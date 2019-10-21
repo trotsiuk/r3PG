@@ -1,0 +1,15 @@
+C_OBJS = skeleton.o
+FT_OBJS = decl_const.o decl_variables.o mainf.o
+
+all: $(SHLIB) clean
+
+$(SHLIB): $(FT_OBJS) $(C_OBJS)
+
+
+mainf.o: decl_variables.o
+mainmodule.o: decl_const.o
+mainmodule.mod: mainf.o
+skeleton.o: mainmodule.mod
+
+clean:
+	@rm -rf *.mod *.o

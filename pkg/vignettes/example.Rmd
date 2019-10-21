@@ -1,0 +1,24 @@
+---
+title: "Example"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(r3PGmix)
+library(dplyr)
+```
+
+## Example
+
+```{r}
+sp <- 2
+m <- 20
+
+run_3PG(
+  siteInputs = array(-999, dim=c(1, 8) ),
+  speciesInputs = array(-999, dim=c(sp, 8) ),
+  forcingInputs = array(-999, dim=c(m, 6) ),
+  parameterInputs = array(-999, dim=c(65, sp) ),
+  biasInputs = array(-999, dim=c(47, sp) )
+)
+```
