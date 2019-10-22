@@ -1,15 +1,23 @@
+# C objects
 C_OBJS = skeleton.o
-FT_OBJS = decl_const.o decl_variables.o mainf.o
+
+# Fortran objects
+FT_OBJS = md_decl_const.o s_read_input.o md_3PG.o
 
 all: $(SHLIB) clean
 
 $(SHLIB): $(FT_OBJS) $(C_OBJS)
 
+# Dependency of objects (?)
+# <name.o>: <modulename.o>
+md_3PG.o: md_decl_const.o s_read_input.o
 
-mainf.o: decl_variables.o
-mainmodule.o: decl_const.o
-mainmodule.mod: mainf.o
-skeleton.o: mainmodule.mod
+# Source (object) of Fortran modules
+# <modulename.mod>: <filename.o>
+mod_3PG.mod: md_3PG.o
+
+# Dependency of the C wrapper
+skeleton.o: mod_3PG.mod
 
 clean:
 	@rm -rf *.mod *.o

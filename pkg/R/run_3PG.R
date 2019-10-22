@@ -23,7 +23,7 @@ run_3PG <- function(
   n_sp = as.integer( nrow(speciesInputs) )
   n_m = as.integer( nrow(forcingInputs) )
 
-  out <- .Call('model_f_C',
+  out <- .Call('s_3PG_c',
     siteInputs = siteInputs,
     speciesInputs = speciesInputs,
     forcingInputs = forcingInputs,

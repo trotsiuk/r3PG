@@ -4,10 +4,10 @@
 #include <Rmath.h>
 #include <R_ext/Rdynload.h>
 
-void F77_NAME(model_f)(double *siteInputs, double *speciesInputs, double *forcingInputs,
+void F77_NAME(s_3PG_f)(double *siteInputs, double *speciesInputs, double *forcingInputs,
     double *parameterInputs, double *biasInputs, int *n_sp, int *n_m, double *output);
 
-extern SEXP model_f_C(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEXP parameterInputs,
+extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEXP parameterInputs,
     SEXP biasInputs, SEXP n_sp, SEXP n_m){
 
     int n;
@@ -28,7 +28,7 @@ extern SEXP model_f_C(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, S
 
     setAttrib( output, R_DimSymbol, dims);
 
-    F77_CALL(model_f)(REAL(siteInputs), REAL(speciesInputs), REAL(forcingInputs), REAL(parameterInputs),
+    F77_CALL(s_3PG_f)(REAL(siteInputs), REAL(speciesInputs), REAL(forcingInputs), REAL(parameterInputs),
         REAL(biasInputs), INTEGER(n_sp), INTEGER(n_m), REAL(output));
 
     UNPROTECT(2);
@@ -37,7 +37,7 @@ extern SEXP model_f_C(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, S
 }
 
 static const R_CallMethodDef CallEntries[] = {
-  {"model_f_C",   (DL_FUNC) &model_f_C,   7},
+  {"s_3PG_c",   (DL_FUNC) &s_3PG_c,   7},
   {NULL,         NULL,                0}
 };
 
@@ -46,5 +46,5 @@ void R_init_r3PGmix(DllInfo *dll)
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 
-    R_RegisterCCallable("r3PGmix", "model_f_C",  (DL_FUNC) &model_f_C);
+    R_RegisterCCallable("r3PGmix", "s_3PG_c",  (DL_FUNC) &s_3PG_c);
 }

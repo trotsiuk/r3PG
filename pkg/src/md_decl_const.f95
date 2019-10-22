@@ -2,11 +2,10 @@
 ! All the parameters are ordered in the alphabetical ordered
 ! V.Trotsiuk [trotsiuk@fld.czu.cz]
 
-module decl_const
+module mod_decl_const
     
-    use, intrinsic :: iso_c_binding, only: c_double, c_int
     implicit none
 
-    real(kind=c_double), parameter :: Pi = 3.141592654_c_double
+    real(kind=8), parameter :: Pi = 3.141592654d0
 
-end module decl_const
+end module mod_decl_const
