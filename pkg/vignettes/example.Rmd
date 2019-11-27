@@ -11,15 +11,12 @@ library(dplyr)
 ## Example
 
 ```{r}
-sp <- 2
-m <- 20
-
 out <- run_3PG(
-  siteInputs = array(-999, dim=c(1, 8) ),
-  speciesInputs = array(-999, dim=c(sp, 8) ),
-  forcingInputs = array(-999, dim=c(m, 6) ),
-  parameterInputs = array(-999, dim=c(65, sp) ),
-  biasInputs = array(-999, dim=c(47, sp) )
+  siteInputs = site_eum,
+  speciesInputs = species_eum,
+  forcingInputs = climate_eum,
+  parameterInputs = parameters_eum[,-1],
+  biasInputs = bias_eum[,-1]
 )
 
 

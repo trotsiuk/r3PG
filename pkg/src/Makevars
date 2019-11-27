@@ -2,7 +2,7 @@
 C_OBJS = skeleton.o
 
 # Fortran objects
-FT_OBJS = md_decl_const.o s_read_input.o md_3PG.o
+FT_OBJS = md_decl_const.o md_3PG.o
 
 all: $(SHLIB) clean
 
@@ -10,7 +10,7 @@ $(SHLIB): $(FT_OBJS) $(C_OBJS)
 
 # Dependency of objects (?)
 # <name.o>: <modulename.o>
-md_3PG.o: md_decl_const.o s_read_input.o
+md_3PG.o: md_decl_const.o
 
 # Source (object) of Fortran modules
 # <modulename.mod>: <filename.o>
