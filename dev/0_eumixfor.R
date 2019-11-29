@@ -112,6 +112,7 @@ bind_rows(vba.df, r.df) %>%
 unique(r.df$variable)
 
 
+
 all_vars <- c(
   'tmp_min','tmp_max','tmp_ave','frost_days','solar_rad','prcp','vpd_day','co2',
   's_age','stems_n','basal_area','dbh','height','crown_length','crown_width',
