@@ -21,10 +21,12 @@ output(ii,:,2,6) = crown_length(:)
 output(ii,:,2,7) = crown_width(:)
 
 ! Canopy variables ---------------
+output(ii,:,3,1) = sla(ii,:)
 output(ii,:,3,3) = lai(:)
 output(ii,:,3,6) = lai_above(:)
 output(ii,:,3,7) = lambda_v(:)
 output(ii,:,3,8) = lambda_h(:)
+output(ii,:,3,10) = vpd_sp(:)
 
 ! Stocks variables ---------------
 output(ii,:,4,1) = biom_foliage(:)
@@ -56,7 +58,16 @@ output(ii,:,6,3) = par(:)
 output(ii,:,6,4) = fi(:)
 output(ii,:,6,5) = alpha_c(:)
 output(ii,:,6,6) = epsilon_gpp(:)
+output(ii,:,6,11) = npp_fract_root(:)
+output(ii,:,6,12) = npp_fract_stem(:)
+output(ii,:,6,13) = npp_fract_foliage(:)
 
+
+! Mortality ---------------
+output(ii,:,7,1) = biom_tree_max(:)
+output(ii,:,7,2) = gammaN(ii,:)
+output(ii,:,7,3) = mort_thinn(:)
+output(ii,:,7,4) = mort_stress(:)
 
 ! Water use ---------------
 output(ii,:,8,3) = prcp_interc_fract(:)

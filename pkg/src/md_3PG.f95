@@ -252,6 +252,7 @@ contains
             ! Determine the various environmental modifiers which were not calculated before
             ! calculate VPD modifier
             ! Get within-canopy climatic conditions this is exponential function
+            Height_max = maxval( height(:) )
 
             ! but since BLcond is a vector we can't use the expF
             ra(:) = (1.d0 / BLcond(:)) + (5.d0 * sum( lai(:) ) - (1.d0 / BLcond(:))) * &
@@ -375,9 +376,9 @@ contains
             ! determine biomass increments and losses
             m(:) = m0(:) + (1.d0 - m0(:)) * fertility(:)
 
-            pR(:) = pRx(:) * pRn(:) / (pRn(:) + (pRx(:) - pRn(:)) * f_phys * m(:))
-            pS(:) = (1.d0 - pR(:)) / (1.d0 + pFS(:))
-            pF(:) = 1.d0 - pR(:) - pS(:)
+            npp_fract_root(:) = pRx(:) * pRn(:) / (pRn(:) + (pRx(:) - pRn(:)) * f_phys * m(:))
+            npp_fract_stem(:) = (1.d0 - npp_fract_root(:)) / (1.d0 + pFS(:))
+            npp_fract_foliage(:) = 1.d0 - npp_fract_root(:) - npp_fract_stem(:)
 
 
             do i = 1, n_sp
@@ -422,9 +423,9 @@ contains
                     end if
         
                     ! calculate biomass increments
-                    biom_incr_foliage(i) = NPP(i) * pF(i)
-                    biom_incr_root(i) = NPP(i) * pR(i)
-                    biom_incr_stem(i) = NPP(i) * pS(i)
+                    biom_incr_foliage(i) = NPP(i) * npp_fract_foliage(i)
+                    biom_incr_root(i) = NPP(i) * npp_fract_root(i)
+                    biom_incr_stem(i) = NPP(i) * npp_fract_stem(i)
                     
                     ! calculate root turnover -
                     biom_loss_root(i) = gammaR(i) * biom_root(i)
@@ -448,6 +449,79 @@ contains
                 f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
 
+
+
+            ! Mortality --------------------------------------------------------------------------
+
+            ! Stress related ------------------
+            do i = 1, n_sp
+                if ( gammaN(ii,i) > 0.d0 ) then
+                    mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
+
+                    if( f_dormant(month, leafgrow(i), leaffall(i)) ) then
+                        biom_foliage_debt(i) = biom_foliage_debt(i) - mF(i) * mort_stress(i) * (biom_foliage_debt(i) / stems_n(i))
+                    else
+                        biom_foliage(i) = biom_foliage(i) - mF(i) * mort_stress(i) * (biom_foliage(i) / stems_n(i))
+                    end if
+                
+                    biom_root(i) = biom_root(i) - mR(i) * mort_stress(i) * (biom_root(i) / stems_n(i))
+                    biom_stem(i) = biom_stem(i) - mS(i) * mort_stress(i) * (biom_stem(i) / stems_n(i))
+                    stems_n(i) = stems_n(i) - mort_stress(i)
+            
+                end if
+            end do
+
+
+            ! Correct the bias
+            biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+            competition_total(:) = sum( Density(ii,:) * basal_area(:) )
+            lai_total(:) = sum( lai(:) )
+        
+            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
+                f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
+
+
+            ! Self-thinning related ------------------
+            basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
+            !basal_area_prop(:) if basal_area_prop(:) > 0 and basal_area_prop(:) < 0.01 put 0.01
+            stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
+
+            biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
+        
+            do i = 1, n_sp
+                if ( biom_tree_max(i) < biom_tree(i) ) then
+                    
+                    mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
+                    mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
+                
+                    if( f_dormant(month, leafgrow(i), leaffall(i)) ) then
+                        biom_foliage_debt(i) = biom_foliage_debt(i) - mF(i) * mort_thinn(i) * (biom_foliage_debt(i) / stems_n(i))
+                    else
+                        biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
+                    end if
+                
+                    biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
+                    biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
+                    stems_n(i) = stems_n(i) - mort_thinn(i)
+                
+                end if
+            end do
+
+
+            ! Correct the bias
+            biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+            competition_total(:) = sum( Density(ii,:) * basal_area(:) )
+            lai_total(:) = sum( lai(:) )
+        
+            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
+                f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
+
+
+            
 
 
 
@@ -664,6 +738,47 @@ contains
         end do
 
     end function f_get_layer_sum
+
+
+    function f_get_mortality(stems_n, WS, mS, wSx1000, thinPower) result(mort_n)
+        ! calculate the mortality
+
+        implicit none
+
+        !input
+        real(kind=8), intent(in) :: stems_n, WS, mS, wSx1000, thinPower
+
+        ! output
+        real(kind=8) :: mort_n
+
+        ! local
+        real(kind=8), parameter :: accuracy = 1.d0 / 1000.d0
+        integer :: i
+        real(kind=8) :: fN,dfN,dN,n,x1,x2
+
+
+        n = stems_n / 1000.d0
+        x1 = 1000.d0 * mS * WS / stems_n
+        i = 0
+        
+        do
+            i = i + 1
+
+            if (n <= 0.d0) exit !added in 3PG+
+
+            x2 = wSx1000 * n ** (1.d0 - thinPower)
+            fN = x2 - x1 * n - (1.d0 - mS) * WS
+            dfN = (1.d0 - thinPower) * x2 / n - x1
+            dN = -fN / dfN
+            n = n + dN
+
+            if (abs(dN) <= accuracy .Or. i >= 5) exit
+
+        end do
+
+        mort_n = stems_n - 1000.d0 * n
+
+    end function f_get_mortality
 
 
     function f_get_solarangle( Lat ) result( solarangle )

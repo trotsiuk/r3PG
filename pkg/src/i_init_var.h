@@ -53,3 +53,8 @@ wue(:) = -9999.d0
 wue_transp(:) = -9999.d0
 evapo_transp = -9999.d0  
 transp_total = -9999.d0
+
+
+! Mortality ---------------------------
+mort_stress(:) = -9999.d0
+mort_thinn(:) = -9999.d0

@@ -163,11 +163,13 @@ real(kind=8), dimension(n_sp) :: pfsPower           ! Derived from pFS2 and PFS2
 ! Structure
 real(kind=8), dimension(n_m, n_sp) :: s_age     ! Age of each species and month
 real(kind=8), dimension(n_sp) :: stems_n
+real(kind=8), dimension(n_sp) :: stems_n_ha         ! potential number of stems per ha
 real(kind=8), dimension(n_sp) :: biom_foliage   ! Foliage biomass
 real(kind=8), dimension(n_sp) :: biom_foliage_debt  !
 real(kind=8), dimension(n_sp) :: biom_root      ! Root biomass
 real(kind=8), dimension(n_sp) :: biom_stem      ! Stem biomass, including branches and bark
 real(kind=8), dimension(n_sp) :: biom_tree      ! average tree stem mass
+real(kind=8), dimension(n_sp) :: biom_tree_max      ! Max. mean tree stem mass at current stocking
 
 real(kind=8), dimension(n_sp) :: biom_incr_foliage
 real(kind=8), dimension(n_sp) :: biom_incr_root
@@ -179,6 +181,7 @@ real(kind=8), dimension(n_sp) :: biom_loss_root
 
 
 real(kind=8), dimension(n_sp) :: basal_area     ! stand level basal area
+real(kind=8), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
 real(kind=8), dimension(n_sp) :: dbh            ! average tree DBH, cm
 real(kind=8), dimension(n_sp) :: height         ! average tree height, m
 real(kind=8), dimension(n_sp) :: crown_length       !***DF mean live-crown length (m) of a species
@@ -191,7 +194,13 @@ real(kind=8), dimension(n_sp) :: lambda_h           !Constant to account for hor
 real(kind=8), dimension(n_sp) :: lambda_v           !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
 
 
-real(kind=8), dimension(n_sp) :: pR, pS, pF
+real(kind=8), dimension(n_sp) :: npp_fract_root, npp_fract_stem, npp_fract_foliage
+
+
+! Mortality
+real(kind=8), dimension(n_sp) :: mort_stress        ! Number of trees that died due to stress-related mortality
+real(kind=8), dimension(n_sp) :: mort_thinn         ! Number of trees that died due to density-dependent mortality
+
 
 
 ! Canopy

@@ -80,7 +80,7 @@ r.df <- run_3PG(
   tranf_rout()  %>%
   mutate( date = get_date( n = n() ) ) %>%
   gather( variable, value, -date) %>%
-  filter( !value %in% -999 ) %>%
+  filter( !value %in% -9999 ) %>%
   # get species id
   separate( variable, c('variable', 'sp_number'), sep = '-' ) %>%
   mutate( obs = 'r',
@@ -94,9 +94,11 @@ sel_var <- c('biom_foliage', 'lai', 'lai_above', 'par','gpp', 'npp','transp','bi
 
 bind_rows(vba.df, r.df) %>%
   filter(!date %in% as.Date('2002-01-31')) %>%
-  filter(year(date) %in% c(2002:2003))  %>%
-  filter( variable %in% sel_var) %>%
-  # mutate( variable = factor( variable, levels = sel_var)) %>%
+  filter(year(date) %in% c(2002:2010))  %>%
+  # filter(variable %in% var_group[names(var_group) %in% c('stand')]) %>%
+  # filter( variable %in% sel_var) %>%
+  filter(variable %in% all_vars) %>%
+  mutate( variable = factor( variable, levels = all_vars)) %>%
   mutate(sp_number = factor(sp_number, labels = c('Fagus', 'Pinus'))) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = sp_number))+
@@ -107,40 +109,23 @@ bind_rows(vba.df, r.df) %>%
   geom_vline(xintercept = as.numeric(as.Date('2002-04-30')), linetype = 2, colour = 'grey50')
 
 
+unique(r.df$variable)
+
+
+all_vars <- c(
+  'tmp_min','tmp_max','tmp_ave','frost_days','solar_rad','prcp','vpd_day','co2',
+  's_age','stems_n','basal_area','dbh','height','crown_length','crown_width',
+  'sla','lai','lai_above','lambda_v','lambda_h','vpd_sp',
+  'biom_foliage','biom_root','biom_stem','biom_tree','gammaF','biom_loss_foliage','biom_foliage_debt',
+  'f_age','f_vpd','f_tmp','f_tmp_gc','f_frost','f_sw','f_nutr','f_calpha','f_cg','f_phys',
+  'gpp','npp_f','par','fi','alpha_c','epsilon_gpp','npp_fract_root', 'npp_fract_stem','npp_fract_foliage',
+  'biom_tree_max','gammaN','mort_thinn','mort_stress',
+  'prcp_interc_fract','prcp_interc','conduct_canopy','conduct_soil','evapotra_soil','wue','wue_transp','evapo_transp','transp_veg')
 
 #  Visualize everything ---------------------------------------------------
-
+unique(names(var_group))
 
 var_group <- var_names.df %>%
   filter(!substr(variable_name, 1, 3) %in% 'var') %>%
   select(variable_group, variable_name) %>%
   tibble::deframe()
-
-
-bind_rows(vba.df, r.df) %>%
-  filter(!date %in% as.Date('2002-05-31')) %>%
-  # filter(variable %in% c(sel_var, 'asw')) %>%
-  # filter(!variable %in% var_group[names(var_group) %in% c('climate', 'modifiers')]) %>%
-  filter(year(date) < 2004) %>%
-  filter( variable %in% pull(distinct(r.df, variable))) %>%
-  ggplot()+
-  geom_line( aes(date, value, color = obs, linetype = as.factor(sp_number)))+
-  facet_wrap( ~ variable, scales = 'free_y') +
-  theme_classic() +
-  geom_vline(xintercept = as.numeric(as.Date('2003-05-31')), linetype = 2, colour = 'red')+
-  geom_vline(xintercept = as.numeric(as.Date('2003-06-30')), linetype = 2, colour = 'grey50') +
-  geom_vline(xintercept = as.numeric(as.Date('2003-04-30')), linetype = 2, colour = 'grey50')
-
-
-
-
-bind_rows(vba.df, r.df) %>%
-  filter(!date %in% as.Date('2002-05-31')) %>%
-  filter(variable %in% c('biom_tree', 'biom_tree_max', 'mort_thinn', 'basal_area', 'stems_n', 'biom_stem')) %>%
-  filter( variable %in% pull(distinct(r.df, variable))) %>%
-  filter(year(date) < 2005) %>%
-  ggplot()+
-  geom_line( aes(date, value, color = obs, linetype = as.factor(sp_number)))+
-  facet_wrap( ~ variable, scales = 'free_y') +
-  # facet_wrap( ~ obs, scales = 'free') +
-  theme_classic()
