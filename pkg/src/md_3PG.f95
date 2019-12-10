@@ -25,7 +25,7 @@ contains
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,8), intent(in) :: speciesInputs
-        real(kind=c_double), dimension(n_m,6), intent(in) :: forcingInputs
+        real(kind=c_double), dimension(n_m,7), intent(in) :: forcingInputs
         real(kind=c_double), dimension(65,n_sp), intent(in) :: parameterInputs
         real(kind=c_double), dimension(47,n_sp), intent(in) :: biasInputs
 
@@ -87,6 +87,9 @@ contains
             f_cg(:,i) = fCg0(i) / (1.d0 + (fCg0(i) - 1.d0) * co2(:) / 350.d0)
     
         end do
+
+        ! air pressure
+        air_pressure = 101.3d0 * Exp(-1.d0 * altitude / 8200.d0)
 
 
         ! SOIL WATER --------
@@ -367,7 +370,37 @@ contains
 
 
             ! d13C module ----------------------------------------------------------------------
-            ! TODO LATER
+            ! Calculating d13C - This is based on Wei et al. 2014 (Plant, Cell and Environment 37, 82-100) 
+            ! and Wei et al. 2014 (Forest Ecology and Management 313, 69-82). This is simply calculated from 
+            ! other variables and has no influence on any processes
+
+            !convert GPP (currently in tDM/ha/month) to GPP in mol/m2/s.
+            GPP_molsec(:) = GPP(:) * 100.d0 / ( daysInMonth(month) * 24.0d0 * 3600.0d0 * gDM_mol)
+
+            !Canopy conductance for water vapour in mol/m2s, unit conversion (CanCond is m/s)
+            Gw_mol(:) = conduct_canopy(:) * 44.6d0 * (273.15d0 / (273.15d0 + tmp_ave(ii) ) ) * (air_pressure / 101.3d0)
+
+            ! Canopy conductance for CO2 in mol/m2s
+            ! This calculation needs to consider the area covered by leaves as opposed to the total ground area of the stand.
+            ! The explanation that Wei et al. provided for adding the "/Maximum(0.0000001, CanCover)" is
+            ! that 3PG is a big leaf leaf model for conductance and the leaf area is assumed to be evenly distributed
+            ! across the land area. So GwMol is divided by Maximum(0.0000001, CanCover) to convert the conductance
+            ! to the area covered by the leaves only, which is smaller than the land area if the canopy has not
+            ! closed. If the original light model has been selected then a CanCover value has already been calculated
+            ! although Wei et al. also warn against using d13C calculations in stands with CanCover < 1.
+            ! If the new light model has been selected then CanCover still needs to be calculated.
+            
+            canopy_cover(:) = (stems_n(:) * (crown_width(:) + 0.25d0) ** 2.d0) / 10000.d0
+            where( canopy_cover(:) > 1.d0) canopy_cover(:) = 1.d0
+            
+            Gc_mol(:) = Gw_mol(:) * RGcGW(:) / max(0.0000001d0, canopy_cover(:))
+        
+            !Calculating monthly average intercellular CO2 concentration. Ci = Ca - A/g
+            InterCi(:) = CO2(ii) * 0.000001d0 - GPP_molsec(:) / Gc_mol(:)
+        
+            !Calculating monthly d13C of new photosynthate, = d13Catm- a-(b-a) (ci/ca)
+            D13CNewPS(:) = d13Catm(ii) - aFracDiffu(:) - (bFracRubi(:) - aFracDiffu(:)) * (InterCi(:) / (CO2(ii) * 0.000001d0))
+            D13CTissue(:) = D13CNewPS(:) + D13CTissueDif(:)
 
             
 
@@ -417,7 +450,8 @@ contains
                 
                     ! If this is first month of growth no lossWF occurs
                     if ( f_dormant(month-1, leafgrow(i), leaffall(i))  .eqv. .TRUE. ) then
-                        biom_loss_foliage(i) = 0.d0
+                        !biom_loss_foliage(i) = 0.d0
+                        biom_loss_foliage(i) = gammaF(ii, i) * biom_foliage(i)
                     else 
                         biom_loss_foliage(i) = gammaF(ii, i) * biom_foliage(i)
                     end if
@@ -485,7 +519,8 @@ contains
 
             ! Self-thinning related ------------------
             basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
-            !basal_area_prop(:) if basal_area_prop(:) > 0 and basal_area_prop(:) < 0.01 put 0.01
+            ! basal_area_prop(:) if basal_area_prop(:) > 0 and basal_area_prop(:) < 0.01 put 0.01
+            ! where( lai(:) > 0.d0 .and. basal_area_prop(:) <0.01d0 ) basal_area_prop(:) = 0.01d0
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
@@ -1308,6 +1343,16 @@ contains
             DrelBiasCrowndiameter(:) = 0.d0
             wsrelBias(:) = 0.d0
         end if
+
+        ! Correct for trees that have age 0
+        where( s_age(:) .eq. 0.d0 )
+            DrelBiaspFS(:) = 0.d0
+            DrelBiasBasArea(:) = 0.d0
+            DrelBiasheight(:) = 0.d0
+            DrelBiasLCL(:) = 0.
+            DrelBiasCrowndiameter(:) = 0.d0
+            wsrelBias(:) = 0.d0
+        end where
     
         ! Correct for bias ------------------
         dbh(:) = (biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:)) * (1.d0 + wsrelBias(:))

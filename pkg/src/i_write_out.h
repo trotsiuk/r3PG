@@ -10,6 +10,7 @@ output(ii,:,1,5) = solar_rad(ii)
 output(ii,:,1,6) = prcp(ii)
 output(ii,:,1,7) = vpd_day(ii)
 output(ii,:,1,8) = co2(ii)
+output(ii,:,1,9) = d13catm(ii)
 
 ! Stand variables ---------------
 output(ii,:,2,1) = s_age(ii,:)
@@ -79,3 +80,11 @@ output(ii,:,8,8) = wue(:)
 output(ii,:,8,9) = wue_transp(:)
 output(ii,:,8,10) = evapo_transp
 output(ii,:,8,11) = transp_veg(:)
+
+
+! Wood Delta ------------------
+output(ii,:,9,1) = Gc_mol(:)
+output(ii,:,9,2) = Gw_mol(:)
+output(ii,:,9,3) = D13CNewPS(:)
+output(ii,:,9,4) = D13CTissue(:)
+output(ii,:,9,5) = InterCi(:) * 1000000.d0

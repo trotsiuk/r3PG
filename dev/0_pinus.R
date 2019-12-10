@@ -43,7 +43,7 @@ vba.names <- var_names.df %>% select( variable_vba, variable_name) %>% filter(!i
 r.names <- var_names.df %>% pull(variable_name)
 
 #' `Prepare VBA dataset`
-vba.df <- readxl::read_xls('../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', sheet = 'Shitaioutput', skip = 259, n_max = 140) %>%
+vba.df <- readxl::read_xls('../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', sheet = 'Shitaioutput', skip = 966, n_max = 140) %>%
   select( -`Year & month` ) %>%
   mutate_all( funs( as.numeric) ) %>%
   # get date
@@ -64,19 +64,15 @@ vba.df <- readxl::read_xls('../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', she
   mutate( obs = 'vba') %>%
   select( date, sp_number, variable, value, obs)
 
-parameters_eum$sp1[11] <- 5
-# parameters_eum$sp1[12] <- 11
-
 
 #' `Prepare Fortran dataset`
 r.df <- run_3PG(
   siteInputs = site_eum,
-  speciesInputs = species_eum,
+  speciesInputs = species_eum %>% filter(species == 2) %>% mutate(iWR = 15),
   forcingInputs = climate_eum,
-  # parameterInputs = pt,
-  parameterInputs = parameters_eum[,-1],
-  biasInputs = bias_eum[,-1],
-  settings = list(f_dbh_dist = 0L)) %>%
+  parameterInputs = parameters_eum[,'sp2'],
+  biasInputs = bias_eum[,'sp2'],
+  settings = list(f_dbh_dist = 1L)) %>%
   tranf_rout()  %>%
   mutate( date = get_date( n = n() ) ) %>%
   gather( variable, value, -date) %>%
@@ -98,25 +94,24 @@ sel_var <- c(
   'f_age','f_vpd','f_tmp','f_tmp_gc','f_frost','f_sw','f_nutr','f_calpha','f_cg','f_phys',
   'gpp','npp_f','par','fi','alpha_c','epsilon_gpp','npp_fract_root', 'npp_fract_stem','npp_fract_foliage',
   'biom_tree_max','gammaN','mort_thinn','mort_stress',
-  'prcp_interc_fract','prcp_interc','conduct_canopy','conduct_soil','evapotra_soil','wue','wue_transp','evapo_transp','transp_veg')
+  'prcp_interc_fract','prcp_interc','conduct_canopy','conduct_soil','evapotra_soil','wue','wue_transp','evapo_transp','transp_veg',
+  'Gc_mol', 'Gw_mol', 'D13CNewPS', 'D13CTissue', 'InterCi')
 
-sel_var <- c('biom_foliage', 'lai',  'par','gpp', 'npp','transp','biom_stem', 'stems_n','vpd_sp')
+sel_var <- c('biom_foliage', 'lai', 'lai_above', 'par','gpp', 'npp','transp','biom_stem', 'stems_n', 'lambda_h', 'lambda_v', 'wue_transp')
 
 sel_var <- c('vpd_sp', 'gpp', 'lai', 'lai_above')
 
+sel_var <- 'f_age'
+
 bind_rows(vba.df, r.df) %>%
-  filter(!date %in% as.Date('2002-01-31')) %>%
-  filter(year(date) %in% c(2002:2012))  %>%
+  # filter(!date %in% as.Date('2002-01-31')) %>%
+  filter(year(date) %in% c(2002:2003))  %>%
   filter( variable %in% sel_var) %>%
   mutate( variable = factor( variable, levels = sel_var)) %>%
-  mutate(sp_number = factor(sp_number, labels = c('Fagus', 'Pinus'))) %>%
   ggplot()+
-  geom_line( aes(date, value, color = obs, linetype = sp_number))+
+  geom_line( aes(date, value, color = obs, linetype = obs))+
   facet_wrap( ~ variable, scales = 'free_y') +
-  theme_classic() +
-  geom_vline(xintercept = as.numeric(as.Date('2002-05-31')), linetype = 2, colour = 'red')+
-  geom_vline(xintercept = as.numeric(as.Date('2002-06-30')), linetype = 2, colour = 'grey50') +
-  geom_vline(xintercept = as.numeric(as.Date('2002-04-30')), linetype = 2, colour = 'grey50')
+  theme_classic()
 
 
 unique(r.df$variable)
@@ -124,10 +119,12 @@ unique(r.df$variable)
 
 
 
-#  Visualize everything ---------------------------------------------------
-unique(names(var_group))
 
-var_group <- var_names.df %>%
-  filter(!substr(variable_name, 1, 3) %in% 'var') %>%
-  select(variable_group, variable_name) %>%
-  tibble::deframe()
+# Testings ----------------------------------------------------------------
+options(digits=10)
+
+bind_rows(vba.df, r.df) %>%
+  filter(variable %in% 'f_age') %>%
+  spread(obs, value) %>%
+  as.data.frame() %>%
+  head()

@@ -34,6 +34,7 @@ prcp        = forcingInputs(:,3)
 solar_rad   = forcingInputs(:,4)
 frost_days  = forcingInputs(:,5)
 co2         = forcingInputs(:,6)
+d13catm     = forcingInputs(:,7)
 
 
 ! Parameters ---------------------------

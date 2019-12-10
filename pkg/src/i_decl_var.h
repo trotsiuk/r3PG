@@ -36,6 +36,7 @@ real(kind=8), dimension(n_m) :: prcp            ! monthly precipitation sum
 real(kind=8), dimension(n_m) :: solar_rad       ! mean daily incident solar radiation
 real(kind=8), dimension(n_m) :: frost_days      ! number of frost days per month
 real(kind=8), dimension(n_m) :: co2             ! atmospheric CO2
+real(kind=8), dimension(n_m) :: d13catm         ! added d13C of atmospheric CO2 (per mil)
 
 
 ! Parameters ---------------------------
@@ -258,4 +259,13 @@ real(kind=8), dimension(n_sp) :: WUE
 real(kind=8), dimension(n_sp) :: WUE_transp !***DF
 
 
+! d13C calculations
+real(kind=8) :: air_pressure                    !Air pressure (kPa)
+real(kind=8), dimension(n_sp) :: GPP_molsec     !GPP per second (mol/m2 s)
+real(kind=8), dimension(n_sp) :: Gw_mol         !Canopy conductance for water vapor in mol/m2s
+real(kind=8), dimension(n_sp) :: Gc_mol         !Canopy conductance for CO2 in mol/m2s
+real(kind=8), dimension(n_sp) :: canopy_cover
+real(kind=8), dimension(n_sp) :: InterCi         !intercellular CO2 concentration
+real(kind=8), dimension(n_sp) :: D13CNewPS
+real(kind=8), dimension(n_sp) :: D13CTissue
 

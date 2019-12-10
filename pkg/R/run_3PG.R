@@ -28,7 +28,7 @@ run_3PG <- function(
   out <- .Call('s_3PG_c',
     siteInputs = as.matrix( siteInputs, nrow = 1, ncol = 8),
     speciesInputs = as.matrix( speciesInputs, nrow = n_sp, ncol = 8),
-    forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 6),
+    forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
     parameterInputs = as.matrix( parameterInputs, nrow = 65, ncol = n_sp),
     biasInputs = as.matrix( biasInputs, nrow = 47, ncol = n_sp),
     n_sp = n_sp,

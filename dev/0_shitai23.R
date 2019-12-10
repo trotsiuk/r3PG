@@ -12,7 +12,7 @@ library(ggplot2)
 library(scales)
 
 # 0. Custom functions -----------------------------------------------------
-get_date <- function( day_start = as.Date('2002-01-31'), n = 10 ){
+get_date <- function( day_start = as.Date('2010-01-31'), n = 10 ){
   #' @description function generate a sequence of dates with step 1 month
 
   seq( ceiling_date( day_start, "month"), by = "month", length.out = n) - 1
@@ -43,7 +43,7 @@ vba.names <- var_names.df %>% select( variable_vba, variable_name) %>% filter(!i
 r.names <- var_names.df %>% pull(variable_name)
 
 #' `Prepare VBA dataset`
-vba.df <- readxl::read_xls('../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', sheet = 'Shitaioutput', skip = 259, n_max = 140) %>%
+vba.df <- readxl::read_xls('../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', sheet = 'Shitaioutput', skip = 132, n_max = 123) %>%
   select( -`Year & month` ) %>%
   mutate_all( funs( as.numeric) ) %>%
   # get date
@@ -64,19 +64,19 @@ vba.df <- readxl::read_xls('../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', she
   mutate( obs = 'vba') %>%
   select( date, sp_number, variable, value, obs)
 
-parameters_eum$sp1[11] <- 5
+# parameters_shi3$sp2[11] <- 3
 # parameters_eum$sp1[12] <- 11
 
 
 #' `Prepare Fortran dataset`
 r.df <- run_3PG(
-  siteInputs = site_eum,
-  speciesInputs = species_eum,
-  forcingInputs = climate_eum,
+  siteInputs = site_shi23,
+  speciesInputs = species_shi23,
+  forcingInputs = climate_shi23,
   # parameterInputs = pt,
-  parameterInputs = parameters_eum[,-1],
-  biasInputs = bias_eum[,-1],
-  settings = list(f_dbh_dist = 0L)) %>%
+  parameterInputs = parameters_shi23[,-1],
+  biasInputs = bias_shi23[,-1],
+  settings = list(f_dbh_dist = 1L)) %>%
   tranf_rout()  %>%
   mutate( date = get_date( n = n() ) ) %>%
   gather( variable, value, -date) %>%
@@ -90,8 +90,10 @@ r.df <- run_3PG(
 
 
 # 3. This part is used to understand descrepancies between R and V --------
+sel_var <- c('biom_foliage', 'lai', 'lai_above', 'par','gpp', 'npp','transp','biom_stem', 'stems_n', 'lambda_h', 'lambda_v')
+
 sel_var <- c(
-  # 'tmp_min','tmp_max','tmp_ave','frost_days','solar_rad','prcp','vpd_day','co2',
+  'tmp_min','tmp_max','tmp_ave','frost_days','solar_rad','prcp','vpd_day','co2',
   's_age','stems_n','basal_area','dbh','height','crown_length','crown_width',
   'sla','lai','lai_above','lambda_v','lambda_h','vpd_sp',
   'biom_foliage','biom_root','biom_stem','biom_tree','gammaF','biom_loss_foliage','biom_foliage_debt',
@@ -100,16 +102,16 @@ sel_var <- c(
   'biom_tree_max','gammaN','mort_thinn','mort_stress',
   'prcp_interc_fract','prcp_interc','conduct_canopy','conduct_soil','evapotra_soil','wue','wue_transp','evapo_transp','transp_veg')
 
-sel_var <- c('biom_foliage', 'lai',  'par','gpp', 'npp','transp','biom_stem', 'stems_n','vpd_sp')
-
-sel_var <- c('vpd_sp', 'gpp', 'lai', 'lai_above')
+sel_var <- c('stems_n', 'basal_area', 'dbh', 'biom_tree_max')
 
 bind_rows(vba.df, r.df) %>%
-  filter(!date %in% as.Date('2002-01-31')) %>%
-  filter(year(date) %in% c(2002:2012))  %>%
+  filter(!date %in% as.Date('2010-01-31')) %>%
+  filter(!date %in% as.Date('2010-02-28')) %>%
+  # filter(year(date) %in% c(2010:2012))  %>%
   filter( variable %in% sel_var) %>%
   mutate( variable = factor( variable, levels = sel_var)) %>%
-  mutate(sp_number = factor(sp_number, labels = c('Fagus', 'Pinus'))) %>%
+  mutate(sp_number = factor(sp_number, labels = c('Castanopsis', 'Cunninghamia'))) %>%
+  # filter(sp_number %in% 'Castanopsis') %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = sp_number))+
   facet_wrap( ~ variable, scales = 'free_y') +
@@ -123,6 +125,10 @@ unique(r.df$variable)
 
 
 
+200 * (1000/357)^2
+
+
+wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
 #  Visualize everything ---------------------------------------------------
 unique(names(var_group))
