@@ -1241,7 +1241,7 @@ contains
     
     
         ! Variables and parameters
-        real(kind=8), dimension(n_sp) ::  height_rel
+        real(kind=8), dimension(n_sp) :: height_rel
     
         real(kind=8), dimension(n_sp) :: aH, nHB, nHC
         real(kind=8), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh

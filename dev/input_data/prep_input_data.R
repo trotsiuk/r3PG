@@ -5,7 +5,15 @@ library(dplyr)
 library(readr)
 library(readxl)
 
-options(digits=15)
+options(digits=16)
+
+
+
+# Variable naming ---------------------------------------------------------
+var_names <- readxl::read_excel('dev/r3PGmix_info.xlsx', sheet = 'var_names') %>%
+  select(group_id, variable_id, variable_group, variable_name, description, unit, variable_vba)
+
+save(var_names, file = 'pkg/data/r3pg_helpers.rda')
 
 
 # EU_MIXFOR ---------------------------------------------------------------

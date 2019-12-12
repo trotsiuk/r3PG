@@ -1,6 +1,16 @@
 # Examples of different sites ---------------------------------------------
 
 
+#' Help tables, need to be modified
+#'
+#' @docType data
+#' @keywords datasets
+#' @name r3pg_helpers
+#' @usage data(r3pg_helpers)
+#' @format 1 \code{data frame}
+NULL
+
+
 #' European Mixtforest project
 #'
 #' @docType data

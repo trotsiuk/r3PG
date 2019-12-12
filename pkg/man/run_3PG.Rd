@@ -4,8 +4,14 @@
 \alias{run_3PG}
 \title{Define the function to run 3PGN in R}
 \usage{
-run_3PG(siteInputs, speciesInputs, forcingInputs, parameterInputs,
-  biasInputs)
+run_3PG(
+  siteInputs,
+  speciesInputs,
+  forcingInputs,
+  parameterInputs,
+  biasInputs,
+  settings = list(fit_dbh_dist = 0L)
+)
 }
 \arguments{
 \item{siteInputs}{site level data}
@@ -17,6 +23,8 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, parameterInputs,
 \item{parameterInputs}{parameters level data}
 
 \item{biasInputs}{bial level data}
+
+\item{settings}{settings for the model}
 }
 \description{
 Define the function to run 3PGN in R
