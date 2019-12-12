@@ -112,6 +112,17 @@ real(kind=8), dimension(n_sp) :: rho1           ! Maximum basic density - for ol
 real(kind=8), dimension(n_sp) :: tRho           ! Age at which rho = (rhoMin+rhoMax)/2
 integer, dimension(n_sp) :: CrownShape          !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
 
+! Bias correction
+real(kind=8), dimension(n_sp) :: aH, nHB, nHC
+real(kind=8), dimension(n_sp) :: aV, nVB, nVH, nVBH
+real(kind=8), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
+real(kind=8), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
+real(kind=8), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC 
+real(kind=8), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC 
+real(kind=8), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
+real(kind=8), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
+real(kind=8), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
+real(kind=8), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocationt, wslocationC
 
 !***************************************
 ! DERIVED VARIABLES
@@ -179,6 +190,9 @@ real(kind=8), dimension(n_sp) :: biom_incr_stem
 real(kind=8), dimension(n_sp) :: biom_loss_foliage  ! Litter fall 
 real(kind=8), dimension(n_sp) :: biom_loss_root
 
+
+real(kind=8), dimension(n_sp) :: volume
+real(kind=8), dimension(n_sp) :: volume_mai
 
 
 real(kind=8), dimension(n_sp) :: basal_area     ! stand level basal area

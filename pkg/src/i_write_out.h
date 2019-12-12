@@ -20,6 +20,9 @@ output(ii,:,2,4) = dbh(:)
 output(ii,:,2,5) = height(:)
 output(ii,:,2,6) = crown_length(:)
 output(ii,:,2,7) = crown_width(:)
+output(ii,:,2,8) = volume(:)
+output(ii,:,2,9) = volume_mai(:)
+
 
 ! Canopy variables ---------------
 output(ii,:,3,1) = sla(ii,:)

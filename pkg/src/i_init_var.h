@@ -9,9 +9,14 @@ SupIrrig = 0.d0
 RunOff = 0.d0
 
 
-! Climate ------------------------------
+! Climatic variables -------------
 tmp_ave(:) = -9999.d0
 vpd_day(:) = -9999.d0
+
+! Stand variables ---------------
+s_age(:,:) = -9999.d0
+volume(:) = -9999.d0
+volume_mai(:) = -9999.d0
 
 ! Canopy variables ---------------
 lai_above(:) = -9999.d0
@@ -45,7 +50,7 @@ npp_fract_stem(:) = -9999.d0
 npp_fract_foliage(:) = -9999.d0
 
 ! Structure ------------------------------
-s_age(:,:) = -9999.d0
+
 SLA(:,:) = -9999.d0
 biom_foliage_debt(:) = -0.d0
 

@@ -27,7 +27,7 @@ data.df <- bind_rows(vba.df, r.df) %>%
 unique(r.df$group)
 
 g_sel <- c('stand', 'canopy', 'stocks', 'production')
-g_sel <- 'climate'
+g_sel <- 'stand'
 v_sel <- c('biom_tree')
 
 data.df %>%
@@ -46,7 +46,7 @@ options(digits=10)
 
 data.df %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'prcp') %>%
+  filter(variable %in% 'basal_area') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head(10)

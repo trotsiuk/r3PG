@@ -9,7 +9,7 @@ module mod_3PG
 
 contains
     
-    subroutine s_3PG_f ( siteInputs, speciesInputs, forcingInputs, parameterInputs, biasInputs, &
+    subroutine s_3PG_f ( siteInputs, speciesInputs, forcingInputs, pars_i, pars_b, &
         n_sp, n_m, f_dbh_dist, output) bind(C, name = "s_3PG_f_")
 
         implicit none
@@ -26,17 +26,17 @@ contains
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,8), intent(in) :: speciesInputs
         real(kind=c_double), dimension(n_m,7), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(65,n_sp), intent(in) :: parameterInputs
-        real(kind=c_double), dimension(47,n_sp), intent(in) :: biasInputs
+        real(kind=c_double), dimension(65,n_sp), intent(in) :: pars_i
+        real(kind=c_double), dimension(47,n_sp), intent(in) :: pars_b
 
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,15), intent(inout) :: output
 
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
+
         include 'i_read_input.h'
-
-
+        include 'i_read_input_bias.h'
 
         ! Initialization
         include 'i_init_var.h'
@@ -187,7 +187,7 @@ contains
 
         ! Correct the bias
         call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
-            f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+            f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
             dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
 
 
@@ -240,7 +240,7 @@ contains
             lai_total(:) = sum( lai(:) )
 
             call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
-                f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
 
 
@@ -480,7 +480,7 @@ contains
             lai_total(:) = sum( lai(:) )
         
             call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
-                f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
 
 
@@ -513,7 +513,7 @@ contains
             lai_total(:) = sum( lai(:) )
         
             call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
-                f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
 
 
@@ -552,9 +552,15 @@ contains
             lai_total(:) = sum( lai(:) )
         
             call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
-                f_dbh_dist, biasInputs, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
 
+            ! additional variables
+            volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / Density(ii,:)
+            where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) &
+                * (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
+            
+            volume_mai(:) = volume(:) / s_age(ii,:)
 
             
 
@@ -1244,6 +1250,7 @@ contains
         real(kind=8), dimension(n_sp) :: height_rel
     
         real(kind=8), dimension(n_sp) :: aH, nHB, nHC
+        real(kind=8), dimension(n_sp) :: aV, nVB, nVH, nVBH
         real(kind=8), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
         real(kind=8), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
         real(kind=8), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC 
