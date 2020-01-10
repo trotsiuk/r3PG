@@ -117,7 +117,7 @@ contains
     
         ! Silvicultural events are currently not active
         Irrig = 0.d0
-        pooledSW = 0.d0
+        water_runoff_polled = 0.d0
         poolFractn = 0.d0
         poolFractn = max(0.d0, min(1.d0, poolFractn))
 
@@ -141,7 +141,7 @@ contains
 
             SLA(:,i) = f_exp( n_m, s_age(:,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
             fracBB(:,i) = f_exp( n_m, s_age(:,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
-            Density(:,i) = f_exp( n_m, s_age(:,i), rho0(i), rho1(i), tRho(i), 1.d0)
+            wood_density(:,i) = f_exp( n_m, s_age(:,i), rho0(i), rho1(i), tRho(i), 1.d0)
             gammaN(:,i) = f_exp( n_m, s_age(:,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
 
             gammaF(:,i) = f_exp_foliage( n_m, s_age(:,i), gammaF1(i), gammaF0(i), tgammaF(i))
@@ -182,16 +182,16 @@ contains
         dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
         basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
         lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-        competition_total(:) = sum( Density(ii,:) * basal_area(:) )
-        lai_total(:) = sum( lai(:) )
+        competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+        height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
 
         ! Correct the bias
-        call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
+        call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
             f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-            dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
+            dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
 
-        Height_max = maxval( height(:) )
+        Height_max = maxval( height(:), mask=lai(:)>0.d0 )
         
 
         ! INITIALISATION (Write output)---------------------
@@ -237,11 +237,11 @@ contains
             end do
 
             ! V.T. I wonder if the biass correction ned to be here, since we change the LAI!
-            lai_total(:) = sum( lai(:) )
+            competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
+            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
+                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
 
             !Radiation and assimilation ----------------------------------------------------------------------
@@ -249,20 +249,20 @@ contains
             ! Calculate the absorbed PAR. If this is first month, then it will be only potential
             call s_absorbed_par ( n_sp, height(:), crown_length(:), crown_width(:), lai(:), stems_n(:), &
                 solar_rad(ii), CrownShape(:), k(:), adjSolarZenithAngle(month), daysInMonth(month), &
-                par(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:))
+                par(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:))
 
 
             ! Determine the various environmental modifiers which were not calculated before
             ! calculate VPD modifier
             ! Get within-canopy climatic conditions this is exponential function
-            Height_max = maxval( height(:) )
+            Height_max = maxval( height(:), mask=lai(:)>0.d0 )
 
             ! but since BLcond is a vector we can't use the expF
-            ra(:) = (1.d0 / BLcond(:)) + (5.d0 * sum( lai(:) ) - (1.d0 / BLcond(:))) * &
+            aero_resist(:) = (1.d0 / BLcond(:)) + (5.d0 * sum( lai(:) ) - (1.d0 / BLcond(:))) * &
                 Exp(-ln2 * ( height(:) / (Height_max / 2.d0)) ** 2.d0)
             ! if this is the highest tree
             where( height(:) == Height_max) 
-                ra(:) = 1.d0 / BLcond(:)
+                aero_resist(:) = 1.d0 / BLcond(:)
             end where
 
             VPD_sp(:) = vpd_day(ii) * Exp(lai_above(:) * (-Log(2.d0)) / cVPD(:))
@@ -281,6 +281,7 @@ contains
 
             ! Calculate assimilation before the water ballance is done
             alpha_c(:) = alphaCx(:) * f_nutr(:) * f_tmp(ii,:) * f_frost(ii,:) * f_calpha(ii,:) * f_phys(:)
+            where( lai(:) == 0.d0 ) alpha_c(:) = 0.d0
             epsilon_gpp(:) = gDM_mol * molPAR_MJ * alpha_c(:)
             GPP(:) = epsilon_gpp(:) * par(:) / 100        ! tDM/ha (par is MJ/m^2)
             NPP(:) = GPP(:) * y(:)                       ! assumes respiratory rate is constant
@@ -289,7 +290,9 @@ contains
 
             ! Water Balance ----------------------------------------------------------------------
             ! Calculate each specie proportion
+            lai_total(:) = sum( lai(:) )
             lai_per(:) = lai(:) / lai_total(:)
+            where( lai_total(:) .eq. 0.d0 ) lai_per(:) = 0.d0
 
             ! Calculate conductance
             gC(:) = MaxCond(:)
@@ -303,7 +306,7 @@ contains
 
             ! Calculate transpiration
             call s_transpiration( n_sp, solar_rad(ii), vpd_day(ii), DayLength(month), daysInMonth(month), &
-                lai(:), fi(:), VPD_sp(:), ra(:), conduct_canopy(:), conduct_soil, &
+                lai(:), fi(:), VPD_sp(:), aero_resist(:), conduct_canopy(:), conduct_soil, &
                 transp_veg(:), evapotra_soil)
 
             transp_total = sum( transp_veg(:) ) + evapotra_soil
@@ -319,15 +322,15 @@ contains
             prcp_interc_total = sum( prcp_interc(:) )
 
             ! Do soil water balance Need to constrain irrigation only to the growing season
-            ASW = ASW + prcp(ii) + (100.d0 * Irrig / 12.0d0) + pooledSW
+            ASW = ASW + prcp(ii) + (100.d0 * Irrig / 12.0d0) + water_runoff_polled
             evapo_transp = min( ASW, transp_total + prcp_interc_total)  !ET can not exceed ASW
             excessSW = max(ASW - evapo_transp - asw_max, 0.d0)
             ASW = ASW - evapo_transp - excessSW
-            pooledSW = poolFractn * excessSW
-            RunOff = (1.d0 - poolFractn) * excessSW
+            water_runoff_polled = poolFractn * excessSW
+            prcp_runoff = (1.d0 - poolFractn) * excessSW
 
             if (ASW < asw_min) then
-                SupIrrig = asw_min - ASW
+                irrig_supl = asw_min - ASW
                 ASW = asw_min
             end if
 
@@ -402,6 +405,12 @@ contains
             D13CNewPS(:) = d13Catm(ii) - aFracDiffu(:) - (bFracRubi(:) - aFracDiffu(:)) * (InterCi(:) / (CO2(ii) * 0.000001d0))
             D13CTissue(:) = D13CNewPS(:) + D13CTissueDif(:)
 
+            ! correct for dormancy
+            where( Gc_mol(:) .eq. 0.d0 )
+                InterCi(:) = 0.d0
+                D13CNewPS(:) = 0.d0
+                D13CTissue(:) = 0.d0
+            end where
             
 
 
@@ -476,12 +485,11 @@ contains
             ! Correct the bias
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-            competition_total(:) = sum( Density(ii,:) * basal_area(:) )
-            lai_total(:) = sum( lai(:) )
+            competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
         
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
+            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
+                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
 
 
@@ -509,12 +517,11 @@ contains
             ! Correct the bias
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-            competition_total(:) = sum( Density(ii,:) * basal_area(:) )
-            lai_total(:) = sum( lai(:) )
+            competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
         
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
+            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
+                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
 
             ! Self-thinning related ------------------
@@ -548,15 +555,14 @@ contains
             ! Correct the bias
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-            competition_total(:) = sum( Density(ii,:) * basal_area(:) )
-            lai_total(:) = sum( lai(:) )
+            competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
         
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai_total(:), &
+            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:))
+                dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
             ! additional variables
-            volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / Density(ii,:)
+            volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
             where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) &
                 * (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
             
@@ -699,7 +705,7 @@ contains
     end function f_get_daylength
 
 
-    function f_get_layer ( n_sp, height, Heightcrown) result(layerID)
+    function f_get_layer ( n_sp, height, Heightcrown) result(layer_id)
         ! function to allocate each tree to the layer based on height and crown heigh
         ! First layer (1) is the highest
         ! According to Forrester, D.I., Guisasola, R., Tang, X. et al. For. Ecosyst. (2014) 1: 17.
@@ -711,7 +717,7 @@ contains
         real(kind=8), dimension(n_sp), intent(in) :: height, Heightcrown
         
         ! output
-        integer, dimension(n_sp) :: layerID ! array of layer id
+        integer, dimension(n_sp) :: layer_id ! array of layer id
     
         ! local
         real(kind=8), dimension( n_sp*2 ) :: Height_all
@@ -741,20 +747,20 @@ contains
         Height_layer = Height_all(PACK(Height_ind, ones_sum == 0))
     
         ! Assign layer to each species
-        layerID(:) = 1
+        layer_id(:) = 1
         if( size(Height_layer) > 1 ) then
             do i = 1, size(Height_layer)-1
-                where ( height(:) > Height_layer(i) ) layerID(:) = i+1
+                where ( height(:) > Height_layer(i) ) layer_id(:) = i+1
             end do
         end if
     
         ! revert the order, so highest trees are 1 layer and lowest is n
-        layerID(:) = maxval( layerID(:) ) - layerID(:) + 1
+        layer_id(:) = maxval( layer_id(:) ) - layer_id(:) + 1
     
     end function f_get_layer
 
 
-    function f_get_layer_sum ( n_sp, nLayers, x, layerID) result (y)
+    function f_get_layer_sum ( n_sp, nLayers, x, layer_id) result (y)
         ! function to sum any array x, based on the vector of layers id
     
         implicit none
@@ -762,7 +768,7 @@ contains
         ! input
         integer, intent(in) :: n_sp, nLayers ! number of species and layers
         real(kind=8), dimension(n_sp), intent(in) :: x
-        integer, dimension(n_sp), intent(in) :: layerID
+        integer, dimension(n_sp), intent(in) :: layer_id
         
         ! output
         real(kind=8), dimension(n_sp) :: y
@@ -773,8 +779,8 @@ contains
         y(:) = 0.d0
     
         do i = 1, nLayers
-            where ( layerID(:) == i )
-                y(:) = sum(x(:), mask=layerID(:)==i)
+            where ( layer_id(:) == i )
+                y(:) = sum(x(:), mask=layer_id(:)==i)
             end where
         end do
 
@@ -951,7 +957,7 @@ contains
 
     subroutine s_absorbed_par ( n_sp, height, crown_length, crown_width, lai, stems_n, solar_rad, &
         CrownShape, k, solarAngle,days_in_month, &
-        par, lai_above, fi, lambda_v, lambda_h)
+        par, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id)
         
         ! Subroutine calculate the par for the mixed species forest
         ! It first allocate each species to a specific layer based on height and crown length
@@ -981,7 +987,9 @@ contains
         real(kind=8), dimension(n_sp), intent(out) :: fi !***DF the proportion of above canopy PAR absorbed by each species
         real(kind=8), dimension(n_sp), intent(out) :: lambda_v       !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
         real(kind=8), dimension(n_sp), intent(out) :: lambda_h         !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-    
+        real(kind=8), dimension(n_sp), intent(out) :: canopy_vol_frac !Fraction of canopy space (between lowest crown crown height to tallest height) filled by crowns    
+        integer, dimension(n_sp), intent(out) :: layer_id
+ 
         ! Additional variables for calculation distribution
         integer :: i
         real(kind=8), dimension(n_sp) :: Heightmidcrown    !mean height of the middle of the crown (height - height to crown base)/2 + height to crown base       !***DF
@@ -989,12 +997,10 @@ contains
         real(kind=8), dimension(n_sp) :: CrownSA  !mean crown surface area (m2) of a species
         real(kind=8), dimension(n_sp) :: Crownvolume   !***DF the crown volume of a given species
         real(kind=8), dimension(n_sp) :: treeLAtoSAratio !the ratio of mean tree leaf area (m2) to crownSA (m2)
-        integer, dimension(n_sp) :: layerId        ! Id of the layer
         integer :: nLayers ! number of layers
         real(kind=8), dimension(n_sp) :: Height_max_l
         real(kind=8), dimension(n_sp) :: Heightcrown_min_l
         real(kind=8), dimension(n_sp) :: Heightmidcrown_l ! maximum and minimum height of layer
-        real(kind=8), dimension(n_sp) :: CanopyVolumefraction !Fraction of canopy space (between lowest crown crown height to tallest height) filled by crowns    
         real(kind=8), dimension(n_sp) :: Heightmidcrown_r !ratio of the mid height of the crown of a given species to the mid height of a canopy layer
         real(kind=8), dimension(n_sp) :: kL_l          !sum of k x L for all species within the given layer
         real(kind=8), dimension(n_sp) :: lambdaV_l     ! sum of lambda_v per layer
@@ -1014,10 +1020,10 @@ contains
     
         !Calculate the mid crown height, crown surface and volume
         ! check if species is dormant
-        where( lai(:) == 0 )
-            height(:) = 0.d0
-            crown_length(:) = 0.d0
-        end where
+        ! where( lai(:) == 0 )
+        !    height(:) = 0.d0
+        !    crown_length(:) = 0.d0
+        ! end where
 
         Heightcrown(:) = height(:) - crown_length(:)
         Heightmidcrown(:) = height(:) - crown_length(:) / 2
@@ -1052,29 +1058,31 @@ contains
     
         !calculate the ratio of tree leaf area to crown surface area restrict kLS to 1
         treeLAtoSAratio(:) = lai(:) * 10000.d0 / stems_n(:) / CrownSA(:)
+        where ( lai(:) == 0.0d0 ) treeLAtoSAratio(:) = 0.d0
     
     
         ! separate trees into layers 
-        layerId(:) = f_get_layer(n_sp, height(:), Heightcrown(:) )
-        nLayers = maxval( layerId(:) )
+        layer_id(:) = f_get_layer(n_sp, height(:), Heightcrown(:) )
+        where ( lai(:) == 0.0d0 ) layer_id(:) = -1.d0
+        nLayers = maxval( layer_id(:) )
     
     
         ! Now calculate the proportion of the canopy space that is filled by the crowns. The canopy space is the
         ! volume between the top and bottom of a layer that is filled by crowns in that layer.
         do i = 1, nLayers
-            where ( layerId(:) == i )
-                Height_max_l(:) = maxval(height(:), mask=layerId(:)==i)
-                Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layerId(:)==i)
+            where ( layer_id(:) == i )
+                Height_max_l(:) = maxval(height(:), mask=layer_id(:)==i)
+                Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:)==i)
             end where
         end do
     
     
         ! sum the canopy volume fraction per layer and save it at each species
-        CanopyVolumefraction(:) = Crownvolume(:) * stems_n(:) / ( (Height_max_l(:) - Heightcrown_min_l(:)) * 10000.d0) 
-        CanopyVolumefraction(:) = f_get_layer_sum(n_sp, nLayers, CanopyVolumefraction(:), layerId(:))
+        canopy_vol_frac(:) = Crownvolume(:) * stems_n(:) / ( (Height_max_l(:) - Heightcrown_min_l(:)) * 10000.d0) 
+        canopy_vol_frac(:) = f_get_layer_sum(n_sp, nLayers, canopy_vol_frac(:), layer_id(:))
         
-        ! if the canopy volume fraction is < 0.01 (very small seedlings) then it is outside the range of the model there is no need for lambda_h so, make canopyvolumefraction = 0.01
-        !where( CanopyVolumefraction(:) < 0.01d0 ) CanopyVolumefraction(:) = 0.01d0
+        ! if the canopy volume fraction is < 0.01 (very small seedlings) then it is outside the range of the model there is no need for lambda_h so, make canopy_vol_frac = 0.01
+        !where( canopy_vol_frac(:) < 0.01d0 ) canopy_vol_frac(:) = 0.01d0
     
         Heightmidcrown_l(:) = Heightcrown_min_l(:) + ( Height_max_l(:) - Heightcrown_min_l(:) ) / 2.d0
     
@@ -1083,7 +1091,7 @@ contains
     
         ! Calculate the sum of kL for all species in a layer
         kL_l(:) =  k(:) * lai(:)
-        kL_l(:) = f_get_layer_sum(n_sp, nLayers, kL_l(:), layerId(:))
+        kL_l(:) = f_get_layer_sum(n_sp, nLayers, kL_l(:), layer_id(:))
     
     
         ! Constant to partition light between species and to account for vertical canopy heterogeneity 
@@ -1091,25 +1099,30 @@ contains
         lambda_v(:) = 0.012306d0 + 0.2366090d0 * k(:) * LAI(:) / kL_l(:) + 0.029118d0 * Heightmidcrown_r(:) + &
             0.608381d0 * k(:) * LAI(:) / kL_l(:) * Heightmidcrown_r(:)
 
-        ! make sure the sum of all lambda_v = 1
-        lambdaV_l(:) = f_get_layer_sum(n_sp, nLayers, lambda_v(:), layerId(:))
-        lambda_v(:) = lambda_v(:) / lambdaV_l(:)
-
         ! check for dormant
         where ( lai(:) == 0.0d0 )
             lambda_v(:) = 0.0d0
         end where
+
+        ! make sure the sum of all lambda_v = 1
+        lambdaV_l(:) = f_get_layer_sum(n_sp, nLayers, lambda_v(:), layer_id(:))
+
+        where( lambdaV_l(:) .ne. 0.d0 )
+            lambda_v(:) = lambda_v(:) / lambdaV_l(:)
+        end where
+
+
     
         ! Calculate the weighted kLS based on kL/sumkL
         kLSweightedave(:) = k(:) * treeLAtoSAratio(:) * k(:) * lai(:) / kL_l(:)
-        kLSweightedave(:) = f_get_layer_sum( n_sp, nLayers, kLSweightedave(:), layerId(:))
+        kLSweightedave(:) = f_get_layer_sum( n_sp, nLayers, kLSweightedave(:), layer_id(:))
         ! the kLS should not be greater than 1 (based on the data used to fit the light model in Forrester et al. 2014)
         ! This is because when there is a high k then LS is likely to be small.
         where( kLSweightedave(:) > 1.d0) kLSweightedave(:) = 1.d0
     
         !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-        lambda_h(:) = 0.8285d0 + ((1.09498d0 - 0.781928d0 * kLSweightedave(:)) * 0.1d0 ** (CanopyVolumefraction(:))) - &
-            0.6714096d0 * 0.1d0 ** (CanopyVolumefraction(:))
+        lambda_h(:) = 0.8285d0 + ((1.09498d0 - 0.781928d0 * kLSweightedave(:)) * 0.1d0 ** (canopy_vol_frac(:))) - &
+            0.6714096d0 * 0.1d0 ** (canopy_vol_frac(:))
         if ( solarAngle > 30.d0 ) then
             lambda_h(:) = lambda_h(:) + 0.00097d0 * 1.08259d0 ** solarAngle
         end if
@@ -1121,10 +1134,10 @@ contains
     
         RADt = solar_rad * days_in_month ! MJ m-2 month-1 
         do i = 1, nLayers
-            where ( layerId(:) == i )
+            where ( layer_id(:) == i )
                 parl(:) = RADt * (1.d0 - 2.71828182845905d0 ** (-kL_l(:)))
             end where
-            RADt = RADt - maxval(parl(:), mask=layerId(:)==i ) ! subtract the layer RAD from total
+            RADt = RADt - maxval(parl(:), mask=layer_id(:)==i ) ! subtract the layer RAD from total
         end do
     
         ! ***DF this used to have month in it but this whole sub is run each month so month is now redundant here.
@@ -1134,15 +1147,16 @@ contains
         fi(:) = par(:) / (solar_rad * days_in_month)
     
         ! calculate the LAI above the given species for within canopy VPD calculations
-        LAI_l = f_get_layer_sum(n_sp, nLayers, LAI(:), layerId(:))
+        LAI_l = f_get_layer_sum(n_sp, nLayers, LAI(:), layer_id(:))
     
         ! now calculate the LAI of all layers above and part of the current layer if the species 
         ! is in the lower half of the layer then also take the proportion of the LAI above
         ! the proportion is based on the Relative height of the mid crown    
+
         do i = 1, n_sp
-            lai_above(i) = sum( lai(:), mask = layerId(:) < layerId(i) )        
-            if ( Heightmidcrown_r(i) < 1.d0 ) then
-                lai_above(i) =  lai_above(i) + sum( LAI(:), mask = layerId(:) == layerId(i) ) * ( 1.d0-Heightmidcrown_r(i) )
+            lai_above(i) = sum( lai(:), mask = layer_id(:) < layer_id(i) )        
+            if ( Heightmidcrown_r(i) < 0.9999999999999d0 ) then
+                lai_above(i) =  lai_above(i) + sum( LAI(:), mask = layer_id(:) == layer_id(i) ) * ( 1.d0-Heightmidcrown_r(i) )
             end if
         end do
     
@@ -1150,7 +1164,7 @@ contains
 
 
     subroutine s_transpiration ( n_sp, solar_rad, vpd_day, DayLength, days_in_month, lai, fi, VPD_sp, &
-            ra, conduct_canopy, conduct_soil, &
+            aero_resist, conduct_canopy, conduct_soil, &
             transp_veg, evapotra_soil) 
     
         implicit none
@@ -1165,7 +1179,7 @@ contains
         real(kind=8), dimension(n_sp), intent(in) :: lai
         real(kind=8), dimension(n_sp), intent(in) :: fi
         real(kind=8), dimension(n_sp), intent(in) :: VPD_sp
-        real(kind=8), dimension(n_sp), intent(in) :: ra
+        real(kind=8), dimension(n_sp), intent(in) :: aero_resist
         real(kind=8), dimension(n_sp), intent(in) :: conduct_canopy
         real(kind=8), intent(in) ::  conduct_soil
             
@@ -1183,25 +1197,36 @@ contains
         real(kind=8) :: div_so ! ending `so` mean soil
         
         ! Species level calculations ---
-        ! the within canopy ra and VPDspecies have been calculated using information from the light submodel
+        ! the within canopy aero_resist and VPDspecies have been calculated using information from the light submodel
         ! and from the calculation of the modifiers. The netrad for each species is calculated
         ! using the fi (proportion of PAR absorbed by the given species) and is calculated by the light submodel.
         
-        netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / DayLength)) * fi(:) 
-        !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /daylength converts to only daytime period ---> W/m2
-        defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) / ra(:)
-        div(:) = conduct_canopy(:) * (1.d0 + e20) + 1.d0 / ra(:)
-        
-        transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * DayLength 
-        ! in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
-        
-        ! now get the soil evaporation (soil ra = 5 * lai_total, and VPD of soil = VPD * Exp(lai_total * -Log(2) / 5))
+        if( n_sp == 1 .and. sum(lai(:)) == 0.d0 ) then
+            transp_veg(:) = 0.d0
+        else
+            netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / DayLength)) * fi(:) 
+            !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /daylength converts to only daytime period ---> W/m2
+            defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) / aero_resist(:)
+            div(:) = conduct_canopy(:) * (1.d0 + e20) + 1.d0 / aero_resist(:)
+            
+            transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * DayLength 
+            ! in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
+        end if 
+
+        ! now get the soil evaporation (soil aero_resist = 5 * lai_total, and VPD of soil = VPD * Exp(lai_total * -Log(2) / 5))
         lai_total = sum( LAI(:) )
         
+        if( lai_total > 0 ) then
+            defTerm_so = rhoAir * lambda * (VPDconv * (vpd_day * Exp(lai_total * (-ln2) / 5.d0))) / (5.d0 * lai_total)
+            div_so = conduct_soil * (1.d0 + e20) + 1.d0 / (5.d0 * lai_total)
+        else
+            defTerm_so = 0.d0
+            div_so = conduct_soil * (1.d0 + e20) + 1.d0
+        end if 
+            
         netRad_so = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / DayLength)) * (1.d0 - sum( fi(:) ) ) 
         !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /daylength converts to only daytime period ---> W/m2
-        defTerm_so = rhoAir * lambda * (VPDconv * (vpd_day * Exp(lai_total * (-ln2) / 5.d0))) / (5.d0 * lai_total)
-        div_so = conduct_soil * (1.d0 + e20) + 1.d0 / (5.d0 * lai_total)
+
         evapotra_soil = days_in_month * conduct_soil * (e20 * netRad_so + defTerm_so) / div_so / lambda * DayLength  
         !in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
 
@@ -1209,9 +1234,9 @@ contains
 
 
 
-    subroutine s_bias_correct (n_sp, s_age, stems_n, biom_tree, competition_total, lai_total, &
+    subroutine s_bias_correct (n_sp, s_age, stems_n, biom_tree, competition_total, lai, &
         f_dbh_dist, pars_b, aWs, nWs,pfsPower, pfsConst, &
-        dbh, basal_area, height, crown_length, crown_width, pFS)
+        dbh, basal_area, height, crown_length, crown_width, pFS, bias_scale)
     
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
         ! used to correct for bias when calculating mean dbh from mean ws. This bias is caused by Jensen's inequality and is
@@ -1229,7 +1254,7 @@ contains
         real(kind=8), dimension(n_sp), intent(in) :: stems_n
         real(kind=8), dimension(n_sp), intent(in) :: biom_tree
         real(kind=8), dimension(n_sp), intent(in) :: competition_total
-        real(kind=8), dimension(n_sp), intent(in) :: lai_total
+        real(kind=8), dimension(n_sp), intent(in) :: lai
     
         ! parameters
         integer, intent(in) :: f_dbh_dist ! if the distribution shall be fitted
@@ -1240,13 +1265,15 @@ contains
         ! output
         real(kind=8), dimension(n_sp), intent(inout) :: dbh
         real(kind=8), dimension(n_sp), intent(inout) :: basal_area
-        real(kind=8), dimension(n_sp), intent(out) :: height
+        real(kind=8), dimension(n_sp), intent(inout) :: height
         real(kind=8), dimension(n_sp), intent(out) :: crown_length
         real(kind=8), dimension(n_sp), intent(out) :: crown_width
         real(kind=8), dimension(n_sp), intent(out) :: pFS
+        real(kind=8), dimension(15, n_sp), intent(out) :: bias_scale
     
     
         ! Variables and parameters
+        real(kind=8), dimension(n_sp) :: lai_total
         real(kind=8), dimension(n_sp) :: height_rel
     
         real(kind=8), dimension(n_sp) :: aH, nHB, nHC
@@ -1266,38 +1293,57 @@ contains
         real(kind=8), dimension(n_sp) :: Ex, Varx, CVdbhDistribution, CVwsDistribution
         real(kind=8), dimension(n_sp) :: DrelBiaspFS, DrelBiasheight, DrelBiasBasArea, DrelBiasLCL, DrelBiasCrowndiameter
         real(kind=8), dimension(n_sp) :: wsrelBias
-    
-        include 'i_read_input_bias.h'
-    
-    
-        ! Calculate the relative height 
-        height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
-        height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
-    
-        if (f_dbh_dist .eq. 1 ) then
         
+        real(kind=8), dimension(n_sp) :: dlocation, wslocation
+        real(kind=8), dimension(n_sp) :: DWeibullShape_gamma, wsWeibullShape_gamma
+
+        include 'i_read_input_bias.h'
+
+        bias_scale(:,:) = 0.d0
+    
+        ! LAI
+        lai_total = sum( lai(:) )
+
+        ! Calculate the relative height 
+        ! height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
+        height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
+
+
+        ! Check where all the locations are provided
+        dlocation(:) = 1.d0
+        wslocation(:) = 1.d0
+
+        where( Dlocation0(:)==0.d0 .and. DlocationB(:)==0.d0 .and. Dlocationrh(:)==0.d0 .and. &
+            Dlocationt(:)==0.d0 .and. DlocationC (:)==0.d0 ) dlocation(:) = 0.d0
+
+        where( wslocation0(:)==0.d0 .and. wslocationB(:)==0.d0 .and. wslocationrh(:)==0.d0 .and. &
+            wslocationt(:)==0.d0 .and. wslocationC (:)==0.d0 ) wslocation(:) = 0.d0
+
+        if (f_dbh_dist .eq. 1 ) then
+
             ! Calculate the DW scale -------------------
             DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * Log(height_rel(:)) + & 
                 Dscalet(:) * Log(s_age(:)) + DscaleC(:) * Log(competition_total(:)))
                 
-            DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log(dbh(:)) + Dshaperh(:) * Log(height_rel(:)) + & 
+            DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + & 
                 Dshapet(:) * Log(s_age(:)) + DshapeC(:) * Log(competition_total(:)))
+
+            DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
                 
-            ! if the location parameters are not provided then predict them
-            if( all( Dlocation0*DlocationB*Dlocationrh*Dlocationt*DlocationC == 0.d0) ) then
-                DWeibullLocation(:) = Max(0.01d0, (Int(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * &
-                    f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)))
-            else
-                DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
+            DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
                     Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(s_age(:)) + &
                     DlocationC(:) * Log(competition_total(:)))
-                where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
-            end if
+
+            where( dlocation(:) == 0.d0 )
+                DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
+            end where
+
+            where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
+
         
-            Ex(:) = DWeibullLocation(:) + DWeibullScale(:) * f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
+            Ex(:) = DWeibullLocation(:) + DWeibullScale(:) * DWeibullShape_gamma(:)
             !now convert the Ex from weibull scale to actual scale of diameter units in cm
-            Varx(:) = DWeibullScale(:) ** 2.d0 * (f_gamma_dist(1.d0 + 2.d0 / DWeibullShape(:), n_sp) - &
-                f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp) ** 2.d0)
+            Varx(:) = DWeibullScale(:) ** 2.d0 * (f_gamma_dist(1.d0 + 2.d0 / DWeibullShape(:), n_sp) -  DWeibullShape_gamma ** 2.d0)
             CVdbhDistribution(:) = Varx(:) ** 0.5d0 / Ex(:)
         
             ! calculate the bias
@@ -1321,21 +1367,23 @@ contains
                 
             wsWeibullShape(:) = Exp( wsshape0(:) + wsshapeB(:) * Log(dbh(:)) + wsshaperh(:) * Log(height_rel(:)) + & 
                 wsshapet(:) * Log(s_age(:)) + wsshapeC(:) * Log(competition_total(:)))
+            wsWeibullShape_gamma = f_gamma_dist(1.d0 + 1.d0 / wsWeibullShape(:), n_sp)
 
-            if( all( wslocation0*wslocationB*wslocationrh*wslocationt*wslocationC == 0.d0)) then
-                wsWeibullLocation(:) = Max(0.01d0, (Int(biom_tree(:)) / 10.d0 - 1.d0 - wsWeibullScale(:) * &
-                    f_gamma_dist(1 + 1 / wsWeibullShape(:), n_sp))) !The /10 is the width of the ws classes (10 kg)
-            else
-                wsWeibullLocation(:) = Exp( wslocation0(:) + wslocationB(:) * Log(dbh(:)) + &
+            wsWeibullLocation(:) = Exp( wslocation0(:) + wslocationB(:) * Log(dbh(:)) + &
                     wslocationrh(:) * Log(height_rel(:)) + wslocationt(:) * Log(s_age(:)) + &
                     wslocationC(:) * Log(competition_total(:)))
-                where( wsWeibullLocation(:) < 0.01d0 ) wsWeibullLocation(:) = 0.01d0
-            end if
+
+            where( wslocation(:) == 0.d0 )
+                wsWeibullLocation(:) = NINT(biom_tree(:)) / 10.d0 - 1.d0 - wsWeibullScale(:) * wsWeibullShape_gamma(:)
+            end where
+
+            where( wsWeibullLocation(:) < 0.01d0 ) wsWeibullLocation(:) = 0.01d0
+
         
-            Ex(:) = wsWeibullLocation(:) + wsWeibullScale(:) * f_gamma_dist(1.d0 + 1.d0 / wsWeibullShape(:), n_sp)
+            Ex(:) = wsWeibullLocation(:) + wsWeibullScale(:) * wsWeibullShape_gamma
             !now convert the Ex from weibull scale to actual scale of diameter units in cm
             Varx(:) = wsWeibullScale(:) ** 2.d0 * (f_gamma_dist(1.d0 + 2.d0 / wsWeibullShape(:), n_sp) - &
-                f_gamma_dist(1.d0 + 1.d0 / wsWeibullShape(:), n_sp) ** 2.d0)
+                wsWeibullShape_gamma ** 2.d0)
             CVwsDistribution(:) = Varx(:) ** 0.5d0 / Ex(:)
 
             wsrelBias(:) = 0.5d0 * (1.d0 / nWs(:) * (1.d0 / nWs(:) - 1.d0)) * CVwsDistribution(:) ** 2.d0 !DF the nWS is replaced with 1/nWs because the equation is inverted to predict dbh from ws, instead of ws from dbh
@@ -1365,10 +1413,13 @@ contains
         dbh(:) = (biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:)) * (1.d0 + wsrelBias(:))
         basal_area(:) = ( dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0) * (1.d0 + DrelBiasBasArea(:))
         height(:) = ( aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)) * (1.d0 + DrelBiasheight(:))
+
         crown_length(:) = ( aHL(:) * dbh(:) ** nHLB(:) * lai_total ** nHLL(:) * competition_total(:) ** nHLC(:) * &
             height_rel(:) ** nHLrh(:)) * (1.d0 + DrelBiasLCL(:))
         crown_width(:) = ( aK(:) * dbh(:) ** nKB(:) * height(:) ** nKH(:) * competition_total(:) ** nKC(:) * &
             height_rel(:) ** nKrh(:)) * (1.d0 + DrelBiasCrowndiameter(:))
+        where( lai(:) .eq. 0.d0 ) crown_width(:) = 0.d0
+
         pFS(:) = ( pfsConst(:) * dbh(:) ** pfsPower(:)) * (1.d0 + DrelBiaspFS(:))
     
         ! check that the height and LCL allometric equations have not predicted that height - LCL < 0
@@ -1377,6 +1428,24 @@ contains
             crown_length(:) = height(:) 
         end where
     
+        ! output the matrix of biasses
+        bias_scale(1,:) = DWeibullScale(:)
+        bias_scale(2,:) = DWeibullShape(:)
+        bias_scale(3,:) = DWeibullLocation(:)
+        bias_scale(4,:) = wsWeibullScale(:)
+        bias_scale(5,:) = wsWeibullShape(:)
+        bias_scale(6,:) = wsWeibullLocation(:)
+        bias_scale(7,:) = CVdbhDistribution(:)
+        bias_scale(8,:) = CVwsDistribution(:)
+        bias_scale(9,:) = wsrelBias(:)
+        bias_scale(10,:) = DrelBiaspFS(:)
+        bias_scale(11,:) = DrelBiasheight(:)
+        bias_scale(12,:) = DrelBiasBasArea(:)
+        bias_scale(13,:) = DrelBiasLCL(:)
+        bias_scale(14,:) = DrelBiasCrowndiameter(:)
+        bias_scale(15,:) = height_rel
+
+
     end subroutine s_bias_correct
 
 end module mod_3PG

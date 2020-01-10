@@ -27,20 +27,23 @@ data.df <- bind_rows(vba.df, r.df) %>%
 # 2. Explore the output ---------------------------------------------------
 unique(r.df$group)
 
-g_sel <- c('stand', 'canopy', 'stocks', 'production')
+
+g_sel <- unique(r.df$group)
+g_sel <- c("climate","stand","canopy","stocks","modifiers","production" ,"mortality","water_use" )
 g_sel <- 'stand'
 v_sel <- c('volume_mai')
 
 data.df %>%
-  # filter(variable %in% 'height') %>%
-  filter(year(date) %in% c(2010:2010))  %>%
-  filter(group %in% g_sel) %>%
+  filter(variable %in% 'canopy_cover') %>%
+  # filter(year(date) %in% c(2002:2002))  %>%
+  # filter(group %in% g_sel) %>%
   # filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = species))+
   facet_wrap( ~ variable, scales = 'free_y') +
   scale_color_discrete(drop=FALSE) +
-  theme_classic()
+  theme_classic() +
+  ggtitle('Shitai23 no Bias correction')
 
 
 data.df %>%

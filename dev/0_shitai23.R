@@ -27,12 +27,14 @@ data.df <- bind_rows(vba.df, r.df) %>%
 # 2. Explore the output ---------------------------------------------------
 unique(r.df$group)
 
-g_sel <- c('stand', 'canopy', 'stocks', 'production')
-g_sel <- 'stand'
+g_sel <- unique(r.df$group)
+g_sel <- c("climate","stand","canopy","stocks","modifiers","production" ,"mortality","water_use" )
+g_sel <- c('stand', 'canopy', 'stocks', 'production',"water_use")
+g_sel <- 'weibull'
 v_sel <- c('volume_mai')
 
 data.df %>%
-  # filter(variable %in% 'volume_mai') %>%
+  # filter(variable %in% 'lai_above') %>%
   # filter(year(date) %in% c(2010:2010))  %>%
   filter(group %in% g_sel) %>%
   # filter(variable %in% v_sel) %>%
@@ -40,13 +42,17 @@ data.df %>%
   geom_line( aes(date, value, color = obs, linetype = species))+
   facet_wrap( ~ variable, scales = 'free_y') +
   scale_color_discrete(drop=FALSE) +
-  theme_classic()
+  theme_classic() +
+  ggtitle('Shitai23 Bias correction')
 
 
 data.df %>%
-  filter(variable %in% 'dbh') %>%
+  filter(variable %in% 'wood_density') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head()
 
 
+data.df %>%
+  filter(group %in% 'weibull') %>%
+  spread(variable, value)

@@ -160,10 +160,10 @@ real(kind=8), dimension(n_sp) :: SWconst            ! soil parameters for soil c
 real(kind=8), dimension(n_sp) :: SWpower            ! soil parameters for soil class
 real(kind=8) :: Irrig
 real(kind=8) :: poolFractn                          ! Determines fraction of excess water that remains on site
-real(kind=8) :: pooledSW                            ! current stored runoff
+real(kind=8) :: water_runoff_polled                            ! current stored runoff
 
-real(kind=8) :: SupIrrig
-real(kind=8) :: RunOff
+real(kind=8) :: irrig_supl
+real(kind=8) :: prcp_runoff
 real(kind=8) :: excessSW
 
 
@@ -222,21 +222,22 @@ real(kind=8), dimension(n_sp) :: mort_thinn         ! Number of trees that died 
 real(kind=8), dimension(n_sp) :: LAI                ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation) 
 real(kind=8), dimension(n_sp) :: lai_total          ! total competition of the forest
 real(kind=8), dimension(n_sp) :: LAI_per            ! species specific proportion of lai
-
+integer, dimension(n_sp) :: layer_id
+real(kind=8), dimension(n_sp) :: canopy_vol_frac
 
 real(kind=8), dimension(n_sp) :: competition_total  ! 
 
 
 real(kind=8), dimension(n_m, n_sp) :: SLA       ! Specific leaf area
 real(kind=8), dimension(n_m, n_sp) :: fracBB    ! Fraction of stem biomass as branch and bark
-real(kind=8), dimension(n_m, n_sp) :: Density   ! Whole-tree basic density
+real(kind=8), dimension(n_m, n_sp) :: wood_density   ! Whole-tree basic density
 real(kind=8), dimension(n_m, n_sp) :: gammaN    ! 
 real(kind=8), dimension(n_m, n_sp) :: gammaF    ! 
 
 
 ! Photosynthesis and conductance
 real(kind=8), dimension(n_sp) :: par                ! RADint
-real(kind=8), dimension(n_sp) :: ra                 ! # 'DF aerodynamic resistance within the canopy at the height of the given species (s m-1)
+real(kind=8), dimension(n_sp) :: aero_resist                 ! # 'DF aerodynamic resistance within the canopy at the height of the given species (s m-1)
 real(kind=8), dimension(n_sp) :: VPD_sp             ! # 'DF VPD around the crowns of the given species
 real(kind=8), dimension(n_sp) :: f_vpd
 real(kind=8), dimension(n_sp) :: f_sw
@@ -283,3 +284,6 @@ real(kind=8), dimension(n_sp) :: InterCi         !intercellular CO2 concentratio
 real(kind=8), dimension(n_sp) :: D13CNewPS
 real(kind=8), dimension(n_sp) :: D13CTissue
 
+
+! Bias correction   
+real(kind=8), dimension(15, n_sp) :: bias_scale
