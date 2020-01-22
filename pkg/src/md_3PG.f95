@@ -264,6 +264,10 @@ contains
             where( height(:) == Height_max) 
                 aero_resist(:) = 1.d0 / BLcond(:)
             end where
+            ! Check for dormancy
+            where( lai(:) .eq. 0.d0) 
+                aero_resist(:) = 0.d0
+            end where
 
             VPD_sp(:) = vpd_day(ii) * Exp(lai_above(:) * (-Log(2.d0)) / cVPD(:))
             f_vpd(:) = Exp( -CoeffCond(:) * VPD_sp(:))
@@ -457,21 +461,22 @@ contains
                     end if
                 
                 
-                    ! If this is first month of growth no lossWF occurs
+                    ! Calculate the biomass loss
                     if ( f_dormant(month-1, leafgrow(i), leaffall(i))  .eqv. .TRUE. ) then
                         !biom_loss_foliage(i) = 0.d0
                         biom_loss_foliage(i) = gammaF(ii, i) * biom_foliage(i)
                     else 
                         biom_loss_foliage(i) = gammaF(ii, i) * biom_foliage(i)
                     end if
+
+                    biom_loss_root(i) = gammaR(i) * biom_root(i)
         
-                    ! calculate biomass increments
+
+                    ! Calculate biomass increments
                     biom_incr_foliage(i) = NPP(i) * npp_fract_foliage(i)
                     biom_incr_root(i) = NPP(i) * npp_fract_root(i)
                     biom_incr_stem(i) = NPP(i) * npp_fract_stem(i)
-                    
-                    ! calculate root turnover -
-                    biom_loss_root(i) = gammaR(i) * biom_root(i)
+        
                     
                     ! Calculate end-of-month biomass
                     biom_foliage(i) = biom_foliage(i) + biom_incr_foliage(i) - biom_loss_foliage(i)
@@ -563,8 +568,8 @@ contains
 
             ! additional variables
             volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
-            where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) &
-                * (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
+            where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) * &
+                    (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
             
             volume_mai(:) = volume(:) / s_age(ii,:)
 
@@ -1058,21 +1063,23 @@ contains
     
         !calculate the ratio of tree leaf area to crown surface area restrict kLS to 1
         treeLAtoSAratio(:) = lai(:) * 10000.d0 / stems_n(:) / CrownSA(:)
-        where ( lai(:) == 0.0d0 ) treeLAtoSAratio(:) = 0.d0
+        where ( lai(:) == 0.d0 ) treeLAtoSAratio(:) = 0.d0
     
     
         ! separate trees into layers 
         layer_id(:) = f_get_layer(n_sp, height(:), Heightcrown(:) )
-        where ( lai(:) == 0.0d0 ) layer_id(:) = -1.d0
+        !where ( lai(:) == 0.0d0 ) layer_id(:) = -1.d0
         nLayers = maxval( layer_id(:) )
     
     
         ! Now calculate the proportion of the canopy space that is filled by the crowns. The canopy space is the
         ! volume between the top and bottom of a layer that is filled by crowns in that layer.
+        ! We calculate it only for the trees that have LAI and are in that particular year. Thus the tree can be in that 
+        ! layer, but currently will not have LAI
         do i = 1, nLayers
             where ( layer_id(:) == i )
-                Height_max_l(:) = maxval(height(:), mask=layer_id(:)==i)
-                Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:)==i)
+                Height_max_l(:) = maxval(height(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
+                Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
             end where
         end do
     
@@ -1201,7 +1208,7 @@ contains
         ! and from the calculation of the modifiers. The netrad for each species is calculated
         ! using the fi (proportion of PAR absorbed by the given species) and is calculated by the light submodel.
         
-        if( n_sp == 1 .and. sum(lai(:)) == 0.d0 ) then
+        if( sum(lai(:)) == 0.d0 ) then
             transp_veg(:) = 0.d0
         else
             netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / DayLength)) * fi(:) 
@@ -1211,6 +1218,11 @@ contains
             
             transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * DayLength 
             ! in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
+
+            where( lai(:) == 0.d0 )
+                transp_veg(:) = 0.d0
+            end where
+            
         end if 
 
         ! now get the soil evaporation (soil aero_resist = 5 * lai_total, and VPD of soil = VPD * Exp(lai_total * -Log(2) / 5))
@@ -1220,7 +1232,8 @@ contains
             defTerm_so = rhoAir * lambda * (VPDconv * (vpd_day * Exp(lai_total * (-ln2) / 5.d0))) / (5.d0 * lai_total)
             div_so = conduct_soil * (1.d0 + e20) + 1.d0 / (5.d0 * lai_total)
         else
-            defTerm_so = 0.d0
+            !defTerm_so = 0.d0
+            defTerm_so = rhoAir * lambda * (VPDconv * (vpd_day * Exp(lai_total * (-ln2) / 5.d0)))
             div_so = conduct_soil * (1.d0 + e20) + 1.d0
         end if 
             
