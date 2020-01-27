@@ -30,7 +30,7 @@ biom_incr_foliage(:) = -9999.d0
 biom_incr_root(:) = -9999.d0
 biom_incr_stem(:) = -9999.d0
 
-biom_foliage_debt(:) = -0.d0
+biom_foliage_debt(:) = 0.d0
 
 ! Modifiers ------------------------------
 f_age(:,:) = -9999.d0

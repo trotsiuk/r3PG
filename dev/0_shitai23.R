@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 132, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 132, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns9.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 r.df <- run_3PG(site_shi23, species_shi23, climate_shi23, parameters_shi23[,-1], bias_shi23[,-1], list(f_dbh_dist = 1L)) %>%
@@ -33,11 +33,13 @@ g_sel <- c('stand', 'canopy', 'stocks', 'production',"water_use")
 g_sel <- 'weibull'
 v_sel <- c('volume_mai')
 
+v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
+
 data.df %>%
   # filter(variable %in% 'lai_above') %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(group %in% g_sel) %>%
-  # filter(variable %in% v_sel) %>%
+  # filter(group %in% g_sel) %>%
+  filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = species))+
   facet_wrap( ~ variable, scales = 'free_y') +
@@ -47,7 +49,7 @@ data.df %>%
 
 
 data.df %>%
-  filter(variable %in% 'wood_density') %>%
+  filter(variable %in% 'gpp') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head()

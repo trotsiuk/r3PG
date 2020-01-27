@@ -44,6 +44,7 @@ output(ii,:,4,4) = biom_tree(:)
 output(ii,:,4,5) = wood_density(ii,:)
 output(ii,:,4,6) = fracBB(ii,:)
 output(ii,:,4,7) = biom_loss_foliage(:)
+output(ii,:,4,8) = biom_incr_foliage(:)
 
 ! Modifiers ---------------
 output(ii,:,5,1) = f_age(ii,:)
@@ -56,6 +57,7 @@ output(ii,:,5,7) = f_nutr(:)
 output(ii,:,5,8) = f_calpha(ii,:)
 output(ii,:,5,9) = f_cg(ii,:)
 output(ii,:,5,10) = f_phys(:)
+output(ii,:,5,11) = gammaF(ii,:)
 
 ! Production ---------------
 output(ii,:,6,1) = gpp(:)

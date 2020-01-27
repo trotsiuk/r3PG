@@ -10,7 +10,8 @@ tranf_vba <- function(sk = 132, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMi
     # head() %>%
     rename( date = `Year & month`) %>%
     mutate( date = gsub("[[:space:]]", "", date) %>% anytime::anydate(.) ) %>%
-    mutate( date = date + months(1) - 1) %>%
+    # mutate( date = date + months(1) - 1) %>%
+    mutate( date = date - 1) %>%
     mutate_at( vars(-date), list( as.numeric) ) %>%
     gather( variable_vba, value, -date) %>%
     filter( !is.na( value) ) %>%

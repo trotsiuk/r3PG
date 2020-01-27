@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 815, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 815, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns8.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
@@ -32,11 +32,14 @@ g_sel <- c('stand', 'canopy', 'stocks', 'production')
 g_sel <- 'weibull'
 v_sel <- c('asw', 'f_sw', 'f_phys', 'alpha_c', 'epsilon_gpp', 'par', 'gpp', 'transp_veg', 'evapotra_soil', 'conduct_canopy', 'lai')
 
+v_sel <- c('transp_veg', 'evapotra_soil', 'conduct_canopy', 'lai', 'conduct_soil','fi')
+v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
+
 data.df %>%
-  # filter(variable %in% 'canopy_cover') %>%
-  filter(year(date) %in% c(2002:2002))  %>%
-  filter(group %in% g_sel) %>%
-  # filter(variable %in% v_sel) %>%
+  # filter(variable %in% 'vpd_day') %>%
+  # filter(year(date) %in% c(2002:2002))  %>%
+  # filter(group %in% g_sel) %>%
+  filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = obs))+
   facet_wrap( ~ variable, scales = 'free_y') +
@@ -50,7 +53,7 @@ options(digits=10)
 
 data.df %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'height') %>%
+  filter(variable %in% 'biom_foliage') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head(10)

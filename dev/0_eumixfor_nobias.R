@@ -33,18 +33,88 @@ g_sel <- c("climate","stand","canopy","stocks","modifiers","production" ,"mortal
 g_sel <- c('stand', 'canopy', 'stocks', 'production',"water_use")
 g_sel <- 'stand'
 v_sel <- c('volume_mai')
+v_sel <- c('f_phys', 'crown_width', 'crown_length', 'height', 'dbh', 'lai')
 
 data.df %>%
   # filter(variable %in% c('fi', 'lambda_h', 'lambda_v', 'canopy_vol_frac')) %>%
-  # filter(year(date) %in% c(2002:2002))  %>%
-  filter(group %in% g_sel) %>%
-  # filter(variable %in% v_sel) %>%
+  filter(year(date) %in% c(2002:2002))  %>%
+  # filter(group %in% g_sel) %>%
+  filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = species))+
   facet_wrap( ~ variable, scales = 'free_y') +
   scale_color_discrete(drop=FALSE) +
   theme_classic() +
   ggtitle('EuMixtfor No bias correction')
+
+
+
+options(digits=10)
+
+data.df %>%
+  # filter(year(date) %in% c(2010:2010))  %>%
+  filter(variable %in% 'crown_length') %>%
+  spread(obs, value) %>%
+  as.data.frame() %>%
+  head(10)
+
+
+
+
+
+
+# Try to calculate the crown lenght for the second month
+f_p <- function( n ){
+  bias_eum %>% filter(parameter %in% n) %>% select(-parameter) %>% unlist
+}
+
+f_v <- function( n ){
+  data.df %>% filter(variable %in% n, date %in% as.Date('2002-02-28'), obs %in% 'vba') %>% pull(value)
+}
+
+aHL <- f_p('aHL')
+nHLB <- f_p('nHLB')
+nHLL <- f_p('nHLL')
+nHLC <- f_p('nHLC')
+nHLrh <- f_p('nHLrh')
+
+dbh <- f_v('dbh')
+lai <- f_v('lai')
+wood_density <- f_v('wood_density')
+basal_area <- f_v('basal_area')
+height <- f_v('height')
+stems_n <- f_v('stems_n')
+
+
+lai_total <- sum(lai)
+competition_total = sum( wood_density * basal_area )
+height_rel = height / ( sum( height * stems_n ) / sum( stems_n ) )
+
+aHL * dbh ^ nHLB * lai_total^nHLL * competition_total^nHLC * height_rel^nHLrh
+
+
+
+
+
+aHL <- c(6.26900373446209, 2.18857915775979)
+nHLB <- c(0.1891636, 0.5632526)
+nHLL <- c(0, 0)
+nHLC <- c(0, -0.2656748)
+nHLrh <- c(0.6551283, 0.6778992)
+
+dbh <- c(14.67842364,	20.01760963)
+lai <- c(0,	1.28762908)
+wood_density <- c(0.567,	0.395)
+basal_area <- c(13.53750731,	25.17701854)
+height <- c(15.52676439,	18.98125148)
+stems_n <- c(800, 800)
+
+lai_total <- sum(lai)
+competition_total = sum( wood_density * basal_area )
+height_rel = height / ( sum( height * stems_n ) / sum( stems_n ) )
+
+aHL * dbh ^ nHLB * lai_total^nHLL * competition_total^nHLC * height_rel^nHLrh
+
 
 
 

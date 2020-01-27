@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 688, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 688, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns9.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 r.df <- run_3PG(site_shi23, species_shi23, climate_shi23, parameters_shi23[,-1], bias_shi23[,-1], list(f_dbh_dist = 0L)) %>%
@@ -30,13 +30,13 @@ unique(r.df$group)
 
 g_sel <- unique(r.df$group)
 g_sel <- c("climate","stand","canopy","stocks","modifiers","production" ,"mortality","water_use" )
-g_sel <- 'stand'
-v_sel <- c('volume_mai')
+g_sel <- c('stand', "stocks")
+v_sel <- c('f_sw', 'asw', 'evapo_transp', 'transp_veg', 'height', 'fracBB')
 
 data.df %>%
-  filter(variable %in% 'canopy_cover') %>%
-  # filter(year(date) %in% c(2002:2002))  %>%
-  # filter(group %in% g_sel) %>%
+  # filter(variable %in% 'canopy_cover') %>%
+  # filter(year(date) %in% c(2010:2010))  %>%
+  filter(group %in% g_sel) %>%
   # filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = species))+
@@ -46,8 +46,15 @@ data.df %>%
   ggtitle('Shitai23 no Bias correction')
 
 
+
+options(digits=10)
+
 data.df %>%
-  filter(variable %in% 'height') %>%
+  # filter(year(date) %in% c(2010:2010))  %>%
+  filter(variable %in% 'gammaF') %>%
+  # filter(date %in% as.Date('2010-02-28')) %>%
   spread(obs, value) %>%
+  # arrange(group, variable, date, species) %>%
   as.data.frame() %>%
-  head()
+  # readr::write_csv('dev/shitai23_noBias.csv')
+  head(20)

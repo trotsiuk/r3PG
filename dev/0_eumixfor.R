@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 1419, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 1419, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns9.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
@@ -22,7 +22,7 @@ r.df <- run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eu
   mutate(obs = 'r')
 
 data.df <- bind_rows(vba.df, r.df) %>%
-  mutate(species = factor(species, labels = c('Castanopsis', 'Cunninghamia')),
+  mutate(species = factor(species, labels = c('Fagus', 'Pinus')),
     obs = factor(obs, levels = c('r', 'vba')))
 
 # 2. Explore the output ---------------------------------------------------
@@ -31,30 +31,43 @@ unique(r.df$group)
 g_sel <- unique(r.df$group)
 g_sel <- c("climate","stand","canopy","stocks","modifiers","production" ,"mortality","water_use" )
 g_sel <- 'stand'
-v_sel <- c('volume_mai')
+v_sel <- c('f_phys', 'crown_width', 'crown_length')
+v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
+
 
 data.df %>%
   # filter(variable %in% 'lai_above') %>%
-  # filter(year(date) %in% c(2002:2002))  %>%
-  filter(group %in% g_sel) %>%
-  # filter(variable %in% v_sel) %>%
+  # filter(year(date) %in% c(2002:2003))  %>%
+  # filter(group %in% g_sel) %>%
+  filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = species))+
   facet_wrap( ~ variable, scales = 'free_y') +
   scale_color_discrete(drop=FALSE) +
   theme_classic() +
-  ggtitle('EuMixtfor No bias correction')
+  ggtitle('EuMixtfor bias correction')
 
 
 
+options(digits=10)
 
+data.df %>%
+  # filter(year(date) %in% c(2010:2010))  %>%
+  filter(variable %in% 'gpp') %>%
+  spread(obs, value) %>%
+  as.data.frame() %>%
+  head(10)
 
 data.df %>%
   filter(group %in% 'stand') %>%
   spread(variable, value)
 
+0.541292614	0.764050095
 
+0.7640500949
+0.7640501192
 
+((5.2850655 - -5) / (15 - -5)) * ((35 - 5.2850655) / (35 - 15)) ^ ((35 - 15) / (15 - -5))
 
 
 

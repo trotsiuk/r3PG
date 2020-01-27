@@ -136,7 +136,7 @@ contains
         ! INITIALISATION (Age dependent)---------------------
         ! Calculate the species specific modifiers
         do i = 1, n_sp
-            s_age(:,i) = 12.d0 * ( year_i - year_p(i) ) + month_i - month_p(i) - 1.d0 ! age at start
+            s_age(:,i) = 12.d0 * ( year_i - year_p(i) ) + month_i - month_p(i) - 2.d0 ! age at start (we need -1 if according to Vova)
             s_age(:,i) =  ( s_age(:,i) + int( (/(i, i=1, n_m)/) ) ) / 12.d0 ! translate to years
 
             SLA(:,i) = f_exp( n_m, s_age(:,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
@@ -154,6 +154,8 @@ contains
                 ! I'm not declaring relative age, but directly put it inside
                 f_age(:,i) = 1.d0 / (1.d0 + ( (s_age(:,i) / MaxAge(i) ) / rAge(i)) ** nAge(i))
             end if
+
+            s_age(:,i) = s_age(:,i) + 1.d0 ! that how the VBA works
 
         end do
 
@@ -457,7 +459,7 @@ contains
                         ! the next month
                         biom_foliage(i) = biom_foliage(i) + NPP(i)
                         biom_foliage_debt(i) = biom_foliage_debt(i) - NPP(i)
-                        NPP(i) = 0.
+                        NPP(i) = 0.d0
                     end if
                 
                 
@@ -477,7 +479,7 @@ contains
                     biom_incr_root(i) = NPP(i) * npp_fract_root(i)
                     biom_incr_stem(i) = NPP(i) * npp_fract_stem(i)
         
-                    
+
                     ! Calculate end-of-month biomass
                     biom_foliage(i) = biom_foliage(i) + biom_incr_foliage(i) - biom_loss_foliage(i)
                     biom_root(i) = biom_root(i) + biom_incr_root(i) - biom_loss_root(i)
