@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 815, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns8.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 815, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
@@ -34,6 +34,7 @@ v_sel <- c('asw', 'f_sw', 'f_phys', 'alpha_c', 'epsilon_gpp', 'par', 'gpp', 'tra
 
 v_sel <- c('transp_veg', 'evapotra_soil', 'conduct_canopy', 'lai', 'conduct_soil','fi')
 v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
+v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai')
 
 data.df %>%
   # filter(variable %in% 'vpd_day') %>%
@@ -53,7 +54,7 @@ options(digits=10)
 
 data.df %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'biom_foliage') %>%
+  filter(variable %in% 'age') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head(10)

@@ -174,6 +174,7 @@ real(kind=8), dimension(n_sp) :: pfsPower           ! Derived from pFS2 and PFS2
 
 ! Structure
 real(kind=8), dimension(n_m, n_sp) :: s_age     ! Age of each species and month
+real(kind=8), dimension(n_m, n_sp) :: s_age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
 real(kind=8), dimension(n_sp) :: stems_n
 real(kind=8), dimension(n_sp) :: stems_n_ha         ! potential number of stems per ha
 real(kind=8), dimension(n_sp) :: biom_foliage   ! Foliage biomass

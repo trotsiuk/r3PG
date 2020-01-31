@@ -46,7 +46,7 @@ contains
         ! INITIALISATION (Age independent)
 
         ! Climate --------
-        tmp_ave(:) = ( tmp_min(:) + tmp_max(:) ) / 2.d0
+        tmp_ave(:) = ( tmp_min(:) + tmp_max(:) ) / 2
 
         ! VPD calculations
         vpd_day(:) = f_get_vpd( n_m, tmp_min(:), tmp_max(:) )
@@ -136,15 +136,17 @@ contains
         ! INITIALISATION (Age dependent)---------------------
         ! Calculate the species specific modifiers
         do i = 1, n_sp
-            s_age(:,i) = 12.d0 * ( year_i - year_p(i) ) + month_i - month_p(i) - 2.d0 ! age at start (we need -1 if according to Vova)
+            s_age(:,i) = 12.d0 * ( year_i - year_p(i) ) + month_i - month_p(i) - 1.d0 ! age at start (we need -1 if according to Vova)
             s_age(:,i) =  ( s_age(:,i) + int( (/(i, i=1, n_m)/) ) ) / 12.d0 ! translate to years
+            s_age_m(:,i) =  s_age(:,i) - 1.d0/12.d0
+            s_age_m(1,i) =  s_age(1,i)
 
-            SLA(:,i) = f_exp( n_m, s_age(:,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
-            fracBB(:,i) = f_exp( n_m, s_age(:,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
-            wood_density(:,i) = f_exp( n_m, s_age(:,i), rho0(i), rho1(i), tRho(i), 1.d0)
+            SLA(:,i) = f_exp( n_m, s_age_m(:,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
+            fracBB(:,i) = f_exp( n_m, s_age_m(:,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
+            wood_density(:,i) = f_exp( n_m, s_age_m(:,i), rho0(i), rho1(i), tRho(i), 1.d0)
             gammaN(:,i) = f_exp( n_m, s_age(:,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
 
-            gammaF(:,i) = f_exp_foliage( n_m, s_age(:,i), gammaF1(i), gammaF0(i), tgammaF(i))
+            gammaF(:,i) = f_exp_foliage( n_m, s_age_m(:,i), gammaF1(i), gammaF0(i), tgammaF(i))
             
 
             ! age modifier
@@ -152,10 +154,10 @@ contains
                 f_age(:,i) = 1.d0
             else
                 ! I'm not declaring relative age, but directly put it inside
-                f_age(:,i) = 1.d0 / (1.d0 + ( (s_age(:,i) / MaxAge(i) ) / rAge(i)) ** nAge(i))
+                f_age(:,i) = 1.d0 / (1.d0 + ( (s_age_m(:,i) / MaxAge(i) ) / rAge(i)) ** nAge(i))
             end if
 
-            s_age(:,i) = s_age(:,i) + 1.d0 ! that how the VBA works
+            !s_age(:,i) = s_age(:,i) + 1.d0 ! that how the VBA works
 
         end do
 
@@ -207,10 +209,10 @@ contains
         do ii = 2, n_m
 
             ! month update
-            month = month + 1
+            month = month + int(1)
 
             if (month > 12) then
-                month = 1
+                month = int(1)
             end if
 
             
@@ -225,10 +227,8 @@ contains
                         lai(i) =  biom_foliage_debt(i) * SLA(ii,i) * 0.1d0
                     end if
                 end if
-            end do
 
-            ! If this is first dormant month, then we set WF to 0 and move everything to the dept
-            do i = 1, n_sp
+                ! If this is first dormant month, then we set WF to 0 and move everything to the dept
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
                     if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
                         biom_foliage_debt(i)= biom_foliage(i)
@@ -236,12 +236,14 @@ contains
                         lai(i) =  0.d0
                     end if
                 end if
+
             end do
 
+            !****** We shall call this only if the any of the above is TRUE
             ! V.T. I wonder if the biass correction ned to be here, since we change the LAI!
-            competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+            competition_total(:) = sum( wood_density(ii-int(1),:) * basal_area(:) )
 
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+            call s_bias_correct(n_sp, s_age(ii-int(1),:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 f_dbh_dist, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 

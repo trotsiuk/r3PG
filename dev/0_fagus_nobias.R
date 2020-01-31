@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 1117, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 1117, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
@@ -50,7 +50,7 @@ options(digits=10)
 
 data.df %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'Gc_mol') %>%
+  filter(variable %in% 'gpp') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head(10)

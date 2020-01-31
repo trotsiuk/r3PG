@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 966, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 966, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 r.df <- run_3PG(site_eum, species_eum %>% filter(species == 2), climate_eum, parameters_eum[,'sp2'], bias_eum[,'sp2'], list(f_dbh_dist = 1L)) %>%
@@ -32,6 +32,7 @@ g_sel <- c('weibull')
 v_sel <- c('biom_tree')
 
 v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
+v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai')
 
 data.df %>%
   # filter(variable %in% c('wood_density', 'basal_area')) %>%
@@ -50,7 +51,7 @@ options(digits=10)
 
 data.df %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'biom_root') %>%
+  filter(variable %in% 'gpp') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head()

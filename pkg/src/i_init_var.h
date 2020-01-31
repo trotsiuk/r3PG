@@ -9,6 +9,7 @@ vpd_day(:) = -9999.d0
 
 ! Stand variables ---------------
 s_age(:,:) = -9999.d0
+s_age_m(:,:) = -9999.d0
 volume(:) = -9999.d0
 volume_mai(:) = -9999.d0
 
