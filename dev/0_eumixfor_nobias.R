@@ -12,11 +12,11 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 259, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns7.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 259, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
-r.df <- run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eum[,-1], list(f_dbh_dist = 0L)) %>%
+r.df <- run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eum[,-1], list(correct_bias = 0L)) %>%
   transf_out(day_start = as.Date('2002-01-31')) %>%
   as_tibble() %>%
   mutate(obs = 'r')
@@ -37,7 +37,7 @@ v_sel <- c('f_phys', 'crown_width', 'crown_length', 'height', 'dbh', 'lai')
 
 data.df %>%
   # filter(variable %in% c('fi', 'lambda_h', 'lambda_v', 'canopy_vol_frac')) %>%
-  filter(year(date) %in% c(2002:2002))  %>%
+  # filter(year(date) %in% c(2002:2002))  %>%
   # filter(group %in% g_sel) %>%
   filter(variable %in% v_sel) %>%
   ggplot()+

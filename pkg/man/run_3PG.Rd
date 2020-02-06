@@ -14,17 +14,53 @@ run_3PG(
 )
 }
 \arguments{
-\item{siteInputs}{site level data}
+\item{siteInputs}{a \code{data frame} or \code{matrix} containing the information about site level data in the following order:
+\itemize{
+\item latitude: Site latitude in the WGS84 coordinate system
+\item soil_class: \code{integer} representing the soil class, according to table ...
+\item asw_i: initial soil water
+\item asw_min: minimum soil water
+\item asw_max: maximum soil water
+\item year_i: \code{integer} year when the simulation will start
+\item momth_i: \code{integer} month when simulation will start, first month in the output file
+\item altitude: altitude of the site, m a.s.l.
+}}
 
-\item{speciesInputs}{species level data}
+\item{speciesInputs}{a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order apply:
+\itemize{
+\item species: \code{integer} species id
+\item year_p: \code{integer} year when the species was planted (from this we calculate species age)
+\item month_p: \code{integer} month when species was planted. Assumption is that species was planted in the end of this month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
+\item fertility: soil fertility for a given species. Range from 0 to 1.
+\item biom_foliage_i: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.
+\item biom_root_i: root biomass for a given species.
+\item biom_stem_i: stem biomass for a given species
+\item n_trees: number of trees per ha.
+}}
 
-\item{forcingInputs}{forcing level data}
+\item{forcingInputs}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i}:
+\itemize{
+\item tmp_min:
+\item tmp_max:
+\item prcp:
+\item sol_rad:
+\item frost_days:
+\item co2:
+\item d13catm:
+}}
 
 \item{parameterInputs}{parameters level data}
 
 \item{biasInputs}{bial level data}
 
-\item{settings}{settings for the model}
+\item{settings}{list with all possible settings of the model. All provided as \code{integer}
+\itemize{
+\item light model: `1` - 3PGmix; `2` - 3PGpjs
+\item water_balance:
+\item phys_model:
+\item correct_bias:
+\item calculate_d13c:
+}}
 }
 \description{
 Define the function to run 3PGN in R

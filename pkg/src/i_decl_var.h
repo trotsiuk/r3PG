@@ -128,61 +128,64 @@ real(kind=8), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocat
 ! DERIVED VARIABLES
 
 ! Helpers ------------------------------
-integer :: i = 1                             ! indexing for species
-integer :: ii = 1                            ! indexing for month (row of climatic data)
+integer :: i = 1                                ! indexing for species
+integer :: ii = 1                               ! indexing for month (row of climatic data)
 integer :: month = 1
 
 
-! Climate & Atmosphere ------------------------------
+! Climatic variables -------------
 real(kind=8), dimension(n_m) :: tmp_ave 
 real(kind=8), dimension(n_m) :: vpd_day
 
 real(kind=8), dimension(12) :: adjSolarZenithAngle
 real(kind=8), dimension(12) :: DayLength  
 
-! CO2 modifiers
-real(kind=8), dimension(n_sp) :: fCalphax
-real(kind=8), dimension(n_sp) :: fCg0
 
-
-! Modifiers 
-real(kind=8), dimension(n_m, n_sp) :: f_age     ! Age related modifier
-real(kind=8), dimension(n_m, n_sp) :: f_tmp     ! Temperature modifier
-real(kind=8), dimension(n_m, n_sp) :: f_tmp_gc  ! gc canopy conductance modifier as in Feikema et al 2010 FEM 260,663–678
-real(kind=8), dimension(n_m, n_sp) :: f_frost   ! Frost modifier
-real(kind=8), dimension(n_m, n_sp) :: f_calpha  ! 
-real(kind=8), dimension(n_m, n_sp) :: f_cg      ! 
-
-
-
-! Soil & Water
-real(kind=8), dimension(n_sp) :: SWconst            ! soil parameters for soil class
-real(kind=8), dimension(n_sp) :: SWpower            ! soil parameters for soil class
-real(kind=8) :: Irrig
-real(kind=8) :: poolFractn                          ! Determines fraction of excess water that remains on site
-real(kind=8) :: water_runoff_polled                            ! current stored runoff
-
-real(kind=8) :: irrig_supl
-real(kind=8) :: prcp_runoff
-real(kind=8) :: excessSW
-
-
-! partitioning
-real(kind=8), dimension(n_sp) :: pfsConst           ! Derived from pFS2 and PFS20
-real(kind=8), dimension(n_sp) :: pfsPower           ! Derived from pFS2 and PFS20
-
-
-! Structure
+! Stand variables ----------------
 real(kind=8), dimension(n_m, n_sp) :: s_age     ! Age of each species and month
 real(kind=8), dimension(n_m, n_sp) :: s_age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
 real(kind=8), dimension(n_sp) :: stems_n
-real(kind=8), dimension(n_sp) :: stems_n_ha         ! potential number of stems per ha
+real(kind=8), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha
+
+real(kind=8), dimension(n_sp) :: basal_area     ! stand level basal area
+real(kind=8), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
+real(kind=8), dimension(n_sp) :: dbh            ! average tree DBH, cm
+real(kind=8), dimension(n_sp) :: height         ! average tree height, m
+real(kind=8) :: Height_max
+
+real(kind=8), dimension(n_sp) :: crown_length   !***DF mean live-crown length (m) of a species
+real(kind=8), dimension(n_sp) :: crown_width    ! ***DF mean crown diameter (m)
+
+real(kind=8), dimension(n_sp) :: volume
+real(kind=8), dimension(n_sp) :: volume_mai
+real(kind=8), dimension(n_sp) :: volume_old
+real(kind=8), dimension(n_sp) :: volume_cum
+real(kind=8), dimension(n_sp) :: volume_change
+
+real(kind=8), dimension(n_sp) :: competition_total
+
+real(kind=8), dimension(n_m, n_sp) :: SLA       ! Specific leaf area
+real(kind=8), dimension(n_m, n_sp) :: fracBB    ! Fraction of stem biomass as branch and bark
+real(kind=8), dimension(n_m, n_sp) :: wood_density  ! Whole-tree basic density
+
+
+! Canopy variables ---------------
+real(kind=8), dimension(n_sp) :: LAI            ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation) 
+real(kind=8), dimension(n_sp) :: lai_total      ! total competition of the forest
+real(kind=8), dimension(n_sp) :: LAI_per        ! species specific proportion of lai
+real(kind=8), dimension(n_sp) :: lai_above      ! leaf area above the given species
+real(kind=8), dimension(n_sp) :: canopy_vol_frac
+
+integer, dimension(n_sp) :: layer_id
+
+
+! Stocks variables ---------------
 real(kind=8), dimension(n_sp) :: biom_foliage   ! Foliage biomass
-real(kind=8), dimension(n_sp) :: biom_foliage_debt  !
+real(kind=8), dimension(n_sp) :: biom_foliage_debt
 real(kind=8), dimension(n_sp) :: biom_root      ! Root biomass
 real(kind=8), dimension(n_sp) :: biom_stem      ! Stem biomass, including branches and bark
 real(kind=8), dimension(n_sp) :: biom_tree      ! average tree stem mass
-real(kind=8), dimension(n_sp) :: biom_tree_max      ! Max. mean tree stem mass at current stocking
+real(kind=8), dimension(n_sp) :: biom_tree_max  ! Max. mean tree stem mass at current stocking
 
 real(kind=8), dimension(n_sp) :: biom_incr_foliage
 real(kind=8), dimension(n_sp) :: biom_incr_root
@@ -192,99 +195,104 @@ real(kind=8), dimension(n_sp) :: biom_loss_foliage  ! Litter fall
 real(kind=8), dimension(n_sp) :: biom_loss_root
 
 
-real(kind=8), dimension(n_sp) :: volume
-real(kind=8), dimension(n_sp) :: volume_mai
+! Modifiers ----------------------
+real(kind=8), dimension(n_m, n_sp) :: f_age     ! Age related modifier
+real(kind=8), dimension(n_m, n_sp) :: f_tmp     ! Temperature modifier
+real(kind=8), dimension(n_m, n_sp) :: f_tmp_gc  ! gc canopy conductance modifier as in Feikema et al 2010 FEM 260,663–678
+real(kind=8), dimension(n_m, n_sp) :: f_frost   ! Frost modifier
+real(kind=8), dimension(n_m, n_sp) :: f_calpha  ! 
+real(kind=8), dimension(n_m, n_sp) :: f_cg      ! 
 
-
-real(kind=8), dimension(n_sp) :: basal_area     ! stand level basal area
-real(kind=8), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
-real(kind=8), dimension(n_sp) :: dbh            ! average tree DBH, cm
-real(kind=8), dimension(n_sp) :: height         ! average tree height, m
-real(kind=8), dimension(n_sp) :: crown_length       !***DF mean live-crown length (m) of a species
-real(kind=8), dimension(n_sp) :: crown_width        ! ***DF mean crown diameter (m)
-real(kind=8), dimension(n_sp) :: pFS
-real(kind=8) :: Height_max
-real(kind=8), dimension(n_sp) :: lai_above          ! leaf area above the given species
-real(kind=8), dimension(n_sp) :: fi                    !***DF the proportion of above canopy PAR absorbed by each species
-real(kind=8), dimension(n_sp) :: lambda_h           !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-real(kind=8), dimension(n_sp) :: lambda_v           !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-
-
-real(kind=8), dimension(n_sp) :: npp_fract_root, npp_fract_stem, npp_fract_foliage
-
-
-! Mortality
-real(kind=8), dimension(n_sp) :: mort_stress        ! Number of trees that died due to stress-related mortality
-real(kind=8), dimension(n_sp) :: mort_thinn         ! Number of trees that died due to density-dependent mortality
-
-
-
-! Canopy
-real(kind=8), dimension(n_sp) :: LAI                ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation) 
-real(kind=8), dimension(n_sp) :: lai_total          ! total competition of the forest
-real(kind=8), dimension(n_sp) :: LAI_per            ! species specific proportion of lai
-integer, dimension(n_sp) :: layer_id
-real(kind=8), dimension(n_sp) :: canopy_vol_frac
-
-real(kind=8), dimension(n_sp) :: competition_total  ! 
-
-
-real(kind=8), dimension(n_m, n_sp) :: SLA       ! Specific leaf area
-real(kind=8), dimension(n_m, n_sp) :: fracBB    ! Fraction of stem biomass as branch and bark
-real(kind=8), dimension(n_m, n_sp) :: wood_density   ! Whole-tree basic density
-real(kind=8), dimension(n_m, n_sp) :: gammaN    ! 
-real(kind=8), dimension(n_m, n_sp) :: gammaF    ! 
-
-
-! Photosynthesis and conductance
-real(kind=8), dimension(n_sp) :: par                ! RADint
-real(kind=8), dimension(n_sp) :: aero_resist                 ! # 'DF aerodynamic resistance within the canopy at the height of the given species (s m-1)
-real(kind=8), dimension(n_sp) :: VPD_sp             ! # 'DF VPD around the crowns of the given species
 real(kind=8), dimension(n_sp) :: f_vpd
 real(kind=8), dimension(n_sp) :: f_sw
 real(kind=8), dimension(n_sp) :: f_nutr
 real(kind=8), dimension(n_sp) :: f_phys
-real(kind=8), dimension(n_sp) :: alpha_c            ! Canopy quantum efficiency after modifiers
-real(kind=8), dimension(n_sp) :: epsilon_gpp            ! Light-use efficiency based on GPP
 
+
+! Production ---------------------
+real(kind=8), dimension(n_sp) :: pfsConst       ! Derived from pFS2 and PFS20
+real(kind=8), dimension(n_sp) :: pfsPower       ! Derived from pFS2 and PFS20
+
+real(kind=8), dimension(n_sp) :: pFS
+real(kind=8), dimension(n_sp) :: fi             !***DF the proportion of above canopy PAR absorbed by each species
+real(kind=8), dimension(n_sp) :: lambda_h       !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
+real(kind=8), dimension(n_sp) :: lambda_v       !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
+
+real(kind=8), dimension(n_sp) :: npp_fract_root
+real(kind=8), dimension(n_sp) :: npp_fract_stem
+real(kind=8), dimension(n_sp) :: npp_fract_foliage
+
+real(kind=8), dimension(n_sp) :: par            ! RADint
+real(kind=8), dimension(n_sp) :: aero_resist    ! # 'DF aerodynamic resistance within the canopy at the height of the given species (s m-1)
+real(kind=8), dimension(n_sp) :: VPD_sp         ! # 'DF VPD around the crowns of the given species
+real(kind=8), dimension(n_sp) :: alpha_c        ! Canopy quantum efficiency after modifiers
+real(kind=8), dimension(n_sp) :: epsilon_gpp    ! Light-use efficiency based on GPP
 real(kind=8), dimension(n_sp) :: GPP
 real(kind=8), dimension(n_sp) :: NPP
-real(kind=8), dimension(n_sp) :: NPP_f ! the full NPP before substraction of depth
-
+real(kind=8), dimension(n_sp) :: NPP_f          ! the full NPP before substraction of depth
 real(kind=8), dimension(n_sp) :: gC
 real(kind=8), dimension(n_sp) :: conduct_canopy
-
 real(kind=8), dimension(n_sp) :: m
 
-! Soil
+
+! Mortality ----------------------
+real(kind=8), dimension(n_sp) :: mort_stress     ! Number of trees that died due to stress-related mortality
+real(kind=8), dimension(n_sp) :: mort_thinn      ! Number of trees that died due to density-dependent mortality
+
+real(kind=8), dimension(n_m, n_sp) :: gammaN
+real(kind=8), dimension(n_m, n_sp) :: gammaF
+
+
+! Water use ----------------------
+real(kind=8), dimension(n_sp) :: SWconst         ! soil parameters for soil class
+real(kind=8), dimension(n_sp) :: SWpower         ! soil parameters for soil class
+real(kind=8) :: Irrig
+real(kind=8) :: poolFractn                       ! Determines fraction of excess water that remains on site
+real(kind=8) :: water_runoff_polled              ! current stored runoff
+
+real(kind=8) :: irrig_supl
+real(kind=8) :: prcp_runoff
+real(kind=8) :: excessSW
+
 real(kind=8) :: conduct_soil
 
+
 ! Transpiration
-real(kind=8), dimension(n_sp) :: transp_veg ! Traspiration from the forest
+real(kind=8), dimension(n_sp) :: transp_veg       ! Traspiration from the forest
 real(kind=8) :: evapotra_soil
 real(kind=8) :: transp_total
 
-real(kind=8), dimension(n_sp) :: prcp_interc_fract  !
-real(kind=8), dimension(n_sp) :: prcp_interc        !
-real(kind=8) :: prcp_interc_total ! total rain interception
+real(kind=8), dimension(n_sp) :: prcp_interc_fract
+real(kind=8), dimension(n_sp) :: prcp_interc
+real(kind=8) :: prcp_interc_total                 ! total rain interception
 
 real(kind=8) :: evapo_transp
-real(kind=8) :: f_transp_scale              !***DF scales GPP and NPP down if evapotranspiration is greater than ASW
+real(kind=8) :: f_transp_scale                    !***DF scales GPP and NPP down if evapotranspiration is greater than ASW
 
 real(kind=8), dimension(n_sp) :: WUE
-real(kind=8), dimension(n_sp) :: WUE_transp !***DF
+real(kind=8), dimension(n_sp) :: WUE_transp       !***DF
 
 
-! d13C calculations
+! Wood Delta --------------------
+real(kind=8), dimension(n_sp) :: fCalphax
+real(kind=8), dimension(n_sp) :: fCg0
+
 real(kind=8) :: air_pressure                    !Air pressure (kPa)
 real(kind=8), dimension(n_sp) :: GPP_molsec     !GPP per second (mol/m2 s)
 real(kind=8), dimension(n_sp) :: Gw_mol         !Canopy conductance for water vapor in mol/m2s
 real(kind=8), dimension(n_sp) :: Gc_mol         !Canopy conductance for CO2 in mol/m2s
 real(kind=8), dimension(n_sp) :: canopy_cover
-real(kind=8), dimension(n_sp) :: InterCi         !intercellular CO2 concentration
+real(kind=8), dimension(n_sp) :: InterCi        !intercellular CO2 concentration
 real(kind=8), dimension(n_sp) :: D13CNewPS
 real(kind=8), dimension(n_sp) :: D13CTissue
 
 
-! Bias correction   
+! Weibull -----------------------
 real(kind=8), dimension(15, n_sp) :: bias_scale
+
+
+! Settings ----------------------
+integer :: light_model                          ! 1 - 3PGmix; 2 - 3PGpjs
+integer :: phys_model                           ! 1 - 3PGmix; 2 - 3PGpjs
+integer :: correct_bias                         ! 0 - no; 1 - 3PGmix
+integer :: calculate_d13c                       ! 0 - no; 1 - 3PGmix

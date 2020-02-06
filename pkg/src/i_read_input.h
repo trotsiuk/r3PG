@@ -99,3 +99,10 @@ rho0        = pars_i(58,:)
 rho1        = pars_i(59,:)
 tRho        = pars_i(60,:)
 CrownShape  = int( pars_i(61,:) )
+
+
+! Settings ----------------------------
+light_model = settings(1)
+phys_model = settings(3)
+correct_bias = settings(4)
+calculate_d13c = settings(5)

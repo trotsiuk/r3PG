@@ -10,8 +10,11 @@ vpd_day(:) = -9999.d0
 ! Stand variables ---------------
 s_age(:,:) = -9999.d0
 s_age_m(:,:) = -9999.d0
-volume(:) = -9999.d0
+volume(:) = 0.d0
 volume_mai(:) = -9999.d0
+volume_old(:) = 0.d0
+volume_cum(:) = 0.d0
+volume_change(:) = 0.d0
 
 ! Canopy variables ---------------
 layer_id(:) = -9999
@@ -24,12 +27,12 @@ aero_resist(:) = -9999.d0
 vpd_sp(:) = -9999.d0
 
 ! Stocks variables ---------------
-biom_loss_foliage(:) = -9999.d0
-biom_loss_root(:) = -9999.d0
+biom_loss_foliage(:) = 0.d0
+biom_loss_root(:) = 0.d0
 
-biom_incr_foliage(:) = -9999.d0
-biom_incr_root(:) = -9999.d0
-biom_incr_stem(:) = -9999.d0
+biom_incr_foliage(:) = 0.d0
+biom_incr_root(:) = 0.d0
+biom_incr_stem(:) = 0.d0
 
 biom_foliage_debt(:) = 0.d0
 

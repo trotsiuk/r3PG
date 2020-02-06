@@ -21,7 +21,7 @@ r.df <- run_3PG(
   climate_eum,
   parameters_eum[,'sp2'],
   bias_eum[,'sp2'],
-  list(f_dbh_dist = 0L)) %>%
+  list(light_model = 1L, phys_model = 1L, correct_bias = 0L)) %>%
   transf_out(.,  day_start = as.Date('2002-01-31')) %>%
   as_tibble() %>%
   mutate(obs = 'r')
@@ -48,6 +48,7 @@ data.df %>%
   scale_color_discrete(drop=FALSE) +
   theme_classic() +
   ggtitle('Pinus no Bias correction')
+
 
 
 options(digits=10)

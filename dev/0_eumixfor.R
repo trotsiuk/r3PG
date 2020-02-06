@@ -16,7 +16,8 @@ vba.df <- tranf_vba(sk = 1419, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMix
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
-r.df <- run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eum[,-1], list(f_dbh_dist = 1L)) %>%
+r.df <- run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eum[,-1],
+  list(light_model = 1L, phys_model = 1L, correct_bias = 1L)) %>%
   transf_out(day_start = as.Date('2002-01-31')) %>%
   as_tibble() %>%
   mutate(obs = 'r')
