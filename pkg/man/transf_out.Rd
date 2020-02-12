@@ -4,12 +4,10 @@
 \alias{transf_out}
 \title{Tranform the output of the fortran 3PG to the long format}
 \usage{
-transf_out(out, day_start = as.Date("2010-01-31"))
+transf_out(model)
 }
 \arguments{
-\item{out}{the 4 dimentional array as output of `run_3PG`}
-
-\item{day_start}{the first date of the simulation, in date format}
+\item{model}{a list as an output of `run_3PG`}
 }
 \description{
 Tranform the output of the fortran 3PG to the long format

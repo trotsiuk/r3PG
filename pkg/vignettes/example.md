@@ -7,13 +7,12 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 ---
 
-```{r setup, include=FALSE}
-library(r3PGmix)
-```
+
 
 ## Example
 
-```{r}
+
+```r
 out <- run_3PG(
   siteInputs = site_eum, 
   speciesInputs = species_eum, 
@@ -25,5 +24,4 @@ out <- run_3PG(
 
 
 out_long <- transf_out( out )
-
 ```
