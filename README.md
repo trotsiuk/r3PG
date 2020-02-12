@@ -1,5 +1,5 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Build Status](https://travis-ci.org/biometry/rLPJGUESS.svg?branch=master)](https://travis-ci.org/biometry/rLPJGUESS)
+[![Build Status](https://travis-ci.org/trotsiuk/r3PGmix.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PGmix)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # r3PGmix
@@ -19,8 +19,7 @@ Or you can install it directly from the download link
 
 ```{r}
 library(devtools)
-install_url("https://github.com/trotsiuk/r3PGmix/releases/download/v0.1.0/rLPJGUESS_0.1.0.tar.gz", 
-dependencies = T, build_vignettes = T)
+install_url("https://github.com/trotsiuk/r3PGmix/releases/download/v0.1.0/r3PGmix_0.1.0.tar.gz", dependencies = T, build_vignettes = T)
 library(r3PGmix)
 ?r3PGmix
 ```
@@ -30,7 +29,6 @@ library(r3PGmix)
 If you want to install the current (development) version from this repository, run
 
 ```{r}
-devtools::install_github(repo = "trotsiuk/r3PGmix", subdir = "pkg", 
-dependencies = T, build_vignettes = T)
+devtools::install_github(repo = "trotsiuk/r3PGmix", subdir = "pkg", dependencies = T, build_vignettes = T)
 ```
 
