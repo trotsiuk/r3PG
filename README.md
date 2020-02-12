@@ -19,9 +19,12 @@ Or you can install it directly from the download link
 
 ```{r}
 library(devtools)
+
 install_url("https://github.com/trotsiuk/r3PGmix/releases/download/v0.1.0/r3PGmix_0.1.0.tar.gz", 
 dependencies = T, build_vignettes = T)
+
 library(r3PGmix)
+
 ?r3PGmix
 ```
 
@@ -42,47 +45,36 @@ Load r3PGmix:
 library(r3PGmix)
 ```
 
-To run an example, load meteorological and soil data from the Solling
-Beech Experimental site distributed with the package:
+Run the exmaple with provided data
 
 ``` r
-data("slb1_meteo")
-data("slb1_soil")
+out <- run_3PG(
+  siteInputs = site_eum, 
+  speciesInputs = species_eum, 
+  forcingInputs = climate_eum, 
+  parameterInputs = parameters_eum[,-1], 
+  biasInputs = bias_eum[,-1],
+  settings = list(light_model = 1, transp_model = 1, phys_model = 1, 
+    correct_bias = 0, calculate_d13c = 0))
+
+
+out_long <- transf_out( out )
 ```
 
-Set up lists containing default model control options and model
-parameters:
+Visualize the output
 
 ``` r
-options.b90 <- setoptions_LWFB90()
-param.b90 <- setparam_LWFB90()
+
+library(dplyr)
+library(ggplot2)
+
+
+sel_var <- c('biom_stem', 'biom_foliage', 'biom_root')
+
+
+out_long %>%
+  filter( variable %in% sel_var ) %>%
+  ggplot( aes(date, value, color = species) ) +
+  geom_line() +
+  facet_wrap(~variable, scales = 'free') 
 ```
-
-Set start and end dates in model control options:
-
-``` r
-options.b90$startdate <- as.Date("2002-01-01")
-options.b90$enddate <- as.Date("2003-12-31")
-```
-
-Derive soil hydraulic properties from soil physical properties using a
-pedotransfer function:
-
-``` r
-soil <- cbind(slb1_soil, hydpar_puh2(clay = slb1_soil$clay,
-                                     silt = slb1_soil$silt,
-                                     sand = slb1_soil$sand,
-                                     bd = slb1_soil$bd,
-                                     oc.pct = slb1_soil$c_org))
-```
-
-Run LWF-Brook90 with the created model input objects and capture results
-in `b90.results.slb1`:
-
-``` r
-b90.results.slb1 <- runLWFB90(project.dir = "example_run_b90/",
-                              param.b90 = param.b90,
-                              options.b90 = options.b90,
-                              climate = slb1_meteo,
-                              soil = soil)
-str(b90.results.slb1, max.level = 1)
