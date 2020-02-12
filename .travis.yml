@@ -1,0 +1,11 @@
+before_install:
+ - cd pkg
+
+language: r
+
+cache: packages
+
+r:
+  - oldrel
+  - release
+  - devel

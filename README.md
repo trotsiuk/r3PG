@@ -1,5 +1,6 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Build Status](https://travis-ci.org/biometry/rLPJGUESS.svg?branch=master)](https://travis-ci.org/biometry/rLPJGUESS)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # r3PGmix
 
@@ -32,18 +33,4 @@ If you want to install the current (development) version from this repository, r
 devtools::install_github(repo = "trotsiuk/r3PGmix", subdir = "pkg", 
 dependencies = T, build_vignettes = T)
 ```
-Below the status of the automatic Travis CI tests on the master branch 
 
-[![Build Status](https://travis-ci.org/biometry/rLPJGUESS.svg?branch=master)](https://travis-ci.org/biometry/rLPJGUESS)
-
-
-### Build the package yourself 
-
-Clone the package to your computer, and build with hand or Rstudio. If you need help see here http://biometry.github.io/APES/R/R70-PackageDevelopment.html
-
-
-In Rstudio, the vignette may not be built per default. You will turn this on in your project options, or run 
-
-```{r}
-devtools::build_vignettes("rLPJGUESS")
-```
