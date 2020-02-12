@@ -296,6 +296,7 @@ real(kind=8), dimension(15, n_sp) :: bias_scale
 
 ! Settings ----------------------
 integer :: light_model                          ! 1 - 3PGmix; 2 - 3PGpjs
+integer :: transp_model                          ! 1 - 3PGmix; 2 - 3PGpjs
 integer :: phys_model                           ! 1 - 3PGmix; 2 - 3PGpjs
 integer :: correct_bias                         ! 0 - no; 1 - 3PGmix
 integer :: calculate_d13c                       ! 0 - no; 1 - 3PGmix

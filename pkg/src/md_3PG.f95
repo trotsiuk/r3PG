@@ -252,7 +252,6 @@ contains
             end do
 
             !****** We shall call this only if the any of the above is TRUE
-            ! V.T. I wonder if the biass correction ned to be here, since we change the LAI!
             competition_total(:) = sum( wood_density(ii-int(1),:) * basal_area(:) )
 
             call s_bias_correct(n_sp, age_m(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
@@ -345,13 +344,13 @@ contains
 
 
             ! Calculate transpiration
-            if ( light_model .eq. int(1) ) then
+            if ( transp_model .eq. int(1) ) then
 
                 call s_transpiration_3pgmix( n_sp, solar_rad(ii), vpd_day(ii), day_length(month), daysInMonth(month), &
                     lai(:), fi(:), VPD_sp(:), aero_resist(:), conduct_canopy(:), conduct_soil, &
                     transp_veg(:), evapotra_soil)
 
-            else if ( light_model .eq. int(2) ) then
+            else if ( transp_model .eq. int(2) ) then
 
                 call s_transpiration_3pgpjs( n_sp, solar_rad(ii), day_length(month), VPD_sp(:), BLcond(:), &
                     conduct_canopy(:), daysInMonth(month), &

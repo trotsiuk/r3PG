@@ -10,7 +10,7 @@ run_3PG(
   forcingInputs,
   parameterInputs,
   biasInputs,
-  settings = list(light_model = 1L, water_balance = 1L, phys_model = 1L, correct_bias =
+  settings = list(light_model = 1L, transp_model = 1L, phys_model = 1L, correct_bias =
     0L, calculate_d13c = 0L)
 )
 }
@@ -57,7 +57,7 @@ run_3PG(
 \item{settings}{list with all possible settings of the model. All provided as \code{integer}
 \itemize{
 \item light_model: `1` - 3PGmix; `2` - 3PGpjs
-\item water_balance: `1` - 3PGmix; `2` - 3PGpjs
+\item transp_model: `1` - 3PGmix; `2` - 3PGpjs
 \item phys_model:  `1` - 3PGmix; `2` - 3PGpjs
 \item correct_bias: `0` - no; `1` - 3PGmix
 \item calculate_d13c: `0` - no; `1` - 3PGmix

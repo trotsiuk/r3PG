@@ -1,7 +1,6 @@
 #' Tranform the output of the fortran 3PG to the long format
 #'
-#' @param out the 4 dimentional array as output of `run_3PG`
-#' @param day_start the first date of the simulation, in date format
+#' @param model a list as an output of `run_3PG`
 #'
 #' @details This is transforming the model output to long format
 #'
@@ -9,7 +8,11 @@
 #' @export
 #'
 
-transf_out <- function( out, day_start = as.Date('2010-01-31') ){
+transf_out <- function( model ){
+
+  # simulations
+  out <- model[['sim']]
+  site <- model[['site']]
 
   # internal variables
   n_ob = dim(out)[1]
@@ -17,7 +20,7 @@ transf_out <- function( out, day_start = as.Date('2010-01-31') ){
 
   out <- as.data.frame.table( out, stringsAsFactors = F, responseName = 'value')
 
-  out$date <- seq( ceiling_date( day_start, "month"), by = "month", length.out = n_ob) - 1
+  out$date <- seq( as.Date( paste(site$iYear, site$iMonth+1, 01, sep = '-') ), by = "month", length.out = n_ob) - 1
   out$species <- rep( paste0('sp_', 1:n_sp), each = n_ob)
   out$group <- rep( unique(var_names$variable_group), each = n_ob * n_sp)
   out$variable <- rep( var_names$variable_name[order(var_names$variable_id)], each = n_ob * n_sp)

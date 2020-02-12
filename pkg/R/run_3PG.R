@@ -37,7 +37,7 @@
 #' @param settings list with all possible settings of the model. All provided as \code{integer}
 #' \itemize{
 #' \item light_model: `1` - 3PGmix; `2` - 3PGpjs
-#' \item water_balance: `1` - 3PGmix; `2` - 3PGpjs
+#' \item transp_model: `1` - 3PGmix; `2` - 3PGpjs
 #' \item phys_model:  `1` - 3PGmix; `2` - 3PGpjs
 #' \item correct_bias: `0` - no; `1` - 3PGmix
 #' \item calculate_d13c: `0` - no; `1` - 3PGmix
@@ -53,20 +53,21 @@ run_3PG <- function(
   siteInputs,
   speciesInputs,
   forcingInputs,
-  parameterInputs,
   # thinningInputs,
+  parameterInputs,
   biasInputs,
-  settings = list(light_model = 1L, water_balance = 1L, phys_model = 1L, correct_bias = 0L, calculate_d13c = 0L)
+  settings = list(light_model = 1L, transp_model = 1L, phys_model = 1L, correct_bias = 0L, calculate_d13c = 0L)
 ){
 
   # replace default settings
-  set_def = list(light_model = 1L, water_balance = 1L, phys_model = 1L, correct_bias = 0L, calculate_d13c = 0L)
+  set_def = list(light_model = 1L, transp_model = 1L, phys_model = 1L, correct_bias = 0L, calculate_d13c = 0L)
   set_def[names(settings)] <- settings
+  set_def <- as.integer( unlist(set_def) )
 
   n_sp = as.integer( nrow(speciesInputs) )
   n_m = as.integer( nrow(forcingInputs) )
 
-  out <- .Call('s_3PG_c',
+  f_out <- .Call('s_3PG_c',
     siteInputs = as.matrix( siteInputs, nrow = 1, ncol = 8),
     speciesInputs = as.matrix( speciesInputs, nrow = n_sp, ncol = 8),
     forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
@@ -75,8 +76,13 @@ run_3PG <- function(
     biasInputs = as.matrix( biasInputs, nrow = 47, ncol = n_sp),
     n_sp = n_sp,
     n_m = n_m,
-    settings = unlist(set_def))
+    settings = set_def)
 
+  out <- list(
+    site = siteInputs,
+    species = speciesInputs,
+    sim = f_out
+  )
   return(out)
 
 }

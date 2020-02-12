@@ -103,6 +103,7 @@ CrownShape  = int( pars_i(61,:) )
 
 ! Settings ----------------------------
 light_model = settings(1)
+transp_model = settings(2)
 phys_model = settings(3)
 correct_bias = settings(4)
 calculate_d13c = settings(5)
