@@ -12,6 +12,7 @@ output(ii,:,1,7) = prcp(ii)
 output(ii,:,1,8) = vpd_day(ii)
 output(ii,:,1,9) = co2(ii)
 output(ii,:,1,10) = d13catm(ii)
+!output(ii,:,1,11) = competition_total(:)
 
 ! Stand variables ---------------
 output(ii,:,2,1) = age(ii,:)

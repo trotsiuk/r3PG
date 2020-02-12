@@ -486,9 +486,14 @@ contains
                     else
                         biom_loss_foliage(i) = biom_foliage_debt(i)
                     end if
-                
+                    
+                    biom_loss_root(i) = 0.d0
+
+
                     ! No changes during dormant period
                     biom_incr_foliage(i) = 0.d0
+                    biom_incr_root(i) = 0.d0
+                    biom_incr_stem(i) = 0.d0
 
                     biom_foliage(i) = biom_foliage(i)
                     biom_root(i) = biom_root(i)
@@ -534,13 +539,16 @@ contains
 
             ! Correct the bias
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
+
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
-        
+            
+            
+
             call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-
 
             ! Volume and Volume increment
             ! This is done before thinning and mortality part
@@ -589,6 +597,7 @@ contains
             do i = 1, n_sp
                 if ( gammaN(ii,i) > 0.d0 ) then
                     mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
+                    mort_stress(i) = min( mort_stress(i), stems_n(i)) ! Mortality can't be more than available
 
                     if( f_dormant(month, leafgrow(i), leaffall(i)) ) then
                         biom_foliage_debt(i) = biom_foliage_debt(i) - mF(i) * mort_stress(i) * (biom_foliage_debt(i) / stems_n(i))
@@ -606,8 +615,11 @@ contains
 
             ! Correct the bias
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
+
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+
         
             call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
@@ -627,16 +639,32 @@ contains
                     
                     mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                     mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
-                
-                    if( f_dormant(month, leafgrow(i), leaffall(i)) ) then
-                        biom_foliage_debt(i) = biom_foliage_debt(i) - mF(i) * mort_thinn(i) * (biom_foliage_debt(i) / stems_n(i))
+
+                    if( mort_thinn(i) < stems_n(i) ) then
+                        if( f_dormant(month, leafgrow(i), leaffall(i)) ) then
+                            biom_foliage_debt(i) = biom_foliage_debt(i) - mF(i) * mort_thinn(i) * &
+                                (biom_foliage_debt(i) / stems_n(i))
+                        else
+                            biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
+                        end if
+                    
+                        biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
+                        biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
+                        stems_n(i) = stems_n(i) - mort_thinn(i)
+
                     else
-                        biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
+
+                        if( f_dormant(month, leafgrow(i), leaffall(i)) ) then
+                            biom_foliage_debt(i) = 0.d0
+                        else
+                            biom_foliage(i) = 0.d0
+                        end if
+                    
+                        biom_root(i) = 0.d0
+                        biom_stem(i) = 0.d0
+                        stems_n(i) = 0.d0
                     end if
-                
-                    biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
-                    biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
-                    stems_n(i) = stems_n(i) - mort_thinn(i)
+
                 
                 end if
             end do
@@ -644,6 +672,7 @@ contains
 
             ! Correct the bias
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
         
@@ -1230,8 +1259,8 @@ contains
             0.608381d0 * k(:) * LAI(:) / kL_l(:) * Heightmidcrown_r(:)
 
         ! check for dormant
-        where ( lai(:) == 0.0d0 )
-            lambda_v(:) = 0.0d0
+        where ( lai(:) == 0.d0 )
+            lambda_v(:) = 0.d0
         end where
 
         ! make sure the sum of all lambda_v = 1
@@ -1596,14 +1625,16 @@ contains
             height_rel(:) ** nKrh(:)) * (1.d0 + DrelBiasCrowndiameter(:))
         where( lai(:) .eq. 0.d0 ) crown_width(:) = 0.d0
 
+
         pFS(:) = ( pfsConst(:) * dbh(:) ** pfsPower(:)) * (1.d0 + DrelBiaspFS(:))
-    
+
+
         ! check that the height and LCL allometric equations have not predicted that height - LCL < 0
         ! and if so reduce LCL so that height - LCL = 0 (assumes height allometry is more reliable than LCL allometry)
         where ( crown_length(:) > height(:) )
             crown_length(:) = height(:) 
         end where
-    
+
         ! output the matrix of biasses
         bias_scale(1,:) = DWeibullScale(:)
         bias_scale(2,:) = DWeibullShape(:)

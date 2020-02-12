@@ -33,6 +33,7 @@ biom_loss_root(:) = 0.d0
 
 biom_incr_foliage(:) = 0.d0
 biom_incr_root(:) = 0.d0
+biom_incr_stem(:) = 0.d0
 
 biom_foliage_debt(:) = 0.d0
 
