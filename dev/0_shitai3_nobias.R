@@ -41,9 +41,9 @@ v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'st
 
 data.df %>%
   # filter(variable %in% 'lai_above') %>%
-  filter(year(date) %in% c(2010:2010))  %>%
-  filter(group %in% g_sel) %>%
-  # filter(variable %in% v_sel) %>%
+  # filter(year(date) %in% c(2010:2010))  %>%
+  # filter(group %in% g_sel) %>%
+  filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = species))+
   facet_wrap( ~ variable, scales = 'free_y') +

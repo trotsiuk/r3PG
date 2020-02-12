@@ -1,4 +1,4 @@
-#' Define the function to run 3PGN in R
+#' Tranform the output of the fortran 3PG to the long format
 #'
 #' @param out the 4 dimentional array as output of `run_3PG`
 #' @param day_start the first date of the simulation, in date format

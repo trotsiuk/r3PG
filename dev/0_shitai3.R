@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 5, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 5, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns12.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_shi3$sp2[11] <- 3
@@ -37,7 +37,7 @@ v_sel <- c('volume_mai')
 
 v_sel <- c('biom_stem', 'biom_foliage', 'biom_root', 'biom_litter_month')
 v_sel <- c('f_tmp')
-v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n')
+v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n', 'biom_incr_foliage', 'biom_loss_foliage', 'biom_foliage_debt', 'volume_cum', 'volume_change')
 
 data.df %>%
   # filter(variable %in% 'lai_above') %>%
@@ -57,7 +57,7 @@ options(digits=10)
 
 data.df %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'biom_foliage') %>%
+  filter(variable %in% 'biom_incr_foliage') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head(10)

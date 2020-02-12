@@ -2,7 +2,7 @@
 % Please edit documentation in R/transf_out.R
 \name{transf_out}
 \alias{transf_out}
-\title{Define the function to run 3PGN in R}
+\title{Tranform the output of the fortran 3PG to the long format}
 \usage{
 transf_out(out, day_start = as.Date("2010-01-31"))
 }
@@ -12,7 +12,7 @@ transf_out(out, day_start = as.Date("2010-01-31"))
 \item{day_start}{the first date of the simulation, in date format}
 }
 \description{
-Define the function to run 3PGN in R
+Tranform the output of the fortran 3PG to the long format
 }
 \details{
 This is transforming the model output to long format

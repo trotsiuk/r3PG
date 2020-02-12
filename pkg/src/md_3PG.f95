@@ -30,7 +30,7 @@ contains
         real(kind=c_double), dimension(47,n_sp), intent(in) :: pars_b
 
         ! Output array
-        real(kind=c_double), dimension(n_m,n_sp,11,15), intent(inout) :: output
+        real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
@@ -54,7 +54,7 @@ contains
         ! Day-length calculations
         adjSolarZenithAngle(:) = f_get_solarangle( Lat )
 
-        DayLength(:) = 86400.d0 * f_get_daylength( Lat ) !Seconds
+        day_length(:) = 86400.d0 * f_get_daylength( Lat ) !Seconds
 
         ! CO2 modifiers helpers
         fCalphax(:) = fCalpha700(:) / (2.d0 - fCalpha700(:))
@@ -136,17 +136,17 @@ contains
         ! INITIALISATION (Age dependent)---------------------
         ! Calculate the species specific modifiers
         do i = 1, n_sp
-            s_age(:,i) = 12.d0 * ( year_i - year_p(i) ) + month_i - month_p(i) - 1.d0 ! 
-            s_age(:,i) =  ( s_age(:,i) + int( (/(i, i=1, n_m)/) ) ) / 12.d0 ! translate to years
-            s_age_m(:,i) =  s_age(:,i) - 1.d0/12.d0
-            s_age_m(1,i) =  s_age(1,i)
+            age(:,i) = 12.d0 * ( year_i - year_p(i) ) + month_i - month_p(i) - 1.d0 ! 
+            age(:,i) =  ( age(:,i) + int( (/(i, i=1, n_m)/) ) ) / 12.d0 ! translate to years
+            age_m(:,i) =  age(:,i) - 1.d0/12.d0
+            age_m(1,i) =  age(1,i)
 
-            SLA(:,i) = f_exp( n_m, s_age_m(:,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
-            fracBB(:,i) = f_exp( n_m, s_age_m(:,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
-            wood_density(:,i) = f_exp( n_m, s_age_m(:,i), rho0(i), rho1(i), tRho(i), 1.d0)
-            gammaN(:,i) = f_exp( n_m, s_age(:,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
+            SLA(:,i) = f_exp( n_m, age_m(:,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
+            fracBB(:,i) = f_exp( n_m, age_m(:,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
+            wood_density(:,i) = f_exp( n_m, age_m(:,i), rho0(i), rho1(i), tRho(i), 1.d0)
+            gammaN(:,i) = f_exp( n_m, age(:,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
 
-            gammaF(:,i) = f_exp_foliage( n_m, s_age_m(:,i), gammaF1(i), gammaF0(i), tgammaF(i))
+            gammaF(:,i) = f_exp_foliage( n_m, age_m(:,i), gammaF1(i), gammaF0(i), tgammaF(i))
             
 
             ! age modifier
@@ -154,10 +154,10 @@ contains
                 f_age(:,i) = 1.d0
             else
                 ! I'm not declaring relative age, but directly put it inside
-                f_age(:,i) = 1.d0 / (1.d0 + ( (s_age_m(:,i) / MaxAge(i) ) / rAge(i)) ** nAge(i))
+                f_age(:,i) = 1.d0 / (1.d0 + ( (age_m(:,i) / MaxAge(i) ) / rAge(i)) ** nAge(i))
             end if
 
-            !s_age(:,i) = s_age(:,i) + 1.d0 ! that how the VBA works
+            !age(:,i) = age(:,i) + 1.d0 ! that how the VBA works
 
         end do
 
@@ -190,7 +190,7 @@ contains
         height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
 
         ! Correct the bias
-        call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+        call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
             correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
             dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
@@ -205,7 +205,9 @@ contains
         volume_cum(:) = volume(:)
         volume_old(:) = volume(:)
 
-        volume_mai(:) = volume_cum(:) / s_age(ii,:)
+        volume_mai(:) = volume_cum(:) / age(ii,:)
+
+        basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
 
         ! INITIALISATION (Write output)---------------------
@@ -253,7 +255,7 @@ contains
             ! V.T. I wonder if the biass correction ned to be here, since we change the LAI!
             competition_total(:) = sum( wood_density(ii-int(1),:) * basal_area(:) )
 
-            call s_bias_correct(n_sp, s_age_m(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+            call s_bias_correct(n_sp, age_m(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
@@ -264,13 +266,13 @@ contains
                 ! Calculate the absorbed PAR. If this is first month, then it will be only potential
                 call s_light_3pgmix ( n_sp, height(:), crown_length(:), crown_width(:), lai(:), stems_n(:), &
                     solar_rad(ii), CrownShape(:), k(:), adjSolarZenithAngle(month), daysInMonth(month), &
-                    par(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:))
+                    par(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:), lai_sa_ratio(:))
             
                 VPD_sp(:) = vpd_day(ii) * Exp(lai_above(:) * (-Log(2.d0)) / cVPD(:))
 
             else if ( light_model .eq. int(2) ) then
 
-                call s_light_3pgpjs ( n_sp, s_age_m(ii,:), fullCanAge(:), k(:), lai(:), &
+                call s_light_3pgpjs ( n_sp, age_m(ii,:), fullCanAge(:), k(:), lai(:), &
                     solar_rad(ii), daysInMonth(month), &
                     canopy_cover(:), par(:) )
 
@@ -320,8 +322,8 @@ contains
             ! Calculate assimilation before the water ballance is done
             alpha_c(:) = alphaCx(:) * f_nutr(:) * f_tmp(ii,:) * f_frost(ii,:) * f_calpha(ii,:) * f_phys(:)
             where( lai(:) == 0.d0 ) alpha_c(:) = 0.d0
-            epsilon_gpp(:) = gDM_mol * molPAR_MJ * alpha_c(:)
-            GPP(:) = epsilon_gpp(:) * par(:) / 100        ! tDM/ha (par is MJ/m^2)
+            epsilon(:) = gDM_mol * molPAR_MJ * alpha_c(:)
+            GPP(:) = epsilon(:) * par(:) / 100        ! tDM/ha (par is MJ/m^2)
             NPP(:) = GPP(:) * y(:)                       ! assumes respiratory rate is constant
 
 
@@ -345,13 +347,13 @@ contains
             ! Calculate transpiration
             if ( light_model .eq. int(1) ) then
 
-                call s_transpiration_3pgmix( n_sp, solar_rad(ii), vpd_day(ii), DayLength(month), daysInMonth(month), &
+                call s_transpiration_3pgmix( n_sp, solar_rad(ii), vpd_day(ii), day_length(month), daysInMonth(month), &
                     lai(:), fi(:), VPD_sp(:), aero_resist(:), conduct_canopy(:), conduct_soil, &
                     transp_veg(:), evapotra_soil)
 
             else if ( light_model .eq. int(2) ) then
 
-                call s_transpiration_3pgpjs( n_sp, solar_rad(ii), DayLength(month), VPD_sp(:), BLcond(:), &
+                call s_transpiration_3pgpjs( n_sp, solar_rad(ii), day_length(month), VPD_sp(:), BLcond(:), &
                     conduct_canopy(:), daysInMonth(month), &
                     transp_veg(:))
                 evapotra_soil = 0.d0
@@ -487,22 +489,26 @@ contains
                     end if
                 
                     ! No changes during dormant period
+                    biom_incr_foliage(i) = 0.d0
+
+                    biom_foliage(i) = biom_foliage(i)
+                    biom_root(i) = biom_root(i)
+                    biom_stem(i) = biom_stem(i)
 
                 else
                 
                     ! if there is some leaves to be growth put first NPP to the leaf growth
                     ! if there is enough NPP then growth all the leaves, otherwise wait for next period
-                    if( NPP(i) > biom_foliage_debt(i) ) then
-                    
+                    if( biom_foliage(i) == 0.d0 ) then
+                        biom_foliage(i) = biom_foliage_debt(i)
+                    end if
+
+                    if( NPP(i) >= biom_foliage_debt(i) ) then
                         !if there is enough NPP
-                        biom_foliage(i) = biom_foliage(i) + biom_foliage_debt(i)
-                    
                         NPP(i) = NPP(i) - biom_foliage_debt(i)
                         biom_foliage_debt(i) = 0.d0
                     else
                         ! IF there is not enough NPP to regrow the leaves we regrow part and wait for
-                        ! the next month
-                        biom_foliage(i) = biom_foliage(i) + NPP(i)
                         biom_foliage_debt(i) = biom_foliage_debt(i) - NPP(i)
                         NPP(i) = 0.d0
                     end if
@@ -532,7 +538,7 @@ contains
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
         
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+            call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
@@ -549,7 +555,33 @@ contains
             volume_cum(:) = volume_cum(:) + volume_change(:)
             volume_old(:) = volume(:)
 
-            volume_mai(:) = volume_cum(:) / s_age(ii,:)
+            volume_mai(:) = volume_cum(:) / age(ii,:)
+
+            
+
+            ! Management -------------------------------------------------------------------------
+            ! do i = 1, n_sp
+
+
+            ! end do
+            ! if( countThinning <= noThinning ) then
+            !     if( spAge(ii) >= siteThinning(countThinning, 1) ) then
+            !         if( StemNo > siteThinning(countThinning,2) ) then
+            !             delStems = (StemNo - siteThinning(countThinning, 2) ) / StemNo
+            !             StemNo = StemNo * (1 - delStems)
+            !             if( isDormant(month, leafgrow, leaffall) ) then
+            !                 WFdorm = WFdorm * (1.0d0 - delStems * siteThinning(countThinning,3))
+            !             else
+            !                 WF = WF * (1.0d0 - delStems * siteThinning(countThinning,3))
+            !             end if
+            !             WR = WR * (1.0d0 - delStems * siteThinning(countThinning,4))
+            !             WS = WS * (1.0d0 - delStems * siteThinning(countThinning,5))
+            !             countThinning = countThinning + 1
+            !         else
+            !             countThinning = countThinning + 1
+            !         end if
+            !     end if
+            ! end if
 
 
             ! Mortality --------------------------------------------------------------------------
@@ -578,7 +610,7 @@ contains
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
         
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+            call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
@@ -616,9 +648,24 @@ contains
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
         
-            call s_bias_correct(n_sp, s_age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+            call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
                 correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+
+
+            ! Additional calculations ------------------
+            basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
+
+            ! Efficiency
+            epsilon_gpp(:) = 100 * gpp(:) / par(:)
+            epsilon_npp(:) = 100 * npp_f(:) / par(:)
+            epsilon_biom_stem(:) = 100 * biom_incr_stem(:) / par(:)
+
+            where( par(:) .eq. 0.d0 )
+                epsilon_gpp(:) = 0.d0
+                epsilon_npp(:) = 0.d0
+                epsilon_biom_stem(:) = 0.d0
+            end where
 
             ! Save end of the month results
             include 'i_write_out.h'
@@ -722,7 +769,7 @@ contains
     end function f_gamma_dist
 
 
-    function f_get_daylength( Lat ) result( DayLength )
+    function f_get_daylength( Lat ) result( day_length )
         ! Day-length calculations
 
         implicit none
@@ -731,7 +778,7 @@ contains
         real(kind=8), intent(in) :: Lat
 
         ! output
-        real(kind=8), dimension(12) :: DayLength
+        real(kind=8), dimension(12) :: day_length
 
         ! local
         real(kind=8) :: SLAt, cLat
@@ -743,10 +790,10 @@ contains
         sinDec(:) = 0.4d0 * sin(0.0172d0 * (dayOfYear(:) - 80.d0) )
         cosH0(:) = -sinDec(:) * SLAt / (cLat * sqrt(1.d0 - (sinDec(:)) ** 2.d0))
     
-        DayLength(:) = Acos(cosH0(:)) / Pi
+        day_length(:) = Acos(cosH0(:)) / Pi
     
-        where( cosH0 > 1.d0 ) DayLength = 0.d0
-        where( cosH0 < -1.d0 ) DayLength = 1.d0
+        where( cosH0 > 1.d0 ) day_length = 0.d0
+        where( cosH0 < -1.d0 ) day_length = 1.d0
 
     end function f_get_daylength
 
@@ -1001,14 +1048,14 @@ contains
     end function p_min_max
 
 
-    subroutine s_light_3pgpjs ( n_sp, s_age, fullCanAge, k, lai, solar_rad, days_in_month, &
+    subroutine s_light_3pgpjs ( n_sp, age, fullCanAge, k, lai, solar_rad, days_in_month, &
         canopy_cover, par )
 
         implicit none
     
         ! input
         integer, intent(in) :: n_sp ! number of species
-        real(kind=8), dimension(n_sp), intent(in) :: s_age
+        real(kind=8), dimension(n_sp), intent(in) :: age
         real(kind=8), dimension(n_sp), intent(in) :: fullCanAge     ! Age at canopy closure 
         real(kind=8), dimension(n_sp), intent(in) :: k
         real(kind=8), dimension(n_sp), intent(in) :: lai
@@ -1025,8 +1072,8 @@ contains
 
 
         canopy_cover(:) = 1.d0
-        where (fullCanAge(:) > 0.d0 .and. s_age(:) < fullCanAge(:) ) 
-            canopy_cover(:) = (s_age(:) + 0.01d0) / fullCanAge(:)
+        where (fullCanAge(:) > 0.d0 .and. age(:) < fullCanAge(:) ) 
+            canopy_cover(:) = (age(:) + 0.01d0) / fullCanAge(:)
         end where
 
         lightIntcptn = (1.d0 - (Exp(-k * lai / canopy_cover)))
@@ -1039,7 +1086,7 @@ contains
 
     subroutine s_light_3pgmix ( n_sp, height, crown_length, crown_width, lai, stems_n, solar_rad, &
         CrownShape, k, solarAngle,days_in_month, &
-        par, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id)
+        par, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio)
         
         ! Subroutine calculate the par for the mixed species forest
         ! It first allocate each species to a specific layer based on height and crown length
@@ -1071,6 +1118,7 @@ contains
         real(kind=8), dimension(n_sp), intent(out) :: lambda_h         !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
         real(kind=8), dimension(n_sp), intent(out) :: canopy_vol_frac !Fraction of canopy space (between lowest crown crown height to tallest height) filled by crowns    
         integer, dimension(n_sp), intent(out) :: layer_id
+        real(kind=8), dimension(n_sp), intent(out) :: lai_sa_ratio !the ratio of mean tree leaf area (m2) to crownSA (m2)
  
         ! Additional variables for calculation distribution
         integer :: i
@@ -1078,7 +1126,6 @@ contains
         real(kind=8), dimension(n_sp) :: Heightcrown ! height of the crown begining
         real(kind=8), dimension(n_sp) :: CrownSA  !mean crown surface area (m2) of a species
         real(kind=8), dimension(n_sp) :: Crownvolume   !***DF the crown volume of a given species
-        real(kind=8), dimension(n_sp) :: treeLAtoSAratio !the ratio of mean tree leaf area (m2) to crownSA (m2)
         integer :: nLayers ! number of layers
         real(kind=8), dimension(n_sp) :: Height_max_l
         real(kind=8), dimension(n_sp) :: Heightcrown_min_l
@@ -1139,8 +1186,8 @@ contains
 
     
         !calculate the ratio of tree leaf area to crown surface area restrict kLS to 1
-        treeLAtoSAratio(:) = lai(:) * 10000.d0 / stems_n(:) / CrownSA(:)
-        where ( lai(:) == 0.d0 ) treeLAtoSAratio(:) = 0.d0
+        lai_sa_ratio(:) = lai(:) * 10000.d0 / stems_n(:) / CrownSA(:)
+        where ( lai(:) == 0.d0 ) lai_sa_ratio(:) = 0.d0
     
     
         ! separate trees into layers 
@@ -1198,7 +1245,7 @@ contains
 
     
         ! Calculate the weighted kLS based on kL/sumkL
-        kLSweightedave(:) = k(:) * treeLAtoSAratio(:) * k(:) * lai(:) / kL_l(:)
+        kLSweightedave(:) = k(:) * lai_sa_ratio(:) * k(:) * lai(:) / kL_l(:)
         kLSweightedave(:) = f_get_layer_sum( n_sp, nLayers, kLSweightedave(:), layer_id(:))
         ! the kLS should not be greater than 1 (based on the data used to fit the light model in Forrester et al. 2014)
         ! This is because when there is a high k then LS is likely to be small.
@@ -1247,7 +1294,7 @@ contains
     end subroutine s_light_3pgmix
 
 
-    subroutine s_transpiration_3pgpjs ( n_sp, solar_rad, DayLength, VPD_sp, BLcond, conduct_canopy, days_in_month, &
+    subroutine s_transpiration_3pgpjs ( n_sp, solar_rad, day_length, VPD_sp, BLcond, conduct_canopy, days_in_month, &
             transp_veg) 
     
         implicit none
@@ -1255,7 +1302,7 @@ contains
         ! input
         integer, intent(in) :: n_sp ! number of species
         real(kind=8), intent(in) :: solar_rad
-        real(kind=8), intent(in) ::  DayLength
+        real(kind=8), intent(in) ::  day_length
         real(kind=8), dimension(n_sp), intent(in) :: VPD_sp
         real(kind=8), dimension(n_sp), intent(in) :: BLcond
         real(kind=8), dimension(n_sp), intent(in) :: conduct_canopy
@@ -1274,12 +1321,12 @@ contains
             transp_veg(:) = 0.d0
             
         else
-            netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / DayLength))
-            !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /daylength converts to only daytime period ---> W/m2
+            netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length))
+            !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
             defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) * BLcond(:)
             div(:) = conduct_canopy(:) * (1.d0 + e20) + BLcond(:)
             
-            transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * DayLength 
+            transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * day_length 
             ! in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
         
         end if 
@@ -1287,7 +1334,7 @@ contains
     end subroutine s_transpiration_3pgpjs
 
 
-    subroutine s_transpiration_3pgmix ( n_sp, solar_rad, vpd_day, DayLength, days_in_month, lai, fi, VPD_sp, &
+    subroutine s_transpiration_3pgmix ( n_sp, solar_rad, vpd_day, day_length, days_in_month, lai, fi, VPD_sp, &
             aero_resist, conduct_canopy, conduct_soil, &
             transp_veg, evapotra_soil) 
     
@@ -1298,7 +1345,7 @@ contains
     
         real(kind=8), intent(in) :: solar_rad
         real(kind=8), intent(in) :: vpd_day
-        real(kind=8), intent(in) ::  DayLength
+        real(kind=8), intent(in) ::  day_length
         integer, intent(in) :: days_in_month
         real(kind=8), dimension(n_sp), intent(in) :: lai
         real(kind=8), dimension(n_sp), intent(in) :: fi
@@ -1328,12 +1375,12 @@ contains
         if( sum(lai(:)) == 0.d0 ) then
             transp_veg(:) = 0.d0
         else
-            netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / DayLength)) * fi(:) 
-            !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /daylength converts to only daytime period ---> W/m2
+            netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length)) * fi(:) 
+            !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
             defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) / aero_resist(:)
             div(:) = conduct_canopy(:) * (1.d0 + e20) + 1.d0 / aero_resist(:)
             
-            transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * DayLength 
+            transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * day_length 
             ! in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
 
             where( lai(:) == 0.d0 )
@@ -1354,17 +1401,17 @@ contains
             div_so = conduct_soil * (1.d0 + e20) + 1.d0
         end if 
             
-        netRad_so = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / DayLength)) * (1.d0 - sum( fi(:) ) ) 
-        !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /daylength converts to only daytime period ---> W/m2
+        netRad_so = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length)) * (1.d0 - sum( fi(:) ) ) 
+        !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
 
-        evapotra_soil = days_in_month * conduct_soil * (e20 * netRad_so + defTerm_so) / div_so / lambda * DayLength  
+        evapotra_soil = days_in_month * conduct_soil * (e20 * netRad_so + defTerm_so) / div_so / lambda * day_length  
         !in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
 
     end subroutine s_transpiration_3pgmix
 
 
 
-    subroutine s_bias_correct (n_sp, s_age, stems_n, biom_tree, competition_total, lai, &
+    subroutine s_bias_correct (n_sp, age, stems_n, biom_tree, competition_total, lai, &
         correct_bias, pars_b, aWs, nWs,pfsPower, pfsConst, &
         dbh, basal_area, height, crown_length, crown_width, pFS, bias_scale)
     
@@ -1380,7 +1427,7 @@ contains
     
         ! input
         integer, intent(in) :: n_sp ! number of species
-        real(kind=8), dimension(n_sp), intent(in) :: s_age
+        real(kind=8), dimension(n_sp), intent(in) :: age
         real(kind=8), dimension(n_sp), intent(in) :: stems_n
         real(kind=8), dimension(n_sp), intent(in) :: biom_tree
         real(kind=8), dimension(n_sp), intent(in) :: competition_total
@@ -1453,15 +1500,15 @@ contains
 
             ! Calculate the DW scale -------------------
             DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * Log(height_rel(:)) + & 
-                Dscalet(:) * Log(s_age(:)) + DscaleC(:) * Log(competition_total(:)))
+                Dscalet(:) * Log(age(:)) + DscaleC(:) * Log(competition_total(:)))
                 
             DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + & 
-                Dshapet(:) * Log(s_age(:)) + DshapeC(:) * Log(competition_total(:)))
+                Dshapet(:) * Log(age(:)) + DshapeC(:) * Log(competition_total(:)))
 
             DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
                 
             DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
-                    Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(s_age(:)) + &
+                    Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(:)) + &
                     DlocationC(:) * Log(competition_total(:)))
 
             where( dlocation(:) == 0.d0 )
@@ -1493,14 +1540,14 @@ contains
         
             ! Calculate the biom_stem scale -------------------
             wsWeibullScale(:) = Exp( wsscale0(:) + wsscaleB(:) * Log(dbh(:)) + wsscalerh(:) * Log(height_rel(:)) + & 
-                wsscalet(:) * Log(s_age(:)) + wsscaleC(:) * Log(competition_total(:)))
+                wsscalet(:) * Log(age(:)) + wsscaleC(:) * Log(competition_total(:)))
                 
             wsWeibullShape(:) = Exp( wsshape0(:) + wsshapeB(:) * Log(dbh(:)) + wsshaperh(:) * Log(height_rel(:)) + & 
-                wsshapet(:) * Log(s_age(:)) + wsshapeC(:) * Log(competition_total(:)))
+                wsshapet(:) * Log(age(:)) + wsshapeC(:) * Log(competition_total(:)))
             wsWeibullShape_gamma = f_gamma_dist(1.d0 + 1.d0 / wsWeibullShape(:), n_sp)
 
             wsWeibullLocation(:) = Exp( wslocation0(:) + wslocationB(:) * Log(dbh(:)) + &
-                    wslocationrh(:) * Log(height_rel(:)) + wslocationt(:) * Log(s_age(:)) + &
+                    wslocationrh(:) * Log(height_rel(:)) + wslocationt(:) * Log(age(:)) + &
                     wslocationC(:) * Log(competition_total(:)))
 
             where( wslocation(:) == 0.d0 )
@@ -1530,7 +1577,7 @@ contains
         end if
 
         ! Correct for trees that have age 0
-        where( s_age(:) .eq. 0.d0 )
+        where( age(:) .eq. 0.d0 )
             DrelBiaspFS(:) = 0.d0
             DrelBiasBasArea(:) = 0.d0
             DrelBiasheight(:) = 0.d0

@@ -12,7 +12,7 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 1419, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 1419, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns12.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
@@ -31,16 +31,16 @@ unique(r.df$group)
 
 g_sel <- unique(r.df$group)
 g_sel <- c("climate","stand","canopy","stocks","modifiers","production" ,"mortality","water_use" )
-g_sel <- 'stand'
+g_sel <- 'modifiers'
 v_sel <- c('f_phys', 'crown_width', 'crown_length')
 v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
-v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n')
+v_sel <- c('epsilon_npp', 'epsilon_biom_stem', 'epsilon_gpp', 'volume_cum', 'gpp', 'par', 'alpha_c')
 
 data.df %>%
-  # filter(variable %in% 'lai_above') %>%
+  # filter(variable %in% 'day_length') %>%
   # filter(year(date) %in% c(2002:2003))  %>%
-  filter(group %in% g_sel) %>%
-  # filter(variable %in% v_sel) %>%
+  # filter(group %in% g_sel) %>%
+  filter(variable %in% v_sel) %>%
   ggplot()+
   geom_line( aes(date, value, color = obs, linetype = species))+
   facet_wrap( ~ variable, scales = 'free_y') +
@@ -53,8 +53,12 @@ data.df %>%
 options(digits=10)
 
 data.df %>%
-  # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'f_age') %>%
+  filter(year(date) %in% c(2010:2010))  %>%
+  filter(variable %in% 'epsilon_gpp') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
-  head(10)
+  head(20)
+
+
+run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eum[,-1],
+  list(light_model = 1L, phys_model = 1L, correct_bias = 1L))[1:10,,6,8]

@@ -138,12 +138,12 @@ real(kind=8), dimension(n_m) :: tmp_ave
 real(kind=8), dimension(n_m) :: vpd_day
 
 real(kind=8), dimension(12) :: adjSolarZenithAngle
-real(kind=8), dimension(12) :: DayLength  
+real(kind=8), dimension(12) :: day_length  
 
 
 ! Stand variables ----------------
-real(kind=8), dimension(n_m, n_sp) :: s_age     ! Age of each species and month
-real(kind=8), dimension(n_m, n_sp) :: s_age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
+real(kind=8), dimension(n_m, n_sp) :: age     ! Age of each species and month
+real(kind=8), dimension(n_m, n_sp) :: age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
 real(kind=8), dimension(n_sp) :: stems_n
 real(kind=8), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha
 
@@ -175,7 +175,7 @@ real(kind=8), dimension(n_sp) :: lai_total      ! total competition of the fores
 real(kind=8), dimension(n_sp) :: LAI_per        ! species specific proportion of lai
 real(kind=8), dimension(n_sp) :: lai_above      ! leaf area above the given species
 real(kind=8), dimension(n_sp) :: canopy_vol_frac
-
+real(kind=8), dimension(n_sp) :: lai_sa_ratio !the ratio of mean tree leaf area (m2) to crownSA (m2)
 integer, dimension(n_sp) :: layer_id
 
 
@@ -226,7 +226,10 @@ real(kind=8), dimension(n_sp) :: par            ! RADint
 real(kind=8), dimension(n_sp) :: aero_resist    ! # 'DF aerodynamic resistance within the canopy at the height of the given species (s m-1)
 real(kind=8), dimension(n_sp) :: VPD_sp         ! # 'DF VPD around the crowns of the given species
 real(kind=8), dimension(n_sp) :: alpha_c        ! Canopy quantum efficiency after modifiers
+real(kind=8), dimension(n_sp) :: epsilon    ! Light-use efficiency based on GPP
 real(kind=8), dimension(n_sp) :: epsilon_gpp    ! Light-use efficiency based on GPP
+real(kind=8), dimension(n_sp) :: epsilon_npp    ! Light-use efficiency based on NPP
+real(kind=8), dimension(n_sp) :: epsilon_biom_stem !Light-use efficiency based on stem biomass (increment in WS)
 real(kind=8), dimension(n_sp) :: GPP
 real(kind=8), dimension(n_sp) :: NPP
 real(kind=8), dimension(n_sp) :: NPP_f          ! the full NPP before substraction of depth

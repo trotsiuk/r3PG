@@ -17,7 +17,8 @@ vba.df <- tranf_vba(sk = 132, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixt
 
 r.df <- run_3PG(
   site_shi23 ,
-  species_shi23, climate_shi23, parameters_shi23[,-1], bias_shi23[,-1], list(f_dbh_dist = 1L)) %>%
+  species_shi23, climate_shi23, parameters_shi23[,-1], bias_shi23[,-1],
+  list(light_model = 1L, phys_model = 1L, correct_bias = 1L)) %>%
   transf_out(day_start = as.Date('2010-01-31')) %>%
   as_tibble() %>%
   mutate(obs = 'r')
@@ -35,7 +36,7 @@ g_sel <- c('stand', 'canopy', 'stocks', 'production',"water_use")
 g_sel <- 'weibull'
 v_sel <- c('volume_mai')
 
-v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
+v_sel <- c('biom_stem', 'biom_foliage', 'biom_root', 'npp')
 v_sel <- c('f_tmp')
 v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n')
 

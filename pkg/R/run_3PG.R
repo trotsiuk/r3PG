@@ -1,4 +1,4 @@
-#' Define the function to run 3PGN in R
+#' Define the function to run 3PG in R
 #'
 #' @param siteInputs a \code{data frame} or \code{matrix} containing the information about site level data in the following order:
 #' \itemize{
@@ -54,6 +54,7 @@ run_3PG <- function(
   speciesInputs,
   forcingInputs,
   parameterInputs,
+  # thinningInputs,
   biasInputs,
   settings = list(light_model = 1L, water_balance = 1L, phys_model = 1L, correct_bias = 0L, calculate_d13c = 0L)
 ){
@@ -69,6 +70,7 @@ run_3PG <- function(
     siteInputs = as.matrix( siteInputs, nrow = 1, ncol = 8),
     speciesInputs = as.matrix( speciesInputs, nrow = n_sp, ncol = 8),
     forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
+    # thinningInputs = as.matrix( thinningInputs, ncol = 6),
     parameterInputs = as.matrix( parameterInputs, nrow = 65, ncol = n_sp),
     biasInputs = as.matrix( biasInputs, nrow = 47, ncol = n_sp),
     n_sp = n_sp,

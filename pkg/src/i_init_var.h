@@ -8,8 +8,8 @@ tmp_ave(:) = -9999.d0
 vpd_day(:) = -9999.d0
 
 ! Stand variables ---------------
-s_age(:,:) = -9999.d0
-s_age_m(:,:) = -9999.d0
+age(:,:) = -9999.d0
+age_m(:,:) = -9999.d0
 volume(:) = 0.d0
 volume_mai(:) = -9999.d0
 volume_old(:) = 0.d0
@@ -25,6 +25,7 @@ lambda_v(:) = -9999.d0
 lambda_h(:) = -9999.d0
 aero_resist(:) = -9999.d0
 vpd_sp(:) = -9999.d0
+lai_sa_ratio(:) = -9999.d0
 
 ! Stocks variables ---------------
 biom_loss_foliage(:) = 0.d0
@@ -32,7 +33,6 @@ biom_loss_root(:) = 0.d0
 
 biom_incr_foliage(:) = 0.d0
 biom_incr_root(:) = 0.d0
-biom_incr_stem(:) = 0.d0
 
 biom_foliage_debt(:) = 0.d0
 
@@ -47,15 +47,19 @@ f_nutr(:) = -9999.d0
 f_calpha(:,:) = -9999.d0
 f_cg(:,:) = -9999.d0
 f_phys(:) = -9999.d0
+f_transp_scale = -9999.d0
 
 ! Production ------------------------------
 gpp(:) = -9999.d0
-npp(:) = -9999.d0
+npp(:) = 0.d0
 npp_f(:) = -9999.d0
 par(:) = -9999.d0
 fi(:) = -9999.d0
 alpha_c(:) = -9999.d0
+epsilon(:) = -9999.d0
 epsilon_gpp(:) = -9999.d0
+epsilon_npp(:) = -9999.d0
+epsilon_biom_stem(:) = 0.d0
 npp_fract_stem(:) = -9999.d0
 npp_fract_foliage(:) = -9999.d0
 npp_fract_root(:) = -9999.d0
