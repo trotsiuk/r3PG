@@ -22,8 +22,8 @@ transf_out <- function( model ){
 
   out$date <- seq( as.Date( paste(site$iYear, site$iMonth+1, 01, sep = '-') ), by = "month", length.out = n_ob) - 1
   out$species <- rep( paste0('sp_', 1:n_sp), each = n_ob)
-  out$group <- rep( unique(var_names$variable_group), each = n_ob * n_sp)
-  out$variable <- rep( var_names$variable_name[order(var_names$variable_id)], each = n_ob * n_sp)
+  out$group <- rep( unique(r3pg_info$variable_group), each = n_ob * n_sp)
+  out$variable <- rep( r3pg_info$variable_name[order(r3pg_info$variable_id)], each = n_ob * n_sp)
 
   out <- out[!out$value %in% -9999,]
 

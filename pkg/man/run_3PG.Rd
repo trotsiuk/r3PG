@@ -24,7 +24,7 @@ run_3PG(
 \item asw_max: maximum soil water
 \item year_i: \code{integer} year when the simulation will start
 \item momth_i: \code{integer} month when simulation will start, first month in the output file
-\item altitude: altitude of the site, m a.s.l.
+\item Altitude: altitude of the site, m a.s.l.
 }}
 
 \item{speciesInputs}{a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order apply:
