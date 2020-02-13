@@ -9,3 +9,4 @@
 *.html
 *.mod
 dev/
+pkg/vignettes/r3PGmix-ReferenceManual.R

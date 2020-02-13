@@ -4,10 +4,9 @@
 #'
 #' @details This is transforming the model output to long format
 #'
-#'
+#' @example inst/examples/run_3PGHelp.R
 #' @export
 #'
-
 transf_out <- function( model ){
 
   # simulations
