@@ -1599,7 +1599,7 @@ contains
             DrelBiaspFS(:) = 0.d0
             DrelBiasBasArea(:) = 0.d0
             DrelBiasheight(:) = 0.d0
-            DrelBiasLCL(:) = 0.
+            DrelBiasLCL(:) = 0.d0
             DrelBiasCrowndiameter(:) = 0.d0
             wsrelBias(:) = 0.d0
         end if
@@ -1609,7 +1609,7 @@ contains
             DrelBiaspFS(:) = 0.d0
             DrelBiasBasArea(:) = 0.d0
             DrelBiasheight(:) = 0.d0
-            DrelBiasLCL(:) = 0.
+            DrelBiasLCL(:) = 0.d0
             DrelBiasCrowndiameter(:) = 0.d0
             wsrelBias(:) = 0.d0
         end where
