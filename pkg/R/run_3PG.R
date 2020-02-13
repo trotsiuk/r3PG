@@ -45,7 +45,7 @@
 #'
 #' @details This is the model
 #'
-#'
+#' @example inst/examples/run_3PGHelp.R
 #' @export
 #' @useDynLib r3PGmix
 #'
