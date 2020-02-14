@@ -5,7 +5,7 @@ Description: This package contains a fortran version of 3PGN model wrapped into 
 Version: 0.1.0
 Authors@R: c(
     person("Volodymyr", "Trotsiuk", , "vtrotsiuk@gmail.com", role = c("aut", 'cre')),
-    person("Florian", "Hartig", , "florian.hartig@biologie.uni-regensburg.de", role = c("aut")),
+    person("Florian", "Hartig", email = "florian.hartig@biologie.uni-regensburg.de", role = c("aut"), comment=c(ORCID="0000-0002-6255-9059")),
     person("David", "Forrester", , "david.forrester@wsl.ch", role = c("aut"))
     )
 License: GPL-3
