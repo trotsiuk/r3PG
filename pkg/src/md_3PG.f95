@@ -495,10 +495,6 @@ contains
                     biom_incr_root(i) = 0.d0
                     biom_incr_stem(i) = 0.d0
 
-                    biom_foliage(i) = biom_foliage(i)
-                    biom_root(i) = biom_root(i)
-                    biom_stem(i) = biom_stem(i)
-
                 else
                 
                     ! if there is some leaves to be growth put first NPP to the leaf growth
