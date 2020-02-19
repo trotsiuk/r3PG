@@ -36,9 +36,9 @@
 #' @param biasInputs bial level data
 #' @param settings list with all possible settings of the model. All provided as \code{integer}
 #' \itemize{
-#' \item light_model: `1` - 3PGmix; `2` - 3PGpjs
-#' \item transp_model: `1` - 3PGmix; `2` - 3PGpjs
-#' \item phys_model:  `1` - 3PGmix; `2` - 3PGpjs
+#' \item light_model: `1` - 3PGpjs; `2` - 3PGmix
+#' \item transp_model: `1` - 3PGpjs; `2` - 3PGmix
+#' \item phys_model:  `1` - 3PGpjs; `2` - 3PGmix
 #' \item correct_bias: `0` - no; `1` - 3PGmix
 #' \item calculate_d13c: `0` - no; `1` - 3PGmix
 #' }
@@ -56,11 +56,11 @@ run_3PG <- function(
   # thinningInputs,
   parameterInputs,
   biasInputs,
-  settings = list(light_model = 1L, transp_model = 1L, phys_model = 1L, correct_bias = 0L, calculate_d13c = 0L)
+  settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0)
 ){
 
   # replace default settings
-  set_def = list(light_model = 1L, transp_model = 1L, phys_model = 1L, correct_bias = 0L, calculate_d13c = 0L)
+  set_def = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0)
   set_def[names(settings)] <- settings
   set_def <- as.integer( unlist(set_def) )
 

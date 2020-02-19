@@ -272,6 +272,13 @@ contains
 
             !Radiation and assimilation ----------------------------------------------------------------------
             if ( light_model .eq. int(1) ) then
+                call s_light_3pgpjs ( n_sp, age_m(ii,:), fullCanAge(:), k(:), lai(:), &
+                    solar_rad(ii), daysInMonth(month), &
+                    canopy_cover(:), par(:) )
+
+                VPD_sp(:) = vpd_day(ii)
+
+            else if ( light_model .eq. int(2) ) then
 
                 ! Calculate the absorbed PAR. If this is first month, then it will be only potential
                 call s_light_3pgmix ( n_sp, height(:), crown_length(:), crown_width(:), lai(:), stems_n(:), &
@@ -279,15 +286,6 @@ contains
                     par(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:), lai_sa_ratio(:))
             
                 VPD_sp(:) = vpd_day(ii) * Exp(lai_above(:) * (-Log(2.d0)) / cVPD(:))
-
-            else if ( light_model .eq. int(2) ) then
-
-                call s_light_3pgpjs ( n_sp, age_m(ii,:), fullCanAge(:), k(:), lai(:), &
-                    solar_rad(ii), daysInMonth(month), &
-                    canopy_cover(:), par(:) )
-
-                VPD_sp(:) = vpd_day(ii)
-
             end if
 
 
@@ -319,11 +317,13 @@ contains
 
             ! calculate physiological modifier applied to conductance and alphaCx.
             if ( phys_model .eq. int(1) ) then
-                f_phys(:) = f_vpd(:) * f_sw(:) * f_age(ii,:)
 
-            else if ( phys_model .eq. int(2) ) then
                 f_phys(:) = min( f_vpd(:), f_sw(:) ) * f_age(ii,:)
                 f_tmp_gc(ii,:) = 1.d0
+
+            else if ( phys_model .eq. int(2) ) then
+
+                f_phys(:) = f_vpd(:) * f_sw(:) * f_age(ii,:)
 
             end if
             
@@ -357,16 +357,16 @@ contains
             ! Calculate transpiration
             if ( transp_model .eq. int(1) ) then
 
-                call s_transpiration_3pgmix( n_sp, solar_rad(ii), vpd_day(ii), day_length(month), daysInMonth(month), &
-                    lai(:), fi(:), VPD_sp(:), aero_resist(:), conduct_canopy(:), conduct_soil, &
-                    transp_veg(:), evapotra_soil)
-
-            else if ( transp_model .eq. int(2) ) then
-
                 call s_transpiration_3pgpjs( n_sp, solar_rad(ii), day_length(month), VPD_sp(:), BLcond(:), &
                     conduct_canopy(:), daysInMonth(month), &
                     transp_veg(:))
-                evapotra_soil = 0.d0
+                evapotra_soil = 0.d0 
+
+            else if ( transp_model .eq. int(2) ) then
+
+                call s_transpiration_3pgmix( n_sp, solar_rad(ii), vpd_day(ii), day_length(month), daysInMonth(month), &
+                    lai(:), fi(:), VPD_sp(:), aero_resist(:), conduct_canopy(:), conduct_soil, &
+                    transp_veg(:), evapotra_soil)
 
             end if
 
