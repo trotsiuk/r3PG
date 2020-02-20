@@ -9,8 +9,8 @@ module mod_3PG
 
 contains
     
-    subroutine s_3PG_f ( siteInputs, speciesInputs, forcingInputs, pars_i, pars_b, &
-        n_sp, n_m, settings, output) bind(C, name = "s_3PG_f_")
+    subroutine s_3PG_f ( siteInputs, speciesInputs, forcingInputs, managementInputs, pars_i, pars_b, &
+        n_sp, n_m, n_man, t_t, settings, output) bind(C, name = "s_3PG_f_")
 
         implicit none
 
@@ -20,11 +20,14 @@ contains
         ! Number of species and month
         integer(kind=c_int), intent(in) :: n_m
         integer(kind=c_int), intent(in) :: n_sp
+        integer(kind=c_int), intent(in) :: n_man ! number of management interactiosn
+        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t ! number of management interactiosn
         integer(kind=c_int), dimension(5), intent(in) :: settings    ! settings for the models
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,8), intent(in) :: speciesInputs
+        real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs 
         real(kind=c_double), dimension(n_m,7), intent(in) :: forcingInputs
         real(kind=c_double), dimension(65,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(47,n_sp), intent(in) :: pars_b
@@ -575,28 +578,85 @@ contains
             
 
             ! Management -------------------------------------------------------------------------
-            ! do i = 1, n_sp
 
+            do i = 1, n_sp
 
-            ! end do
-            ! if( countThinning <= noThinning ) then
-            !     if( spAge(ii) >= siteThinning(countThinning, 1) ) then
-            !         if( StemNo > siteThinning(countThinning,2) ) then
-            !             delStems = (StemNo - siteThinning(countThinning, 2) ) / StemNo
-            !             StemNo = StemNo * (1 - delStems)
-            !             if( isDormant(month, leafgrow, leaffall) ) then
-            !                 WFdorm = WFdorm * (1.0d0 - delStems * siteThinning(countThinning,3))
-            !             else
-            !                 WF = WF * (1.0d0 - delStems * siteThinning(countThinning,3))
-            !             end if
-            !             WR = WR * (1.0d0 - delStems * siteThinning(countThinning,4))
-            !             WS = WS * (1.0d0 - delStems * siteThinning(countThinning,5))
-            !             countThinning = countThinning + 1
-            !         else
-            !             countThinning = countThinning + 1
-            !         end if
-            !     end if
-            ! end if
+                if( t_t(i) > 0 ) then
+
+                    if(t_n(i) <= t_t(i)) then
+
+                        if( age(ii,i) >= managementInputs(t_n(i),1,i) ) then
+
+                            if( stems_n(i) > managementInputs(t_n(i),2,i) ) then
+                                
+                                mort_manag(i) = (stems_n(i) - managementInputs(t_n(i),2,i) ) / stems_n(i)
+
+                                stems_n(i) = stems_n(i) * (1.d0 - mort_manag(i))
+
+                                !if the stand is thinned from above, then the ratios (F, R and S) of stem, 
+                                ! foliage and roots to be removed relative to the mean tree in the stand 
+                                ! will be >1. If the product of this ratio and delN is > 1 then the new 
+                                ! WF, WR or WS will be < 0, which is impossible. Therefore, make sure this is >= 0.
+
+                                if( maxval( mort_manag(i) * managementInputs( t_n(i),3:5,i)) > 1.d0 ) then
+
+                                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
+                                        biom_foliage_debt(i) = 0.d0
+                                    else
+                                        biom_foliage(i) = 0.d0
+                                    end if
+                    
+                                    biom_root(i) = 0.d0
+                                    biom_stem(i) = 0.d0
+                                    stems_n(i) = 0.d0
+
+                                else
+
+                                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
+
+                                        biom_foliage_debt(i) = biom_foliage_debt(i) * (1.d0 - mort_manag(i) * & 
+                                            managementInputs(t_n(i),3,i) )
+                                    else 
+
+                                        biom_foliage(i) = biom_foliage(i) * (1.d0 - mort_manag(i) * managementInputs(t_n(i),3,i) )
+                                    end if
+
+                                    biom_root(i) = biom_root(i)  * (1.d0 - mort_manag(i) * managementInputs(t_n(i),4,i) )
+                                    biom_stem(i) = biom_stem(i)  * (1.d0 - mort_manag(i) * managementInputs(t_n(i),5,i) )
+
+                                end if
+
+                                b_cor = .TRUE.
+
+                            end if
+
+                            t_n(i) = t_n(i) + 1
+
+                        end if
+
+                    end if
+
+                end if
+
+            end do
+
+            ! Correct the bias
+            if ( b_cor .eqv. .TRUE. ) then
+
+                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
+                lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+
+                do n = 1, b_n
+                    competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+
+                    call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+                        correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+                end do
+
+                b_cor = .FALSE.
+            end if
 
 
             ! Mortality --------------------------------------------------------------------------

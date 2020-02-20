@@ -8,6 +8,7 @@ test_that("basic model run", {
     siteInputs = site_eum,
     speciesInputs = species_eum,
     forcingInputs = climate_eum,
+    managementInputs = NULL,
     parameterInputs = parameters_eum[,-1],
     biasInputs = bias_eum[,-1],
     settings = list(light_model = 2, transp_model = 2, phys_model = 2,

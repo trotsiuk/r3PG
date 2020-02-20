@@ -8,6 +8,7 @@ run_3PG(
   siteInputs,
   speciesInputs,
   forcingInputs,
+  managementInputs = NULL,
   parameterInputs,
   biasInputs,
   settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0,
@@ -50,6 +51,16 @@ run_3PG(
 \item d13catm:
 }}
 
+\item{managementInputs}{a \code{data frame} or \code{matrix} containing the information about management. The following order apply:
+\itemize{
+\item species: \code{integer} species id
+\item age: \code{real} age at which thinning is done
+\item n_trees: \code{integer} number of trees remaining after thinning.
+\item foliage_type: Type of thinning (above/below). Default is 1.
+\item root_type: Type of thinning (above/below). Default is 1.
+\item stem_type: Type of thinning (above/below). Default is 1.
+}}
+
 \item{parameterInputs}{parameters level data}
 
 \item{biasInputs}{bial level data}
@@ -74,6 +85,7 @@ out <- run_3PG(
   siteInputs = site_eum,
   speciesInputs = species_eum,
   forcingInputs = climate_eum,
+  managementInputs = NULL,
   parameterInputs = parameters_eum[,-1],
   biasInputs = bias_eum[,-1],
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,

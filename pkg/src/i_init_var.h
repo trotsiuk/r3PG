@@ -68,9 +68,11 @@ pFS(:) = -9999.d0
 
 ! Mortality ---------------
 biom_tree_max(:) = -9999.d0
-mort_stress(:) = -0.d0
-mort_thinn(:) = -0.d0
+mort_stress(:) = 0.d0
+mort_thinn(:) = 0.d0
 
+mort_manag(:) = 0.d0
+t_n(:) = 1
 
 ! Water use ---------------
 conduct_canopy(:) = -9999.d0

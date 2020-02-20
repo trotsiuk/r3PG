@@ -248,6 +248,11 @@ real(kind=8), dimension(n_m, n_sp) :: gammaN
 real(kind=8), dimension(n_m, n_sp) :: gammaF
 
 
+integer, dimension(n_sp) :: t_n ! currnet thinnign number
+real(kind=8), dimension(n_sp) :: mort_manag ! mortality due to management
+
+
+
 ! Water use ----------------------
 real(kind=8), dimension(n_sp) :: SWconst         ! soil parameters for soil class
 real(kind=8), dimension(n_sp) :: SWpower         ! soil parameters for soil class
