@@ -2,7 +2,7 @@ Package: r3PGmix
 Type: Package
 Title: 3PG forest growth model
 Description: This package contains a fortran version of 3PGN model wrapped into R.
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Volodymyr", "Trotsiuk", email = "trotsiuk@fld.czu.cz", role = c("aut", 'cre'), comment=c(ORCID="0000-0002-8363-656X")),
     person("Florian", "Hartig", email = "florian.hartig@biologie.uni-regensburg.de", role = c("aut"), comment=c(ORCID="0000-0002-6255-9059")),
