@@ -664,20 +664,19 @@ contains
             ! Stress related ------------------
             do i = 1, n_sp
                 if ( gammaN(ii,i) > 0.d0 ) then
-                    mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
-                    mort_stress(i) = min( mort_stress(i), stems_n(i)) ! Mortality can't be more than available
+                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+                        
+                        mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
+                        mort_stress(i) = min( mort_stress(i), stems_n(i)) ! Mortality can't be more than available
 
-                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
-                        biom_foliage_debt(i) = biom_foliage_debt(i) - mF(i) * mort_stress(i) * (biom_foliage_debt(i) / stems_n(i))
-                    else
                         biom_foliage(i) = biom_foliage(i) - mF(i) * mort_stress(i) * (biom_foliage(i) / stems_n(i))
-                    end if
-                
-                    biom_root(i) = biom_root(i) - mR(i) * mort_stress(i) * (biom_root(i) / stems_n(i))
-                    biom_stem(i) = biom_stem(i) - mS(i) * mort_stress(i) * (biom_stem(i) / stems_n(i))
-                    stems_n(i) = stems_n(i) - mort_stress(i)
+                        biom_root(i) = biom_root(i) - mR(i) * mort_stress(i) * (biom_root(i) / stems_n(i))
+                        biom_stem(i) = biom_stem(i) - mS(i) * mort_stress(i) * (biom_stem(i) / stems_n(i))
+                        stems_n(i) = stems_n(i) - mort_stress(i)
 
-                    b_cor = .TRUE.
+                        b_cor = .TRUE.
+
+                    end if
             
                 end if
             end do
@@ -711,36 +710,30 @@ contains
         
             do i = 1, n_sp
                 if ( biom_tree_max(i) < biom_tree(i) ) then
-                    
-                    mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
-                    mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                    if( mort_thinn(i) < stems_n(i) ) then
-                        if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
-                            biom_foliage_debt(i) = biom_foliage_debt(i) - mF(i) * mort_thinn(i) * &
-                                (biom_foliage_debt(i) / stems_n(i))
-                        else
+                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+                    
+                        mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
+                        mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
+
+                        if( mort_thinn(i) < stems_n(i) ) then
+
                             biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
-                        end if
-                    
-                        biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
-                        biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
-                        stems_n(i) = stems_n(i) - mort_thinn(i)
+                            biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
+                            biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
+                            stems_n(i) = stems_n(i) - mort_thinn(i)
 
-                    else
-
-                        if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-                            biom_foliage_debt(i) = 0.d0
                         else
-                            biom_foliage(i) = 0.d0
-                        end if
-                    
-                        biom_root(i) = 0.d0
-                        biom_stem(i) = 0.d0
-                        stems_n(i) = 0.d0
-                    end if
 
-                    b_cor = .TRUE.
+                            biom_foliage(i) = 0.d0
+                            biom_root(i) = 0.d0
+                            biom_stem(i) = 0.d0
+                            stems_n(i) = 0.d0
+                        end if
+
+                        b_cor = .TRUE.
+
+                    end if
 
                 end if
             end do
@@ -1435,6 +1428,7 @@ contains
             
         else
             netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length))
+            netRad(:) = max(netRad(:), 0.d0) ! net radiation can't be negative
             !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
             defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) * BLcond(:)
             div(:) = conduct_canopy(:) * (1.d0 + e20) + BLcond(:)
@@ -1489,6 +1483,7 @@ contains
             transp_veg(:) = 0.d0
         else
             netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length)) * fi(:) 
+            netRad(:) = max(netRad(:), 0.d0) ! net radiation can't be negative
             !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
             defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) / aero_resist(:)
             div(:) = conduct_canopy(:) * (1.d0 + e20) + 1.d0 / aero_resist(:)
