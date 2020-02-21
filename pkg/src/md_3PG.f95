@@ -1428,7 +1428,7 @@ contains
             
         else
             netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length))
-            netRad(:) = max(netRad(:), 0.d0) ! net radiation can't be negative
+            !netRad(:) = max(netRad(:), 0.d0) ! net radiation can't be negative
             !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
             defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) * BLcond(:)
             div(:) = conduct_canopy(:) * (1.d0 + e20) + BLcond(:)
@@ -1483,7 +1483,7 @@ contains
             transp_veg(:) = 0.d0
         else
             netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length)) * fi(:) 
-            netRad(:) = max(netRad(:), 0.d0) ! net radiation can't be negative
+            !netRad(:) = max(netRad(:), 0.d0) ! net radiation can't be negative
             !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
             defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) / aero_resist(:)
             div(:) = conduct_canopy(:) * (1.d0 + e20) + 1.d0 / aero_resist(:)
