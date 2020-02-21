@@ -655,6 +655,13 @@ contains
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
+                ! Adjust the old wolume after thinning
+                volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
+                where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) * &
+                    (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
+
+                volume_old(:) = volume(:)
+
                 b_cor = .FALSE.
             end if
 
