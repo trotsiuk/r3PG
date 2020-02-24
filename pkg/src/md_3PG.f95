@@ -635,7 +635,7 @@ contains
                         end if
 
                     end if
-
+                
                 end if
 
             end do
@@ -670,8 +670,9 @@ contains
 
             ! Stress related ------------------
             do i = 1, n_sp
-                if ( gammaN(ii,i) > 0.d0 ) then
-                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+                    
+                    if ( gammaN(ii,i) > 0.d0 ) then
                         
                         mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
                         mort_stress(i) = min( mort_stress(i), stems_n(i)) ! Mortality can't be more than available
@@ -684,7 +685,9 @@ contains
                         b_cor = .TRUE.
 
                     end if
-            
+                
+                else
+                    mort_stress(i) = 0.d0
                 end if
             end do
 
@@ -716,10 +719,11 @@ contains
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
         
             do i = 1, n_sp
-                if ( biom_tree_max(i) < biom_tree(i) ) then
 
-                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
                     
+                    if ( biom_tree_max(i) < biom_tree(i) ) then
+
                         mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                         mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
@@ -741,6 +745,9 @@ contains
                         b_cor = .TRUE.
 
                     end if
+
+                else
+                    mort_thinn(i) = 0.d0
 
                 end if
             end do
@@ -1442,6 +1449,7 @@ contains
             
             transp_veg(:) = days_in_month * conduct_canopy(:) * (e20 * netRad(:) + defTerm(:)) / div(:) / lambda * day_length 
             ! in J/m2/s then the "/lambda*h" converts to kg/m2/day and the days in month then coverts this to kg/m2/month
+            transp_veg(:) = max(0.d0, transp_veg(:)) ! transpiration can't be negative
         
         end if 
 
