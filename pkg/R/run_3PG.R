@@ -64,7 +64,6 @@
 #'
 #' @example inst/examples/run_3PGHelp.R
 #' @export
-#' @useDynLib r3PGmix
 #'
 run_3PG <- function(
   siteInputs,
@@ -125,7 +124,7 @@ run_3PG <- function(
   }
 
 
-  f_out <- .Call('s_3PG_c',
+  out <- f_3PG(
     siteInputs = as.matrix( siteInputs, nrow = 1, ncol = 8),
     speciesInputs = as.matrix( speciesInputs[,-1], nrow = n_sp, ncol = 7),
     forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
@@ -138,22 +137,9 @@ run_3PG <- function(
     t_t = t_t,
     settings = set_def)
 
-  out <- list(
-    site = as.data.frame(siteInputs),
-    species = as.data.frame(speciesInputs),
-    sim = f_out
-  )
   return(out)
 
 }
-
-
-.onUnload <- function(libpath) {
-  library.dynam.unload("r3PGmix", libpath)
-}
-
-
-
 
 # Check the input data for consistency ------------------------------------
 # The following checks of input data need to be performed
