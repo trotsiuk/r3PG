@@ -9,17 +9,17 @@
 #' \item asw_max: maximum soil water
 #' \item year_i: \code{integer} year when the simulation will start
 #' \item momth_i: \code{integer} month when simulation will start, first month in the output file
-#' \item Altitude: altitude of the site, m a.s.l.
+#' \item altitude: altitude of the site, m a.s.l.
 #' }
 #' @param speciesInputs a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order apply:
 #' \itemize{
-#' \item species: \code{integer} species id
+#' \item species: species or cohort id/name. It shall be consistent with parameterInputs and biasInputs table.
 #' \item year_p: \code{integer} year when the species was planted (from this we calculate species age)
 #' \item month_p: \code{integer} month when species was planted. Assumption is that species was planted in the end of this month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
 #' \item fertility: soil fertility for a given species. Range from 0 to 1.
-#' \item biom_foliage_i: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.
-#' \item biom_root_i: root biomass for a given species.
-#' \item biom_stem_i: stem biomass for a given species
+#' \item biom_foliage: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.
+#' \item biom_root: root biomass for a given species.
+#' \item biom_stem: stem biomass for a given species
 #' \item n_trees: number of trees per ha.
 #' }
 #' @param forcingInputs  a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i}:
@@ -27,22 +27,30 @@
 #' \item tmp_min:
 #' \item tmp_max:
 #' \item prcp:
-#' \item sol_rad:
+#' \item srad:
 #' \item frost_days:
-#' \item co2:
-#' \item d13catm:
+#' \item co2: required if calculate_d13c=1
+#' \item d13catm: required if calculate_d13c=1
 #' }
 #' @param managementInputs a \code{data frame} or \code{matrix} containing the information about management. The following order apply:
 #' \itemize{
 #' \item species: \code{integer} species id
 #' \item age: \code{real} age at which thinning is done
 #' \item n_trees: \code{integer} number of trees remaining after thinning.
-#' \item foliage_type: Type of thinning (above/below). Default is 1.
-#' \item root_type: Type of thinning (above/below). Default is 1.
-#' \item stem_type: Type of thinning (above/below). Default is 1.
+#' \item foliage: Type of thinning (above/below). Default is 1.
+#' \item root: Type of thinning (above/below). Default is 1.
+#' \item stem: Type of thinning (above/below). Default is 1.
 #' }
 #' @param parameterInputs parameters level data
+#' \itemize{
+#' \item parameter: name of the parameter, shall be consistent in naming with `param_info`
+#' \item species: each column shall correspond to species/cohort name, as defined in speciesInputs table
+#' }
 #' @param biasInputs bial level data
+#' \itemize{
+#' \item parameter: name of the parameter, shall be consistent in naming with `bias_info`
+#' \item species: each column shall correspond to species/cohort name, as defined in speciesInputs table
+#' }
 #' @param settings list with all possible settings of the model. All provided as \code{integer}
 #' \itemize{
 #' \item light_model: `1` - 3PGpjs; `2` - 3PGmix
@@ -64,9 +72,13 @@ run_3PG <- function(
   forcingInputs,
   managementInputs = NULL,
   parameterInputs,
-  biasInputs,
+  biasInputs = NULL,
   settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0)
 ){
+
+  #Check the input
+  chk_input()
+
 
   # replace default settings
   set_def = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0)
@@ -76,12 +88,28 @@ run_3PG <- function(
   n_sp = as.integer( nrow(speciesInputs) )
   n_m = as.integer( nrow(forcingInputs) )
 
-  # Prepare thinning
+  # Climate
+  if( set_def[5] == 1 ){
+    if( !identical(c("co2","d13catm"), names(forcingInputs)[6:7]) ){
+      stop('Please provide forcing data for co2 and d13catm in forcingInputs, if calculate_d13c = 1')
+    }
+  }else{
+    if( !identical(c("co2"), names(forcingInputs)[6]) ){
+      forcingInputs = cbind(forcingInputs[,1:5], matrix(350, ncol = 2, nrow = n_m))
+    }
+  }
+
+  # Management
   if( is.null(managementInputs) ) {
     t_t = 0L
     n_man = 1L
     thin_mat = array(NA_real_, dim = c(1,5,n_sp))
   } else {
+
+    sp_names <- 1:n_sp
+    names( sp_names ) <- speciesInputs$species
+    managementInputs[,1] = sp_names[managementInputs$species] # change sp names to integer
+
     t_t = as.integer( as.vector( table(managementInputs[,1]) ) )
     n_man = as.integer( max(t_t) )
 
@@ -91,14 +119,19 @@ run_3PG <- function(
     thin_mat <- simplify2array(by(thin_mat[,3:7], thin_mat[,1], as.matrix))
   }
 
+  # Bias
+  if( is.null(biasInputs) ){
+    biasInputs = matrix(NA_real_, nrow = 47, ncol = (n_sp+1) )
+  }
+
 
   f_out <- .Call('s_3PG_c',
     siteInputs = as.matrix( siteInputs, nrow = 1, ncol = 8),
-    speciesInputs = as.matrix( speciesInputs, nrow = n_sp, ncol = 8),
+    speciesInputs = as.matrix( speciesInputs[,-1], nrow = n_sp, ncol = 7),
     forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
     managementInputs = thin_mat,
-    parameterInputs = as.matrix( parameterInputs, nrow = 65, ncol = n_sp),
-    biasInputs = as.matrix( biasInputs, nrow = 47, ncol = n_sp),
+    parameterInputs = as.matrix( parameterInputs[,-1], nrow = 65, ncol = n_sp),
+    biasInputs = as.matrix( biasInputs[,-1], nrow = 47, ncol = n_sp),
     n_sp = n_sp,
     n_m = n_m,
     n_man = n_man,
@@ -106,8 +139,8 @@ run_3PG <- function(
     settings = set_def)
 
   out <- list(
-    site = siteInputs,
-    species = speciesInputs,
+    site = as.data.frame(siteInputs),
+    species = as.data.frame(speciesInputs),
     sim = f_out
   )
   return(out)
@@ -117,4 +150,87 @@ run_3PG <- function(
 
 .onUnload <- function(libpath) {
   library.dynam.unload("r3PGmix", libpath)
+}
+
+
+
+
+# Check the input data for consistency ------------------------------------
+# The following checks of input data need to be performed
+# If all required columns are provided
+# If the parameters names are consistent with potential parameters
+
+chk_input <- function(){
+  eval.parent(quote({
+
+    # Consistensy in order of the columns in the data
+    if( !identical(c("latitude","soil_class","asw_i","asw_min","asw_max","year_i","month_i","altitude"), names(siteInputs)) ){
+      stop( 'Columns names of the siteInputs table shall correspond to: latitude, soil_class, asw_i, asw_min, asw_max, year_i, month_i, altitude' )
+    }
+
+    if( !identical(c("species","year_p","month_p","fertility","biom_foliage","biom_root","biom_stem","n_trees"), names(speciesInputs)) ){
+      stop( 'Columns names of the siteInputs table shall correspond to: species,year_p,month_p,fertility,biom_foliage,biom_root,biom_stem,n_trees' )
+    }
+
+    if( !identical(c("tmp_min","tmp_max","prcp","srad","frost_days"), names(forcingInputs)[1:5]) ){
+      stop( 'First five columns names of the forcingInputs table shall correspond to: tmp_min,tmp_max,prcp,srad,frost_days' )
+    }
+
+    if( !is.null(managementInputs) ){
+      if( !identical(c("species","age","n_trees","foliage","root","stem"), names(managementInputs)) ){
+        stop( 'Columns names of the managementInputs table shall correspond to: species,age,n_trees,foliage,root,stem' )
+      }
+    }
+
+    if( !identical(c("parameter"), names(parameterInputs)[1]) ){
+      stop( 'First column name of the parameterInputs table shall correspond to: parameter' )
+    }
+
+    if( !identical( param_names.default$parameter, parameterInputs$parameter) ){
+      stop( paste0('Parameter input table shall contains row in the order of: ', paste(param_names.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+    }
+
+    if( !is.null(biasInputs) ){
+
+      if( !identical(c("parameter"), names(biasInputs)[1]) ){
+        stop( 'First column name of the biasInputs table shall correspond to: parameter' )
+      }
+
+      if( !identical( bias_names.default$parameter, biasInputs$parameter) ){
+        stop( paste0('Parameter input table shall contains row in the order of: ', paste(bias_names.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+      }
+    }
+
+
+
+    # Consistency in namings of the species
+    if( nrow(speciesInputs) != ncol(parameterInputs[,-1]) ){
+      stop( 'Please provide parameterInputs for all of the species in the speciesInputs table' )
+    }
+
+    if( !identical(speciesInputs$species, colnames(parameterInputs[,-1])) ){
+      stop( 'Names or order of species in speciesInputs does not correspond to names or order in parameterInputs' )
+    }
+
+
+    if( !is.null(settings$correct_bias) ){
+      if( settings$correct_bias == 1 ){
+
+        if( is.null(biasInputs) ){
+          stop( 'Please provide biasInputs table or change the setting to correct_bias = 0' )
+        }
+
+        if( nrow(speciesInputs) != ncol(biasInputs[,-1]) ){
+          stop( 'Please provide biasInputs for all of the species in the speciesInputs table' )
+        }
+
+        if( !identical(speciesInputs$species, colnames(biasInputs[,-1])) ){
+          stop( 'Names or order of species in speciesInputs does not correspond to names or order in biasInputs' )
+        }
+      }
+    }
+
+
+
+  }))
 }

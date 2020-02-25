@@ -11,10 +11,24 @@
 
 var_names.default <- read.table("data-raw/var_names.default.csv", header = T, stringsAsFactors = F, sep = ",")
 
+param_names.default <- read.table("data-raw/param_names.default.csv", header = T, stringsAsFactors = F, sep = ",")
+
+bias_names.default <- read.table("data-raw/bias_names.default.csv", header = T, stringsAsFactors = F, sep = ",")
 
 
 
 # Save the data -----------------------------------------------------------
 
-usethis::use_data(var_names.default,
+usethis::use_data(var_names.default, param_names.default, bias_names.default,
   internal = TRUE, overwrite = TRUE)
+
+
+
+output_info <- var_names.default
+param_info <- param_names.default
+bias_info <- bias_names.default
+
+
+save( output_info, file = 'data/output_info.rda')
+save( param_info, file = 'data/param_info.rda')
+save( bias_info, file = 'data/bias_info.rda')

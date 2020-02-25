@@ -7,13 +7,13 @@
 \format{A data frame with x rows and 8 variables:
 \describe{
   \item{species}{\code{integer} species id}
-  \item{pYear}{\code{integer} year when the species was planted (from this we calculate species age)}
-  \item{pMonth}{\code{integer} month when species was planted. Assumption is that species was planted in the end of this month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.}
-  \item{fertilityRating}{soil fertility for a given species. Range from 0 to 1.}
-  \item{iWF}{initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.}
-  \item{iWR}{root biomass for a given species.}
-  \item{iWS}{stem biomass for a given species}
-  \item{iStocking}{number of trees per ha.}
+  \item{year_p}{\code{integer} year when the species was planted (from this we calculate species age)}
+  \item{month_p}{\code{integer} month when species was planted. Assumption is that species was planted in the end of this month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.}
+  \item{fertility}{soil fertility for a given species. Range from 0 to 1.}
+  \item{biom_foliage}{initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.}
+  \item{biom_root}{root biomass for a given species.}
+  \item{biom_stem}{stem biomass for a given species}
+  \item{n_trees}{number of trees per ha.}
 }}
 \usage{
 species_eum

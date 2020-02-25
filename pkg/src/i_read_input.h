@@ -18,13 +18,13 @@ altitude    = int( siteInputs(8) )
 
 
 ! Species data -------------------------
-year_p      = int( speciesInputs(:,2) )
-month_p     = int( speciesInputs(:,3) )
-fertility   = speciesInputs(:,4)
-biom_foliage_i = speciesInputs(:,5)
-biom_root_i = speciesInputs(:,6)
-biom_stem_i = speciesInputs(:,7)
-stems_n_i   = speciesInputs(:,8)
+year_p      = int( speciesInputs(:,1) )
+month_p     = int( speciesInputs(:,2) )
+fertility   = speciesInputs(:,3)
+biom_foliage_i = speciesInputs(:,4)
+biom_root_i = speciesInputs(:,5)
+biom_stem_i = speciesInputs(:,6)
+stems_n_i   = speciesInputs(:,7)
 
 
 ! Climate ------------------------------

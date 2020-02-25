@@ -26,7 +26,7 @@ contains
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
-        real(kind=c_double), dimension(n_sp,8), intent(in) :: speciesInputs
+        real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs
         real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs 
         real(kind=c_double), dimension(n_m,7), intent(in) :: forcingInputs
         real(kind=c_double), dimension(65,n_sp), intent(in) :: pars_i
