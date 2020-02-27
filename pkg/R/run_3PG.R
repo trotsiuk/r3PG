@@ -120,7 +120,11 @@ run_3PG <- function(
 
   # Bias
   if( is.null(biasInputs) ){
-    biasInputs = matrix(NA_real_, nrow = 47, ncol = (n_sp+1) )
+    if( n_sp > 1 ){
+      stop('Please provide the height parameters in the biasInputs table, required for light model')
+    }else{
+      biasInputs = matrix(NA_real_, nrow = 47, ncol = (n_sp+1) )
+    }
   }
 
 
