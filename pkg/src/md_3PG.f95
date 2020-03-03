@@ -29,8 +29,8 @@ contains
         real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs
         real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs 
         real(kind=c_double), dimension(n_m,7), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(65,n_sp), intent(in) :: pars_i
-        real(kind=c_double), dimension(47,n_sp), intent(in) :: pars_b
+        real(kind=c_double), dimension(82,n_sp), intent(in) :: pars_i
+        real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
@@ -39,7 +39,8 @@ contains
         include 'i_decl_var.h'
 
         include 'i_read_input.h'
-        include 'i_read_input_bias.h'
+        include 'i_read_param.h'
+        include 'i_read_param_bias.h'
 
         ! Initialization
         include 'i_init_var.h'
@@ -197,7 +198,7 @@ contains
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
             call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                correct_bias, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
         end do
 
@@ -267,7 +268,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
                 b_cor = .FALSE.
@@ -361,14 +362,14 @@ contains
             if ( transp_model .eq. int(1) ) then
 
                 call s_transpiration_3pgpjs( n_sp, solar_rad(ii), day_length(month), VPD_sp(:), BLcond(:), &
-                    conduct_canopy(:), daysInMonth(month), &
+                    conduct_canopy(:), daysInMonth(month), Qa, Qb, &
                     transp_veg(:))
                 evapotra_soil = 0.d0 
 
             else if ( transp_model .eq. int(2) ) then
 
                 call s_transpiration_3pgmix( n_sp, solar_rad(ii), vpd_day(ii), day_length(month), daysInMonth(month), &
-                    lai(:), fi(:), VPD_sp(:), aero_resist(:), conduct_canopy(:), conduct_soil, &
+                    lai(:), fi(:), VPD_sp(:), aero_resist(:), conduct_canopy(:), conduct_soil, Qa, Qb, &
                     transp_veg(:), evapotra_soil)
 
             end if
@@ -557,7 +558,7 @@ contains
                 competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
             
                 call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                    correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                    correct_bias, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                     dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
             end do 
 
@@ -651,7 +652,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -703,7 +704,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -764,7 +765,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_bias_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -1414,7 +1415,7 @@ contains
     end subroutine s_light_3pgmix
 
 
-    subroutine s_transpiration_3pgpjs ( n_sp, solar_rad, day_length, VPD_sp, BLcond, conduct_canopy, days_in_month, &
+    subroutine s_transpiration_3pgpjs ( n_sp, solar_rad, day_length, VPD_sp, BLcond, conduct_canopy, days_in_month, Qa, Qb, &
             transp_veg) 
     
         implicit none
@@ -1427,6 +1428,7 @@ contains
         real(kind=8), dimension(n_sp), intent(in) :: BLcond
         real(kind=8), dimension(n_sp), intent(in) :: conduct_canopy
         integer, intent(in) :: days_in_month
+        real(kind=8), dimension(n_sp), intent(in) :: Qa, Qb
             
         ! output 
         real(kind=8), dimension(n_sp), intent(out) :: transp_veg
@@ -1457,7 +1459,7 @@ contains
 
 
     subroutine s_transpiration_3pgmix ( n_sp, solar_rad, vpd_day, day_length, days_in_month, lai, fi, VPD_sp, &
-            aero_resist, conduct_canopy, conduct_soil, &
+            aero_resist, conduct_canopy, conduct_soil, Qa, Qb, &
             transp_veg, evapotra_soil) 
     
         implicit none
@@ -1475,6 +1477,7 @@ contains
         real(kind=8), dimension(n_sp), intent(in) :: aero_resist
         real(kind=8), dimension(n_sp), intent(in) :: conduct_canopy
         real(kind=8), intent(in) ::  conduct_soil
+        real(kind=8), dimension(n_sp), intent(in) :: Qa, Qb
             
         ! output 
         real(kind=8), dimension(n_sp), intent(out) :: transp_veg
@@ -1524,7 +1527,7 @@ contains
             div_so = conduct_soil * (1.d0 + e20) + 1.d0
         end if 
             
-        netRad_so = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length)) * (1.d0 - sum( fi(:) ) ) 
+        netRad_so = (Qa(1) + Qb(1) * (solar_rad * 10.d0 ** 6.d0 / day_length)) * (1.d0 - sum( fi(:) ) ) 
         !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
 
         evapotra_soil = days_in_month * conduct_soil * (e20 * netRad_so + defTerm_so) / div_so / lambda * day_length  
@@ -1535,7 +1538,7 @@ contains
 
 
     subroutine s_bias_correct (n_sp, age, stems_n, biom_tree, competition_total, lai, &
-        correct_bias, pars_b, aWs, nWs,pfsPower, pfsConst, &
+        correct_bias, pars_s, pars_b, aWs, nWs, pfsPower, pfsConst, &
         dbh, basal_area, height, crown_length, crown_width, pFS, bias_scale)
     
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
@@ -1558,7 +1561,8 @@ contains
     
         ! parameters
         integer, intent(in) :: correct_bias ! if the distribution shall be fitted
-        real(kind=8), dimension(47, n_sp), intent(in) :: pars_b ! parameters for bias
+        real(kind=8), dimension(17, n_sp), intent(in) :: pars_s ! parameters for bias
+        real(kind=8), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
         real(kind=8), dimension(n_sp), intent(in) :: aWs, nWs
         real(kind=8), dimension(n_sp), intent(in) :: pfsPower, pfsConst
     
@@ -1597,7 +1601,8 @@ contains
         real(kind=8), dimension(n_sp) :: dlocation, wslocation
         real(kind=8), dimension(n_sp) :: DWeibullShape_gamma, wsWeibullShape_gamma
 
-        include 'i_read_input_bias.h'
+        include 'i_read_param_bias.h'
+        include 'i_read_param_sub.h'
 
         bias_scale(:,:) = 0.d0
     

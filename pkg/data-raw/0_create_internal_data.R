@@ -28,7 +28,8 @@ output_info <- var_names.default
 param_info <- param_names.default
 bias_info <- bias_names.default
 
+usethis::use_data( output_info, param_info, bias_info, internal = FALSE, overwrite = TRUE)
 
-save( output_info, file = 'data/output_info.rda')
-save( param_info, file = 'data/param_info.rda')
-save( bias_info, file = 'data/bias_info.rda')
+
+
+stringi::stri_enc_mark(var_names.default$unit)

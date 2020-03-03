@@ -4,7 +4,7 @@
 \name{param_info}
 \alias{param_info}
 \title{Parameters table information}
-\format{A data frame with 65 rows and 3 variables:
+\format{A data frame with 82 rows and 3 variables:
 \describe{
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}

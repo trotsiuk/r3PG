@@ -112,11 +112,17 @@ real(kind=8), dimension(n_sp) :: rho1           ! Maximum basic density - for ol
 real(kind=8), dimension(n_sp) :: tRho           ! Age at which rho = (rhoMin+rhoMax)/2
 integer, dimension(n_sp) :: CrownShape          !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
 
-! Bias correction
+! Height and Wolume
 real(kind=8), dimension(n_sp) :: aH, nHB, nHC
 real(kind=8), dimension(n_sp) :: aV, nVB, nVH, nVBH
 real(kind=8), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
 real(kind=8), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
+
+! Delta 13
+real(kind=8), dimension(n_sp) :: Qa, Qb
+real(kind=8), dimension(n_sp) :: gDM_mol, molPAR_MJ
+
+! Bias correction
 real(kind=8), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC 
 real(kind=8), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC 
 real(kind=8), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC

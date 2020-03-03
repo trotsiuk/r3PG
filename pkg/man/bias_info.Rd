@@ -4,7 +4,7 @@
 \name{bias_info}
 \alias{bias_info}
 \title{Bias table information}
-\format{A data frame with 47 rows and 3 variables:
+\format{A data frame with 30 rows and 3 variables:
 \describe{
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}

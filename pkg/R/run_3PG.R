@@ -120,11 +120,7 @@ run_3PG <- function(
 
   # Bias
   if( is.null(biasInputs) ){
-    if( n_sp > 1 ){
-      stop('Please provide the height parameters in the biasInputs table, required for light model')
-    }else{
-      biasInputs = matrix(NA_real_, nrow = 47, ncol = (n_sp+1) )
-    }
+    biasInputs = matrix(NA_real_, nrow = 30, ncol = (n_sp+1) )
   }
 
 
@@ -133,8 +129,8 @@ run_3PG <- function(
     speciesInputs = as.matrix( speciesInputs[,-1], nrow = n_sp, ncol = 7),
     forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
     managementInputs = thin_mat,
-    parameterInputs = as.matrix( parameterInputs[,-1], nrow = 65, ncol = n_sp),
-    biasInputs = as.matrix( biasInputs[,-1], nrow = 47, ncol = n_sp),
+    parameterInputs = as.matrix( parameterInputs[,-1], nrow = 82, ncol = n_sp),
+    biasInputs = as.matrix( biasInputs[,-1], nrow = 30, ncol = n_sp),
     n_sp = n_sp,
     n_m = n_m,
     n_man = n_man,

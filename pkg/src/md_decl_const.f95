@@ -10,10 +10,10 @@ module mod_decl_const
     real(kind=8), parameter :: ln2 = 0.693147181d0
 
     real(kind=8), parameter :: e20 = 2.2d0            ! rate of change of saturated VP with T at 20C
-    real(kind=8), parameter :: Qa = -90.0d0, Qb = 0.8d0    ! intercept & slope of net v. solar radiation relationship (W/m2)
+!    real(kind=8), parameter :: Qa = -90.0d0, Qb = 0.8d0    ! intercept & slope of net v. solar radiation relationship (W/m2)
 
-    real(kind=8), parameter :: gDM_mol = 24.d0 
-    real(kind=8), parameter :: molPAR_MJ = 2.30d0
+!    real(kind=8), parameter :: gDM_mol = 24.d0 
+!    real(kind=8), parameter :: molPAR_MJ = 2.30d0
     real(kind=8), parameter :: MaxSoilCond = 0.00250d0
 
     real(kind=8), parameter :: lambda = 2460000.0d0   ! latent heat of vapourisation of H2O (J/kg)

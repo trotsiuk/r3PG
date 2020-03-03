@@ -6,8 +6,8 @@
 #' @param speciesInputs a \code{matrix} (dim=c(n_sp,7)) containing the information about species level data. Each row corresponds to one species/layer.
 #' @param forcingInputs  a \code{matrix} (dim=c(n_m,7)) containing the information about climatic forcing data.
 #' @param managementInputs a \code{matrix} (dim=c(n_man,5,n_sp)) containing the information about management.
-#' @param parameterInputs a \code{matrix} (dim=c(65,n_sp)) parameters level data.
-#' @param biasInputs a \code{matrix} (dim=c(47,n_sp)) bial level data
+#' @param parameterInputs a \code{matrix} (dim=c(82,n_sp)) parameters level data.
+#' @param biasInputs a \code{matrix} (dim=c(30,n_sp)) bial level data
 #' @param n_sp \code{integer} number of species
 #' @param n_m \code{integer} number of simulated month
 #' @param n_man \code{integer} number of management interventions, dimention of managementInputs matrix (min1)

@@ -1,21 +1,4 @@
 ﻿parameter,description,unit
-aH,Constant in the stem height relationship,-
-nHB,Power of DBH in the stem height relationship,-
-nHC,Power of competition in the stem height relationship,-
-aV,Constant in the stem volume relationship,-
-nVB,Power of DBH in the stem volume relationship,-
-nVH,Power of height in the stem volume relationship,-
-nVBH,Power of DBH^2 x height in the stem volume relationship,-
-aK,Constant in the crown diameter relationship,-
-nKB,Power of DBH in the crown diameter relationship,-
-nKH,Power of height in the crown diameter relationship,-
-nKC,Power of competition in the crown diameter relationship,-
-nKrh,Power of relative height in the crown diameter relationship,-
-aHL,Constant in the LCL relationship,-
-nHLB,Power of DBH in the LCL relationship,-
-nHLL,Power of LAI in the LCL relationship,-
-nHLC,Power of competition in the LCL relationship,-
-nHLrh,Power of relative height in the LCL relationship,-
 Dscale0,Constant in the relationship for Weibull scale parameter of D distribution,-
 DscaleB,Slope of DBH in relationship for Weibull scale parameter of D distribution,-
 Dscalerh,Slope of relative height in relationship for Weibull scale parameter of D distribution,-

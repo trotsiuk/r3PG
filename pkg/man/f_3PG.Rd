@@ -27,9 +27,9 @@ f_3PG(
 
 \item{managementInputs}{a \code{matrix} (dim=c(n_man,5,n_sp)) containing the information about management.}
 
-\item{parameterInputs}{a \code{matrix} (dim=c(65,n_sp)) parameters level data.}
+\item{parameterInputs}{a \code{matrix} (dim=c(82,n_sp)) parameters level data.}
 
-\item{biasInputs}{a \code{matrix} (dim=c(47,n_sp)) bial level data}
+\item{biasInputs}{a \code{matrix} (dim=c(30,n_sp)) bial level data}
 
 \item{n_sp}{\code{integer} number of species}
 

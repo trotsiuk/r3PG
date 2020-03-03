@@ -18,7 +18,7 @@
 #'
 #' A dataset containing the parameters order and description.
 #'
-#' @format A data frame with 65 rows and 3 variables:
+#' @format A data frame with 82 rows and 3 variables:
 #' \describe{
 #'   \item{parameter}{parameter name}
 #'   \item{description}{description of the parameter}
@@ -30,7 +30,7 @@
 #'
 #' A dataset containing the parameters order and description.
 #'
-#' @format A data frame with 47 rows and 3 variables:
+#' @format A data frame with 30 rows and 3 variables:
 #' \describe{
 #'   \item{parameter}{parameter name}
 #'   \item{description}{description of the parameter}
