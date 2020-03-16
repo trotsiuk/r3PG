@@ -13,6 +13,7 @@
 #' @param n_man \code{integer} number of management interventions, dimention of managementInputs matrix (min1)
 #' @param t_t \code{vector} number of management interactions for each species
 #' @param settings \code{vector} of integers  with all possible settings of the model.
+#' @param sp_names \code{character} of species names
 #'
 #' @details This is the model
 #'
@@ -31,7 +32,8 @@ f_3PG <- function(
   n_m,
   n_man,
   t_t,
-  settings = c(1L,1L,1L,0L,0L)
+  settings = c(1L,1L,1L,0L,0L),
+  sp_names
 ){
 
   f_out <- .Call('s_3PG_c',
@@ -47,12 +49,17 @@ f_3PG <- function(
     t_t = t_t,
     settings = settings)
 
+  sp_info <- data.frame(
+    species = sp_names,
+    year_i = siteInputs[6],
+    month_i = siteInputs[7]
+  )
+
   out <- list(
-    site = siteInputs,
-    species = speciesInputs,
-    species_name = colnames(parameterInputs),
+    sp_info = sp_info,
     sim = f_out
   )
+
   return(out)
 
 }

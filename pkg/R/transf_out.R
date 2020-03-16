@@ -10,8 +10,10 @@
 transf_out <- function( model ){
 
   # simulations
-  site <- as.data.frame( model[['site']] )
-  species_name <- model[['species_name']]
+  species_name <- model[['sp_info']]$species
+  year_i <- model[['sp_info']]$year_i[1]
+  month_i <- model[['sp_info']]$month_i[1]
+
   out <- model[['sim']]
 
   # internal variables
@@ -20,7 +22,7 @@ transf_out <- function( model ){
 
   out <- as.data.frame.table( out, stringsAsFactors = F, responseName = 'value')
 
-  out$date <- seq( as.Date( paste(site$year_i, site$month_i+1, 01, sep = '-') ), by = "month", length.out = n_ob) - 1
+  out$date <- seq( as.Date( paste(year_i, month_i+1, 01, sep = '-') ), by = "month", length.out = n_ob) - 1
   out$species <- rep(species_name, each = n_ob)
   out$group <- rep( unique(var.default$variable_group), each = n_ob * n_sp)
   out$variable <- rep( var.default$variable_name[order(var.default$variable_id)], each = n_ob * n_sp)

@@ -15,7 +15,8 @@ f_3PG(
   n_m,
   n_man,
   t_t,
-  settings = c(1L, 1L, 1L, 0L, 0L)
+  settings = c(1L, 1L, 1L, 0L, 0L),
+  sp_names
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ f_3PG(
 \item{t_t}{\code{vector} number of management interactions for each species}
 
 \item{settings}{\code{vector} of integers  with all possible settings of the model.}
+
+\item{sp_names}{\code{character} of species names}
 }
 \description{
 This is the base implementation of the 3-PG model in Fortran. This function shall be used if you are sure that the input is in correct form. We always recomend to use \code{\link{run_3PG}}
@@ -72,7 +75,8 @@ out <- f_3PG(
   n_m = n_m,
   n_man = n_man,
   t_t = t_t,
-  settings = c(2L,2L,2L,0L,0L))
+  settings = c(2L,2L,2L,0L,0L),
+  sp_names = species_eum$species)
 
 
 out_long <- transf_out( out )

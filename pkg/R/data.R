@@ -117,8 +117,8 @@
 #' @format A data frame with 65 rows and x variables:
 #' \describe{
 #'   \item{parameter}{name of the parameter}
-#'   \item{sp1}{parameter values for species 1}
-#'   \item{sp2}{parameter values for species 2}
+#'   \item{Fagus sylvatica}{parameter values for species 1}
+#'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
 "parameters_eum"
 
@@ -130,7 +130,7 @@
 #' @format A data frame with 47 rows and x variables:
 #' \describe{
 #'   \item{parameter}{name of the parameter}
-#'   \item{sp1}{parameter values for species 1}
-#'   \item{sp2}{parameter values for species 2}
+#'   \item{Fagus sylvatica}{parameter values for species 1}
+#'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
 "bias_eum"

@@ -150,7 +150,8 @@ run_3PG <- function(
     n_m = n_m,
     n_man = n_man,
     t_t = t_t,
-    settings = set_def)
+    settings = set_def,
+    sp_names = speciesInputs$species)
 
   return(out)
 
@@ -202,7 +203,7 @@ chk_input <- function(){
       }
 
       if( !all( biasInputs$parameter %in% bias.default$parameter) ){
-        stop( paste0('Parameter input table shall contains only parameters presend in: ', paste(bias.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+        stop( paste0('Bias input table shall contains only parameters presend in: ', paste(bias.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
       }
 
     }

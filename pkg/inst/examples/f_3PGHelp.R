@@ -22,7 +22,8 @@ out <- f_3PG(
   n_m = n_m,
   n_man = n_man,
   t_t = t_t,
-  settings = c(2L,2L,2L,0L,0L))
+  settings = c(2L,2L,2L,0L,0L),
+  sp_names = species_eum$species)
 
 
 out_long <- transf_out( out )
