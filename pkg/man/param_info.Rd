@@ -9,6 +9,7 @@
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}
   \item{unit}{unit}
+  \item{default}{default value for E.globus from original 3-PG}
 }}
 \usage{
 param_info

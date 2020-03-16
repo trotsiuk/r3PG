@@ -23,6 +23,7 @@ climate_eum <- read_excel('data-raw/input_eum.xlsx', sheet = 'climate') %>%
 
 parameters_eum <- read_excel('data-raw/input_eum.xlsx', sheet = 'parameters') %>%
   select(parameter = Name, sp1 = `Fagus sylvatica`, sp2 = `Pinus sylvestris3`)
+parameters_eum$sp1[11] <- 5
 
 bias_eum <- read_excel('data-raw/input_eum.xlsx', sheet = 'bias') %>%
   select(parameter = Name, sp1 = `Fagus sylvatica`, sp2 = `Pinus sylvestris3`) 

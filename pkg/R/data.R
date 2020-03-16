@@ -23,6 +23,7 @@
 #'   \item{parameter}{parameter name}
 #'   \item{description}{description of the parameter}
 #'   \item{unit}{unit}
+#'   \item{default}{default value for E.globus from original 3-PG}
 #' }
 "param_info"
 
@@ -35,6 +36,7 @@
 #'   \item{parameter}{parameter name}
 #'   \item{description}{description of the parameter}
 #'   \item{unit}{unit}
+#'   \item{default}{default value equal to 0}
 #' }
 "bias_info"
 

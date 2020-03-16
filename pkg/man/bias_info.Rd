@@ -9,6 +9,7 @@
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}
   \item{unit}{unit}
+  \item{default}{default value equal to 0}
 }}
 \usage{
 bias_info

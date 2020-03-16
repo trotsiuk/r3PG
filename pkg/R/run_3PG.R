@@ -70,12 +70,12 @@ run_3PG <- function(
   speciesInputs,
   forcingInputs,
   managementInputs = NULL,
-  parameterInputs,
+  parameterInputs = NULL,
   biasInputs = NULL,
   settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0)
 ){
 
-  #Check the input
+  #Check the input naming and structure
   chk_input()
 
 
@@ -120,19 +120,32 @@ run_3PG <- function(
     thin_mat <- simplify2array(by(thin_mat[,3:7], thin_mat[,1], as.matrix))
   }
 
-  # Bias
-  if( is.null(biasInputs) ){
-    biasInputs = matrix(NA_real_, nrow = 30, ncol = (n_sp+1) )
+  # Replace the default parameters
+  parameterReplaced = param.default['parameter']
+  parameterReplaced[speciesInputs$species] <- NA_real_
+  parameterReplaced[speciesInputs$species] <- param.default$default
+  if( !is.null(parameterInputs) ){
+    parameterReplaced[match(parameterInputs$parameter, parameterReplaced$parameter), ] <- parameterInputs
   }
 
 
+  # Bias
+  biasReplaced = bias.default['parameter']
+  biasReplaced[speciesInputs$species] <- NA_real_
+  biasReplaced[speciesInputs$species] <- as.numeric(bias.default$default)
+  if( !is.null(biasInputs) ){
+    biasReplaced[match(biasInputs$parameter, biasReplaced$parameter), ] <- biasInputs
+  }
+
+
+  # Run the model
   out <- f_3PG(
     siteInputs = as.matrix( siteInputs, nrow = 1, ncol = 8),
     speciesInputs = as.matrix( speciesInputs[,-1], nrow = n_sp, ncol = 7),
     forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
     managementInputs = thin_mat,
-    parameterInputs = as.matrix( parameterInputs[,-1], nrow = 82, ncol = n_sp),
-    biasInputs = as.matrix( biasInputs[,-1], nrow = 30, ncol = n_sp),
+    parameterInputs = as.matrix( parameterReplaced[,-1], nrow = 82, ncol = n_sp),
+    biasInputs = as.matrix( biasReplaced[,-1], nrow = 30, ncol = n_sp),
     n_sp = n_sp,
     n_m = n_m,
     n_man = n_man,
@@ -170,12 +183,16 @@ chk_input <- function(){
       }
     }
 
-    if( !identical(c("parameter"), names(parameterInputs)[1]) ){
-      stop( 'First column name of the parameterInputs table shall correspond to: parameter' )
-    }
+    if( !is.null(parameterInputs) ){
 
-    if( !identical( param_names.default$parameter, parameterInputs$parameter) ){
-      stop( paste0('Parameter input table shall contains row in the order of: ', paste(param_names.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+      if( !identical(c("parameter"), names(parameterInputs)[1]) ){
+        stop( 'First column name of the parameterInputs table shall correspond to: parameter' )
+      }
+
+      if( !all( parameterInputs$parameter %in% param.default$parameter) ){
+        stop( paste0('Parameter input table shall contains only parameters presend in: ', paste(param.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+      }
+
     }
 
     if( !is.null(biasInputs) ){
@@ -184,22 +201,24 @@ chk_input <- function(){
         stop( 'First column name of the biasInputs table shall correspond to: parameter' )
       }
 
-      if( !identical( bias_names.default$parameter, biasInputs$parameter) ){
-        stop( paste0('Parameter input table shall contains row in the order of: ', paste(bias_names.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+      if( !all( biasInputs$parameter %in% bias.default$parameter) ){
+        stop( paste0('Parameter input table shall contains only parameters presend in: ', paste(bias.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
       }
-    }
 
+    }
 
 
     # Consistency in namings of the species
-    if( nrow(speciesInputs) != ncol(parameterInputs[,-1]) ){
-      stop( 'Please provide parameterInputs for all of the species in the speciesInputs table' )
-    }
+    if( !is.null(parameterInputs) ){
 
-    if( !identical(speciesInputs$species, colnames(parameterInputs[,-1])) ){
-      stop( 'Names or order of species in speciesInputs does not correspond to names or order in parameterInputs' )
-    }
+      if( nrow(speciesInputs) != ncol(parameterInputs[,-1]) ){
+        stop( 'Please provide parameterInputs for all of the species in the speciesInputs table' )
+      }
 
+      if( !identical(speciesInputs$species, colnames(parameterInputs[,-1])) ){
+        stop( 'Names or order of species in speciesInputs does not correspond to names or order in parameterInputs' )
+      }
+    }
 
     if( !is.null(settings$correct_bias) ){
       if( settings$correct_bias == 1 ){
@@ -217,7 +236,6 @@ chk_input <- function(){
         }
       }
     }
-
 
 
   }))

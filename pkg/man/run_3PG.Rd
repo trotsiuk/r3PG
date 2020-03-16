@@ -9,7 +9,7 @@ run_3PG(
   speciesInputs,
   forcingInputs,
   managementInputs = NULL,
-  parameterInputs,
+  parameterInputs = NULL,
   biasInputs = NULL,
   settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0,
     calculate_d13c = 0)
