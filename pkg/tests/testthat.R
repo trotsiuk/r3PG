@@ -1,2 +1,2 @@
 library(testthat)
-test_check("r3PGmix")
+test_check("r3PG")

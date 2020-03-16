@@ -115,6 +115,8 @@ run_3PG <- function(
     thin_mat <- merge( data.frame(species = rep(1:n_sp, each = n_man), thin_n = rep(1:n_man, times = n_sp)),
       cbind(data.frame(thin_n = sequence(t_t)), managementInputs), by=c('species', 'thin_n'), all = T)
 
+    thin_mat <- thin_mat[order(thin_mat$species, thin_mat$thin_n),]
+
     thin_mat <- simplify2array(by(thin_mat[,3:7], thin_mat[,1], as.matrix))
   }
 

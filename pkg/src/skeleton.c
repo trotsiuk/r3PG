@@ -42,10 +42,10 @@ static const R_CallMethodDef CallEntries[] = {
   {NULL,         NULL,                0}
 };
 
-void R_init_r3PGmix(DllInfo *dll)
+void R_init_r3PG(DllInfo *dll)
 {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 
-    R_RegisterCCallable("r3PGmix", "s_3PG_c",  (DL_FUNC) &s_3PG_c);
+    R_RegisterCCallable("r3PG", "s_3PG_c",  (DL_FUNC) &s_3PG_c);
 }

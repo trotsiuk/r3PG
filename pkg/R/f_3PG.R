@@ -18,7 +18,7 @@
 #'
 #' @example inst/examples/f_3PGHelp.R
 #' @export
-#' @useDynLib r3PGmix
+#' @useDynLib r3PG
 #'
 f_3PG <- function(
   siteInputs,
@@ -59,5 +59,5 @@ f_3PG <- function(
 
 
 .onUnload <- function(libpath) {
-  library.dynam.unload("r3PGmix", libpath)
+  library.dynam.unload("r3PG", libpath)
 }

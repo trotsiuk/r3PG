@@ -3,4 +3,4 @@
 export(f_3PG)
 export(run_3PG)
 export(transf_out)
-useDynLib(r3PGmix)
+useDynLib(r3PG)

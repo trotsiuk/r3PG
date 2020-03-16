@@ -1,4 +1,4 @@
-library(r3PGmix)
+library(r3PG)
 library(testthat)
 
 context("Basic Model runs work")
