@@ -4,20 +4,9 @@
 \alias{f_3PG}
 \title{Define the function to run 3PG in R}
 \usage{
-f_3PG(
-  siteInputs,
-  speciesInputs,
-  forcingInputs,
-  managementInputs,
-  parameterInputs,
-  biasInputs,
-  n_sp,
-  n_m,
-  n_man,
-  t_t,
-  settings = c(1L, 1L, 1L, 0L, 0L),
-  sp_names
-)
+f_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs,
+  parameterInputs, biasInputs, n_sp, n_m, n_man, t_t, settings = c(1L, 1L, 1L,
+  0L, 0L), sp_names)
 }
 \arguments{
 \item{siteInputs}{a \code{matrix} (dim=c(1,8)) containing the information about site level information}
