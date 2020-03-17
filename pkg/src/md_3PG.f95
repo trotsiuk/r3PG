@@ -728,6 +728,8 @@ contains
                         mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                         mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
+                        if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
+
                         if( mort_thinn(i) < stems_n(i) ) then
 
                             biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
