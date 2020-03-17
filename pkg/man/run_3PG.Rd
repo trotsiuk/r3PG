@@ -8,10 +8,11 @@ run_3PG(
   siteInputs,
   speciesInputs,
   forcingInputs,
-  parameterInputs,
-  biasInputs,
-  settings = list(light_model = 1L, transp_model = 1L, phys_model = 1L, correct_bias =
-    0L, calculate_d13c = 0L)
+  managementInputs = NULL,
+  parameterInputs = NULL,
+  biasInputs = NULL,
+  settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0,
+    calculate_d13c = 0)
 )
 }
 \arguments{
@@ -24,18 +25,18 @@ run_3PG(
 \item asw_max: maximum soil water
 \item year_i: \code{integer} year when the simulation will start
 \item momth_i: \code{integer} month when simulation will start, first month in the output file
-\item Altitude: altitude of the site, m a.s.l.
+\item altitude: altitude of the site, m a.s.l.
 }}
 
 \item{speciesInputs}{a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order apply:
 \itemize{
-\item species: \code{integer} species id
+\item species: species or cohort id/name. It shall be consistent with parameterInputs and biasInputs table.
 \item year_p: \code{integer} year when the species was planted (from this we calculate species age)
 \item month_p: \code{integer} month when species was planted. Assumption is that species was planted in the end of this month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
 \item fertility: soil fertility for a given species. Range from 0 to 1.
-\item biom_foliage_i: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.
-\item biom_root_i: root biomass for a given species.
-\item biom_stem_i: stem biomass for a given species
+\item biom_foliage: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.
+\item biom_root: root biomass for a given species.
+\item biom_stem: stem biomass for a given species
 \item n_trees: number of trees per ha.
 }}
 
@@ -44,21 +45,39 @@ run_3PG(
 \item tmp_min:
 \item tmp_max:
 \item prcp:
-\item sol_rad:
+\item srad:
 \item frost_days:
-\item co2:
-\item d13catm:
+\item co2: required if calculate_d13c=1
+\item d13catm: required if calculate_d13c=1
 }}
 
-\item{parameterInputs}{parameters level data}
+\item{managementInputs}{a \code{data frame} or \code{matrix} containing the information about management. The following order apply:
+\itemize{
+\item species: \code{integer} species id
+\item age: \code{real} age at which thinning is done
+\item n_trees: \code{integer} number of trees remaining after thinning.
+\item foliage: Type of thinning (above/below). Default is 1.
+\item root: Type of thinning (above/below). Default is 1.
+\item stem: Type of thinning (above/below). Default is 1.
+}}
 
-\item{biasInputs}{bial level data}
+\item{parameterInputs}{parameters level data
+\itemize{
+\item parameter: name of the parameter, shall be consistent in naming with `param_info`
+\item species: each column shall correspond to species/cohort name, as defined in speciesInputs table
+}}
+
+\item{biasInputs}{bial level data
+\itemize{
+\item parameter: name of the parameter, shall be consistent in naming with `bias_info`
+\item species: each column shall correspond to species/cohort name, as defined in speciesInputs table
+}}
 
 \item{settings}{list with all possible settings of the model. All provided as \code{integer}
 \itemize{
-\item light_model: `1` - 3PGmix; `2` - 3PGpjs
-\item transp_model: `1` - 3PGmix; `2` - 3PGpjs
-\item phys_model:  `1` - 3PGmix; `2` - 3PGpjs
+\item light_model: `1` - 3PGpjs; `2` - 3PGmix
+\item transp_model: `1` - 3PGpjs; `2` - 3PGmix
+\item phys_model:  `1` - 3PGpjs; `2` - 3PGmix
 \item correct_bias: `0` - no; `1` - 3PGmix
 \item calculate_d13c: `0` - no; `1` - 3PGmix
 }}
@@ -74,9 +93,10 @@ out <- run_3PG(
   siteInputs = site_eum,
   speciesInputs = species_eum,
   forcingInputs = climate_eum,
-  parameterInputs = parameters_eum[,-1],
-  biasInputs = bias_eum[,-1],
-  settings = list(light_model = 1, transp_model = 1, phys_model = 1,
+  managementInputs = NULL,
+  parameterInputs = parameters_eum,
+  biasInputs = bias_eum,
+  settings = list(light_model = 2, transp_model = 2, phys_model = 2,
                   correct_bias = 0, calculate_d13c = 0))
 
 

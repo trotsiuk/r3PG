@@ -1,31 +1,31 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Build Status](https://travis-ci.org/trotsiuk/r3PGmix.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PGmix)
+[![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-# r3PGmix
+# r3PG
 
 A R package that wraps the [3-PG model](https://3pg.forestry.ubc.ca)
 
 ### Recommended installation
 
-Install the latest stable release from https://github.com/trotsiuk/r3PGmix/releases.
+Install the latest stable release from https://github.com/trotsiuk/r3PG/releases.
 
 You can download the binary and install it as follows
 
 ```{r}
-install.packages("/path/to/binary/r3PGmix_0.1.0.tar.gz", repos = NULL, type = "source")
+install.packages("/path/to/binary/r3PG_0.1.0.tar.gz", repos = NULL, type = "source")
 ```
 Or you can install it directly from the download link
 
 ```{r}
 library(devtools)
 
-install_url("https://github.com/trotsiuk/r3PGmix/releases/download/v0.1.0/r3PGmix_0.1.0.tar.gz", 
+install_url("https://github.com/trotsiuk/r3PG/releases/download/v0.1.0/r3PG_0.1.0.tar.gz", 
 dependencies = T, build_vignettes = T)
 
-library(r3PGmix)
+library(r3PG)
 
-?r3PGmix
+?r3PG
 ```
 
 ### Development release 
@@ -33,16 +33,16 @@ library(r3PGmix)
 If you want to install the current (development) version from this repository, run
 
 ```{r}
-devtools::install_github(repo = "trotsiuk/r3PGmix", subdir = "pkg", dependencies = T, 
+devtools::install_github(repo = "trotsiuk/r3PG", subdir = "pkg", dependencies = T, 
 build_vignettes = T)
 ```
 
 ## Basic usage
 
-Load r3PGmix:
+Load r3PG:
 
 ``` r
-library(r3PGmix)
+library(r3PG)
 ```
 
 Run the exmaple with provided data
@@ -52,9 +52,10 @@ out <- run_3PG(
   siteInputs = site_eum, 
   speciesInputs = species_eum, 
   forcingInputs = climate_eum, 
-  parameterInputs = parameters_eum[,-1], 
-  biasInputs = bias_eum[,-1],
-  settings = list(light_model = 1, transp_model = 1, phys_model = 1, 
+  managementInputs = NULL,
+  parameterInputs = parameters_eum, 
+  biasInputs = bias_eum,
+  settings = list(light_model = 2, transp_model = 2, phys_model = 2, 
     correct_bias = 0, calculate_d13c = 0))
 
 

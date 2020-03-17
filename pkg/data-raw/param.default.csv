@@ -1,0 +1,83 @@
+﻿parameter,description,unit,default
+pFS2,Foliage:stem partitioning ratio @ D=2 cm,-,1
+pFS20,Foliage:stem partitioning ratio @ D=20 cm,-,0.15
+aWS,Constant in the stem mass v. diam. relationship,-,0.095
+nWS,Power in the stem mass v. diam. relationship,-,2.4
+pRx,Maximum fraction of NPP to roots,-,0.8
+pRn,Minimum fraction of NPP to roots,-,0.25
+gammaF1,Maximum litterfall rate,1/month,0.027
+gammaF0,Litterfall rate at t = 0,1/month,0.001
+tgammaF,Age at which litterfall rate has median value,months,12
+gammaR,Average monthly root turnover rate,1/month,0.015
+leafgrow,"If deciduous, leaves are produced at end of this month",month,0
+leaffall,"If deciduous, leaves all fall at start of this month",month,0
+Tmin,Minimum temperature for growth,deg. C,8.5
+Topt,Optimum temperature for growth,deg. C,16
+Tmax,Maximum temperature for growth,deg. C,40
+kF,Days production lost per frost day,days,0
+SWconst,Moisture ratio deficit for fq = 0.5 ,-,0.7
+SWpower,Power of moisture ratio deficit,-,9
+fCalpha700,Assimilation enhancement factor at 700 ppm,-,1.4
+fCg700,Canopy conductance enhancement factor at 700 ppm,-,0.7
+m0,Value of 'm' when FR = 0,-,0
+fN0,Value of 'fNutr' when FR = 0,-,1
+fNn,Power of (1-FR) in 'fNutr' ,-,0
+MaxAge,Maximum stand age used in age modifier,years,50
+nAge,Power of relative age in function for fAge,-,4
+rAge,Relative age to give fAge = 0.5,-,0.95
+gammaN1,Mortality rate for large t,%/year,0
+gammaN0,Seedling mortality rate (t = 0),%/year,0
+tgammaN,Age at which mortality rate has median value,years,0
+ngammaN,Shape of mortality response,-,1
+wSx1000,Max. stem mass per tree @ 1000 trees/hectare,kg/tree,300
+thinPower,Power in self-thinning rule,-,1.5
+mF,Fraction mean single-tree foliage biomass lost per dead tree,-,0
+mR,Fraction mean single-tree root biomass lost per dead tree,-,0.2
+mS,Fraction mean single-tree stem biomass lost per dead tree,-,0.2
+SLA0,Specific leaf area at age 0,m2/kg,11
+SLA1,Specific leaf area for mature leaves,m2/kg,4
+tSLA,Age at which specific leaf area = (SLA0+SLA1)/2,years,2.5
+k,Extinction coefficient for absorption of PAR by canopy,-,0.5
+fullCanAge,Age at canopy closure ,years,3
+MaxIntcptn,Maximum proportion of rainfall evaporated from canopy,-,0.15
+LAImaxIntcptn,LAI for maximum rainfall interception,-,0
+cVPD,LAI for 50% reduction of VPD in canopy ,-,5
+alphaCx,Canopy quantum efficiency,molC/molPAR,0.06
+Y,Ratio NPP/GPP,-,0.47
+MinCond,Minimum canopy conductance,m/s,0
+MaxCond,Maximum canopy conductance,m/s,0.02
+LAIgcx,LAI for maximum canopy conductance,-,3.33
+CoeffCond,Defines stomatal response to VPD,1/mBar,0.05
+BLcond,Canopy boundary layer conductance,m/s,0.2
+RGcGw,The ratio of diffusivities of CO2 and water vapour in air,-,0.66
+D13CTissueDif,d13C difference of modelled tissue and new photosynthate,per mil,2
+aFracDiffu,Fractionation against 13C in diffusion,per mil,4.4
+bFracRubi,Enzymatic fractionation by Rubisco,per mil,27
+fracBB0,Branch and bark fraction at age 0,-,0.75
+fracBB1,Branch and bark fraction for mature stands,-,0.15
+tBB,Age at which fracBB = (fracBB0+fracBB1)/2,years,2
+rhoMin,Minimum basic density - for young trees,Mg/m3 = g/cm3,0.45
+rhoMax,Maximum basic density - for older trees,Mg/m3 = g/cm3,0.45
+tRho,Age at which rho = (rhoMin+rhoMax)/2,years,4
+crownshape,"Crown shape (1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular)",-,3
+aH,Constant in the stem height relationship,-,0
+nHB,Power of DBH in the stem height relationship,-,0
+nHC,Power of competition in the stem height relationship,-,0
+aV,Constant in the stem volume relationship,-,0
+nVB,Power of DBH in the stem volume relationship,-,0
+nVH,Power of height in the stem volume relationship,-,0
+nVBH,Power of DBH^2 x height in the stem volume relationship,-,0
+aK,Constant in the crown diameter relationship,-,0
+nKB,Power of DBH in the crown diameter relationship,-,0
+nKH,Power of height in the crown diameter relationship,-,0
+nKC,Power of competition in the crown diameter relationship,-,0
+nKrh,Power of relative height in the crown diameter relationship,-,0
+aHL,Constant in the LCL relationship,-,0
+nHLB,Power of DBH in the LCL relationship,-,0
+nHLL,Power of LAI in the LCL relationship,-,0
+nHLC,Power of competition in the LCL relationship,-,0
+nHLrh,Power of relative height in the LCL relationship,-,0
+Qa,Intercept of net v. solar radiation relationship,W/m2,-90
+Qb,Slope of net v. solar radiation relationship,-,0.8
+gDM_mol,Molecular weight of dry matter,gDM/mol,24
+molPAR_MJ,Conversion of solar radiation to PAR,mol/MJ,2.3

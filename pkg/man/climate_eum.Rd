@@ -6,11 +6,11 @@
 \title{Climate forcing data}
 \format{A data frame with 156 rows and 7 variables:
 \describe{
-  \item{Tmin}{minimum monthly temperature}
-  \item{Tmax}{maximum monthly temperature}
-  \item{Rain}{total monthly precipittation}
-  \item{sRad}{solar radiation}
-  \item{fDays}{number of frost days}
+  \item{tmp_min}{minimum monthly temperature}
+  \item{tmp_max}{maximum monthly temperature}
+  \item{prcp}{total monthly precipittation}
+  \item{srad}{solar radiation}
+  \item{frost_days}{number of frost days}
   \item{co2}{atmospheric co2}
   \item{d13catm}{d13catm}
 }}

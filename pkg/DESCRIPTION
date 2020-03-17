@@ -1,12 +1,12 @@
-Package: r3PGmix
+Package: r3PG
 Type: Package
 Title: 3PG forest growth model
-Description: This package contains a fortran version of 3PGN model wrapped into R.
-Version: 0.1.0
+Description: This package contains a fortran version of 3-PG model wrapped into R.
+Version: 0.1.1
 Authors@R: c(
-    person("Volodymyr", "Trotsiuk", , "vtrotsiuk@gmail.com", role = c("aut", 'cre')),
+    person("Volodymyr", "Trotsiuk", email = "trotsiuk@fld.czu.cz", role = c("aut", 'cre'), comment=c(ORCID="0000-0002-8363-656X")),
     person("Florian", "Hartig", email = "florian.hartig@biologie.uni-regensburg.de", role = c("aut"), comment=c(ORCID="0000-0002-6255-9059")),
-    person("David", "Forrester", , "david.forrester@wsl.ch", role = c("aut"))
+    person("David", "Forrester", email = "david.forrester@wsl.ch", role = c("aut"))
     )
 License: GPL-3
 Depends:
@@ -20,6 +20,6 @@ Suggests:
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.0.2
-URL: https://github.com/trotsiuk/r3PGmix
-BugReports: https://github.com/trotsiuk/r3PGmix/issues
+URL: https://github.com/trotsiuk/r3PG
+BugReports: https://github.com/trotsiuk/r3PG/issues
 VignetteBuilder: knitr

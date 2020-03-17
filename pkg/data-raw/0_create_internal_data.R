@@ -9,12 +9,23 @@
 #'
 #'
 
-var_names.default <- read.table("data-raw/var_names.default.csv", header = T, stringsAsFactors = F, sep = ",")
+var.default <- read.table("data-raw/var.default.csv", header = T, stringsAsFactors = F, sep = ",")
 
+param.default <- read.table("data-raw/param.default.csv", header = T, stringsAsFactors = F, sep = ",")
+
+bias.default <- read.table("data-raw/bias.default.csv", header = T, stringsAsFactors = F, sep = ",")
 
 
 
 # Save the data -----------------------------------------------------------
 
-usethis::use_data(var_names.default,
+usethis::use_data(var.default, param.default, bias.default,
   internal = TRUE, overwrite = TRUE)
+
+
+
+output_info <- var.default
+param_info <- param.default
+bias_info <- bias.default
+
+usethis::use_data( output_info, param_info, bias_info, internal = FALSE, overwrite = TRUE)

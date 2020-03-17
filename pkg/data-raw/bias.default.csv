@@ -1,0 +1,31 @@
+﻿parameter,description,unit,default
+Dscale0,Constant in the relationship for Weibull scale parameter of D distribution,-,0
+DscaleB,Slope of DBH in relationship for Weibull scale parameter of D distribution,-,0
+Dscalerh,Slope of relative height in relationship for Weibull scale parameter of D distribution,-,0
+Dscalet,Slope of age in relationship for Weibull scale parameter of D distribution,-,0
+DscaleC,Slope of competition in relationship for Weibull scale parameter of D distribution,-,0
+Dshape0,Constant in the relationship for Weibull shape parameter of D distribution,-,0
+DshapeB,Slope of DBH in relationship for Weibull shape parameter of D distribution,-,0
+Dshaperh,Slope of relative height in relationship for Weibull shape parameter of D distribution,-,0
+Dshapet,Slope of age in relationship for Weibull shape parameter of D distribution,-,0
+DshapeC,Slope of competition in relationship for Weibull shape parameter of D distribution,-,0
+Dlocation0,Constant in the relationship for Weibull location parameter of D distribution,-,0
+DlocationB,Slope of DBH in relationship for Weibull location parameter of D distribution,-,0
+Dlocationrh,Slope of relative height in relationship for Weibull location parameter of D distribution,-,0
+Dlocationt,Slope of age in relationship for Weibull location parameter of D distribution,-,0
+DlocationC,Slope of competition in relationship for Weibull location parameter of D distribution,-,0
+wsscale0,Constant in the relationship for Weibull scale parameter of ws distribution,-,0
+wsscaleB,Slope of DBH in relationship for Weibull scale parameter of ws distribution,-,0
+wsscalerh,Slope of relative height in relationship for Weibull scale parameter of ws distribution,-,0
+wsscalet,Slope of age in relationship for Weibull scale parameter of ws distribution,-,0
+wsscaleC,Slope of competition in relationship for Weibull scale parameter of ws distribution,-,0
+wsshape0,Constant in the relationship for Weibull shape parameter of ws distribution,-,0
+wsshapeB,Slope of DBH in relationship for Weibull shape parameter of ws distribution,-,0
+wsshaperh,Slope of relative height in relationship for Weibull shape parameter of ws distribution,-,0
+wsshapet,Slope of age in relationship for Weibull shape parameter of ws distribution,-,0
+wsshapeC,Slope of competition in relationship for Weibull shape parameter of ws distribution,-,0
+wslocation0,Constant in the relationship for Weibull location parameter of ws distribution,-,0
+wslocationB,Slope of DBH in relationship for Weibull location parameter of ws distribution,-,0
+wslocationrh,Slope of relative height in relationship for Weibull location parameter of ws distribution,-,0
+wslocationt,Slope of age in relationship for Weibull location parameter of ws distribution,-,0
+wslocationC,Slope of competition in relationship for Weibull location parameter of ws distribution,-,0

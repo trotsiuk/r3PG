@@ -7,13 +7,13 @@
 \format{A data frame with 1 rows and 8 variables:
 \describe{
   \item{latitude}{site latitude in the WGS84 coordinate system}
-  \item{soilClass}{\code{integer} representing the soil class, according to table ...}
-  \item{iASW}{initial awailable soil water}
-  \item{minASW}{minimum awailable soil water}
-  \item{maxASW}{maximum awailable soil water}
-  \item{iYear}{\code{integer} year when the simulation will start}
-  \item{iMonth}{\code{integer} month when simulation will start, first month in the output file}
-  \item{Altitude}{altitude of the site, m a.s.l.}
+  \item{soil_class}{\code{integer} representing the soil class, according to table ...}
+  \item{asw_i}{initial awailable soil water}
+  \item{asw_max}{minimum awailable soil water}
+  \item{asw_min}{maximum awailable soil water}
+  \item{year_i}{\code{integer} year when the simulation will start}
+  \item{month_i}{\code{integer} month when simulation will start, first month in the output file}
+  \item{altitude}{altitude of the site, m a.s.l.}
 }}
 \usage{
 site_eum

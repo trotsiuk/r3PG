@@ -1,0 +1,36 @@
+! Weibull parsameters ---
+Dscale0 = pars_b(1,:)
+DscaleB = pars_b(2,:)
+Dscalerh = pars_b(3,:)
+Dscalet = pars_b(4,:)
+DscaleC = pars_b(5,:)
+
+Dshape0 = pars_b(6,:)
+DshapeB = pars_b(7,:)
+Dshaperh = pars_b(8,:)
+Dshapet = pars_b(9,:)
+DshapeC = pars_b(10,:)
+
+Dlocation0 = pars_b(11,:)
+DlocationB = pars_b(12,:)
+Dlocationrh = pars_b(13,:)
+Dlocationt = pars_b(14,:)
+DlocationC = pars_b(15,:)
+
+wsscale0 = pars_b(16,:)
+wsscaleB = pars_b(17,:)
+wsscalerh = pars_b(18,:)
+wsscalet = pars_b(19,:)
+wsscaleC = pars_b(20,:)
+
+wsshape0 = pars_b(21,:)
+wsshapeB = pars_b(22,:)
+wsshaperh = pars_b(23,:)
+wsshapet = pars_b(24,:)
+wsshapeC = pars_b(25,:)
+
+wslocation0 = pars_b(26,:)
+wslocationB = pars_b(27,:)
+wslocationrh = pars_b(28,:)
+wslocationt = pars_b(29,:)
+wslocationC = pars_b(30,:)

@@ -1,4 +1,4 @@
-library(r3PGmix)
+library(r3PG)
 library(testthat)
 
 context("Basic Model runs work")
@@ -8,9 +8,10 @@ test_that("basic model run", {
     siteInputs = site_eum,
     speciesInputs = species_eum,
     forcingInputs = climate_eum,
-    parameterInputs = parameters_eum[,-1],
-    biasInputs = bias_eum[,-1],
-    settings = list(light_model = 1, transp_model = 1, phys_model = 1,
+    managementInputs = NULL,
+    parameterInputs = parameters_eum,
+    biasInputs = bias_eum,
+    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
                     correct_bias = 0, calculate_d13c = 0))
 
 

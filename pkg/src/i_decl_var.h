@@ -112,11 +112,17 @@ real(kind=8), dimension(n_sp) :: rho1           ! Maximum basic density - for ol
 real(kind=8), dimension(n_sp) :: tRho           ! Age at which rho = (rhoMin+rhoMax)/2
 integer, dimension(n_sp) :: CrownShape          !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
 
-! Bias correction
+! Height and Wolume
 real(kind=8), dimension(n_sp) :: aH, nHB, nHC
 real(kind=8), dimension(n_sp) :: aV, nVB, nVH, nVBH
 real(kind=8), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
 real(kind=8), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
+
+! Delta 13
+real(kind=8), dimension(n_sp) :: Qa, Qb
+real(kind=8), dimension(n_sp) :: gDM_mol, molPAR_MJ
+
+! Bias correction
 real(kind=8), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC 
 real(kind=8), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC 
 real(kind=8), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
@@ -130,8 +136,10 @@ real(kind=8), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocat
 ! Helpers ------------------------------
 integer :: i = 1                                ! indexing for species
 integer :: ii = 1                               ! indexing for month (row of climatic data)
-integer :: month = 1
-
+integer :: month = 1       
+integer :: b_n = 2                              ! how many times to iterate for biass correction
+integer :: n = 1                                ! count for bias correction
+logical :: b_cor = .TRUE.                            ! if something has changed and wee need to correct bias       
 
 ! Climatic variables -------------
 real(kind=8), dimension(n_m) :: tmp_ave 
@@ -246,6 +254,11 @@ real(kind=8), dimension(n_m, n_sp) :: gammaN
 real(kind=8), dimension(n_m, n_sp) :: gammaF
 
 
+integer, dimension(n_sp) :: t_n ! currnet thinnign number
+real(kind=8), dimension(n_sp) :: mort_manag ! mortality due to management
+
+
+
 ! Water use ----------------------
 real(kind=8), dimension(n_sp) :: SWconst         ! soil parameters for soil class
 real(kind=8), dimension(n_sp) :: SWpower         ! soil parameters for soil class
@@ -295,8 +308,9 @@ real(kind=8), dimension(15, n_sp) :: bias_scale
 
 
 ! Settings ----------------------
-integer :: light_model                          ! 1 - 3PGmix; 2 - 3PGpjs
-integer :: transp_model                          ! 1 - 3PGmix; 2 - 3PGpjs
-integer :: phys_model                           ! 1 - 3PGmix; 2 - 3PGpjs
+integer :: light_model                          ! 1 - 3PGpjs; 2 - 3PGmix
+integer :: transp_model                          ! 1 - 3PGpjs; 2 - 3PGmix
+integer :: phys_model                           ! 1 - 3PGpjs; 2 - 3PGmix
 integer :: correct_bias                         ! 0 - no; 1 - 3PGmix
 integer :: calculate_d13c                       ! 0 - no; 1 - 3PGmix
+
