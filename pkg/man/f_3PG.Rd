@@ -2,42 +2,42 @@
 % Please edit documentation in R/f_3PG.R
 \name{f_3PG}
 \alias{f_3PG}
-\title{Define the function to run 3PG in R}
+\title{The function to run the 3-PG in FORTRAN.}
 \usage{
 f_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs,
   parameterInputs, biasInputs, n_sp, n_m, n_man, t_t, settings = c(1L, 1L, 1L,
   0L, 0L), sp_names)
 }
 \arguments{
-\item{siteInputs}{a \code{matrix} (dim=c(1,8)) containing the information about site level information}
+\item{siteInputs}{\code{matrix} (dim=c(1,8)) containing the information about site level information}
 
-\item{speciesInputs}{a \code{matrix} (dim=c(n_sp,7)) containing the information about species level data. Each row corresponds to one species/layer.}
+\item{speciesInputs}{\code{matrix} (dim=c(n_sp,7)) containing the information about species level data. Each row corresponds to one species/layer.}
 
-\item{forcingInputs}{a \code{matrix} (dim=c(n_m,7)) containing the information about climatic forcing data.}
+\item{forcingInputs}{\code{matrix} (dim=c(n_m,7)) containing the information about climatic forcing data.}
 
-\item{managementInputs}{a \code{matrix} (dim=c(n_man,5,n_sp)) containing the information about management.}
+\item{managementInputs}{\code{matrix} (dim=c(n_man,5,n_sp)) containing the information about management.}
 
-\item{parameterInputs}{a \code{matrix} (dim=c(82,n_sp)) parameters level data.}
+\item{parameterInputs}{\code{matrix} (dim=c(82,n_sp)) parameters level data.}
 
-\item{biasInputs}{a \code{matrix} (dim=c(30,n_sp)) bial level data}
+\item{biasInputs}{\code{matrix} (dim=c(30,n_sp)) bial level data}
 
 \item{n_sp}{\code{integer} number of species}
 
 \item{n_m}{\code{integer} number of simulated month}
 
-\item{n_man}{\code{integer} number of management interventions, dimention of managementInputs matrix (min1)}
+\item{n_man}{\code{integer} number of maximum management interventions per species, dimention of managementInputs matrix (min=1)}
 
 \item{t_t}{\code{vector} number of management interactions for each species}
 
-\item{settings}{\code{vector} of integers  with all possible settings of the model.}
+\item{settings}{\code{vector} of integers  with all possible settings for the model.}
 
-\item{sp_names}{\code{character} of species names}
+\item{sp_names}{\code{character vector} of species names}
 }
 \description{
 This is the base implementation of the 3-PG model in Fortran. This function shall be used if you are sure that the input is in correct form. We always recomend to use \code{\link{run_3PG}}
 }
 \details{
-This is the model
+Thre is no check for input quality and consistency. Therefore, it is highly recomended to check that your input is in the correct form
 }
 \examples{
 f_site = as.matrix( site_eum )

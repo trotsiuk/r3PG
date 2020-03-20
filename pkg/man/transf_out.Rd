@@ -2,18 +2,22 @@
 % Please edit documentation in R/transf_out.R
 \name{transf_out}
 \alias{transf_out}
-\title{Tranform the output of the fortran 3PG to the long format}
+\title{The function to tranform the output to the long format
+
+#' @description This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.}
 \usage{
 transf_out(model)
 }
 \arguments{
-\item{model}{a list as an output of `run_3PG`}
+\item{model}{a 2-dimentinal list as an output of \code{\link{run_3PG}} or \code{\link{f_3PG}} function.}
 }
 \description{
-Tranform the output of the fortran 3PG to the long format
+The function to tranform the output to the long format
+
+#' @description This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.
 }
 \details{
-This is transforming the model output to long format
+Function transform the model simulation from 4-dimentional array to long format dataframe with the following columns: \code{date; species; group; variable; value}.
 }
 \examples{
 out <- run_3PG(

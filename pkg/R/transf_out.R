@@ -1,10 +1,13 @@
-#' Tranform the output of the fortran 3PG to the long format
+#' @title The function to tranform the output to the long format
 #'
-#' @param model a list as an output of `run_3PG`
+#'#' @description This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.
 #'
-#' @details This is transforming the model output to long format
+#' @param model a 2-dimentinal list as an output of \code{\link{run_3PG}} or \code{\link{f_3PG}} function.
+#'
+#' @details Function transform the model simulation from 4-dimentional array to long format dataframe with the following columns: \code{date; species; group; variable; value}.
 #'
 #' @example inst/examples/run_3PGHelp.R
+#'
 #' @export
 #'
 transf_out <- function( model ){

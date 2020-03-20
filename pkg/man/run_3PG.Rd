@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_3PG.R
 \name{run_3PG}
 \alias{run_3PG}
-\title{Define the function to run 3PG in R}
+\title{The function to run the 3-PG in R}
 \usage{
 run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
   parameterInputs = NULL, biasInputs = NULL, settings = list(light_model =
@@ -11,75 +11,75 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \arguments{
 \item{siteInputs}{a \code{data frame} or \code{matrix} containing the information about site level data in the following order:
 \itemize{
-\item latitude: Site latitude in the WGS84 coordinate system
-\item soil_class: \code{integer} representing the soil class, according to table ...
-\item asw_i: initial soil water
-\item asw_min: minimum soil water
-\item asw_max: maximum soil water
-\item year_i: \code{integer} year when the simulation will start
-\item momth_i: \code{integer} month when simulation will start, first month in the output file
+\item latitude: site latitude in the WGS84 coordinate system
+\item soil_class: soil class, according to table 2 of 3PGpjs user manual.
+\item asw_i: initial soil water in mm.
+\item asw_min: minimum soil water in mm.
+\item asw_max: maximum soil water in mm.
+\item year_i: initial year of the simulation.
+\item momth_i: initial month of the simulation, first month in the output file.
 \item altitude: altitude of the site, m a.s.l.
 }}
 
-\item{speciesInputs}{a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order apply:
+\item{speciesInputs}{a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order of the collumns apply:
 \itemize{
-\item species: species or cohort id/name. It shall be consistent with parameterInputs and biasInputs table.
-\item year_p: \code{integer} year when the species was planted (from this we calculate species age)
-\item month_p: \code{integer} month when species was planted. Assumption is that species was planted in the end of this month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
+\item species: species or cohort id/name. It shall be consistent with \code{parameterInputs} and \code{biasInputs} table.
+\item year_p: year when the species was planted (it is used to calculate species age at the time of simulation).
+\item month_p: month when species was planted, assuming end of the month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
 \item fertility: soil fertility for a given species. Range from 0 to 1.
-\item biom_foliage: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.
+\item biom_foliage: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in summer.
 \item biom_root: root biomass for a given species.
-\item biom_stem: stem biomass for a given species
+\item biom_stem: stem biomass for a given species.
 \item n_trees: number of trees per ha.
 }}
 
-\item{forcingInputs}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i}:
+\item{forcingInputs}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i} in the \code{siteInputs} table:
 \itemize{
-\item tmp_min:
-\item tmp_max:
-\item prcp:
-\item srad:
-\item frost_days:
+\item tmp_min: monthly mean daily minimum temperature (C).
+\item tmp_max: monthly mean daily maximum temperature (C).
+\item prcp: monthly rainfall (mm month-1).
+\item srad: monthly mean daily solar radiation (MJ m-2 d-1).
+\item frost_days: frost days per month (d month-1).
 \item co2: required if calculate_d13c=1
 \item d13catm: required if calculate_d13c=1
 }}
 
 \item{managementInputs}{a \code{data frame} or \code{matrix} containing the information about management. The following order apply:
 \itemize{
-\item species: \code{integer} species id
-\item age: \code{real} age at which thinning is done
-\item n_trees: \code{integer} number of trees remaining after thinning.
-\item foliage: Type of thinning (above/below). Default is 1.
-\item root: Type of thinning (above/below). Default is 1.
-\item stem: Type of thinning (above/below). Default is 1.
+\item species: species or cohort id/name.
+\item age: age at which management is done.
+\item n_trees: number of trees remaining after management
+\item foliage: type of management (above/below). Default is 1.
+\item root: type of management (above/below). Default is 1.
+\item stem: type of management (above/below). Default is 1.
 }}
 
-\item{parameterInputs}{parameters level data
+\item{parameterInputs}{a \code{data frame} or \code{matrix} containing the parameters to be modified:
 \itemize{
-\item parameter: name of the parameter, shall be consistent in naming with `param_info`
-\item species: each column shall correspond to species/cohort name, as defined in speciesInputs table
+\item parameter: name of the parameter, shall be consistent in naming with \code{\link{param_info}}
+\item species: each column correspond to species/cohort id/name, as defined in \code{speciesInputs} table
 }}
 
-\item{biasInputs}{bial level data
+\item{biasInputs}{a \code{data frame} or \code{matrix} containing the bias parameters to be modified:
 \itemize{
-\item parameter: name of the parameter, shall be consistent in naming with `bias_info`
-\item species: each column shall correspond to species/cohort name, as defined in speciesInputs table
+\item parameter: name of the parameter, shall be consistent in naming with \code{\link{bias_info}}
+\item species: each column shall correspond to species/cohort id/name, as defined in \code{speciesInputs} table
 }}
 
-\item{settings}{list with all possible settings of the model. All provided as \code{integer}
+\item{settings}{list with all possible settings of the model.
 \itemize{
-\item light_model: `1` - 3PGpjs; `2` - 3PGmix
-\item transp_model: `1` - 3PGpjs; `2` - 3PGmix
-\item phys_model:  `1` - 3PGpjs; `2` - 3PGmix
-\item correct_bias: `0` - no; `1` - 3PGmix
-\item calculate_d13c: `0` - no; `1` - 3PGmix
+\item light_model: `1` - 3-PGpjs; `2` - 3-PGmix
+\item transp_model: `1` - 3-PGpjs; `2` - 3-PGmix
+\item phys_model:  `1` - 3-PGpjs; `2` - 3-PGmix
+\item correct_bias: `0` - no; `1` - 3-PGmix
+\item calculate_d13c: `0` - no; `1` - 3-PGmix
 }}
 }
 \description{
-Define the function to run 3PG in R
+This function allows to run the 3-PGpjs or 3-PGmix model in R. It returns a model output as list, which can be later tranformed to the dataframe using \code{\link{transf_out}} function.
 }
 \details{
-This is the model
+The \code{run_3PG} also check for the quality of input data. In case that names, or structure is not consitent with requirenments it will return an error.
 }
 \examples{
 out <- run_3PG(
