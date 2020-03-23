@@ -1,0 +1,306 @@
+---
+title: "The r3PG R package"
+author: "Volodymyr Trotsiuk, Florian Hartig, David I. Forrester"
+date: "`r Sys.Date()`"
+abstract: "This vignette provides an overview of the r3PG R package functions and options. \n \n \n"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Vignette for the r3PG R package}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8](inputenc)
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  warning=FALSE, 
+  message = FALSE,
+  cache = F,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Prerequisite 
+In order to reproduce all the examples, please make sure that the below listed r packages are installed.
+
+```{r libraries}
+library(r3PG)
+
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+library(ggplot2)
+
+library(BayesianTools)
+library(sensitivity)
+```
+
+
+We also have prepared an input data required for the model calibration and simulations on Swiss scale.
+```{r data}
+load('vignette_data/solling.rda')
+```
+
+## Single model runs
+
+To demonstrate the basic functionality of the `r3PG` R package, we will perform a simple simulations with the `3-PGmix` model. The central function to run `3-PG` from within R is `run_3PG`. When called, the function will:
+
+- check the model input for the consistency in structure
+- replace the default parameters if new ones are provided
+- run and return the simulated output from the model.
+
+Before using `run_3PG` it is required that the user prepares the input data as described in the package description. In particular, it is important to prepare information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). In the  example presented, we run a simulation for the mixed *Fagus sylvatica* and *Pinus sylvestris* stands **(REF)**. The input data are provided in the package. The output of the `run_3PG` function is a list with 2 objects: *sp_info* - information about species names and simulation start; *sim* - actual simulation of the model. The *sim* object is a 4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get the information about output variables and their group, please look at `data('output_info')`. 
+
+```{r run_model}
+out <- run_3PG(
+  siteInputs = site_eum, 
+  speciesInputs = species_eum, 
+  forcingInputs = climate_eum, 
+  managementInputs = NULL,
+  parameterInputs = parameters_eum, 
+  biasInputs = bias_eum,
+  settings = list(light_model = 2, transp_model = 2, phys_model = 2, 
+    correct_bias = 1, calculate_d13c = 0),
+  df_out = FALSE)
+
+str(out)
+```
+
+For easy use and exploration, we convert the default model output into the long format using function `tranf_out`. This function puts all the data into long format, where each row corresponds to one observational value, assigned to data, species, and variable names.
+```{r tranform}
+out_long <- transf_out( out )
+
+head( out_long )
+```
+
+
+To visualize the output we select three main variables describing stand dry mass: stem, foliage and root dry mass. For visualization we are using a `ggplot` function, which allows us to visualize all the outputs side-by-side.
+```{r morris_figure, fig.height=4.5, fig.width=6.6}
+
+i_var <- c('stems_n',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage')
+i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
+
+
+out_long %>%
+  filter(variable %in% i_var) %>%
+  mutate(variable = factor(variable, levels = i_var)) %>%
+  ggplot( aes(date, value))+
+  geom_line( aes(color = species), size = 0.5)+
+  facet_wrap( ~ variable, scales = 'free_y', ncol = 3, 
+    labeller = labeller(variable = setNames(i_lab, i_var) )) +
+  scale_color_brewer('', palette = 'Dark2') +
+  theme_classic()+
+  theme(legend.position="bottom")+
+  xlab("Calendar date") + ylab('Value')
+```
+
+
+## Sensitivity analysis and Bayesian calibration
+
+As a second example, we will first performed a Morris screening and then perform the Bayesian calibration of 3-PGpjs model. We will be using freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220) for the analysis. We will use the `solling` site, dominated by *Pice abies*.
+
+### Likelihood function
+
+To perform a `morris` sensitivity analysis and `Bayesian calibration` we construct the log-likelihood function. For this purpose, we will use observational data for: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. In addition, we need to provide error parameters for all of those observational data. We will be using a faster function for running the 3-PG model - `f_3PG`. This function assumes that all input data are correct and avoids checking the input data, in contrast to the default `run_3PG`. Before using `f_3PG` make sure that you provide data in the required form.
+
+```{r funs}
+r3pg_ll <- function( pars ){
+  #' @param pars a vector of parameters for the calibration, including errors 
+
+  # replace the default values for the selected parameters
+  pars <- setNames(pars, par_cal_names)
+  
+  par_def[which( names(par_def) %in% par_cal_names)] <- pars[-grep('err', par_cal_names)]
+  err_def <- pars[grep('err', par_cal_names)]
+  
+  # simulate the model
+  sim.df <- f_3PG(
+    siteInputs = site_solling, 
+    speciesInputs = species_solling,
+    forcingInputs = climate_solling,
+    managementInputs = thinn_solling,
+    parameterInputs = par_def, 
+    biasInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
+    n_sp = 1L, n_m = 552L, n_man = 14L, t_t = 14L, 
+    settings = c(1L, 1L, 1L, 0L, 0L), sp_names = 'piab', df_out = FALSE )$sim
+  
+  sim.df <- cbind(sim.df[,,2,c(3,5,6)], sim.df[,,4,c(1,2,3)])
+  
+  # calculate the log likelihood
+  logpost <- sapply(1:6, function(i) likelihoodIidNormal( sim.df[,i], observ_solling_mat[,i], err_def[i] ) )
+  logpost <- sum( logpost )
+  
+  if(is.nan(logpost) | is.na(logpost) | logpost == 0 ){logpost <- -Inf}
+  
+  return( logpost )
+}
+
+```
+
+
+### Priors and default
+
+For Morris sensitivity analysis and Bayesian callibration we define the parameters range, for which we will evaluate first the sensitivity and later perform calibration.
+```{r def_input}
+# default parameters
+par_def <- setNames(param_solling$default, param_solling$param_name)
+err_def <- setNames(error_solling$default, error_solling$param_name)
+
+# parameters for callibration and their ranges
+param_morris.df <- bind_rows(param_solling, error_solling) %>% filter(!is.na(min))
+par_cal_names <- param_morris.df$param_name
+par_cal_min <- param_morris.df$min
+par_cal_max <- param_morris.df$max
+par_cal_best <- param_morris.df$default
+
+r3pg_ll( par_cal_best)
+```
+
+### Morris sensitivity
+
+With below specified settings we will run a total of 11600 model runs (N (length(factors)+1)) and visualize the results The morris sensitivity run will take approximately 4 minutes on the working computer.
+
+```{r morris, eval = T, fig.height=4, fig.width=6.6, }
+morris_setup <- createBayesianSetup(
+  likelihood = r3pg_ll, 
+  prior = createUniformPrior(par_cal_min, par_cal_max, par_cal_best), 
+  names = par_cal_names)
+
+morrisOut <- morris(
+  model = morris_setup$posterior$density,
+  factors = par_cal_names, 
+  r = 200, 
+  design = list(type = "oat", levels = 20, grid.jump = 3), 
+  binf = par_cal_min, 
+  bsup = par_cal_max, 
+  scale = TRUE)
+
+# summarise the moris output
+morrisOut.df <- data.frame(
+  parameter = par_cal_names,
+  mu.star = apply(abs(morrisOut$ee), 2, mean, na.rm = T),
+  sigma = apply(morrisOut$ee, 2, sd, na.rm = T)
+) %>%
+  arrange( mu.star )
+
+morrisOut.df %>%
+  gather(variable, value, -parameter) %>%
+  ggplot(aes(reorder(parameter, value), value, fill = variable), color = NA)+
+  geom_bar(position = position_dodge(), stat = 'identity') +
+  scale_fill_brewer("", labels = c('mu.star' = expression(mu * "*"), 'sigma' = expression(sigma)), palette="Dark2") +
+  theme_classic() +
+  theme(
+    axis.text = element_text(size = 6),
+    axis.text.x = element_text(angle=90, hjust=1, vjust = 0.5),
+    axis.title = element_blank(),
+    legend.position = c(0.05 ,0.95),legend.justification = c(0.05,0.95)
+  )
+```
+
+
+### Bayesian calibration
+
+We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity and errors for six observational variables. We will run 3 parallel chains, each on the separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours. 
+
+```{r mcmc, eval=T}
+# which parameters to calibrate
+par_select <- morrisOut.df$parameter %>% .[-grep('err', .)] %>% tail(., 20) %>% as.character()
+par_id <- which(par_cal_names %in% c(par_select,  error_solling$param_name) )
+
+par_cal_names <- par_cal_names[par_id]
+par_cal_min <- par_cal_min[par_id]
+par_cal_max <- par_cal_max[par_id]
+par_cal_best <- par_cal_best[par_id]
+ 
+
+mcmc_setup <- createBayesianSetup(
+  likelihood = r3pg_ll, 
+  prior = createUniformPrior(par_cal_min, par_cal_max, par_cal_best), 
+  names = par_cal_names)
+  
+mcmc_out <- runMCMC(
+  bayesianSetup = mcmc_setup, 
+  sampler = "DEzs",
+  settings = list(iterations = 2e+04))
+
+gelmanDiagnostics( mcmc_out )
+```
+
+Additionally, we draw ~500 samples from the mcmc object and run model simulations for each of the parameter combinations to understand model uncertainties. We save the simulation object for further use, due to time needed for simulations.
+
+```{r sim_post, fig.height=4.5, fig.width=6.6}
+sim_r3PG <- function( pars ){
+  #' @param pars a vector of parameters for the calibration, including errors 
+
+  # replace the default values for the selected parameters
+  par_def[which( names(par_def) %in% names(pars))] = pars
+  
+  
+  sim.df <- f_3PG(
+    siteInputs = site_solling, 
+    speciesInputs = species_solling,
+    forcingInputs = climate_solling,
+    managementInputs = thinn_solling,
+    parameterInputs = par_def, 
+    biasInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
+    n_sp = 1L, n_m = 552L, n_man = 14L, t_t = 14L, 
+    settings = c(1L, 1L, 1L, 0L, 0L), sp_names = 'piab', df_out = TRUE )
+  
+  return( sim.df )
+}
+
+
+# default run
+def_run.df <- sim_r3PG( setNames(par_cal_best, par_cal_names) ) %>%
+  select(date, variable, value) %>%
+  mutate(run = 'default')
+
+
+# calibrated run
+post_run.df <- getSample(mcmc_out, numSamples = 100, coda = F, whichParameters = 1:20) %>%
+  as.data.frame() %>%
+  mutate(mcmc_id = 1:n()) %>%
+  nest_legacy(-mcmc_id, .key = 'pars')   %>%
+  mutate( pars = map(pars, unlist)) %>%
+  mutate( sim = map( pars, sim_r3PG)) %>%
+  select(mcmc_id, sim) %>%
+  unnest_legacy() %>%
+  group_by(date, variable) %>%
+  summarise(
+    q05 = quantile(value, 0.05, na.rm = T),
+    q95 = quantile(value, 0.95, na.rm = T),
+    value = quantile(value, 0.5, na.rm = T)) %>%
+  ungroup() %>%
+  mutate(run = 'calibrated')
+
+sim.df <- bind_rows( def_run.df, post_run.df)
+
+i_var <- c('basal_area',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage')
+i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
+
+observ_solling.df <- observ_solling %>%
+  gather(variable, value, -date) %>%
+  filter(variable %in% i_var) %>%
+  filter(!is.na(value)) %>%
+  mutate(variable = factor(variable, levels = i_var))
+
+sim.df %>%
+  filter(variable %in% i_var) %>%
+  mutate(variable = factor(variable, levels = i_var)) %>%
+  ggplot(aes(date, value))+
+  geom_ribbon(aes(ymin = q05, ymax = q95, fill = run), alpha = 0.5)+
+  geom_line( aes(color = run), size = 0.2)+
+  geom_point( data = observ_solling.df, color = 'grey10', size = 0.1) +
+  facet_wrap( ~ variable, scales = 'free_y', nrow = 2, labeller = labeller(variable = setNames(i_lab, i_var) )) +
+  scale_color_manual('', values = c('calibrated' = '#1b9e77', 'default' = '#d95f02')) +
+  scale_fill_manual('', values = c('calibrated' = '#1b9e77', 'default' = '#d95f02'), guide = F) +
+  theme_classic() +
+  theme(legend.position="bottom")+
+  xlab("Calendar date") + ylab('Value')
+
+```
