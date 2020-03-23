@@ -6,7 +6,8 @@
 \usage{
 run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
   parameterInputs = NULL, biasInputs = NULL, settings = list(light_model =
-  1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0))
+  1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0),
+  df_out = TRUE)
 }
 \arguments{
 \item{siteInputs}{a \code{data frame} or \code{matrix} containing the information about site level data in the following order:
@@ -74,6 +75,8 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \item correct_bias: `0` - no; `1` - 3-PGmix
 \item calculate_d13c: `0` - no; `1` - 3-PGmix
 }}
+
+\item{df_out}{\code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)}
 }
 \description{
 This function allows to run the 3-PGpjs or 3-PGmix model in R. It returns a model output as list, which can be later tranformed to the dataframe using \code{\link{transf_out}} function.
@@ -90,8 +93,6 @@ out <- run_3PG(
   parameterInputs = parameters_eum,
   biasInputs = bias_eum,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                  correct_bias = 0, calculate_d13c = 0))
-
-
-out_long <- transf_out( out )
+                  correct_bias = 0, calculate_d13c = 0),
+  df_out = TRUE)
 }

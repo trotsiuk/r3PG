@@ -59,6 +59,7 @@
 #' \item correct_bias: `0` - no; `1` - 3-PGmix
 #' \item calculate_d13c: `0` - no; `1` - 3-PGmix
 #' }
+#' @param df_out \code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)
 #'
 #' @details The \code{run_3PG} also check for the quality of input data. In case that names, or structure is not consitent with requirenments it will return an error.
 #'
@@ -73,7 +74,8 @@ run_3PG <- function(
   managementInputs = NULL,
   parameterInputs = NULL,
   biasInputs = NULL,
-  settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0)
+  settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0),
+  df_out = TRUE
 ){
 
   #Check the input naming and structure
@@ -152,7 +154,8 @@ run_3PG <- function(
     n_man = n_man,
     t_t = t_t,
     settings = set_def,
-    sp_names = speciesInputs$species)
+    sp_names = speciesInputs$species,
+    df_out = df_out)
 
   return(out)
 

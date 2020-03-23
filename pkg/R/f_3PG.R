@@ -12,6 +12,7 @@
 #' @param t_t \code{vector} number of management interactions for each species
 #' @param settings \code{vector} of integers  with all possible settings for the model.
 #' @param sp_names \code{character vector} of species names
+#' @param df_out \code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)
 #'
 #' @details Thre is no check for input quality and consistency. Therefore, it is highly recomended to check that your input is in the correct form
 #'
@@ -33,7 +34,8 @@ f_3PG <- function(
   n_man,
   t_t,
   settings = c(1L,1L,1L,0L,0L),
-  sp_names
+  sp_names,
+  df_out = TRUE
 ){
 
   f_out <- .Call('s_3PG_c',
@@ -60,8 +62,12 @@ f_3PG <- function(
     sim = f_out
   )
 
-  return(out)
 
+  if( df_out ){
+    out <- transf_out( out )
+  }
+
+  return(out)
 }
 
 
