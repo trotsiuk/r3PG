@@ -1,6 +1,6 @@
 #' @title The function to tranform the output to the long format
 #'
-#'#' @description This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.
+#' @description This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.
 #'
 #' @param model a 2-dimentinal list as an output of \code{\link{run_3PG}} or \code{\link{f_3PG}} function.
 #'

@@ -2,9 +2,7 @@
 % Please edit documentation in R/transf_out.R
 \name{transf_out}
 \alias{transf_out}
-\title{The function to tranform the output to the long format
-
-#' @description This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.}
+\title{The function to tranform the output to the long format}
 \usage{
 transf_out(model)
 }
@@ -12,9 +10,7 @@ transf_out(model)
 \item{model}{a 2-dimentinal list as an output of \code{\link{run_3PG}} or \code{\link{f_3PG}} function.}
 }
 \description{
-The function to tranform the output to the long format
-
-#' @description This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.
+This function tranform the output of the \code{\link{run_3PG}} or \code{\link{f_3PG}} functions into the long format dataframe. This allow easy and fast exploration or manipulation of the output data.
 }
 \details{
 Function transform the model simulation from 4-dimentional array to long format dataframe with the following columns: \code{date; species; group; variable; value}.
