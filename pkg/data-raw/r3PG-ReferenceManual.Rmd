@@ -2,7 +2,7 @@
 title: "The r3PG R package"
 author: "Volodymyr Trotsiuk, Florian Hartig, David I. Forrester"
 date: "`r Sys.Date()`"
-abstract: "This vignette provides an overview of the r3PG R package functions and options. \n \n \n"
+abstract: "This vignette provides an overview of the r3PG R package functions and options. We provide an working exampleswhich (i) demonstrates the basic functionality and use of the package, (ii) performs a sensitivity analysis and a Bayesian calibration of the model, and (iii) uses the calibrated model to simulate spatial patterns of forest growth across Switzerland.  \n \n \n"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -21,6 +21,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(knitr)
 ```
 
 
@@ -41,7 +43,8 @@ library(sensitivity)
 ```
 
 
-We also have prepared an input data required for the model calibration and simulations on Swiss scale.
+We will be using freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220) for the analysis. In order to use them directly with `r3PG` we have prepared the data in required format. We also saved the meteorological data used for simulations on Swiss scale. The interpolation of the meteorological data used to force 3-PG model was done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton et al., 1997). 
+
 ```{r data}
 load('vignette_data/solling.rda')
 ```
@@ -54,7 +57,7 @@ To demonstrate the basic functionality of the `r3PG` R package, we will perform 
 - replace the default parameters if new ones are provided
 - run and return the simulated output from the model.
 
-Before using `run_3PG` it is required that the user prepares the input data as described in the package description. In particular, it is important to prepare information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). In the  example presented, we run a simulation for the mixed *Fagus sylvatica* and *Pinus sylvestris* stands **(REF)**. The input data are provided in the package. The output of the `run_3PG` function is a list with 2 objects: *sp_info* - information about species names and simulation start; *sim* - actual simulation of the model. The *sim* object is a 4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get the information about output variables and their group, please look at `data('output_info')`. 
+Before using `run_3PG` it is required that the user prepares the input data as described in the package description. In particular, it is important to prepare information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). In the  example presented, we run a simulation for the mixed *Fagus sylvatica* and *Pinus sylvestris* stands (Forrester et al., 2017). The input data are provided in the package. The output of the `run_3PG` function can be either a list with 2 objects: *sp_info* - information about species names and simulation start; *sim* - actual simulation of the model or a long format dataframe. In first case, the *sim* object is a 4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get the information about output variables and their group, please look at `data('output_info')`. 
 
 ```{r run_model}
 out <- run_3PG(
@@ -71,7 +74,7 @@ out <- run_3PG(
 str(out)
 ```
 
-For easy use and exploration, we convert the default model output into the long format using function `tranf_out`. This function puts all the data into long format, where each row corresponds to one observational value, assigned to data, species, and variable names.
+For easy use and exploration, we convert the default model output into the long format using function `tranf_out`. This function tranforms all the data into long format, where each row corresponds to one observational value, assigned to data, species, and variable names.
 ```{r tranform}
 out_long <- transf_out( out )
 
@@ -79,12 +82,10 @@ head( out_long )
 ```
 
 
-To visualize the output we select three main variables describing stand dry mass: stem, foliage and root dry mass. For visualization we are using a `ggplot` function, which allows us to visualize all the outputs side-by-side.
+To visualize the output we select six main variables: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. For visualization we are using a `ggplot` function, which allows us to visualize all the outputs side-by-side.
 ```{r morris_figure, fig.height=4.5, fig.width=6.6}
-
 i_var <- c('stems_n',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage')
 i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
-
 
 out_long %>%
   filter(variable %in% i_var) %>%
@@ -132,14 +133,14 @@ r3pg_ll <- function( pars ){
   sim.df <- cbind(sim.df[,,2,c(3,5,6)], sim.df[,,4,c(1,2,3)])
   
   # calculate the log likelihood
-  logpost <- sapply(1:6, function(i) likelihoodIidNormal( sim.df[,i], observ_solling_mat[,i], err_def[i] ) )
-  logpost <- sum( logpost )
+  logpost <- sapply(1:6, function(i) {
+    likelihoodIidNormal( sim.df[,i], observ_solling_mat[,i], err_def[i] ) 
+  }) %>% sum(.)
   
   if(is.nan(logpost) | is.na(logpost) | logpost == 0 ){logpost <- -Inf}
   
   return( logpost )
 }
-
 ```
 
 
@@ -163,18 +164,19 @@ r3pg_ll( par_cal_best)
 
 ### Morris sensitivity
 
-With below specified settings we will run a total of 11600 model runs (N (length(factors)+1)) and visualize the results The morris sensitivity run will take approximately 4 minutes on the working computer.
+With below specified settings we will run a total of 30500 model runs (N (length(factors)+1)) and visualize the results The morris sensitivity run will take approximately 4 minutes on the working computer.
 
-```{r morris, eval = T, fig.height=4, fig.width=6.6, }
+```{r morris, eval = F}
 morris_setup <- createBayesianSetup(
   likelihood = r3pg_ll, 
   prior = createUniformPrior(par_cal_min, par_cal_max, par_cal_best), 
   names = par_cal_names)
 
+set.seed(432)
 morrisOut <- morris(
   model = morris_setup$posterior$density,
   factors = par_cal_names, 
-  r = 200, 
+  r = 500, 
   design = list(type = "oat", levels = 20, grid.jump = 3), 
   binf = par_cal_min, 
   bsup = par_cal_max, 
@@ -187,7 +189,14 @@ morrisOut.df <- data.frame(
   sigma = apply(morrisOut$ee, 2, sd, na.rm = T)
 ) %>%
   arrange( mu.star )
+```
+```{r morris_load, include=F}
+load('vignette_data/morris.rda')
+```
 
+We visualize the results of `morris` analysis by listing all the parameters and error parametsr. A high $\mu^{*}$ indicates a factor with an important overall influence on model output; a high $\alpha$ indicates either a factor interacting with other factors or a factor whose effects are non-linear. 
+
+```{r morris_vis, fig.height=4, fig.width=6.6, }
 morrisOut.df %>%
   gather(variable, value, -parameter) %>%
   ggplot(aes(reorder(parameter, value), value, fill = variable), color = NA)+
@@ -205,9 +214,9 @@ morrisOut.df %>%
 
 ### Bayesian calibration
 
-We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity and errors for six observational variables. We will run 3 parallel chains, each on the separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours. 
+We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity plus six errors parrameters for each of the observational variable. We will run 3 parallel chains, each on the separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours. 
 
-```{r mcmc, eval=T}
+```{r mcmc, eval=F}
 # which parameters to calibrate
 par_select <- morrisOut.df$parameter %>% .[-grep('err', .)] %>% tail(., 20) %>% as.character()
 par_id <- which(par_cal_names %in% c(par_select,  error_solling$param_name) )
@@ -217,7 +226,6 @@ par_cal_min <- par_cal_min[par_id]
 par_cal_max <- par_cal_max[par_id]
 par_cal_best <- par_cal_best[par_id]
  
-
 mcmc_setup <- createBayesianSetup(
   likelihood = r3pg_ll, 
   prior = createUniformPrior(par_cal_min, par_cal_max, par_cal_best), 
@@ -226,20 +234,27 @@ mcmc_setup <- createBayesianSetup(
 mcmc_out <- runMCMC(
   bayesianSetup = mcmc_setup, 
   sampler = "DEzs",
-  settings = list(iterations = 2e+04))
+  settings = list(iterations = 4e+06, nrChains = 3))
+```
+```{r mcmc_load, include=F}
+load('vignette_data/mcmc.rda')
+```
 
+As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted as the multivariate potential scale reduction factor was $\le$ 1.1. 
+
+```{r mcmc_gelamn}
 gelmanDiagnostics( mcmc_out )
 ```
 
-Additionally, we draw ~500 samples from the mcmc object and run model simulations for each of the parameter combinations to understand model uncertainties. We save the simulation object for further use, due to time needed for simulations.
+To evaluate the model performance, we draw ~500 samples from the mcmc object and run model simulations for each of the parameter combinations to understand model uncertainties. We visualize the posteriori predition range by drawing the $5^{th}$ and $95^{th}$ range of predictions. The callibrated model simulate well the observational data.
 
 ```{r sim_post, fig.height=4.5, fig.width=6.6}
 sim_r3PG <- function( pars ){
-  #' @param pars a vector of parameters for the calibration, including errors 
+  #' @description function to simulate the model for a given parameter combinations
+  #' @param pars a named vector of parameters, excluding error parameters
 
   # replace the default values for the selected parameters
   par_def[which( names(par_def) %in% names(pars))] = pars
-  
   
   sim.df <- f_3PG(
     siteInputs = site_solling, 
@@ -254,15 +269,13 @@ sim_r3PG <- function( pars ){
   return( sim.df )
 }
 
-
 # default run
 def_run.df <- sim_r3PG( setNames(par_cal_best, par_cal_names) ) %>%
   select(date, variable, value) %>%
   mutate(run = 'default')
 
-
 # calibrated run
-post_run.df <- getSample(mcmc_out, numSamples = 100, coda = F, whichParameters = 1:20) %>%
+post_run.df <- getSample(mcmc_out, numSamples = 50, coda = F, whichParameters = 1:20) %>%
   as.data.frame() %>%
   mutate(mcmc_id = 1:n()) %>%
   nest_legacy(-mcmc_id, .key = 'pars')   %>%
@@ -280,6 +293,7 @@ post_run.df <- getSample(mcmc_out, numSamples = 100, coda = F, whichParameters =
 
 sim.df <- bind_rows( def_run.df, post_run.df)
 
+# Visualize
 i_var <- c('basal_area',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage')
 i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
 
@@ -302,5 +316,16 @@ sim.df %>%
   theme_classic() +
   theme(legend.position="bottom")+
   xlab("Calendar date") + ylab('Value')
-
 ```
+
+
+## Spatial simulations
+
+
+## References
+
+* Forrester, David I., Tachauer, I.H.H., Annighoefer, P., Barbeito, I., Pretzsch, H., Ruiz-Peinado, R., Stark, H., Vacchiano, G., Zlatanov, T., Chakraborty, T., Saha, S., Sileshi, G.W., 2017. Generalized biomass and leaf area allometric equations for European tree species incorporating stand structure, tree age and climate. Forest Ecology and Management 396, 160–175. https://doi.org/10.1016/j.foreco.2017.04.011
+
+* Reyer, C.P.O., Silveyra Gonzalez, R., Dolos, K., Hartig, F., Hauf, Y., Noack, M., Lasch-Born, P., Rötzer, T., Pretzsch, H., Mesenburg, H., Fleck, S., Wagner, M., Bolte, A., Sanders, T.G.M., Kolari, P., Mäkelä, A., Vesala, T., Mammarella, I., Pumpanen, J., Collalti, A., Trotta, C., Matteucci, G., D’Andrea, E., Foltýnová, L., Krejza, J., Ibrom, A., Pilegaard, K., Loustau, D., Bonnefond, J.-M., Berbigier, P., Picart, D., Lafont, S., Dietze, M., Cameron, D., Vieno, M., Tian, H., Palacios-Orueta, A., Cicuendez, V., Recuero, L., Wiese, K., Büchner, M., Lange, S., Volkholz, J., Kim, H., Weedon, G.P., Sheffield, J., Vega del Valle, I., Suckow, F., Horemans, J.A., Martel, S., Bohn, F., Steinkamp, J., Chikalanov, A., Mahnken, M., Gutsch, M., Frieler, K., 2019. The PROFOUND database for evaluating vegetation models and simulating climate impacts on forests. Earth System Science Data Discussions 1–47. https://doi.org/10.5194/essd-2019-220
+
+* Thornton, P.E., Running, S.W., White, M.A., 1997. Generating surfaces of daily meteorological variables over large regions of complex terrain. Journal of Hydrology, Aggregate Description of Land-Atmosphere Interactions 190, 214–251. https://doi.org/10.1016/S0022-1694(96)03128-9
