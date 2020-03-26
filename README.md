@@ -9,7 +9,7 @@
 
 ## Usage
 
-Below is a basic example, for more extended exaple please [visit package] vignette(https://htmlpreview.github.io/?https://github.com/trotsiuk/r3PG/blob/master/pkg/vignettes/r3PG-ReferenceManual.html).
+Below is a basic example, for more extended exaple please visit package [vignette](https://htmlpreview.github.io/?https://github.com/trotsiuk/r3PG/blob/master/pkg/vignettes/r3PG-ReferenceManual.html).
 
 The main function is `run_3PG()` which returns all 108 simulated variables for each species at a monthly time-step either as a 4-dimentional array or a long format data frame.
 
