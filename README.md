@@ -70,8 +70,8 @@ Please submit issues, bugs and suggestions in the dedicated [page](https://githu
 
 ## References
 
-Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi:10.1016/j.ecolmodel.2015.07.010
+Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi.org/10.1016/j.ecolmodel.2015.07.010
 
-Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. Forest Ecology and Management, 95(3), 209–228. https://doi:10.1016/S0378-1127(97)00026-1
+Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. Forest Ecology and Management, 95(3), 209–228. https://doi.org/10.1016/S0378-1127(97)00026-1
 
 Sands, P. J. (2010). 3PGpjs user manual. Retrieved from https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf
