@@ -1,7 +1,8 @@
 Package: r3PG
 Type: Package
-Title: An R Package for Forest Growth Simulation using 3-PG Process-Based Model
-Description: R package, which serves as a flexible and easy-to-use interface for the 3-PG model written in Fortran.
+Title: Simulating Forest Growth using the 3-PG Process-Based Vegetation Model
+Description: Provides a flexible and easy-to-use interface for the 3-PG model written in Fortran.
+Date: 2020-04-04
 Version: 0.2.0
 Authors@R: c(
     person("Volodymyr", "Trotsiuk", email = "trotsiuk@fld.czu.cz", role = c("aut", 'cre'), comment=c(ORCID="0000-0002-8363-656X")),
