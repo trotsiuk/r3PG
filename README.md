@@ -9,6 +9,8 @@
 
 ## Usage
 
+Below is a basic example, for more extended exaple please [visit package] vignette(https://htmlpreview.github.io/?https://github.com/trotsiuk/r3PG/blob/master/pkg/vignettes/r3PG-ReferenceManual.html).
+
 The main function is `run_3PG()` which returns all 108 simulated variables for each species at a monthly time-step either as a 4-dimentional array or a long format data frame.
 
 ```r
@@ -62,14 +64,14 @@ Please submit issues, bugs and suggestions in the dedicated [page](https://githu
 
 ## Author and contact
 
-[Volodymyr Trotsiuk](mailto:trotsiuk@fld.czu.cz)
-[Florian Hartig](mailto:florian.hartig@biologie.uni-regensburg.de)
+[Volodymyr Trotsiuk; ](mailto:trotsiuk@fld.czu.cz)
+[Florian Hartig; ](mailto:florian.hartig@biologie.uni-regensburg.de)
 [David I. Forrester](mailto:david.forrester@wsl.ch)
 
 ## References
 
-Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. doi:10.1016/j.ecolmodel.2015.07.010
+Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi:10.1016/j.ecolmodel.2015.07.010
 
-Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. Forest Ecology and Management, 95(3), 209–228. doi:10.1016/S0378-1127(97)00026-1
+Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. Forest Ecology and Management, 95(3), 209–228. https://doi:10.1016/S0378-1127(97)00026-1
 
 Sands, P. J. (2010). 3PGpjs user manual. Retrieved from https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf

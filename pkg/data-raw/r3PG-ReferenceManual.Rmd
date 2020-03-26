@@ -396,12 +396,12 @@ sim.grid %>%
 
 ## References
 
-* Forrester, D. I., Tachauer, I. H. H., Annighoefer, P., Barbeito, I., Pretzsch, H., Ruiz-Peinado, R., … Sileshi, G. W. (2017). Generalized biomass and leaf area allometric equations for European tree species incorporating stand structure, tree age and climate. Forest Ecology and Management, 396, 160–175. doi:10.1016/j.foreco.2017.04.011
+* Forrester, D. I., Tachauer, I. H. H., Annighoefer, P., Barbeito, I., Pretzsch, H., Ruiz-Peinado, R., … Sileshi, G. W. (2017). Generalized biomass and leaf area allometric equations for European tree species incorporating stand structure, tree age and climate. Forest Ecology and Management, 396, 160–175. https://doi.org/10.1016/j.foreco.2017.04.011
 
-* Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. doi:10.1016/j.ecolmodel.2015.07.010
+* Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi.org/10.1016/j.ecolmodel.2015.07.010
 
-* Hiederer, R. 2013. Mapping Soil Properties for Europe - Spatial Representation of Soil Database Attributes. Luxembourg: Publications Office of the European Union – 2013 – 47pp. – EUR26082EN Scientific and Technical Research series, ISSN 1831-9424, doi:10.2788/94128
+* Hiederer, R. 2013. Mapping Soil Properties for Europe - Spatial Representation of Soil Database Attributes. Luxembourg: Publications Office of the European Union – 2013 – 47pp. – EUR26082EN Scientific and Technical Research series, ISSN 1831-9424, https://doi.org/10.2788/94128
 
-* Reyer, C. P. O., Silveyra Gonzalez, R., Dolos, K., Hartig, F., Hauf, Y., Noack, M., … Frieler, K. (2019). The PROFOUND database for evaluating vegetation models and simulating climate impacts on forests. Earth System Science Data Discussions, 1–47. doi:10.5194/essd-2019-220
+* Reyer, C. P. O., Silveyra Gonzalez, R., Dolos, K., Hartig, F., Hauf, Y., Noack, M., … Frieler, K. (2019). The PROFOUND database for evaluating vegetation models and simulating climate impacts on forests. Earth System Science Data Discussions, 1–47. https://doi.org/10.5194/essd-2019-220
 
-* Thornton, P. E., Running, S. W., & White, M. A. (1997). Generating surfaces of daily meteorological variables over large regions of complex terrain. Journal of Hydrology, 190(3), 214–251. doi:10.1016/S0022-1694(96)03128-9
+* Thornton, P. E., Running, S. W., & White, M. A. (1997). Generating surfaces of daily meteorological variables over large regions of complex terrain. Journal of Hydrology, 190(3), 214–251. https://doi.org/10.1016/S0022-1694(96)03128-9
