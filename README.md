@@ -17,7 +17,7 @@ out_3PG <- run_3PG(
   siteInputs        = site_eum, 
   speciesInputs     = species_eum, 
   forcingInputs     = climate_eum, 
-  managementInputs  = NULL,
+  managementInputs  = thinn_eum,
   parameterInputs   = parameters_eum, 
   biasInputs        = bias_eum,
   settings          = list(light_model = 2, transp_model = 2, phys_model = 2, 
@@ -38,7 +38,8 @@ out_3PG %>%
   filter( variable %in% sel_var ) %>%
   ggplot( aes(date, value, color = species) ) +
   geom_line() +
-  facet_wrap(~variable, scales = 'free') 
+  facet_wrap(~variable, scales = 'free') +
+  theme_classic()
 ```
 
 ## Installation
