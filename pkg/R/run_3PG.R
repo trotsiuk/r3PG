@@ -1,7 +1,5 @@
-#' @title Runs a 3-PG simulation
-#'
-#' @description This function runs the 3-PGpjs or 3-PGmix model
-#'
+#' @title The function to run the 3-PG in R
+#' @description This function allows to run the 3-PGpjs or 3-PGmix model in R. It returns a model output as list, which can be later tranformed to the dataframe using \code{\link{transf_out}} function.
 #' @param siteInputs a \code{data frame} or \code{matrix} containing the information about site level data in the following order:
 #' \itemize{
 #' \item latitude: site latitude in the WGS84 coordinate system
@@ -63,13 +61,7 @@
 #' }
 #' @param df_out \code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)
 #'
-#' @details 3PG is a relatively simple, widely used physiological forest growth model. The state variables of 3-PG are the stem, foliage and root biomass (Mg ha-1) of each cohort, the stocking (trees ha-1) of each cohort, age of each cohort, and the available soil water (mm). 3-PG then simulates the stand development via five sub-models, light, productivity, water, allocation and mortality, which update the forest structure in monthly time steps.
-#'
-#' This implementation of 3pg includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for bias corrections and 13C calculations (see parameters).
-#'
-#' @note The \code{run_3PG} also check for the quality of input data. In case that names, or structure is not consitent with requirenments it will return an error.
-#'
-#' @return a 4-dimentional array or a data.frame, depending on the parameter df_out. The matrix can also be transformed via the \code{\link{transf_out}} function.
+#' @details The \code{run_3PG} also check for the quality of input data. In case that names, or structure is not consitent with requirenments it will return an error.
 #'
 #' @example inst/examples/run_3PGHelp.R
 #'
