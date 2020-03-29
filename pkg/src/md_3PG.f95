@@ -676,6 +676,7 @@ contains
                     if ( gammaN(ii,i) > 0.d0 ) then
                         
                         mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
+                        ! mort_stress(i) = ceiling( mort_stress(i) )
                         mort_stress(i) = min( mort_stress(i), stems_n(i)) ! Mortality can't be more than available
 
                         biom_foliage(i) = biom_foliage(i) - mF(i) * mort_stress(i) * (biom_foliage(i) / stems_n(i))
@@ -728,7 +729,8 @@ contains
                         mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                         mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                        if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
+                        !if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
+                        !mort_thinn(i) = ceiling( mort_thinn(i) )
 
                         if( mort_thinn(i) < stems_n(i) ) then
 
