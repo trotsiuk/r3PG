@@ -47,14 +47,11 @@ library(sensitivity)
 
 We will be using freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220) for the analysis. In order to use them directly with `r3PG` we have prepared the data in required format. We also saved the meteorological data used for simulations on Swiss scale. The interpolation of the meteorological data used to force 3-PG model was done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton et al., 1997). 
 
-```{r data, eval = F}
+```{r data}
 load('vignette_data/solling.rda')
 load('vignette_data/grid_input.rda')
 ```
-```{r data_hide, eval = T, include=F}
-load('vignette_data/solling.rda')
-load('vignette_data/grid_input.rda')
-```
+
 ## Single model runs
 
 To demonstrate the basic functionality of the `r3PG` R package, we will perform a simple simulations with the `3-PGmix` model. The central function to run `3-PG` from within R is `run_3PG`. When called, the function will:
