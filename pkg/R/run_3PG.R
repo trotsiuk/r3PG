@@ -100,11 +100,11 @@ run_3PG <- function(
 
   # Climate
   if( set_def[5] == 1 ){
-    if( !identical(c("co2","d13catm"), names(forcingInputs)[6:7]) ){
+    if( !identical(c("co2","d13catm"), colnames(forcingInputs)[6:7]) ){
       stop('Please provide forcing data for co2 and d13catm in forcingInputs, if calculate_d13c = 1')
     }
   }else{
-    if( !identical(c("co2"), names(forcingInputs)[6]) ){
+    if( !identical(c("co2"), colnames(forcingInputs)[6]) ){
       forcingInputs = cbind(forcingInputs[,1:5], matrix(350, ncol = 2, nrow = n_m))
     }
   }
@@ -178,27 +178,27 @@ chk_input <- function(){
   eval.parent(quote({
 
     # Consistensy in order of the columns in the data
-    if( !identical(c("latitude","soil_class","asw_i","asw_min","asw_max","year_i","month_i","altitude"), names(siteInputs)) ){
+    if( !identical(c("latitude","soil_class","asw_i","asw_min","asw_max","year_i","month_i","altitude"), colnames(siteInputs)) ){
       stop( 'Columns names of the siteInputs table shall correspond to: latitude, soil_class, asw_i, asw_min, asw_max, year_i, month_i, altitude' )
     }
 
-    if( !identical(c("species","year_p","month_p","fertility","biom_foliage","biom_root","biom_stem","n_trees"), names(speciesInputs)) ){
+    if( !identical(c("species","year_p","month_p","fertility","biom_foliage","biom_root","biom_stem","n_trees"), colnames(speciesInputs)) ){
       stop( 'Columns names of the siteInputs table shall correspond to: species,year_p,month_p,fertility,biom_foliage,biom_root,biom_stem,n_trees' )
     }
 
-    if( !identical(c("tmp_min","tmp_max","prcp","srad","frost_days"), names(forcingInputs)[1:5]) ){
+    if( !identical(c("tmp_min","tmp_max","prcp","srad","frost_days"), colnames(forcingInputs)[1:5]) ){
       stop( 'First five columns names of the forcingInputs table shall correspond to: tmp_min,tmp_max,prcp,srad,frost_days' )
     }
 
     if( !is.null(managementInputs) ){
-      if( !identical(c("species","age","n_trees","foliage","root","stem"), names(managementInputs)) ){
+      if( !identical(c("species","age","n_trees","foliage","root","stem"), colnames(managementInputs)) ){
         stop( 'Columns names of the managementInputs table shall correspond to: species,age,n_trees,foliage,root,stem' )
       }
     }
 
     if( !is.null(parameterInputs) ){
 
-      if( !identical(c("parameter"), names(parameterInputs)[1]) ){
+      if( !identical(c("parameter"), colnames(parameterInputs)[1]) ){
         stop( 'First column name of the parameterInputs table shall correspond to: parameter' )
       }
 
@@ -210,7 +210,7 @@ chk_input <- function(){
 
     if( !is.null(biasInputs) ){
 
-      if( !identical(c("parameter"), names(biasInputs)[1]) ){
+      if( !identical(c("parameter"), colnames(biasInputs)[1]) ){
         stop( 'First column name of the biasInputs table shall correspond to: parameter' )
       }
 
