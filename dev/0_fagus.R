@@ -7,19 +7,22 @@ library(lubridate)
 library(ggplot2)
 library(scales)
 
-library(r3PGmix)
+library(r3PG)
 
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 815, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 410, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns13.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_eum$sp1[11] <- 5
-r.df <- run_3PG(site_eum, species_eum %>% filter(species == 1), climate_eum, parameters_eum[,'sp1'], bias_eum[,'sp1'], list(f_dbh_dist = 1L)) %>%
-  transf_out(.,  day_start = as.Date('2002-01-31')) %>%
-  as_tibble() %>%
-  mutate(obs = 'r')
+
+r.df <- run_3PG(site_eum, species_eum %>% filter(species == 'Fagus sylvatica'), climate_eum, NULL, parameters_eum[,1:2], bias_eum[,1:2],
+  list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0)) %>%
+  # transf_out( ) %>%
+  # as_tibble() %>%
+  mutate(obs = 'r') %>%
+  mutate(species = if_else(species %in% 'Fagus sylvatica', 'sp_1', 'sp_2'))
 
 data.df <- bind_rows(vba.df, r.df) %>%
   mutate(obs = factor(obs, levels = c('r', 'vba')))

@@ -11,16 +11,20 @@ library(r3PGmix)
 
 source('dev/functions.R')
 
+load('dev/input_data/shitai3.rda')
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 5, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns12.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 5, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns13.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
+# thin_temp <- simplify2array(by(thinning_shi3[,-1], thinning_shi3$species, as.matrix))
+# thin_temp[1,1,] <- 5
 parameters_shi3$sp2[11] <- 3
-r.df <- run_3PG( site_shi3 ,species_shi3, climate_shi3, parameters_shi3[,-1], bias_shi3[,-1],
-  list(light_model = 1L, phys_model = 1L, correct_bias = 1L)) %>%
-  transf_out(day_start = as.Date('2010-01-31')) %>%
+r.df <- run_3PG( site_shi3 ,species_shi3 %>% mutate(species = c('sp1', 'sp2')), climate_shi3, thinning_shi3, parameters_shi3, bias_shi3,
+  list(light_model = 2, transp_model = 2, phys_model = 2, correct_bias = 1)) %>%
+  transf_out( ) %>%
   as_tibble() %>%
-  mutate(obs = 'r')
+  mutate(obs = 'r') %>%
+  mutate(species = gsub('sp', 'sp_', species))
 
 data.df <- bind_rows(vba.df, r.df) %>%
   mutate(species = factor(species, labels = c('Castanopsis', 'Cunninghamia')),
@@ -37,7 +41,7 @@ v_sel <- c('volume_mai')
 
 v_sel <- c('biom_stem', 'biom_foliage', 'biom_root', 'biom_litter_month')
 v_sel <- c('f_tmp')
-v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n', 'biom_incr_foliage', 'biom_loss_foliage', 'biom_foliage_debt', 'volume_cum', 'volume_change')
+v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n', 'biom_incr_foliage', 'biom_loss_foliage', 'biom_foliage_debt', 'volume_cum', 'volume_change', 'dbh')
 
 data.df %>%
   # filter(variable %in% 'lai_above') %>%
@@ -57,7 +61,7 @@ options(digits=10)
 
 data.df %>%
   # filter(year(date) %in% c(2010:2010))  %>%
-  filter(variable %in% 'biom_incr_foliage') %>%
+  filter(variable %in% 'stems_n') %>%
   spread(obs, value) %>%
   as.data.frame() %>%
   head(10)

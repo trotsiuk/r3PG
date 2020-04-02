@@ -7,20 +7,28 @@ library(lubridate)
 library(ggplot2)
 library(scales)
 
-library(r3PGmix)
+library(r3PG)
 
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 1419, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns12.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 1419, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns13.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
-parameters_eum$sp1[11] <- 5
-r.df <- run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eum[,-1],
-  list(light_model = 1L, phys_model = 1L, correct_bias = 1L)) %>%
-  transf_out( ) %>%
-  as_tibble() %>%
-  mutate(obs = 'r')
+vba.df <- tranf_vba(sk = 5, n_m = 147, f = '../3PG_examples/3PGmix/ExampleMixtureRuns16.xls', s = 'Shitaioutput' ) %>%
+  mutate(obs = 'vba')
+
+thin_eum <- data.frame(species = c('Fagus sylvatica', 'Picea abies', 'Picea abies'), age = c(48, 47, 50), n_trees = c(500, 600, 400), foliage = 1, root = 1, stem = 1)
+
+
+# parameters_eum$sp1[11] <- 5
+r.df <- run_3PG(site_eum, species_eum, climate_eum, thin_eum, parameters_eum, bias_eum,
+  list(light_model = 2, transp_model = 2, phys_model = 2, correct_bias = 1)) %>%
+  # transf_out( ) %>%
+  # as_tibble() %>%
+  mutate(obs = 'r') %>%
+  mutate(species = if_else(species %in% 'Fagus sylvatica', 'sp_1', 'sp_2'))
+  # mutate(species = gsub('sp', 'sp_', species))
 
 data.df <- bind_rows(vba.df, r.df) %>%
   mutate(species = factor(species, labels = c('Fagus', 'Pinus')),
@@ -33,7 +41,7 @@ g_sel <- unique(r.df$group)
 g_sel <- c("climate","stand","canopy","stocks","modifiers","production" ,"mortality","water_use" )
 g_sel <- 'modifiers'
 v_sel <- c('f_phys', 'crown_width', 'crown_length')
-v_sel <- c('biom_stem', 'biom_foliage', 'biom_root')
+v_sel <- c('biom_stem', 'biom_foliage', 'biom_root', 'stems_n')
 v_sel <- c('epsilon_npp', 'epsilon_biom_stem', 'epsilon_gpp', 'volume_cum', 'gpp', 'par', 'alpha_c')
 
 data.df %>%
@@ -60,5 +68,3 @@ data.df %>%
   head(20)
 
 
-run_3PG(site_eum, species_eum, climate_eum, parameters_eum[,-1], bias_eum[,-1],
-  list(light_model = 1L, phys_model = 1L, correct_bias = 1L))[1:10,,6,8]

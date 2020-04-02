@@ -31,3 +31,7 @@ tranf_vba <- function(sk = 132, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMi
     ) %>%
     select(date, species, group, variable, value)
 }
+
+
+var_names <- readxl::read_excel('dev/r3PGmix_info.xlsx', sheet = 'var_names') %>%
+  select(group_id, variable_id, variable_group, variable_name, description, unit, variable_vba)

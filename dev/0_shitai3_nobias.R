@@ -11,14 +11,15 @@ library(r3PGmix)
 
 source('dev/functions.R')
 
+load('dev/input_data/shitai3.rda')
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 561, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 561, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns13.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 parameters_shi3$sp2[11] <- 3
 r.df <- run_3PG( site_shi3 ,species_shi3, climate_shi3, parameters_shi3[,-1], bias_shi3[,-1],
-  list(light_model = 1L, phys_model = 1L, correct_bias = 0L)) %>%
-  transf_out(day_start = as.Date('2010-01-31')) %>%
+  list(light_model = 1, phys_model = 1, correct_bias = 0)) %>%
+  transf_out() %>%
   as_tibble() %>%
   mutate(obs = 'r')
 

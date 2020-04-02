@@ -12,14 +12,14 @@ library(r3PGmix)
 source('dev/functions.R')
 
 # 1. Run the simulations --------------------------------------------------
-vba.df <- tranf_vba(sk = 132, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns11.xls', s = 'Shitaioutput' ) %>%
+vba.df <- tranf_vba(sk = 132, n_m = 123, f = '../3PG_examples/3PGmix/ExampleMixtureRuns13.xls', s = 'Shitaioutput' ) %>%
   mutate(obs = 'vba')
 
 r.df <- run_3PG(
   site_shi23 ,
   species_shi23, climate_shi23, parameters_shi23[,-1], bias_shi23[,-1],
   list(light_model = 1L, phys_model = 1L, correct_bias = 1L)) %>%
-  transf_out(day_start = as.Date('2010-01-31')) %>%
+  transf_out() %>%
   as_tibble() %>%
   mutate(obs = 'r')
 
@@ -38,7 +38,7 @@ v_sel <- c('volume_mai')
 
 v_sel <- c('biom_stem', 'biom_foliage', 'biom_root', 'npp')
 v_sel <- c('f_tmp')
-v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n')
+v_sel <- c('biom_tree', 'biom_root', 'biom_foliage', 'volume', 'volume_mai', 'stems_n', 'volume_change')
 
 data.df %>%
   # filter(variable %in% 'lai_above') %>%
