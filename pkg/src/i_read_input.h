@@ -30,11 +30,13 @@ stems_n_i   = speciesInputs(:,7)
 ! Climate ------------------------------
 tmp_min     = forcingInputs(:,1)
 tmp_max     = forcingInputs(:,2)
-prcp        = forcingInputs(:,3)
-solar_rad   = forcingInputs(:,4)
-frost_days  = forcingInputs(:,5)
-co2         = forcingInputs(:,6)
-d13catm     = forcingInputs(:,7)
+tmp_ave     = forcingInputs(:,3)
+prcp        = forcingInputs(:,4)
+solar_rad   = forcingInputs(:,5)
+frost_days  = forcingInputs(:,6)
+vpd_day     = forcingInputs(:,7)
+co2         = forcingInputs(:,8)
+d13catm     = forcingInputs(:,9)
 
 ! Settings ----------------------------
 light_model = settings(1)

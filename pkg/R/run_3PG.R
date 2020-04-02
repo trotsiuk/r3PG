@@ -24,13 +24,15 @@
 #' \item biom_stem: stem biomass for a given species.
 #' \item n_trees: number of trees per ha.
 #' }
-#' @param forcingInputs  a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i} in the \code{siteInputs} table:
+#' @param forcingInputs  a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i} in the \code{siteInputs} table. The required variables are (tmp_min, tmp_max, prcp, srad, frost_days)
 #' \itemize{
 #' \item tmp_min: monthly mean daily minimum temperature (C).
 #' \item tmp_max: monthly mean daily maximum temperature (C).
+#' \item tmp_ave: monthly mean daily maximum temperature (C).
 #' \item prcp: monthly rainfall (mm month-1).
 #' \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 #' \item frost_days: frost days per month (d month-1).
+#' \item vpd_day: frost days per month (mbar).
 #' \item co2: required if calculate_d13c=1
 #' \item d13catm: required if calculate_d13c=1
 #' }
@@ -99,15 +101,7 @@ run_3PG <- function(
   n_m = as.integer( nrow(forcingInputs) )
 
   # Climate
-  if( set_def[5] == 1 ){
-    if( !identical(c("co2","d13catm"), colnames(forcingInputs)[6:7]) ){
-      stop('Please provide forcing data for co2 and d13catm in forcingInputs, if calculate_d13c = 1')
-    }
-  }else{
-    if( !identical(c("co2"), colnames(forcingInputs)[6]) ){
-      forcingInputs = cbind(forcingInputs[,1:5], matrix(350, ncol = 2, nrow = n_m))
-    }
-  }
+  chk_climate()
 
   # Management
   if( is.null(managementInputs) ) {
@@ -153,7 +147,7 @@ run_3PG <- function(
   out <- f_3PG(
     siteInputs = as.matrix( siteInputs, nrow = 1, ncol = 8),
     speciesInputs = as.matrix( speciesInputs[,-1], nrow = n_sp, ncol = 7),
-    forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 7),
+    forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 9),
     managementInputs = thin_mat,
     parameterInputs = as.matrix( parameterReplaced[,-1], nrow = 82, ncol = n_sp),
     biasInputs = as.matrix( biasReplaced[,-1], nrow = 30, ncol = n_sp),
@@ -186,8 +180,8 @@ chk_input <- function(){
       stop( 'Columns names of the siteInputs table shall correspond to: species,year_p,month_p,fertility,biom_foliage,biom_root,biom_stem,n_trees' )
     }
 
-    if( !identical(c("tmp_min","tmp_max","prcp","srad","frost_days"), colnames(forcingInputs)[1:5]) ){
-      stop( 'First five columns names of the forcingInputs table shall correspond to: tmp_min,tmp_max,prcp,srad,frost_days' )
+    if( !all(c("tmp_min","tmp_max","prcp","srad","frost_days") %in% colnames(forcingInputs)) ){
+      stop( 'forcingInputs table shall include: tmp_min,tmp_max,prcp,srad,frost_days' )
     }
 
     if( !is.null(managementInputs) ){
@@ -250,6 +244,48 @@ chk_input <- function(){
       }
     }
 
+
+  }))
+}
+
+
+chk_climate <- function(){
+  eval.parent(quote({
+
+    if( any(is.na(forcingInputs)) ){
+      stop( 'forcingInputs should not contain NA in any column' )
+    }
+
+    # add tmp_ave if missing
+    if( !'tmp_ave' %in% colnames(forcingInputs) ){
+      forcingInputs$tmp_ave = (forcingInputs$tmp_min + forcingInputs$tmp_max) / 2
+    }
+
+    # add VPD if missing
+    if( !'vpd_day' %in% colnames(forcingInputs) ){
+
+      vpd_max = 6.10780 * exp(17.2690 * forcingInputs$tmp_max / (237.30 + forcingInputs$tmp_max))
+      vpd_min = 6.10780 * exp(17.2690 * forcingInputs$tmp_min / (237.30 + forcingInputs$tmp_min))
+
+      forcingInputs$vpd_day = (vpd_max - vpd_min) / 2
+    }
+
+    # if
+    if( set_def[5] == 1 ){
+      if( !all(c("co2","d13catm") %in% colnames(forcingInputs)) ){
+        stop('Please provide forcing data for co2 and d13catm in forcingInputs, if calculate_d13c = 1')
+      }
+    }else{
+      if( !'co2' %in% colnames(forcingInputs) ){
+        forcingInputs$co2 = 350
+      }
+      if( !'d13catm' %in% colnames(forcingInputs) ){
+        forcingInputs$d13catm = -7.705222
+      }
+
+    }
+
+    forcingInputs = forcingInputs[,c('tmp_min', 'tmp_max', 'tmp_ave', 'prcp', 'srad', 'frost_days', 'vpd_day', 'co2', 'd13catm')]
 
   }))
 }
