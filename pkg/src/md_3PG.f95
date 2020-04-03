@@ -28,7 +28,7 @@ contains
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs
         real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs 
-        real(kind=c_double), dimension(n_m,7), intent(in) :: forcingInputs
+        real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(82,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
@@ -48,12 +48,6 @@ contains
 
         !*************************************************************************************
         ! INITIALISATION (Age independent)
-
-        ! Climate --------
-        tmp_ave(:) = ( tmp_min(:) + tmp_max(:) ) / 2
-
-        ! VPD calculations
-        vpd_day(:) = f_get_vpd( n_m, tmp_min(:), tmp_max(:) )
 
         ! Day-length calculations
         adjSolarZenithAngle(:) = f_get_solarangle( Lat )
@@ -676,6 +670,7 @@ contains
                     if ( gammaN(ii,i) > 0.d0 ) then
                         
                         mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
+                        ! mort_stress(i) = ceiling( mort_stress(i) )
                         mort_stress(i) = min( mort_stress(i), stems_n(i)) ! Mortality can't be more than available
 
                         biom_foliage(i) = biom_foliage(i) - mF(i) * mort_stress(i) * (biom_foliage(i) / stems_n(i))
@@ -728,7 +723,8 @@ contains
                         mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                         mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                        if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
+                        !if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
+                        !mort_thinn(i) = ceiling( mort_thinn(i) )
 
                         if( mort_thinn(i) < stems_n(i) ) then
 
@@ -1089,30 +1085,6 @@ contains
         end if
 
     end function f_get_solarangle
-
-
-    function f_get_vpd( n_m, tmp_min, tmp_max ) result( vpd_day )
-        ! funtion to calculate VPD from the temperature data
-
-        implicit none
-
-        ! input
-        integer, intent(in) :: n_m
-        real(kind=8), dimension(n_m), intent(in) :: tmp_min, tmp_max
-
-        ! output
-        real(kind=8), dimension(n_m) :: vpd_day
-
-        ! local
-        real(kind=8), dimension(n_m) :: vpd_max, vpd_min
-
-
-        vpd_max(:) = 6.10780d0 * Exp(17.2690d0 * tmp_max(:) / (237.30d0 + tmp_max(:)))
-        vpd_min(:) = 6.10780d0 * Exp(17.2690d0 * tmp_min(:) / (237.30d0 + tmp_min(:)))
-
-        vpd_day(:) = (vpd_max(:) - vpd_min(:)) / 2.d0
-
-    end function f_get_vpd
 
 
     function f_orderId(x) result(id)

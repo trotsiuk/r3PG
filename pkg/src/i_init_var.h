@@ -3,10 +3,6 @@
 ! Output ------------------------------
 output(:,:,:,:) = -9999.d0
 
-! Climatic variables -------------
-tmp_ave(:) = -9999.d0
-vpd_day(:) = -9999.d0
-
 ! Stand variables ---------------
 age(:,:) = -9999.d0
 age_m(:,:) = -9999.d0

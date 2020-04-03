@@ -32,9 +32,11 @@ real(kind=8), dimension(n_sp) :: stems_n_i      ! initial stand stocking for a s
 ! Climate ------------------------------
 real(kind=8), dimension(n_m) :: tmp_min         ! minimum daily temperature
 real(kind=8), dimension(n_m) :: tmp_max         ! maximum daily temperature
+real(kind=8), dimension(n_m) :: tmp_ave 
 real(kind=8), dimension(n_m) :: prcp            ! monthly precipitation sum
 real(kind=8), dimension(n_m) :: solar_rad       ! mean daily incident solar radiation
 real(kind=8), dimension(n_m) :: frost_days      ! number of frost days per month
+real(kind=8), dimension(n_m) :: vpd_day
 real(kind=8), dimension(n_m) :: co2             ! atmospheric CO2
 real(kind=8), dimension(n_m) :: d13catm         ! added d13C of atmospheric CO2 (per mil)
 
@@ -142,9 +144,6 @@ integer :: n = 1                                ! count for bias correction
 logical :: b_cor = .TRUE.                            ! if something has changed and wee need to correct bias       
 
 ! Climatic variables -------------
-real(kind=8), dimension(n_m) :: tmp_ave 
-real(kind=8), dimension(n_m) :: vpd_day
-
 real(kind=8), dimension(12) :: adjSolarZenithAngle
 real(kind=8), dimension(12) :: day_length  
 

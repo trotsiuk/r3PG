@@ -13,7 +13,7 @@ f_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs,
 
 \item{speciesInputs}{\code{matrix} (dim=c(n_sp,7)) containing the information about species level data. Each row corresponds to one species/layer.}
 
-\item{forcingInputs}{\code{matrix} (dim=c(n_m,7)) containing the information about climatic forcing data.}
+\item{forcingInputs}{\code{matrix} (dim=c(n_m,9)) containing the information about climatic forcing data (tmp_min, tmp_max, tmp_ave, prcp, srad, frost_days, vpd_day, co3, d13catm).}
 
 \item{managementInputs}{\code{matrix} (dim=c(n_man,5,n_sp)) containing the information about management.}
 

@@ -34,13 +34,15 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \item n_trees: number of trees per ha.
 }}
 
-\item{forcingInputs}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i} in the \code{siteInputs} table:
+\item{forcingInputs}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i} in the \code{siteInputs} table. The required variables are (tmp_min, tmp_max, prcp, srad, frost_days)
 \itemize{
 \item tmp_min: monthly mean daily minimum temperature (C).
 \item tmp_max: monthly mean daily maximum temperature (C).
+\item tmp_ave: monthly mean daily maximum temperature (C).
 \item prcp: monthly rainfall (mm month-1).
 \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 \item frost_days: frost days per month (d month-1).
+\item vpd_day: frost days per month (mbar).
 \item co2: required if calculate_d13c=1
 \item d13catm: required if calculate_d13c=1
 }}
