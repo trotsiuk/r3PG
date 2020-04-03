@@ -8,6 +8,7 @@
 \describe{
   \item{tmp_min}{minimum monthly temperature}
   \item{tmp_max}{maximum monthly temperature}
+  \item{tmp_ave}{average monthly temperature}
   \item{prcp}{total monthly precipittation}
   \item{srad}{solar radiation}
   \item{frost_days}{number of frost days}
