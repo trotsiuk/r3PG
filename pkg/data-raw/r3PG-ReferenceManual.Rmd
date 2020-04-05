@@ -130,7 +130,7 @@ r3pg_ll <- function( pars ){
     managementInputs = thinn_solling,
     parameterInputs = par_def, 
     biasInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
-    n_sp = 1L, n_m = 552L, n_man = 14L, t_t = 14L, 
+    n_sp = 1L, n_m = 564L, n_man = 14L, t_t = 14L, 
     settings = c(1L, 1L, 1L, 0L, 0L), sp_names = 'piab', df_out = FALSE )$sim
   
   sim.df <- cbind(sim.df[,,2,c(3,5,6)], sim.df[,,4,c(1,2,3)])
@@ -272,7 +272,7 @@ sim_r3PG <- function( pars ){
     managementInputs = thinn_solling,
     parameterInputs = par_def, 
     biasInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
-    n_sp = 1L, n_m = 552L, n_man = 14L, t_t = 14L, 
+    n_sp = 1L, n_m = 564L, n_man = 14L, t_t = 14L, 
     settings = c(1L, 1L, 1L, 0L, 0L), sp_names = 'piab', df_out = TRUE )
   
   return( sim.df )
@@ -300,7 +300,7 @@ sim.df <- bind_rows( def_run.df, post_run.df)
 
 # Visualize
 i_var <- c('basal_area',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage')
-i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
+i_lab <- c('Basal area', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
 
 observ_solling.df <- observ_solling %>%
   gather(variable, value, -date) %>%
@@ -390,7 +390,7 @@ sim.grid %>%
   facet_wrap(~variable)+
   theme_void()+
   coord_equal() +
-  scale_fill_distiller( '', palette = 'Spectral', limits = c(0, 600))
+  scale_fill_distiller( '', palette = 'Spectral', limits = c(0, 250))
 ```
 
 
