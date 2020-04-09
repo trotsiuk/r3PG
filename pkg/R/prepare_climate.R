@@ -1,5 +1,6 @@
-#' @title The function to subset climate table.
-#' @description This function prepare the climate table, by either replicating the average climate for the required number of years or subsetting.
+#' @title Subsets or replicate a climate data
+#' @description This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting.
+#'
 #' @param climate  a \code{data frame} or \code{matrix} containing the information about climatic forcing data. In case you want to replicate average climate it shall have exactly 12, one for each month. In case one want to subset, it shall contain the period for subsetting and two additional columns: year and month.  Additionally can include: tmp_ave, c02, d13catm. The minimum required columns are listed below.
 #' \itemize{
 #' \item year: numeric, year of observation (only reguired for subsetting.
@@ -13,13 +14,17 @@
 #' @param from from which date climate data shall be included. Shall be provided as character, in form of year-month. E.g. "2000-01"
 #' @param to to which date climate data shall be included. Shall be provided as character, in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month
 #'
-#' @details This function shall be used in case user provide only average climate and want to repeate it for each year of simualtion.
+#' @details This function prepares the climate table for the model.
 #'
-#' @example inst/examples/sub_climateHelp.R
+#' In case a user provide only average climate, this is replicated for the desired simulation period.
+#'
+#' In case a larger climate file is provided, the simulation period is selected from this.
+#'
+#' @example inst/examples/prepare_climateHelp.R
 #'
 #' @export
 #'
-sub_climate <- function(
+prepare_climate <- function(
   climate,
   from = '2000-04',
   to = '2010-11'

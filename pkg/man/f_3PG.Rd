@@ -2,7 +2,7 @@
 % Please edit documentation in R/f_3PG.R
 \name{f_3PG}
 \alias{f_3PG}
-\title{The function to run the 3-PG in FORTRAN.}
+\title{Run 3-PG in FORTRAN}
 \usage{
 f_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs,
   parameterInputs, sizeDistInputs, n_sp, n_m, n_man, t_t, settings = c(1L, 1L,
@@ -36,10 +36,12 @@ f_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs,
 \item{df_out}{\code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)}
 }
 \description{
-This is the base implementation of the 3-PG model in Fortran. This function shall be used if you are sure that the input is in correct form. We always recomend to use \code{\link{run_3PG}}
+A minimal (speed-optimized) interface to run 3-PG in FORTRAN. Only use this function when optimizing for speed, otherwise use \code{\link{run_3PG}}
 }
 \details{
-Thre is no check for input quality and consistency. Therefore, it is highly recomended to check that your input is in the correct form
+The purpose of this function is to provide a minimal interface to the 3-PG FORTRAN implementation, without tests and conversions that are performed in the normal \code{\link{run_3PG}} function. You should not use this function, unless you are optimizing for speed.
+
+If you use f_3PG, note that there is no check for input quality and consistency
 }
 \examples{
 f_site = as.matrix( site_eum )
