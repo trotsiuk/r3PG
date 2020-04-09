@@ -15,7 +15,7 @@
 #' }
 #' @param speciesInputs a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order of the collumns apply:
 #' \itemize{
-#' \item species: species or cohort id/name. It shall be consistent with \code{parameterInputs} and \code{biasInputs} table.
+#' \item species: species or cohort id/name. It shall be consistent with \code{parameterInputs} and \code{sizeDistInputs} table.
 #' \item year_p: year when the species was planted (it is used to calculate species age at the time of simulation).
 #' \item month_p: month when species was planted, assuming end of the month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
 #' \item fertility: soil fertility for a given species. Range from 0 to 1.
@@ -50,9 +50,9 @@
 #' \item parameter: name of the parameter, shall be consistent in naming with \code{\link{param_info}}
 #' \item species: each column correspond to species/cohort id/name, as defined in \code{speciesInputs} table
 #' }
-#' @param biasInputs  a \code{data frame} or \code{matrix} containing the bias parameters to be modified:
+#' @param sizeDistInputs  a \code{data frame} or \code{matrix} containing the size distribution parameters to be modified:
 #' \itemize{
-#' \item parameter: name of the parameter, shall be consistent in naming with \code{\link{bias_info}}
+#' \item parameter: name of the parameter, shall be consistent in naming with \code{\link{sizeDist_info}}
 #' \item species: each column shall correspond to species/cohort id/name, as defined in \code{speciesInputs} table
 #' }
 #' @param settings list with all possible settings of the model.
@@ -60,14 +60,14 @@
 #' \item light_model: `1` - 3-PGpjs; `2` - 3-PGmix
 #' \item transp_model: `1` - 3-PGpjs; `2` - 3-PGmix
 #' \item phys_model:  `1` - 3-PGpjs; `2` - 3-PGmix
-#' \item correct_bias: `0` - no; `1` - 3-PGmix
-#' \item calculate_d13c: `0` - no; `1` - 3-PGmix
+#' \item correct_sizeDist: `0` - no; `1` - yes
+#' \item calculate_d13c: `0` - no; `1` - yes
 #' }
 #' @param df_out \code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)
 #'
 #' @details 3PG is a relatively simple, widely used physiological forest growth model. The state variables of 3-PG are the stem, foliage and root biomass (Mg ha-1) of each cohort, the stocking (trees ha-1) of each cohort, age of each cohort, and the available soil water (mm). 3-PG then simulates the stand development via five sub-models, light, productivity, water, allocation and mortality, which update the forest structure in monthly time steps.
 #'
-#' This implementation of 3pg includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for bias corrections and 13C calculations (see parameters).
+#' This implementation of 3pg includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for size distribution corrections and 13C calculations (see parameters).
 #'
 #' @note The \code{run_3PG} also check for the quality of input data. In case that names, or structure is not consitent with requirenments it will return an error.
 #'
@@ -83,8 +83,8 @@ run_3PG <- function(
   forcingInputs,
   managementInputs = NULL,
   parameterInputs = NULL,
-  biasInputs = NULL,
-  settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0),
+  sizeDistInputs = NULL,
+  settings = list(light_model = 1, transp_model = 1, phys_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
   df_out = TRUE
 ){
 
@@ -93,7 +93,7 @@ run_3PG <- function(
 
 
   # replace default settings
-  set_def = list(light_model = 1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0)
+  set_def = list(light_model = 1, transp_model = 1, phys_model = 1, correct_sizeDist = 0, calculate_d13c = 0)
   set_def[names(settings)] <- settings
   set_def <- as.integer( unlist(set_def) )
 
@@ -134,12 +134,12 @@ run_3PG <- function(
   }
 
 
-  # Bias
-  biasReplaced = bias.default['parameter']
-  biasReplaced[speciesInputs$species] <- NA_real_
-  biasReplaced[speciesInputs$species] <- as.numeric(bias.default$default)
-  if( !is.null(biasInputs) ){
-    biasReplaced[match(biasInputs$parameter, biasReplaced$parameter), ] <- biasInputs
+  # sizeDist
+  sizeDistReplaced = sizeDist.default['parameter']
+  sizeDistReplaced[speciesInputs$species] <- NA_real_
+  sizeDistReplaced[speciesInputs$species] <- as.numeric(sizeDist.default$default)
+  if( !is.null(sizeDistInputs) ){
+    sizeDistReplaced[match(sizeDistInputs$parameter, sizeDistReplaced$parameter), ] <- sizeDistInputs
   }
 
 
@@ -150,7 +150,7 @@ run_3PG <- function(
     forcingInputs = as.matrix( forcingInputs, nrow = n_m, ncol = 9),
     managementInputs = thin_mat,
     parameterInputs = as.matrix( parameterReplaced[,-1], nrow = 82, ncol = n_sp),
-    biasInputs = as.matrix( biasReplaced[,-1], nrow = 30, ncol = n_sp),
+    sizeDistInputs = as.matrix( sizeDistReplaced[,-1], nrow = 30, ncol = n_sp),
     n_sp = n_sp,
     n_m = n_m,
     n_man = n_man,
@@ -202,14 +202,14 @@ chk_input <- function(){
 
     }
 
-    if( !is.null(biasInputs) ){
+    if( !is.null(sizeDistInputs) ){
 
-      if( !identical(c("parameter"), colnames(biasInputs)[1]) ){
-        stop( 'First column name of the biasInputs table shall correspond to: parameter' )
+      if( !identical(c("parameter"), colnames(sizeDistInputs)[1]) ){
+        stop( 'First column name of the sizeDistInputs table shall correspond to: parameter' )
       }
 
-      if( !all( biasInputs$parameter %in% bias.default$parameter) ){
-        stop( paste0('Bias input table shall contains only parameters presend in: ', paste(bias.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+      if( !all( sizeDistInputs$parameter %in% sizeDist.default$parameter) ){
+        stop( paste0('sizeDist input table shall contains only parameters presend in: ', paste(sizeDist.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
       }
 
     }
@@ -227,19 +227,19 @@ chk_input <- function(){
       }
     }
 
-    if( !is.null(settings$correct_bias) ){
-      if( settings$correct_bias == 1 ){
+    if( !is.null(settings$correct_sizeDist) ){
+      if( settings$correct_sizeDist == 1 ){
 
-        if( is.null(biasInputs) ){
-          stop( 'Please provide biasInputs table or change the setting to correct_bias = 0' )
+        if( is.null(sizeDistInputs) ){
+          stop( 'Please provide sizeDistInputs table or change the setting to correct_sizeDist = 0' )
         }
 
-        if( nrow(speciesInputs) != ncol(biasInputs[,-1]) ){
-          stop( 'Please provide biasInputs for all of the species in the speciesInputs table' )
+        if( nrow(speciesInputs) != ncol(sizeDistInputs[,-1]) ){
+          stop( 'Please provide sizeDistInputs for all of the species in the speciesInputs table' )
         }
 
-        if( !identical(speciesInputs$species, colnames(biasInputs[,-1])) ){
-          stop( 'Names or order of species in speciesInputs does not correspond to names or order in biasInputs' )
+        if( !identical(speciesInputs$species, colnames(sizeDistInputs[,-1])) ){
+          stop( 'Names or order of species in speciesInputs does not correspond to names or order in sizeDistInputs' )
         }
       }
     }

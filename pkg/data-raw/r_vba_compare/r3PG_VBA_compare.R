@@ -16,7 +16,7 @@ species.df <- read_xls(f_input, 'species')
 climate.df <- read_xls(f_input, 'climate')
 thinn.df <- read_xls(f_input, 'thinning')
 param.df <- read_xls(f_input, 'parameters')
-bias.df <- read_xls(f_input, 'bias')
+sizeDist.df <- read_xls(f_input, 'sizeDist')
 settings.df <- read_xls(f_input, 'settings')
 
 # run the simulation
@@ -42,9 +42,9 @@ for( site_id in settings.df$site){
     thinn_i = NULL
   }
   param_i = select(param.df, c('parameter', species_i$species))
-  bias_i = select(bias.df, c('parameter', species_i$species))
+  sizeDist_i = select(sizeDist.df, c('parameter', species_i$species))
   
-  out <- run_3PG(site_i, species_i, climate_i, thinn_i, param_i, bias_i, as.list(settings_i[,2:6])) %>%
+  out <- run_3PG(site_i, species_i, climate_i, thinn_i, param_i, sizeDist_i, as.list(settings_i[,2:6])) %>%
     mutate( model = 'r3PG',
       site = site_id)
   
