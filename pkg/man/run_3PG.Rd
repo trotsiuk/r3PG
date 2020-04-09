@@ -57,7 +57,7 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \item stem: type of management (above/below). Default is 1.
 }}
 
-\item{parameterInputs}{a \code{data frame} or \code{matrix} containing the parameters to be modified:
+\item{parameterInputs}{a \code{data frame} or \code{matrix} containing the parameters to be modified. Values that are not provided are replaced by defaults.
 \itemize{
 \item parameter: name of the parameter, shall be consistent in naming with \code{\link{param_info}}
 \item species: each column correspond to species/cohort id/name, as defined in \code{speciesInputs} table
@@ -69,7 +69,7 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \item species: each column shall correspond to species/cohort id/name, as defined in \code{speciesInputs} table
 }}
 
-\item{settings}{list with all possible settings of the model.
+\item{settings}{a list with settings for the model. Values that are not provided are replaced by defaults.
 \itemize{
 \item light_model: `1` - 3-PGpjs; `2` - 3-PGmix
 \item transp_model: `1` - 3-PGpjs; `2` - 3-PGmix
@@ -81,13 +81,13 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \item{df_out}{\code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)}
 }
 \value{
-a 4-dimentional array or a data.frame, depending on the parameter df_out. The matrix can also be transformed via the \code{\link{transf_out}} function.
+either a 4-dimentional array or a data.frame, depending on the parameter df_out. The matrix can also be transformed via the \code{\link{transf_out}} function.
 }
 \description{
 This function runs the 3-PGpjs or 3-PGmix model
 }
 \details{
-3PG is a relatively simple, widely used physiological forest growth model. The state variables of 3-PG are the stem, foliage and root biomass (Mg ha-1) of each cohort, the stocking (trees ha-1) of each cohort, age of each cohort, and the available soil water (mm). 3-PG then simulates the stand development via five sub-models, light, productivity, water, allocation and mortality, which update the forest structure in monthly time steps.
+`r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model (Landsberg & Waring, 1997), which simulate forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
 
 This implementation of 3pg includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for size distribution corrections and 13C calculations (see parameters).
 }
@@ -104,5 +104,12 @@ out <- run_3PG(
   sizeDistInputs = sizeDist_eum,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
                   correct_sizeDist = 0, calculate_d13c = 0),
-  df_out = TRUE)
+  df_out = FALSE) # note that default is TRUE
+
+str(out) # List output format
+
+outLong = transf_out(out) # df output format - identical to df_out = TRUE
+}
+\seealso{
+\code{\link{transf_out}}
 }

@@ -8,6 +8,8 @@
 #'
 #' @example inst/examples/run_3PGHelp.R
 #'
+#' @seealso \code{\link{run_3PG}}
+#'
 #' @export
 #'
 transf_out <- function( model ){

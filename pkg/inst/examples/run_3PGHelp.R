@@ -7,4 +7,8 @@ out <- run_3PG(
   sizeDistInputs = sizeDist_eum,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
                   correct_sizeDist = 0, calculate_d13c = 0),
-  df_out = TRUE)
+  df_out = FALSE) # note that default is TRUE
+
+str(out) # List output format
+
+outLong = transf_out(out) # df output format - identical to df_out = TRUE

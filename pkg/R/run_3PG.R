@@ -71,7 +71,9 @@
 #'
 #' @note The \code{run_3PG} also check for the quality of input data. In case that names, or structure is not consitent with requirenments it will return an error.
 #'
-#' @return a 4-dimentional array or a data.frame, depending on the parameter df_out. The matrix can also be transformed via the \code{\link{transf_out}} function.
+#' @return either a 4-dimentional array or a data.frame, depending on the parameter df_out. The matrix can also be transformed via the \code{\link{transf_out}} function.
+#'
+#' @seealso \code{\link{transf_out}}
 #'
 #' @example inst/examples/run_3PGHelp.R
 #'
