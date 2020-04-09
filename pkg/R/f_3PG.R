@@ -1,5 +1,5 @@
-#' @title The function to run the 3-PG in FORTRAN.
-#' @description This is the base implementation of the 3-PG model in Fortran. This function shall be used if you are sure that the input is in correct form. We always recomend to use \code{\link{run_3PG}}
+#' @title Run 3-PG in FORTRAN
+#' @description A minimal (speed-optimized) interface to run 3-PG in FORTRAN. Only use this function when optimizing for speed, otherwise use \code{\link{run_3PG}}
 #' @param siteInputs \code{matrix} (dim=c(1,8)) containing the information about site level information
 #' @param speciesInputs \code{matrix} (dim=c(n_sp,7)) containing the information about species level data. Each row corresponds to one species/layer.
 #' @param forcingInputs  \code{matrix} (dim=c(n_m,9)) containing the information about climatic forcing data (tmp_min, tmp_max, tmp_ave, prcp, srad, frost_days, vpd_day, co3, d13catm).
@@ -14,8 +14,10 @@
 #' @param sp_names \code{character vector} of species names
 #' @param df_out \code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)
 #'
-#' @details Thre is no check for input quality and consistency. Therefore, it is highly recomended to check that your input is in the correct form
+#' @details The purpose of this function is to provide a minimal interface to the 3-PG FORTRAN implementation, without tests and conversions that are performed in the normal \code{\link{run_3PG}} function. You should not use this function, unless you are optimizing for speed.
 #'
+#' If you use f_3PG, note that there is no check for input quality and consistency
+
 #' @example inst/examples/f_3PGHelp.R
 #'
 #' @export
