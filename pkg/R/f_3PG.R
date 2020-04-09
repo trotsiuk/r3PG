@@ -5,7 +5,7 @@
 #' @param forcingInputs  \code{matrix} (dim=c(n_m,9)) containing the information about climatic forcing data (tmp_min, tmp_max, tmp_ave, prcp, srad, frost_days, vpd_day, co3, d13catm).
 #' @param managementInputs \code{matrix} (dim=c(n_man,5,n_sp)) containing the information about management.
 #' @param parameterInputs \code{matrix} (dim=c(82,n_sp)) parameters level data.
-#' @param biasInputs \code{matrix} (dim=c(30,n_sp)) bial level data
+#' @param sizeDistInputs \code{matrix} (dim=c(30,n_sp)) bial level data
 #' @param n_sp \code{integer} number of species
 #' @param n_m \code{integer} number of simulated month
 #' @param n_man \code{integer} number of maximum management interventions per species, dimention of managementInputs matrix (min=1)
@@ -28,7 +28,7 @@ f_3PG <- function(
   forcingInputs,
   managementInputs,
   parameterInputs,
-  biasInputs,
+  sizeDistInputs,
   n_sp,
   n_m,
   n_man,
@@ -44,7 +44,7 @@ f_3PG <- function(
     forcingInputs = forcingInputs,
     managementInputs = managementInputs,
     parameterInputs = parameterInputs,
-    biasInputs = biasInputs,
+    sizeDistInputs = sizeDistInputs,
     n_sp = n_sp,
     n_m = n_m,
     n_man = n_man,

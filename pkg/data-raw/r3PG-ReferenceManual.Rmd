@@ -108,7 +108,7 @@ out <- run_3PG(
   forcingInputs = climate_eum, 
   managementInputs = NULL,
   parameterInputs = parameters_eum, 
-  biasInputs = bias_eum,
+  sizeDistInputs = sizeDist_eum,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2, 
     correct_bias = 1, calculate_d13c = 0),
   df_out = FALSE)
@@ -168,8 +168,8 @@ r3pg_ll <- function( pars ){
     forcingInputs = climate_solling,
     managementInputs = thinn_solling,
     parameterInputs = par_def, 
-    biasInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
-    n_sp = 1L, n_m = 552L, n_man = 14L, t_t = 14L, 
+    sizeDistInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
+    n_sp = 1L, n_m = 564L, n_man = 14L, t_t = 14L, 
     settings = c(1L, 1L, 1L, 0L, 0L), sp_names = 'piab', df_out = FALSE )$sim
   
   sim.df <- cbind(sim.df[,,2,c(3,5,6)], sim.df[,,4,c(1,2,3)])
@@ -310,8 +310,8 @@ sim_r3PG <- function( pars ){
     forcingInputs = climate_solling,
     managementInputs = thinn_solling,
     parameterInputs = par_def, 
-    biasInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
-    n_sp = 1L, n_m = 552L, n_man = 14L, t_t = 14L, 
+    sizeDistInputs = matrix(NA_real_, nrow = 30, ncol = 2 ),
+    n_sp = 1L, n_m = 564L, n_man = 14L, t_t = 14L, 
     settings = c(1L, 1L, 1L, 0L, 0L), sp_names = 'piab', df_out = TRUE )
   
   return( sim.df )
@@ -339,7 +339,7 @@ sim.df <- bind_rows( def_run.df, post_run.df)
 
 # Visualize
 i_var <- c('basal_area',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage')
-i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
+i_lab <- c('Basal area', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
 
 observ_solling.df <- observ_solling %>%
   gather(variable, value, -date) %>%
@@ -429,7 +429,7 @@ sim.grid %>%
   facet_wrap(~variable)+
   theme_void()+
   coord_equal() +
-  scale_fill_distiller( '', palette = 'Spectral', limits = c(0, 600))
+  scale_fill_distiller( '', palette = 'Spectral', limits = c(0, 250))
 ```
 
 

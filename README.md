@@ -21,9 +21,9 @@ out_3PG <- run_3PG(
   forcingInputs     = climate_eum, 
   managementInputs  = thinn_eum,
   parameterInputs   = parameters_eum, 
-  biasInputs        = bias_eum,
+  sizeDistInputs    = sizeDist_eum,
   settings          = list(light_model = 2, transp_model = 2, phys_model = 2, 
-                           correct_bias = 0, calculate_d13c = 0),
+                           correct_sizeDist = 0, calculate_d13c = 0),
   df_out = TRUE)
 
 head( out_3PG )

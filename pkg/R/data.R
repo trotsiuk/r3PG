@@ -27,7 +27,7 @@
 #' }
 "param_info"
 
-#' Bias table information
+#' sizeDist table information
 #'
 #' A dataset containing the parameters order and description.
 #'
@@ -38,7 +38,7 @@
 #'   \item{unit}{unit}
 #'   \item{default}{default value equal to 0}
 #' }
-"bias_info"
+"sizeDist_info"
 
 
 #' Site information
@@ -124,7 +124,7 @@
 "parameters_eum"
 
 
-#' Bias information
+#' sizeDist information
 #'
 #' Containing the information about bias parameters.
 #'
@@ -134,4 +134,4 @@
 #'   \item{Fagus sylvatica}{parameter values for species 1}
 #'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
-"bias_eum"
+"sizeDist_eum"

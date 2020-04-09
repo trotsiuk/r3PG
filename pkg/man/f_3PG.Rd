@@ -5,8 +5,8 @@
 \title{The function to run the 3-PG in FORTRAN.}
 \usage{
 f_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs,
-  parameterInputs, biasInputs, n_sp, n_m, n_man, t_t, settings = c(1L, 1L, 1L,
-  0L, 0L), sp_names, df_out = TRUE)
+  parameterInputs, sizeDistInputs, n_sp, n_m, n_man, t_t, settings = c(1L, 1L,
+  1L, 0L, 0L), sp_names, df_out = TRUE)
 }
 \arguments{
 \item{siteInputs}{\code{matrix} (dim=c(1,8)) containing the information about site level information}
@@ -19,7 +19,7 @@ f_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs,
 
 \item{parameterInputs}{\code{matrix} (dim=c(82,n_sp)) parameters level data.}
 
-\item{biasInputs}{\code{matrix} (dim=c(30,n_sp)) bial level data}
+\item{sizeDistInputs}{\code{matrix} (dim=c(30,n_sp)) bial level data}
 
 \item{n_sp}{\code{integer} number of species}
 
@@ -46,7 +46,7 @@ f_site = as.matrix( site_eum )
 f_species = as.matrix( species_eum[,-1] )
 f_clim = as.matrix( climate_eum )
 f_param = as.matrix( parameters_eum[,-1] )
-f_bias = as.matrix( bias_eum[,-1] )
+f_sizeDist = as.matrix( sizeDist_eum[,-1] )
 
 n_sp = nrow( f_species )
 n_m = nrow( f_clim )
@@ -61,7 +61,7 @@ out <- f_3PG(
   forcingInputs = f_clim,
   managementInputs = f_management,
   parameterInputs = f_param,
-  biasInputs = f_bias,
+  sizeDistInputs = f_sizeDist,
   n_sp = n_sp,
   n_m = n_m,
   n_man = n_man,

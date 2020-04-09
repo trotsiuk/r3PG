@@ -5,11 +5,11 @@
 #include <R_ext/Rdynload.h>
 
 void F77_NAME(s_3PG_f)(double *siteInputs, double *speciesInputs, double *forcingInputs, double *managementInputs, 
-    double *parameterInputs, double *biasInputs, int *n_sp, int *n_m, int *n_man, int *t_t, int *settings, 
+    double *parameterInputs, double *sizeDistInputs, int *n_sp, int *n_m, int *n_man, int *t_t, int *settings, 
     double *output);
 
 extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEXP managementInputs, SEXP parameterInputs,
-    SEXP biasInputs, SEXP n_sp, SEXP n_m, SEXP n_man, SEXP t_t, SEXP settings){
+    SEXP sizeDistInputs, SEXP n_sp, SEXP n_m, SEXP n_man, SEXP t_t, SEXP settings){
 
     int n;
 
@@ -30,7 +30,7 @@ extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEX
     setAttrib( output, R_DimSymbol, dims);
 
     F77_CALL(s_3PG_f)(REAL(siteInputs), REAL(speciesInputs), REAL(forcingInputs), REAL(managementInputs), REAL(parameterInputs),
-        REAL(biasInputs), INTEGER(n_sp), INTEGER(n_m), INTEGER(n_man), INTEGER(t_t), INTEGER(settings), REAL(output));
+        REAL(sizeDistInputs), INTEGER(n_sp), INTEGER(n_m), INTEGER(n_man), INTEGER(t_t), INTEGER(settings), REAL(output));
 
     UNPROTECT(2);
 

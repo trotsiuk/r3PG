@@ -2,7 +2,7 @@ f_site = as.matrix( site_eum )
 f_species = as.matrix( species_eum[,-1] )
 f_clim = as.matrix( climate_eum )
 f_param = as.matrix( parameters_eum[,-1] )
-f_bias = as.matrix( bias_eum[,-1] )
+f_sizeDist = as.matrix( sizeDist_eum[,-1] )
 
 n_sp = nrow( f_species )
 n_m = nrow( f_clim )
@@ -17,7 +17,7 @@ out <- f_3PG(
   forcingInputs = f_clim,
   managementInputs = f_management,
   parameterInputs = f_param,
-  biasInputs = f_bias,
+  sizeDistInputs = f_sizeDist,
   n_sp = n_sp,
   n_m = n_m,
   n_man = n_man,

@@ -19,10 +19,10 @@ climate_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'clim
 
 parameters_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'parameters')
 
-bias_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'bias')
+sizeDist_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'sizeDist')
 
 thinn_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'thinning')
 
 
-usethis::use_data( site_eum, species_eum, climate_eum, parameters_eum, bias_eum, thinn_eum, overwrite = TRUE)
+usethis::use_data( site_eum, species_eum, climate_eum, parameters_eum, sizeDist_eum, thinn_eum, overwrite = TRUE)
   

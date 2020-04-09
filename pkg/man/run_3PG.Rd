@@ -5,9 +5,9 @@
 \title{Runs a 3-PG simulation}
 \usage{
 run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
-  parameterInputs = NULL, biasInputs = NULL, settings = list(light_model =
-  1, transp_model = 1, phys_model = 1, correct_bias = 0, calculate_d13c = 0),
-  df_out = TRUE)
+  parameterInputs = NULL, sizeDistInputs = NULL,
+  settings = list(light_model = 1, transp_model = 1, phys_model = 1,
+  correct_sizeDist = 0, calculate_d13c = 0), df_out = TRUE)
 }
 \arguments{
 \item{siteInputs}{a \code{data frame} or \code{matrix} containing the information about site level data in the following order:
@@ -24,7 +24,7 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 
 \item{speciesInputs}{a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order of the collumns apply:
 \itemize{
-\item species: species or cohort id/name. It shall be consistent with \code{parameterInputs} and \code{biasInputs} table.
+\item species: species or cohort id/name. It shall be consistent with \code{parameterInputs} and \code{sizeDistInputs} table.
 \item year_p: year when the species was planted (it is used to calculate species age at the time of simulation).
 \item month_p: month when species was planted, assuming end of the month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
 \item fertility: soil fertility for a given species. Range from 0 to 1.
@@ -63,9 +63,9 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \item species: each column correspond to species/cohort id/name, as defined in \code{speciesInputs} table
 }}
 
-\item{biasInputs}{a \code{data frame} or \code{matrix} containing the bias parameters to be modified:
+\item{sizeDistInputs}{a \code{data frame} or \code{matrix} containing the size distribution parameters to be modified:
 \itemize{
-\item parameter: name of the parameter, shall be consistent in naming with \code{\link{bias_info}}
+\item parameter: name of the parameter, shall be consistent in naming with \code{\link{sizeDist_info}}
 \item species: each column shall correspond to species/cohort id/name, as defined in \code{speciesInputs} table
 }}
 
@@ -74,8 +74,8 @@ run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
 \item light_model: `1` - 3-PGpjs; `2` - 3-PGmix
 \item transp_model: `1` - 3-PGpjs; `2` - 3-PGmix
 \item phys_model:  `1` - 3-PGpjs; `2` - 3-PGmix
-\item correct_bias: `0` - no; `1` - 3-PGmix
-\item calculate_d13c: `0` - no; `1` - 3-PGmix
+\item correct_sizeDist: `0` - no; `1` - yes
+\item calculate_d13c: `0` - no; `1` - yes
 }}
 
 \item{df_out}{\code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)}
@@ -89,7 +89,7 @@ This function runs the 3-PGpjs or 3-PGmix model
 \details{
 3PG is a relatively simple, widely used physiological forest growth model. The state variables of 3-PG are the stem, foliage and root biomass (Mg ha-1) of each cohort, the stocking (trees ha-1) of each cohort, age of each cohort, and the available soil water (mm). 3-PG then simulates the stand development via five sub-models, light, productivity, water, allocation and mortality, which update the forest structure in monthly time steps.
 
-This implementation of 3pg includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for bias corrections and 13C calculations (see parameters).
+This implementation of 3pg includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for size distribution corrections and 13C calculations (see parameters).
 }
 \note{
 The \code{run_3PG} also check for the quality of input data. In case that names, or structure is not consitent with requirenments it will return an error.
@@ -101,8 +101,8 @@ out <- run_3PG(
   forcingInputs = climate_eum,
   managementInputs = NULL,
   parameterInputs = parameters_eum,
-  biasInputs = bias_eum,
+  sizeDistInputs = sizeDist_eum,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                  correct_bias = 0, calculate_d13c = 0),
+                  correct_sizeDist = 0, calculate_d13c = 0),
   df_out = TRUE)
 }
