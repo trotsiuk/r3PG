@@ -22,7 +22,7 @@ contains
         integer(kind=c_int), intent(in) :: n_sp
         integer(kind=c_int), intent(in) :: n_man ! number of management interactiosn
         integer(kind=c_int), dimension(n_sp), intent(in) :: t_t ! number of management interactiosn
-        integer(kind=c_int), dimension(5), intent(in) :: settings    ! settings for the models
+        integer(kind=c_int), dimension(6), intent(in) :: settings    ! settings for the models
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
@@ -185,14 +185,19 @@ contains
         basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
         lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
-        height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
+
+        if( height_model .eq. 1 ) then
+            height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
+        else if ( height_model .eq. 2 ) then
+            height(:) = 1.3d0 + aH(:) * Exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
+        end if
 
         ! Correct the bias
         do n = 1, b_n
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
             call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                correct_sizeDist, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
         end do
 
@@ -262,7 +267,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
                 b_cor = .FALSE.
@@ -552,7 +557,7 @@ contains
                 competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
             
                 call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                    correct_sizeDist, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                    correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                     dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
             end do 
 
@@ -610,14 +615,14 @@ contains
                                     if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
 
                                         biom_foliage_debt(i) = biom_foliage_debt(i) * (1.d0 - mort_manag(i) * & 
-                                            managementInputs(t_n(i),3,i) )
+                                            managementInputs(t_n(i),5,i) )
                                     else 
 
-                                        biom_foliage(i) = biom_foliage(i) * (1.d0 - mort_manag(i) * managementInputs(t_n(i),3,i) )
+                                        biom_foliage(i) = biom_foliage(i) * (1.d0 - mort_manag(i) * managementInputs(t_n(i),5,i) )
                                     end if
 
                                     biom_root(i) = biom_root(i)  * (1.d0 - mort_manag(i) * managementInputs(t_n(i),4,i) )
-                                    biom_stem(i) = biom_stem(i)  * (1.d0 - mort_manag(i) * managementInputs(t_n(i),5,i) )
+                                    biom_stem(i) = biom_stem(i)  * (1.d0 - mort_manag(i) * managementInputs(t_n(i),3,i) )
 
                                 end if
 
@@ -646,7 +651,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -699,7 +704,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -763,7 +768,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -1512,7 +1517,7 @@ contains
 
 
     subroutine s_sizeDist_correct (n_sp, age, stems_n, biom_tree, competition_total, lai, &
-        correct_sizeDist, pars_s, pars_b, aWs, nWs, pfsPower, pfsConst, &
+        correct_sizeDist, height_model, pars_s, pars_b, aWs, nWs, pfsPower, pfsConst, &
         dbh, basal_area, height, crown_length, crown_width, pFS, bias_scale)
     
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
@@ -1535,6 +1540,7 @@ contains
     
         ! parameters
         integer, intent(in) :: correct_sizeDist ! if the distribution shall be fitted
+        integer, intent(in) :: height_model ! which heigh equation
         real(kind=8), dimension(17, n_sp), intent(in) :: pars_s ! parameters for bias
         real(kind=8), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
         real(kind=8), dimension(n_sp), intent(in) :: aWs, nWs
@@ -1691,10 +1697,20 @@ contains
         ! Correct for bias ------------------
         dbh(:) = (biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:)) * (1.d0 + wsrelBias(:))
         basal_area(:) = ( dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0) * (1.d0 + DrelBiasBasArea(:))
-        height(:) = ( aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)) * (1.d0 + DrelBiasheight(:))
 
-        crown_length(:) = ( aHL(:) * dbh(:) ** nHLB(:) * lai_total ** nHLL(:) * competition_total(:) ** nHLC(:) * &
-            height_rel(:) ** nHLrh(:)) * (1.d0 + DrelBiasLCL(:))
+        if( height_model .eq. 1 ) then
+            
+            height(:) = ( aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)) * (1.d0 + DrelBiasheight(:))
+
+            crown_length(:) = ( aHL(:) * dbh(:) ** nHLB(:) * lai_total ** nHLL(:) * competition_total(:) ** nHLC(:) * &
+                height_rel(:) ** nHLrh(:)) * (1.d0 + DrelBiasLCL(:))
+
+        else if ( height_model .eq. 2 ) then
+
+            height(:) = 1.3d0 + aH(:) * exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
+            crown_length(:) = 1.3d0 + aHL(:) * exp(1.d0)**(-nHLB(:)/dbh(:)) + nHLC(:) * competition_total(:) * dbh(:)
+        end if
+
         crown_width(:) = ( aK(:) * dbh(:) ** nKB(:) * height(:) ** nKH(:) * competition_total(:) ** nKC(:) * &
             height_rel(:) ** nKrh(:)) * (1.d0 + DrelBiasCrowndiameter(:))
         where( lai(:) .eq. 0.d0 ) crown_width(:) = 0.d0

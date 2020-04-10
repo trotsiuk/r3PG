@@ -8,23 +8,22 @@
 
 ! Site data ----------------------------
 lat         = siteInputs(1)
-soil_class  = int( siteInputs(2) )
-aSW         = siteInputs(3)
-asw_min     = siteInputs(4)
-asw_max     = siteInputs(5)
-year_i      = int( siteInputs(6) )
-month_i     = int( siteInputs(7) )
-altitude    = int( siteInputs(8) )
-
+altitude    = int( siteInputs(2) )
+soil_class  = int( siteInputs(3) )
+aSW         = siteInputs(4)
+asw_min     = siteInputs(5)
+asw_max     = siteInputs(6)
+year_i      = int( siteInputs(7) )
+month_i     = int( siteInputs(8) )
 
 ! Species data -------------------------
 year_p      = int( speciesInputs(:,1) )
 month_p     = int( speciesInputs(:,2) )
 fertility   = speciesInputs(:,3)
-biom_foliage_i = speciesInputs(:,4)
-biom_root_i = speciesInputs(:,5)
-biom_stem_i = speciesInputs(:,6)
-stems_n_i   = speciesInputs(:,7)
+stems_n_i   = speciesInputs(:,4)
+biom_stem_i = speciesInputs(:,5)
+biom_root_i = speciesInputs(:,6)
+biom_foliage_i = speciesInputs(:,7)
 
 
 ! Climate ------------------------------
@@ -42,5 +41,6 @@ d13catm     = forcingInputs(:,9)
 light_model = settings(1)
 transp_model = settings(2)
 phys_model = settings(3)
-correct_sizeDist = settings(4)
-calculate_d13c = settings(5)
+height_model = settings(4)
+correct_sizeDist = settings(5)
+calculate_d13c = settings(6)
