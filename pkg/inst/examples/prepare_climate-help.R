@@ -1,5 +1,5 @@
 # subsetting climate data
-prepare_climate( climate = climate_eum, from = '2003-04', to = '2010-11')
+prepare_climate( climate = d_climate, from = '2003-04', to = '2010-11')
 
 # replicating climate data
 climate = matrix(rnorm(60), ncol = 5)

@@ -8,14 +8,14 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
   "Pinus sylvestris"))
 }
 \arguments{
-\item{thinning}{a \code{data frame} or \code{matrix} containing the information about management. In case there is no management it shall be equall to \code{NULL}. The following columns are required:
+\item{thinning}{table containing the information about thinnings. In case there is no management it shall be equall to \code{NULL}. The following columns are required:
 \itemize{
 \item species: species or cohort id/name.
 \item age: age at which management is done.
-\item n_trees: number of trees remaining after management
+\item stems_n: number of trees remaining after management
+\item stem: type of management (above/below). Default is 1.
 \item foliage: type of management (above/below). Default is 1.
 \item root: type of management (above/below). Default is 1.
-\item stem: type of management (above/below). Default is 1.
 }}
 
 \item{sp_names}{names of the species / cohorsts used for the simulations. This is required to account if `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` shall be identical to those from \code{species} table.}
@@ -33,5 +33,5 @@ In case there will be management it will return 3-d array, where one dimention c
 \examples{
 prepare_thinning( thinning = NULL, sp_names = c('Quercus', 'Abies'))
 
-prepare_thinning( thinning = thinn_eum, sp_names = c('Fagus sylvatica', 'Pinus sylvestris'))
+prepare_thinning( thinning = d_thinning, sp_names = c('Fagus sylvatica', 'Pinus sylvestris'))
 }
