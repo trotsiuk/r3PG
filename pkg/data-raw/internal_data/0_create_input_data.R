@@ -2,7 +2,6 @@
 # libraries ---------------------------------------------------------------
 
 library(dplyr)
-library(readr)
 library(readxl)
 
 options(digits=16)
@@ -10,19 +9,18 @@ options(digits=16)
 
 # EU_MIXFOR ---------------------------------------------------------------
 #' `EU MIXFOR`
-site_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'site')
+d_site <- read_excel('data-raw/internal_data/data.input.xlsx', sheet = 'site')
   
-species_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'species')
+d_species <- read_excel('data-raw/internal_data/data.input.xlsx', sheet = 'species')
 
-climate_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'climate') %>%
-  select(year, month, tmp_min, tmp_max, tmp_ave, prcp, srad, frost_days, co2, d13catm)
+d_climate <- read_excel('data-raw/internal_data/data.input.xlsx', sheet = 'climate')
 
-parameters_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'parameters')
+d_parameters <- read_excel('data-raw/internal_data/data.input.xlsx', sheet = 'parameters')
 
-sizeDist_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'sizeDist')
+d_sizeDist <- read_excel('data-raw/internal_data/data.input.xlsx', sheet = 'sizeDist')
 
-thinn_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'thinning')
+d_thinning <- read_excel('data-raw/internal_data/data.input.xlsx', sheet = 'thinning')
 
 
-usethis::use_data( site_eum, species_eum, climate_eum, parameters_eum, sizeDist_eum, thinn_eum, overwrite = TRUE)
+usethis::use_data( d_site, d_species, d_climate, d_parameters, d_sizeDist, d_thinning, overwrite = TRUE)
   

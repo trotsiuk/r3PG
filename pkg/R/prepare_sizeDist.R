@@ -1,10 +1,10 @@
 #' @title Prepare parameters table
 #' @description This function prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
 #'
-#' @param size_dist a \code{data frame} or \code{matrix} containing the size distribution parameters to be modified. Values that are not provided are replaced by defaults.
+#' @param size_dist table containing the information about size distribution to be modified. Values that are not provided are replaced by defaults.
 #' \itemize{
-#' \item parameter: name of the parameter, shall be consistent in naming with \code{\link{param_info}}
-#' \item species: each column correspond to species/cohort id/name, as defined in \code{speciesInputs} table
+#' \item parameter: name of the parameter, shall be consistent in naming with \code{\link{i_sizeDist}}.
+#' \item species: each column shall correspond to species/cohort id/name, as defined in \code{species} table.
 #' }
 #' @param sp_names names of the species / cohorsts used for the simulations.The `sp_names` shall be identical to those from \code{species} table.
 #'

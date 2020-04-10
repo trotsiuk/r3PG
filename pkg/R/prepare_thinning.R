@@ -1,14 +1,14 @@
 #' @title Check and prepare management information.
 #' @description This function prepares the management table and ckeck for consistensy.
 #'
-#' @param thinning  a \code{data frame} or \code{matrix} containing the information about management. In case there is no management it shall be equall to \code{NULL}. The following columns are required:
+#' @param thinning  table containing the information about thinnings. In case there is no management it shall be equall to \code{NULL}. The following columns are required:
 #' \itemize{
 #' \item species: species or cohort id/name.
 #' \item age: age at which management is done.
-#' \item n_trees: number of trees remaining after management
+#' \item stems_n: number of trees remaining after management
+#' \item stem: type of management (above/below). Default is 1.
 #' \item foliage: type of management (above/below). Default is 1.
 #' \item root: type of management (above/below). Default is 1.
-#' \item stem: type of management (above/below). Default is 1.
 #' }
 #' @param sp_names names of the species / cohorsts used for the simulations. This is required to account if `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` shall be identical to those from \code{species} table.
 #'
@@ -32,7 +32,8 @@ prepare_thinning <- function(
   }
 
   n_sp = length(sp_names)
-  sp_names <- setNames( 1:n_sp, sp_names)
+  sp_id <- 1:n_sp
+  names(sp_id) <- sp_names
 
   if( is.null(thinning) ){
 
@@ -40,12 +41,12 @@ prepare_thinning <- function(
 
   } else {
 
-    if( !identical( c("species","age","n_trees","foliage","root","stem"), colnames(thinning) ) ){
-      stop( 'Column names of the thinning table shall correspond to: species, age, n_trees, foliage, root,stem' )
+    if( !identical( c("species","age","stems_n","stem","root","foliage"), colnames(thinning) ) ){
+      stop( 'Column names of the thinning table shall correspond to: species, age, stems_n, stem, root, foliage' )
     }
 
     thinning = data.frame( thinning )
-    thinning$species = sp_names[thinning$species] # change sp names to integer
+    thinning$species = sp_id[thinning$species] # change sp names to integer
 
     t_t = as.integer( as.vector( table(thinning[,1]) ) )
     n_man = as.integer( max(t_t) )
@@ -58,8 +59,10 @@ prepare_thinning <- function(
     thinning = simplify2array(by(thinning[,3:7], thinning[,1], as.matrix))
   }
 
+  if( n_sp > 1 ){
+    dimnames(thinning)[[3]] = sp_names
+  }
 
-  dimnames(thinning)[[3]] = names(sp_names)
 
   return( thinning )
 }

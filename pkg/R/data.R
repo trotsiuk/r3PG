@@ -1,6 +1,6 @@
-#' Information table
+#' Information about model outputs
 #'
-#' A dataset containing the list of variables and their description.
+#' A dataset containing the list of output variables and their description.
 #'
 #' @format A data frame with 150 rows and 7 variables:
 #' \describe{
@@ -12,9 +12,10 @@
 #'   \item{unit}{unit of the variable}
 #'   \item{variable_vba}{corresponding name of the variable in the VBA output}
 #' }
-"output_info"
+"i_output"
 
-#' Parameters table information
+
+#' Information about parameters
 #'
 #' A dataset containing the parameters order and description.
 #'
@@ -25,9 +26,10 @@
 #'   \item{unit}{unit}
 #'   \item{default}{default value for E.globus from original 3-PG}
 #' }
-"param_info"
+"i_parameters"
 
-#' sizeDist table information
+
+#' Information about size distribution parameters
 #'
 #' A dataset containing the parameters order and description.
 #'
@@ -38,102 +40,101 @@
 #'   \item{unit}{unit}
 #'   \item{default}{default value equal to 0}
 #' }
-"sizeDist_info"
+"i_sizeDist"
 
 
-#' Site information
+#' Site input
 #'
-#' Information about site conditions for the example data.
+#' Table containing the information about site conditions.
 #'
-#' @format A data frame with 1 rows and 8 variables:
+#' @format A \code{data frame} with 1 rows and 8 variables:
 #' \describe{
 #'   \item{latitude}{site latitude in the WGS84 coordinate system}
-#'   \item{soil_class}{\code{integer} representing the soil class, according to table ...}
-#'   \item{asw_i}{initial awailable soil water}
-#'   \item{asw_max}{minimum awailable soil water}
-#'   \item{asw_min}{maximum awailable soil water}
-#'   \item{year_i}{\code{integer} year when the simulation will start}
-#'   \item{month_i}{\code{integer} month when simulation will start, first month in the output file}
-#'   \item{altitude}{altitude of the site, m a.s.l.}
+#'   \item{altitude}{site altitude, m a.s.l.}
+#'   \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production}
+#'   \item{asw_i}{initial awailable soil water (mm)}
+#'   \item{asw_max}{minimum awailable soil water (mm)}
+#'   \item{asw_min}{maximum awailable soil water (mm)}
+#'   \item{from}{year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01"}
+#'   \item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month}
 #' }
-"site_eum"
+"d_site"
 
 
-#' Species information
+#' Species input
 #'
-#' Containing the information about species level data. Each row corresponds to one species/layer.
+#' Table containing the information about species level data. Each row corresponds to one species/cohort.
 #'
-#' @format A data frame with x rows and 8 variables:
+#' @format A a \code{data frame} with number of rows correcponding to each species/cohort and 8 variables:
 #' \describe{
-#'   \item{species}{\code{integer} species id}
-#'   \item{year_p}{\code{integer} year when the species was planted (from this we calculate species age)}
-#'   \item{month_p}{\code{integer} month when species was planted. Assumption is that species was planted in the end of this month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.}
-#'   \item{fertility}{soil fertility for a given species. Range from 0 to 1.}
+#'   \item{species}{species or cohort id/name. It shall be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+#'   \item{planted}{year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01"}
+#'   \item{fertility}{soil fertility for a given species. Range from 0 to 1}
+#'   \item{stems_n}{number of trees per ha}
+#'   \item{biom_stem}{stem biomass for a given species  (T/ha)}
+#'   \item{biom_root}{root biomass for a given species  (T/ha)}
 #'   \item{biom_foliage}{initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.}
-#'   \item{biom_root}{root biomass for a given species.}
-#'   \item{biom_stem}{stem biomass for a given species}
-#'   \item{n_trees}{number of trees per ha.}
 #' }
-"species_eum"
+"d_species"
 
 
-#' Climate forcing data
+#' Climate input
 #'
-#' Monthly values for climatic data
+#' Table containing the information about monthly values for climatic data.
 #'
-#' @format A data frame with 156 rows and 7 variables:
+#' @format Aa \code{data frame} with 156 rows and 7 variables:
 #' \describe{
 #'   \item{year}{calendar year}
 #'   \item{month}{month}
-#'   \item{tmp_min}{minimum monthly temperature}
-#'   \item{tmp_max}{maximum monthly temperature}
-#'   \item{tmp_ave}{average monthly temperature}
-#'   \item{prcp}{total monthly precipittation}
-#'   \item{srad}{solar radiation}
-#'   \item{frost_days}{number of frost days}
-#'   \item{co2}{atmospheric co2}
-#'   \item{d13catm}{d13catm}
+#'   \item{tmp_min}{monthly mean daily minimum temperature (C)}
+#'   \item{tmp_max}{monthly mean daily maximum temperature (C)}
+#'   \item{tmp_ave}{monthly mean daily maximum temperature (C). (optional)}
+#'   \item{prcp}{monthly rainfall (mm month-1)}
+#'   \item{srad}{monthly mean daily solar radiation (MJ m-2 d-1)}
+#'   \item{frost_days}{frost days per month (d month-1)}
+#'   \item{co2}{required if calculate_d13c=1 (optional)}
+#'   \item{d13catm}{required if calculate_d13c=1 (optional)}
 #' }
-"climate_eum"
+"d_climate"
 
 
-#' Management information
+#' Thinning input
 #'
-#' Information about management
+#' Table containing the information about thinnings
 #'
-#' @format A data frame with 3 rows and 6 variables:
+#' @format A \code{data frame} with 3 rows and 6 variables:
 #' \describe{
-#'   \item{species}{\code{integer} species id}
-#'   \item{age}{age at which management is done}
-#'   \item{n_trees}{number of trees remaining after management}
-#'   \item{foliage}{type of thinning (above/below). Default is 1}
-#'   \item{root}{type of thinning (above/below). Default is 1}
+#'   \item{species}{species or cohort id/name. It shall be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+#'   \item{age}{age when thinning is performed}
+#'   \item{stems_n}{number of trees remaining after management}
 #'   \item{stem}{type of thinning (above/below). Default is 1}
+#'   \item{root}{type of thinning (above/below). Default is 1}
+#'   \item{foliage}{type of thinning (above/below). Default is 1}
 #' }
-"thinn_eum"
+"d_thinning"
 
 
-#' Parameters information
+#' Parameters input
 #'
-#' Containing the information about parameters.
+#' Table containing the information about parameters to be modified.
 #'
-#' @format A data frame with 65 rows and x variables:
+#' @format A \code{data frame} with 65 rows and x variables:
 #' \describe{
-#'   \item{parameter}{name of the parameter}
+#'   \item{parameter}{name of the parameter, shall be consistent in naming with \code{\link{i_parameters}}}
 #'   \item{Fagus sylvatica}{parameter values for species 1}
 #'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
-"parameters_eum"
+"d_parameters"
 
 
-#' sizeDist information
+#' sizeDist input
 #'
-#' Containing the information about bias parameters.
+#' Table containing the information about size distribution to be modified.
 #'
 #' @format A data frame with 47 rows and x variables:
 #' \describe{
-#'   \item{parameter}{name of the parameter}
+#'   \item{parameter}{name of the parameter, shall be consistent in naming with \code{\link{i_sizeDist}}}
 #'   \item{Fagus sylvatica}{parameter values for species 1}
 #'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
-"sizeDist_eum"
+"d_sizeDist"

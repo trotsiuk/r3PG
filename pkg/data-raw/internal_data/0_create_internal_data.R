@@ -9,23 +9,24 @@
 #'
 #'
 
-var.default <- read.table("data-raw/internal_data/var.default.csv", header = T, stringsAsFactors = F, sep = ",")
+library(dplyr)
+library(readxl)
 
-param.default <- read.table("data-raw/internal_data/param.default.csv", header = T, stringsAsFactors = F, sep = ",")
+options(digits=16)
 
-sizeDist.default <- read.table("data-raw/internal_data/sizeDist.default.csv", header = T, stringsAsFactors = F, sep = ",")
+# internal data
+var.default <- read_excel('data-raw/internal_data/info.default.xlsx', sheet = 'output')
+
+param.default <- read_excel('data-raw/internal_data/info.default.xlsx', sheet = 'parameters')
+
+sizeDist.default <- read_excel('data-raw/internal_data/info.default.xlsx', sheet = 'sizeDist')
+
+usethis::use_data(var.default, param.default, sizeDist.default, internal = TRUE, overwrite = TRUE)
 
 
+# visible data
+i_output <- var.default
+i_parameters <- param.default
+i_sizeDist <- sizeDist.default
 
-# Save the data -----------------------------------------------------------
-
-usethis::use_data(var.default, param.default, sizeDist.default,
-  internal = TRUE, overwrite = TRUE)
-
-
-
-output_info <- var.default
-param_info <- param.default
-sizeDist_info <- sizeDist.default
-
-usethis::use_data( output_info, param_info, sizeDist_info, internal = FALSE, overwrite = TRUE)
+usethis::use_data( i_output, i_parameters, i_sizeDist, internal = FALSE, overwrite = TRUE)
