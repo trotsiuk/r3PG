@@ -26,16 +26,16 @@ for( site_id in settings.df$site){
   # site_id = "mixtures_eu"
   # site_id = 'mixtures_other'
   # site_id = 'broadleaf_pjs'
+  # site_id = 'evergreen_pjs'
   
   settings_i = filter(settings.df, site %in% site_id)
   
   site_i = filter(site.df, site %in% site_id) %>% .[,-1]
   species_i = filter(species.df, site %in% site_id) %>% .[,-1]
   climate_i = filter(climate.df, 
-    climate_id %in% settings_i$climate_id,
-    year >= site_i$year_i,  year <= settings_i$year_e) %>%
+    climate_id %in% settings_i$climate_id) %>%
     select_if(function(x){!all(is.na(x))}) %>%
-    select(-climate_id, -year, -month)
+    select(-climate_id)
   if( settings_i$thinning == 'yes'){
     thinn_i = filter(thinn.df, site %in% site_id) %>% .[,-1]
   }else{ 
@@ -44,7 +44,7 @@ for( site_id in settings.df$site){
   param_i = select(param.df, c('parameter', species_i$species))
   sizeDist_i = select(sizeDist.df, c('parameter', species_i$species))
   
-  out <- run_3PG(site_i, species_i, climate_i, thinn_i, param_i, sizeDist_i, as.list(settings_i[,2:6])) %>%
+  out <- run_3PG(site_i, species_i, climate_i, thinn_i, param_i, sizeDist_i, as.list(settings_i[,2:7])) %>%
     mutate( model = 'r3PG',
       site = site_id)
   
@@ -54,7 +54,7 @@ for( site_id in settings.df$site){
 
 
 # 2. Load and transform VBA -----------------------------------------------
-var_names_vba <- select(output_info, variable_vba, variable_name) %>% 
+var_names_vba <- select(i_output, variable_vba, variable_name) %>% 
   filter(nchar(variable_vba)>0) %>% 
   tibble::deframe()
 

@@ -5,18 +5,15 @@ context("Basic Model runs work")
 
 test_that("basic model run", {
   out <- run_3PG(
-    siteInputs = site_eum,
-    speciesInputs = species_eum,
-    forcingInputs = climate_eum,
-    managementInputs = NULL,
-    parameterInputs = parameters_eum,
-    sizeDistInputs = sizeDist_eum,
+    site = d_site,
+    species = d_species,
+    climate = d_climate,
+    thinning = d_thinning,
+    parameters = d_parameters,
+    size_dist = d_sizeDist,
     settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                    correct_sizeDist = 0, calculate_d13c = 0),
-    df_out = F)
-
-
-  out_long <- transf_out( out )
+      correct_sizeDist = 1, calculate_d13c = 0),
+    check_input = TRUE, df_out = TRUE)
 })
 
 
