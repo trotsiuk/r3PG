@@ -9,19 +9,17 @@ The r3PG serves as a flexible and easy-to-use interface for the 3-PGpjs and the 
 }
 \examples{
 out <- run_3PG(
-  siteInputs = site_eum,
-  speciesInputs = species_eum,
-  forcingInputs = climate_eum,
-  managementInputs = NULL,
-  parameterInputs = parameters_eum,
-  sizeDistInputs = sizeDist_eum,
+  site = d_site,
+  species = d_species,
+  climate = d_climate,
+  thinning = d_thinning,
+  parameters = d_parameters,
+  size_dist = d_sizeDist,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                  correct_sizeDist = 0, calculate_d13c = 0),
-  df_out = FALSE) # note that default is TRUE
+                  correct_sizeDist = 1, calculate_d13c = 0),
+  check_input = TRUE, df_out = TRUE) # note that default is TRUE
 
 str(out) # List output format
-
-outLong = transf_out(out) # df output format - identical to df_out = TRUE
 }
 \seealso{
 \code{\link{run_3PG}}

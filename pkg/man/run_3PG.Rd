@@ -4,87 +4,33 @@
 \alias{run_3PG}
 \title{Runs a 3-PG simulation}
 \usage{
-run_3PG(siteInputs, speciesInputs, forcingInputs, managementInputs = NULL,
-  parameterInputs = NULL, sizeDistInputs = NULL,
-  settings = list(light_model = 1, transp_model = 1, phys_model = 1,
-  correct_sizeDist = 0, calculate_d13c = 0), df_out = TRUE)
+run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
+  size_dist = NULL, settings = NULL, check_input = TRUE, df_out = TRUE)
 }
 \arguments{
-\item{siteInputs}{a \code{data frame} or \code{matrix} containing the information about site level data in the following order:
-\itemize{
-\item latitude: site latitude in the WGS84 coordinate system
-\item soil_class: soil class, according to table 2 of 3PGpjs user manual.
-\item asw_i: initial soil water in mm.
-\item asw_min: minimum soil water in mm.
-\item asw_max: maximum soil water in mm.
-\item year_i: initial year of the simulation.
-\item momth_i: initial month of the simulation, first month in the output file.
-\item altitude: altitude of the site, m a.s.l.
-}}
+\item{site}{table containing the information about site conditions.}
 
-\item{speciesInputs}{a \code{data frame} or \code{matrix} containing the information about species level data. Each row corresponds to one species/layer. The following order of the collumns apply:
-\itemize{
-\item species: species or cohort id/name. It shall be consistent with \code{parameterInputs} and \code{sizeDistInputs} table.
-\item year_p: year when the species was planted (it is used to calculate species age at the time of simulation).
-\item month_p: month when species was planted, assuming end of the month. E.g. if species is planted in January 2000, then in 31 April 2000 it will be 3 month.
-\item fertility: soil fertility for a given species. Range from 0 to 1.
-\item biom_foliage: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in summer.
-\item biom_root: root biomass for a given species.
-\item biom_stem: stem biomass for a given species.
-\item n_trees: number of trees per ha.
-}}
+\item{species}{table containing the information about species level data. Each row corresponds to one species/cohort.}
 
-\item{forcingInputs}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. First month shall corresponds to \code{year_i month_i} in the \code{siteInputs} table. The required variables are (tmp_min, tmp_max, prcp, srad, frost_days)
-\itemize{
-\item tmp_min: monthly mean daily minimum temperature (C).
-\item tmp_max: monthly mean daily maximum temperature (C).
-\item tmp_ave: monthly mean daily maximum temperature (C).
-\item prcp: monthly rainfall (mm month-1).
-\item srad: monthly mean daily solar radiation (MJ m-2 d-1).
-\item frost_days: frost days per month (d month-1).
-\item vpd_day: frost days per month (mbar).
-\item co2: required if calculate_d13c=1
-\item d13catm: required if calculate_d13c=1
-}}
+\item{climate}{table containing the information about monthly values for climatic data.}
 
-\item{managementInputs}{a \code{data frame} or \code{matrix} containing the information about management. The following order apply:
-\itemize{
-\item species: species or cohort id/name.
-\item age: age at which management is done.
-\item n_trees: number of trees remaining after management
-\item foliage: type of management (above/below). Default is 1.
-\item root: type of management (above/below). Default is 1.
-\item stem: type of management (above/below). Default is 1.
-}}
+\item{thinning}{table containing the information about thinnings.}
 
-\item{parameterInputs}{a \code{data frame} or \code{matrix} containing the parameters to be modified. Values that are not provided are replaced by defaults.
-\itemize{
-\item parameter: name of the parameter, shall be consistent in naming with \code{\link{param_info}}
-\item species: each column correspond to species/cohort id/name, as defined in \code{speciesInputs} table
-}}
+\item{parameters}{table containing the information about parameters to be modified.}
 
-\item{sizeDistInputs}{a \code{data frame} or \code{matrix} containing the size distribution parameters to be modified:
-\itemize{
-\item parameter: name of the parameter, shall be consistent in naming with \code{\link{sizeDist_info}}
-\item species: each column shall correspond to species/cohort id/name, as defined in \code{speciesInputs} table
-}}
+\item{size_dist}{table containing the information about size distribution to be modified.}
 
-\item{settings}{a list with settings for the model. Values that are not provided are replaced by defaults.
-\itemize{
-\item light_model: `1` - 3-PGpjs; `2` - 3-PGmix
-\item transp_model: `1` - 3-PGpjs; `2` - 3-PGmix
-\item phys_model:  `1` - 3-PGpjs; `2` - 3-PGmix
-\item correct_sizeDist: `0` - no; `1` - yes
-\item calculate_d13c: `0` - no; `1` - yes
-}}
+\item{settings}{a list with settings for the model.}
 
-\item{df_out}{\code{logical} if the output shall be in the 4-dimentional array (FALSE) or long data.frame (TRUE)}
+\item{check_input}{\code{logical} if the input shall be checked for consistensy. It will call \code{\link{prepare_input}} function.}
+
+\item{df_out}{\code{logical} if the output shall be long data.frame (TRUE) the 4-dimentional array (FALSE).}
 }
 \value{
-either a 4-dimentional array or a data.frame, depending on the parameter df_out. The matrix can also be transformed via the \code{\link{transf_out}} function.
+either a 4-dimentional array or a data.frame, depending on the parameter df_out.
 }
 \description{
-This function runs the 3-PGpjs or 3-PGmix model
+This function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
 }
 \details{
 `r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model (Landsberg & Waring, 1997), which simulate forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
@@ -96,20 +42,18 @@ The \code{run_3PG} also check for the quality of input data. In case that names,
 }
 \examples{
 out <- run_3PG(
-  siteInputs = site_eum,
-  speciesInputs = species_eum,
-  forcingInputs = climate_eum,
-  managementInputs = NULL,
-  parameterInputs = parameters_eum,
-  sizeDistInputs = sizeDist_eum,
+  site = d_site,
+  species = d_species,
+  climate = d_climate,
+  thinning = d_thinning,
+  parameters = d_parameters,
+  size_dist = d_sizeDist,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                  correct_sizeDist = 0, calculate_d13c = 0),
-  df_out = FALSE) # note that default is TRUE
+                  correct_sizeDist = 1, calculate_d13c = 0),
+  check_input = TRUE, df_out = TRUE) # note that default is TRUE
 
 str(out) # List output format
-
-outLong = transf_out(out) # df output format - identical to df_out = TRUE
 }
 \seealso{
-\code{\link{transf_out}}
+\code{\link{prepare_input}}
 }

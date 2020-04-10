@@ -16,15 +16,15 @@ The main function is `run_3PG()` which returns all 108 simulated variables for e
 ```r
 library(r3PG)
 out_3PG <- run_3PG(
-  siteInputs        = site_eum, 
-  speciesInputs     = species_eum, 
-  forcingInputs     = climate_eum, 
-  managementInputs  = thinn_eum,
-  parameterInputs   = parameters_eum, 
-  sizeDistInputs    = sizeDist_eum,
-  settings          = list(light_model = 2, transp_model = 2, phys_model = 2, 
+  site        = d_site, 
+  species     = d_species, 
+  climate     = d_climate, 
+  thinning    = d_thinning,
+  parameters  = d_parameters, 
+  size_dist   = d_sizeDist,
+  settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
                            correct_sizeDist = 0, calculate_d13c = 0),
-  df_out = TRUE)
+  check_input = TRUE, df_out = TRUE)
 
 head( out_3PG )
 ```
