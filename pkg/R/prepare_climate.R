@@ -1,18 +1,21 @@
 #' @title Subsets or replicate a climate data
-#' @description This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting.
+#' @description This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from the longer time-series of climate data.
 #'
-#' @param climate  a \code{data frame} or \code{matrix} containing the information about climatic forcing data. In case you want to replicate average climate it shall have exactly 12, one for each month. In case one want to subset, it shall contain the period for subsetting and two additional columns: year and month.  Additionally can include: tmp_ave, c02, d13catm. The minimum required columns are listed below.
+#' @param climate  a \code{data frame} or \code{matrix} containing the information about climatic forcing data. If the climate table have exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. It is required to include columsn \code{year} and \code{month} in case climate table shall be subsetted to selected period. The minimum required columns are listed below, but additionally you can include: tmp_ave, c02, d13catm.
 #' \itemize{
-#' \item year: numeric, year of observation (only reguired for subsetting.
-#' \item month: numeric, months of observation (only reguired for subsetting.
+#' \item year: year of observation (only reguired for subsetting) (numeric).
+#' \item month: months of observation (only reguired for subsetting) (numeric).
 #' \item tmp_min: monthly mean daily minimum temperature (C).
 #' \item tmp_max: monthly mean daily maximum temperature (C).
 #' \item prcp: monthly rainfall (mm month-1).
 #' \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 #' \item frost_days: frost days per month (d month-1).
+#' \item tmp_ave: monthly mean daily mean temperature (C) (optional).
+#' \item co2: required if calculate_d13c=1 (optional).
+#' \item d13catm: required if calculate_d13c=1 (optional).
 #' }
-#' @param from from which date climate data shall be included. Shall be provided as character, in form of year-month. E.g. "2000-01"
-#' @param to to which date climate data shall be included. Shall be provided as character, in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month
+#' @param from Year and month indicated the start of climate data. Shall be provided as character, in form of year-month. E.g. "2000-01"
+#' @param to  Year and month of the last date for simulations. Shall be provided as character, in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month
 #'
 #' @details This function prepares the climate table for the model.
 #'
@@ -20,7 +23,7 @@
 #'
 #' In case a larger climate file is provided, the simulation period is selected from this.
 #'
-#' @example inst/examples/prepare_climateHelp.R
+#' @example inst/examples/prepare_climate-help.R
 #'
 #' @export
 #'
@@ -30,10 +33,17 @@ prepare_climate <- function(
   to = '2010-11'
 ){
 
+  # Test for the columns consistensy
   if( !all(c("tmp_min","tmp_max","prcp","srad","frost_days") %in% colnames(climate)) ){
-    stop( 'climate table shall include: tmp_min,tmp_max,prcp,srad,frost_days' )
+    stop( 'Climate table shall include the following columns: tmp_min, tmp_max, prcp, srad, frost_days' )
   }
 
+  # Test for NA
+  if( any( is.na(climate) ) ){
+    stop( "Climate table should not contain NA's" )
+  }
+
+  # prepare the time period
   from = as.Date(paste(from,"-01",sep=""))
   to = as.Date(paste(to,"-01",sep=""))
 
@@ -41,33 +51,79 @@ prepare_climate <- function(
     stop( 'The start date is later than the end date' )
   }
 
-  if( nrow(climate) == 12 ){
+  # make data.frame
+  climate = data.frame(climate)
+
+  # Replicate or subset the data
+  if( dim(climate)[1] == 12 ){
 
     n_years <- as.numeric(format(to,'%Y')) - as.numeric(format(from,'%Y'))
     month_i <- as.numeric(format(from,'%m'))
     month_e <- as.numeric(format(to,'%m'))
 
-    out = do.call("rbind", replicate(n_years, climate, simplify = FALSE))
+    climate = do.call("rbind", replicate(n_years, climate, simplify = FALSE))
 
     if( month_i > 1 ){
-      out = out[-c(1:(month_i-1)),]
+      climate = climate[-c(1:(month_i-1)),]
     }
 
     if( month_e < 12 ){
-      out = out[1:(nrow(out)-(12-month_e)),]
+      climate = climate[1:(nrow(climate)-(12-month_e)),]
     }
 
   } else {
 
-    col_select = intersect( c('tmp_min', 'tmp_max', 'tmp_ave', 'prcp', 'srad', 'frost_days', 'vpd_day', 'co2', 'd13catm'),
-      colnames(climate))
+    # test if year and month column are present
+    if( !all(c("year", "month") %in% colnames(climate)) ){
+      stop( 'Climate table shall include year and month for subsettins.' )
+    }
 
     climate$date = as.Date( paste(climate$year, '-', climate$month, "-01",sep="") )
 
-    out = climate[climate$date >= from & climate$date <= to, col_select]
+    # Test if we climate data cover the requested range
+    if( any( from < min(climate$date), to > max(climate$date)) ){
+      stop( 'Requested time period is outside of providate dates in climate table.')
+    }
+
+    climate = climate[climate$date >= from & climate$date <= to, ]
+
   }
 
-  return( out )
+  # Add Average temperature if missing
+  if( !'tmp_ave' %in% colnames(climate) ){
+    climate$tmp_ave = (climate$tmp_min + climate$tmp_max) / 2
+  }
+
+  # Add VPD if missing
+  if( !'vpd_day' %in% colnames(climate) ){
+    climate$vpd_day = get_vpd( climate$tmp_min, climate$tmp_max)
+  }
+
+  # Add default CO2 if missing
+  if( !'co2' %in% colnames(climate) ){
+    climate$co2 = 350
+  }
+
+  # Add default d13catm if missing
+  if( !'d13catm' %in% colnames(climate) ){
+    climate$d13catm = NA_real_
+  }
+
+  # Select final table
+  climate = climate[,c('tmp_min', 'tmp_max', 'tmp_ave', 'prcp', 'srad', 'frost_days', 'vpd_day', 'co2', 'd13catm')]
+
+  return( climate )
 }
 
 
+
+
+get_vpd <- function(tmin, tmax){
+  # internal function to calculate VPD if not available
+  vpd_min = 6.10780 * exp(17.2690 * tmin / (237.30 + tmin))
+  vpd_max = 6.10780 * exp(17.2690 * tmax / (237.30 + tmax))
+
+  vpd_day = (vpd_max - vpd_min) / 2
+
+  return(vpd_day)
+}

@@ -7,23 +7,26 @@
 prepare_climate(climate, from = "2000-04", to = "2010-11")
 }
 \arguments{
-\item{climate}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. In case you want to replicate average climate it shall have exactly 12, one for each month. In case one want to subset, it shall contain the period for subsetting and two additional columns: year and month.  Additionally can include: tmp_ave, c02, d13catm. The minimum required columns are listed below.
+\item{climate}{a \code{data frame} or \code{matrix} containing the information about climatic forcing data. If the climate table have exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. It is required to include columsn \code{year} and \code{month} in case climate table shall be subsetted to selected period. The minimum required columns are listed below, but additionally you can include: tmp_ave, c02, d13catm.
 \itemize{
-\item year: numeric, year of observation (only reguired for subsetting.
-\item month: numeric, months of observation (only reguired for subsetting.
+\item year: year of observation (only reguired for subsetting) (numeric).
+\item month: months of observation (only reguired for subsetting) (numeric).
 \item tmp_min: monthly mean daily minimum temperature (C).
 \item tmp_max: monthly mean daily maximum temperature (C).
 \item prcp: monthly rainfall (mm month-1).
 \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 \item frost_days: frost days per month (d month-1).
+\item tmp_ave: monthly mean daily mean temperature (C) (optional).
+\item co2: required if calculate_d13c=1 (optional).
+\item d13catm: required if calculate_d13c=1 (optional).
 }}
 
-\item{from}{from which date climate data shall be included. Shall be provided as character, in form of year-month. E.g. "2000-01"}
+\item{from}{Year and month indicated the start of climate data. Shall be provided as character, in form of year-month. E.g. "2000-01"}
 
-\item{to}{to which date climate data shall be included. Shall be provided as character, in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month}
+\item{to}{Year and month of the last date for simulations. Shall be provided as character, in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month}
 }
 \description{
-This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting.
+This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from the longer time-series of climate data.
 }
 \details{
 This function prepares the climate table for the model.
@@ -33,8 +36,12 @@ In case a user provide only average climate, this is replicated for the desired 
 In case a larger climate file is provided, the simulation period is selected from this.
 }
 \examples{
+# subsetting climate data
+prepare_climate( climate = climate_eum, from = '2003-04', to = '2010-11')
+
+# replicating climate data
 climate = matrix(rnorm(60), ncol = 5)
 colnames(climate) = c("tmp_min", "tmp_max", "prcp", "srad", "frost_days")
 
-prepare_climate( climate, from = '2000-04', to = '2010-11')
+prepare_climate( climate = climate, from = '2000-04', to = '2010-11')
 }

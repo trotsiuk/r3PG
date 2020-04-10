@@ -83,6 +83,8 @@
 #'
 #' @format A data frame with 156 rows and 7 variables:
 #' \describe{
+#'   \item{year}{calendar year}
+#'   \item{month}{month}
 #'   \item{tmp_min}{minimum monthly temperature}
 #'   \item{tmp_max}{maximum monthly temperature}
 #'   \item{tmp_ave}{average monthly temperature}

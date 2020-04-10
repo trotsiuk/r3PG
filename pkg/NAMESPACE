@@ -2,6 +2,7 @@
 
 export(f_3PG)
 export(prepare_climate)
+export(prepare_thinning)
 export(run_3PG)
 export(transf_out)
 useDynLib(r3PG)

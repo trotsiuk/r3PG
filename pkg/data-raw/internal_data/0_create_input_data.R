@@ -15,7 +15,7 @@ site_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'site')
 species_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'species')
 
 climate_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'climate') %>%
-  select(tmp_min, tmp_max, tmp_ave, prcp, srad, frost_days, co2, d13catm)
+  select(year, month, tmp_min, tmp_max, tmp_ave, prcp, srad, frost_days, co2, d13catm)
 
 parameters_eum <- read_excel('data-raw/internal_data/input_eum.xlsx', sheet = 'parameters')
 
