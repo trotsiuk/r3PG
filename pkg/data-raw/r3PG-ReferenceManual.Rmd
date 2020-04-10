@@ -105,27 +105,36 @@ As a second example, we will first performed a `Morris` screening and then perfo
 To perform a `morris` sensitivity analysis and `Bayesian calibration` we construct the log Likelihood function. The log Likelihood function was calculated using normal error assumptions for six variables that describe stand stocks and characteristics: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. To calculate the stand-level stocks, we applied the biomass equations developed for European forests following Forrester et al. (2017) for each measured tree, and summed it up to the stand level in Mg dry matter $ha^{-1}$. 
 
 ```{r funs}
-r3pg_ll <- function( pars ){
-  #' @param pars a vector of parameters for the calibration, including errors 
-
-  # replace the default values for the selected parameters
-  pars <- setNames(pars, par_cal_names)
+r3pg_sim <- function( par_df, ...){
+  #' @description function to simulate the model for a given parameters
+  #' @param par_df data frame of the parameters with two columns: parameter, piab
   
-  par_def <- pars[-grep('err', par_cal_names)]
-  par_def <- data.frame(parameter = names(par_def), piab = par_def)
-  err_def <- pars[grep('err', par_cal_names)]
-  
-  # simulate the model
   sim.df <- run_3PG(
     site = site_solling, 
     species = species_solling,
     climate = climate_solling,
     thinning = thinn_solling,
-    parameters = par_def, 
+    parameters = par_df, 
     size_dist = NULL,
     settings =  list(light_model = 1, transp_model = 1, phys_model = 1),
-    check_input = TRUE, df_out = FALSE )
+    check_input = TRUE, ...)
   
+  return( sim.df )
+}
+
+
+r3pg_ll <- function( par_v ){
+  #' @param par_v a vector of parameters for the calibration, including errors 
+  #' par_v = par_cal_best
+  
+  # replace the default values for the selected parameters
+  err_id = grep('err', par_cal_names)
+  
+  par_df = data.frame(parameter = par_cal_names[-err_id], piab = par_v[-err_id])
+  err_v = par_v[err_id]
+  
+  # simulate the model
+  sim.df <- r3pg_sim(par_df, df_out = FALSE)
   sim.df <- cbind(sim.df[,,2,c(3,5,6)], sim.df[,,4,c(1,2,3)])
   
   # calculate the log likelihood
@@ -210,7 +219,7 @@ morrisOut.df %>%
 
 We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity plus six errors parrameters for each of the observational variable. We will run 3 parallel chains, each on the separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours. 
 
-```{r mcmc, eval=F}
+```{r mcmc_par, eval=T}
 # which parameters to calibrate
 par_select <- morrisOut.df$parameter %>% .[-grep('err', .)] %>% tail(., 20) %>% as.character()
 par_id <- which(par_cal_names %in% c(par_select,  error_solling$param_name) )
@@ -224,11 +233,12 @@ mcmc_setup <- createBayesianSetup(
   likelihood = r3pg_ll, 
   prior = createUniformPrior(par_cal_min, par_cal_max, par_cal_best), 
   names = par_cal_names)
-  
+```
+```{r mcmc, eval=F}
 mcmc_out <- runMCMC(
   bayesianSetup = mcmc_setup, 
   sampler = "DEzs",
-  settings = list(iterations = 4e+04, nrChains = 3))
+  settings = list(iterations = 4e+03, nrChains = 3))
 ```
 ```{r mcmc_load, include=F}
 load('vignette_data/mcmc.rda')
@@ -242,42 +252,28 @@ gelmanDiagnostics( mcmc_out )
 
 To evaluate the model performance, we draw ~500 samples from the mcmc object and run model simulations for each of the parameter combinations to understand model uncertainties.
 ```{r mcmc_draw}
+par_def.df <- select(param_solling, parameter = param_name, piab = default)
+
 param.draw <- getSample(mcmc_out, numSamples = 500, coda = F, whichParameters = 1:20) %>%
   as.data.frame() %>%
   mutate(mcmc_id = 1:n()) %>%
   nest_legacy(-mcmc_id, .key = 'pars')   %>%
-  mutate( pars = map(pars, unlist))
+  mutate( 
+    pars = map(pars, unlist),
+    pars = map(pars, ~tibble::enframe(.x, 'parameter', 'piab')),
+    pars = map(pars, ~bind_rows(.x, filter(par_def.df, !parameter %in% par_cal_names))))
 ```
 
 We then simulate the forest growth using the defaults and the drawn parameters combination. Afterwards, we visualize the posteriori predition range by drawing the $5^{th}$ and $95^{th}$ range of predictions. The callibrated model simulate well the observational data.
 ```{r sim_post, fig.height=4.5, fig.width=6.6}
-sim_r3PG <- function( pars ){
-  #' @description function to simulate the model for a given parameter combinations
-  #' @param pars a named vector of parameters, excluding error parameters
-
-  pars = pars[-grep('err', names(pars))]
-  
-  sim.df <- run_3PG(
-    site = site_solling, 
-    species = species_solling,
-    climate = climate_solling,
-    thinning = thinn_solling,
-    parameters = data.frame(parameter = names(pars), piab = pars), 
-    size_dist = NULL,
-    settings =  list(light_model = 1, transp_model = 1, phys_model = 1),
-    check_input = TRUE, df_out = TRUE )
-  
-  return( sim.df )
-}
-
 # default run
-def_run.df <- sim_r3PG( setNames(par_cal_best, par_cal_names) ) %>%
+def_run.df <- r3pg_sim( par_df = par_def.df, df_out = T) %>%
   select(date, variable, value) %>%
   mutate(run = 'default')
 
 # calibrated run
-post_run.df <-  param.draw %>%
-  mutate( sim = map( pars, sim_r3PG)) %>%
+post_run.df <- param.draw   %>%
+  mutate( sim = map( pars, ~r3pg_sim(.x, df_out = T)) ) %>%
   select(mcmc_id, sim) %>%
   unnest_legacy() %>%
   group_by(date, variable) %>%
@@ -319,26 +315,31 @@ sim.df %>%
 
 3-PG is a cohort level model. Thus, to make a simulation across a landscapes we need to explicitly simulate each individual grid point. For this purpose, we will simulate  the *Picea abies* stand biomass across distribution in Switzerland on a 1x1 km grid. In total it summed to ~18’000 grid points over Switzerland. We have prepared the input data, including climate and soil information for each of the grid point. We used interpolated meteorological data done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton, Running, & White, 1997). Grid-specific information on soil type and plant available soil water was retrieved from European Soil Database Derived data (Hiederer 2013). In addition, we use ~500 samples drawn from the previously obtained mcmc object and run model simulations for each of the parameter combinations to understand simulation uncertainties. 
 
+```{r grid_input}
+load('vignette_data/grid_input.rda')
+library(multidplyr)
+```
+
 We construct a function, which requires site and climate information as input, and calculate $5^{th}$, $50^{th}$ and $95^{th}$ percentile from ~500 simulated runs. To do so, we use the `multidplyr` package for distributing computing. In total, it takes less than 1 hour on a computer cluster with 50 processes (CPU time ~20 hours). 
+
 ```{r grid_sim, eval=F}
-sim_r3PG_draw <- function(site, forc){
+r3pg_grid <- function(site, forc){
   #' @description simulate the n runs for a given site with the drawn parameters combination
   
-  r_3pg_int <- function( p ){
+  
+  r3pg_int <- function( par_df){
     #' @description function to run one site and return reguired output on standing biomass
-    #' @param p a vector of parameters
-    # p = param.draw$pars[[1]]
+    #' @param par_df a data.frame of parameters
     
-    par_def[which( names(par_def) %in% names(p))] = p
-    
-    out <- f_3PG(site, species.grid, forc, thinn.grid, par_def, matrix(NA_real_,nrow =47,ncol= 1),
-      1L, nrow(forc), 1L, 0L, c(1L,1L,1L,0L,0L), 'piab', df_out = F)$sim[,,4,1]
+    out <- run_3PG(site, species.grid, forc, thinn.grid, par_df, NULL, 
+      list(light_model = 1, transp_model = 1, phys_model = 1), check_input = TRUE,
+      df_out = F)[,,4,1]
     
     return( last( out ) )
   }
   
   site_out <- param.draw %>%
-    mutate( sim = map( pars, r_3pg_int)) %>%
+    mutate( sim = map( pars, r3pg_int)) %>%
     select(mcmc_id, sim) %>%
     unnest_legacy() %>%
     summarise(
@@ -351,16 +352,16 @@ sim_r3PG_draw <- function(site, forc){
 
 cl_in <- create_cluster() %>%
   cluster_library(c('r3PG', 'purrr', 'dplyr', 'tidyr')) %>%
-  cluster_copy( sim_r3PG_draw ) %>%
+  cluster_copy( r3pg_grid ) %>%
   cluster_copy( species.grid ) %>%
   cluster_copy( thinn.grid ) %>%
-  cluster_copy( param.draw ) %>%
-  cluster_copy( par_def)
+  cluster_copy( param.draw )
 
 #' `hide the sample_n`
 sim.grid <- inner_join(site.grid, climate.grid, by = 'grid_id')  %>%
+  sample_n(10) %>% # remove this for full simulation
   partition(grid_id, cluster = cl_in) %>%
-  mutate( out = map2(site, forc, ~sim_r3PG_draw(.x, .y))) %>%
+  mutate( out = map2(site, forc, ~r3pg_grid(.x, .y))) %>%
   select( grid_id, out) %>%
   collect() %>%
   unnest_legacy() %>%
