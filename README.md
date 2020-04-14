@@ -23,7 +23,7 @@ out_3PG <- run_3PG(
   parameters  = d_parameters, 
   size_dist   = d_sizeDist,
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
-                           correct_sizeDist = 0, calculate_d13c = 0),
+                height_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
   check_input = TRUE, df_out = TRUE)
 
 head( out_3PG )
@@ -42,6 +42,23 @@ out_3PG %>%
   geom_line() +
   facet_wrap(~variable, scales = 'free') +
   theme_classic()
+```
+
+If you prefer to use data stored in `xcell`, you can use the below example. Data to reproduce this example are stored in `[data-raw/internal_data/data.input.xlsx](https://github.com/trotsiuk/r3PG/blob/master/pkg/data-raw/internal_data/data.input.xlsx)`.
+
+``` r
+library(readxl)
+
+run_3PG(
+  site        = read_xlsx('data.input.xlsx', 'site'),
+  species     = read_xlsx('data.input.xlsx', 'species'),
+  climate     = read_xlsx('data.input.xlsx', 'climate'),
+  thinning    = read_xlsx('data.input.xlsx', 'thinning'),
+  parameters  = read_xlsx('data.input.xlsx', 'parameters'), 
+  size_dist   = read_xlsx('data.input.xlsx', 'sizeDist'),
+  settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
+                height_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
+  check_input = TRUE, df_out = TRUE)
 ```
 
 ## Installation
