@@ -57,7 +57,7 @@ prepare_climate <- function(
   # Replicate or subset the data
   if( dim(climate)[1] == 12 ){
 
-    n_years <- as.numeric(format(to,'%Y')) - as.numeric(format(from,'%Y'))
+    n_years <- as.numeric(format(to,'%Y')) - as.numeric(format(from,'%Y')) + 1
     month_i <- as.numeric(format(from,'%m'))
     month_e <- as.numeric(format(to,'%m'))
 
