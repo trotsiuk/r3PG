@@ -44,7 +44,7 @@ out_3PG %>%
   theme_classic()
 ```
 
-If you prefer to use data stored in `xcell`, you can use the below example. Data to reproduce this example are stored in `[data-raw/internal_data/data.input.xlsx](https://github.com/trotsiuk/r3PG/blob/master/pkg/data-raw/internal_data/data.input.xlsx)`.
+If you prefer to use data stored in `xcell`, you can use the below example. Data to reproduce this example are stored in [data-raw/internal_data/data.input.xlsx](https://github.com/trotsiuk/r3PG/blob/master/pkg/data-raw/internal_data/data.input.xlsx).
 
 ``` r
 library(readxl)
