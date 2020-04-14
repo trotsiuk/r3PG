@@ -49,13 +49,15 @@ If you prefer to use data stored in `xcell`, you can use the below example. Data
 ``` r
 library(readxl)
 
+f_loc <- 'data.input.xlsx'
+
 run_3PG(
-  site        = read_xlsx('data.input.xlsx', 'site'),
-  species     = read_xlsx('data.input.xlsx', 'species'),
-  climate     = read_xlsx('data.input.xlsx', 'climate'),
-  thinning    = read_xlsx('data.input.xlsx', 'thinning'),
-  parameters  = read_xlsx('data.input.xlsx', 'parameters'), 
-  size_dist   = read_xlsx('data.input.xlsx', 'sizeDist'),
+  site        = read_xlsx(f_loc, 'site'),
+  species     = read_xlsx(f_loc, 'species'),
+  climate     = read_xlsx(f_loc, 'climate'),
+  thinning    = read_xlsx(f_loc, 'thinning'),
+  parameters  = read_xlsx(f_loc, 'parameters'), 
+  size_dist   = read_xlsx(f_loc, 'sizeDist'),
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
                 height_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
   check_input = TRUE, df_out = TRUE)
