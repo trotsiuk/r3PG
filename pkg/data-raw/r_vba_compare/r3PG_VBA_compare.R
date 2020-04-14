@@ -117,3 +117,10 @@ data.df %>%
 
 ggsave('data-raw/r_vba_compare/r3pg_vba.png', width = 15, height = 8, units = c("in"), dpi = 'retina', bg = "transparent")
 
+
+i_var <- c('stems_n', 'biom_stem', 'biom_root', 'biom_foliage')
+ast <- data.df %>%
+  filter(date == as.Date('2009-12-31')) %>%
+  filter(variable %in% i_var) %>%
+  select(site, species, variable, value, model) %>%
+  spread(model, value)
