@@ -62,6 +62,8 @@ prepare_climate <- function(
     month_e <- as.numeric(format(to,'%m'))
 
     climate = do.call("rbind", replicate(n_years, climate, simplify = FALSE))
+    climate$year = rep( as.numeric(format(from,'%Y')):as.numeric(format(to,'%Y')), each = 12)
+    climate$month = rep(1:12, times = n_years)
 
     if( month_i > 1 ){
       climate = climate[-c(1:(month_i-1)),]
@@ -106,11 +108,11 @@ prepare_climate <- function(
 
   # Add default d13catm if missing
   if( !'d13catm' %in% colnames(climate) ){
-    climate$d13catm = NA_real_
+    climate$d13catm = -7.1
   }
 
   # Select final table
-  climate = climate[,c('tmp_min', 'tmp_max', 'tmp_ave', 'prcp', 'srad', 'frost_days', 'vpd_day', 'co2', 'd13catm')]
+  climate = climate[,c("year", "month",'tmp_min', 'tmp_max', 'tmp_ave', 'prcp', 'srad', 'frost_days', 'vpd_day', 'co2', 'd13catm')]
 
   return( climate )
 }

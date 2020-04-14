@@ -80,6 +80,7 @@ run_3PG <- function(
 
   # climate
   n_m = dim(climate)[1]
+  climate = climate[,c('tmp_min', 'tmp_max', 'tmp_ave', 'prcp', 'srad', 'frost_days', 'vpd_day', 'co2', 'd13catm')]
   climate = as.matrix( climate, nrow = n_m, ncol = 9)
 
   # thinning
