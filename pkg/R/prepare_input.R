@@ -61,7 +61,7 @@
 #' \item transp_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
 #' \item phys_model:  `1` - 3-PGpjs (default); `2` - 3-PGmix
 #' \item height_model: `1` - linear (default); `2` - non-linear
-#' \item correct_sizeDist: `0` - no (default); `1` - yes
+#' \item correct_bias: `0` - no (default); `1` - yes
 #' \item calculate_d13c: `0` - no (default); `1` - yes
 #' }
 #'
@@ -93,7 +93,7 @@ prepare_input <- function(
   }
 
   # Settings
-  set_def = list(light_model = 1, transp_model = 1, phys_model = 1, height_model = 1, correct_sizeDist = 0, calculate_d13c = 0)
+  set_def = list(light_model = 1, transp_model = 1, phys_model = 1, height_model = 1, correct_bias = 0, calculate_d13c = 0)
   set_def[names(settings)] <- settings
 
   # Climate
@@ -112,7 +112,7 @@ prepare_input <- function(
   parameters = prepare_parameters( parameters = parameters, sp_names = species$species)
 
   # Size distribution
-  if( set_def['correct_sizeDist'] == 1 & is.null(size_dist) ){
+  if( set_def['correct_bias'] == 1 & is.null(size_dist) ){
     stop('Please provide size_dist table or change the setting to size_dist = 0')
   }
   size_dist = prepare_sizeDist( size_dist = size_dist, sp_names = species$species)

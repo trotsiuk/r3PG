@@ -197,7 +197,7 @@ contains
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
             call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
         end do
 
@@ -267,7 +267,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
                 b_cor = .FALSE.
@@ -557,7 +557,7 @@ contains
                 competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
             
                 call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                    correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                    correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                     dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
             end do 
 
@@ -651,7 +651,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -704,7 +704,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -768,7 +768,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_sizeDist, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -1517,7 +1517,7 @@ contains
 
 
     subroutine s_sizeDist_correct (n_sp, age, stems_n, biom_tree, competition_total, lai, &
-        correct_sizeDist, height_model, pars_s, pars_b, aWs, nWs, pfsPower, pfsConst, &
+        correct_bias, height_model, pars_s, pars_b, aWs, nWs, pfsPower, pfsConst, &
         dbh, basal_area, height, crown_length, crown_width, pFS, bias_scale)
     
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
@@ -1539,7 +1539,7 @@ contains
         real(kind=8), dimension(n_sp), intent(in) :: lai
     
         ! parameters
-        integer, intent(in) :: correct_sizeDist ! if the distribution shall be fitted
+        integer, intent(in) :: correct_bias ! if the distribution shall be fitted
         integer, intent(in) :: height_model ! which heigh equation
         real(kind=8), dimension(17, n_sp), intent(in) :: pars_s ! parameters for bias
         real(kind=8), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
@@ -1604,7 +1604,7 @@ contains
         where( wslocation0(:)==0.d0 .and. wslocationB(:)==0.d0 .and. wslocationrh(:)==0.d0 .and. &
             wslocationt(:)==0.d0 .and. wslocationC (:)==0.d0 ) wslocation(:) = 0.d0
 
-        if (correct_sizeDist .eq. 1 ) then
+        if (correct_bias .eq. 1 ) then
 
             ! Calculate the DW scale -------------------
             DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * Log(height_rel(:)) + & 

@@ -6,7 +6,7 @@ out <- run_3PG(
   parameters = d_parameters,
   size_dist = d_sizeDist,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                  correct_sizeDist = 1, calculate_d13c = 0),
+                  correct_bias = 1, calculate_d13c = 0),
   check_input = TRUE, df_out = TRUE) # note that default is TRUE
 
 str(out) # List output format

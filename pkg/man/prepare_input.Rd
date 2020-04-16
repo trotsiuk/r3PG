@@ -74,7 +74,7 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 \item transp_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
 \item phys_model:  `1` - 3-PGpjs (default); `2` - 3-PGmix
 \item height_model: `1` - linear (default); `2` - non-linear
-\item correct_sizeDist: `0` - no (default); `1` - yes
+\item correct_bias: `0` - no (default); `1` - yes
 \item calculate_d13c: `0` - no (default); `1` - yes
 }}
 }

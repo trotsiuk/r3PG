@@ -23,7 +23,7 @@ out_3PG <- run_3PG(
   parameters  = d_parameters, 
   size_dist   = d_sizeDist,
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
-                height_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
+                height_model = 1, correct_bias = 0, calculate_d13c = 0),
   check_input = TRUE, df_out = TRUE)
 
 head( out_3PG )
@@ -59,7 +59,7 @@ run_3PG(
   parameters  = read_xlsx(f_loc, 'parameters'), 
   size_dist   = read_xlsx(f_loc, 'sizeDist'),
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
-                height_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
+                height_model = 1, correct_bias = 0, calculate_d13c = 0),
   check_input = TRUE, df_out = TRUE)
 ```
 

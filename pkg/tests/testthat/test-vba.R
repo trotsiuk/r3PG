@@ -12,7 +12,7 @@ test_that("Evergreen 3-PGpjs check", {
     parameters = d_parameters[,c(1,3)],
     size_dist = NULL,
     settings = list(light_model = 1, transp_model = 1, phys_model = 1,
-      height_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
+      height_model = 1, correct_bias = 0, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
   testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(125.401, 39.128, 3.843) ) )
@@ -27,7 +27,7 @@ test_that("Evergreen 3-PGmix check", {
     parameters = d_parameters[,c(1,3)],
     size_dist = d_sizeDist[,c(1,3)],
     settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-      height_model = 1, correct_sizeDist = 1, calculate_d13c = 0),
+      height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
   testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(127.185, 41.156, 3.994) ) )
@@ -43,7 +43,7 @@ test_that("Broadleaf 3-PGpjs check", {
     parameters = d_parameters[,c(1,2)],
     size_dist = NULL,
     settings = list(light_model = 1, transp_model = 1, phys_model = 1,
-      height_model = 1, correct_sizeDist = 0, calculate_d13c = 0),
+      height_model = 1, correct_bias = 0, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
   testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(129.985, 31.348, 0.000) ) )
@@ -58,7 +58,7 @@ test_that("Broadleaf 3-PGmix check", {
     parameters = d_parameters[,c(1,2)],
     size_dist = d_sizeDist[,c(1,2)],
     settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-      height_model = 1, correct_sizeDist = 1, calculate_d13c = 0),
+      height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
   testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(132.313, 32.994, 0.000) ) )
@@ -74,7 +74,7 @@ test_that("Mixtures 3-PGmix check", {
     parameters = d_parameters,
     size_dist = d_sizeDist,
     settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-      height_model = 1, correct_sizeDist = 1, calculate_d13c = 0),
+      height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
   testthat::expect_true( all( round( out[120,1,4,1:3], 3) == c(85.934, 19.359, 0.000) ) )
