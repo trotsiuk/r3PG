@@ -52,9 +52,9 @@
 #'   \item{latitude}{site latitude in the WGS84 coordinate system}
 #'   \item{altitude}{site altitude, m a.s.l.}
 #'   \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production}
-#'   \item{asw_i}{initial awailable soil water (mm)}
-#'   \item{asw_max}{minimum awailable soil water (mm)}
-#'   \item{asw_min}{maximum awailable soil water (mm)}
+#'   \item{asw_i}{initial available soil water (mm)}
+#'   \item{asw_max}{minimum available soil water (mm)}
+#'   \item{asw_min}{maximum available soil water (mm)}
 #'   \item{from}{year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01"}
 #'   \item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month}
 #' }
@@ -67,7 +67,7 @@
 #'
 #' @format A a \code{data frame} with number of rows correcponding to each species/cohort and 8 variables:
 #' \describe{
-#'   \item{species}{species or cohort id/name. It shall be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+#'   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
 #'   \item{planted}{year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01"}
 #'   \item{fertility}{soil fertility for a given species. Range from 0 to 1}
 #'   \item{stems_n}{number of trees per ha}
@@ -104,7 +104,7 @@
 #'
 #' @format A \code{data frame} with 3 rows and 6 variables:
 #' \describe{
-#'   \item{species}{species or cohort id/name. It shall be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+#'   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
 #'   \item{age}{age when thinning is performed}
 #'   \item{stems_n}{number of trees remaining after management}
 #'   \item{stem}{type of thinning (above/below). Default is 1}
@@ -120,7 +120,7 @@
 #'
 #' @format A \code{data frame} with 65 rows and x variables:
 #' \describe{
-#'   \item{parameter}{name of the parameter, shall be consistent in naming with \code{\link{i_parameters}}}
+#'   \item{parameter}{name of the parameter, must be consistent in naming with \code{\link{i_parameters}}}
 #'   \item{Fagus sylvatica}{parameter values for species 1}
 #'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
@@ -133,7 +133,7 @@
 #'
 #' @format A data frame with 47 rows and x variables:
 #' \describe{
-#'   \item{parameter}{name of the parameter, shall be consistent in naming with \code{\link{i_sizeDist}}}
+#'   \item{parameter}{name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}}
 #'   \item{Fagus sylvatica}{parameter values for species 1}
 #'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }

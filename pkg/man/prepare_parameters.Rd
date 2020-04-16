@@ -10,11 +10,11 @@ prepare_parameters(parameters = NULL, sp_names = c("Fagus sylvatica",
 \arguments{
 \item{parameters}{table containing the information about parameters to be modified. Values that are not provided are replaced by defaults.
 \itemize{
-\item parameter: name of the parameter, shall be consistent in naming with \code{\link{i_parameters}}
-\item species: each column shall correspond to species/cohort id/name, as defined in \code{species} table
+\item parameter: name of the parameter, must be consistent in naming with \code{\link{i_parameters}}
+\item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 }}
 
-\item{sp_names}{names of the species / cohorsts used for the simulations.The `sp_names` shall be identical to those from \code{species} table.}
+\item{sp_names}{names of the species / cohorsts used for the simulations.The `sp_names` must be identical to those from \code{species} table.}
 }
 \description{
 This function prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.

@@ -3,10 +3,10 @@
 #'
 #' @param parameters table containing the information about parameters to be modified. Values that are not provided are replaced by defaults.
 #' \itemize{
-#' \item parameter: name of the parameter, shall be consistent in naming with \code{\link{i_parameters}}
-#' \item species: each column shall correspond to species/cohort id/name, as defined in \code{species} table
+#' \item parameter: name of the parameter, must be consistent in naming with \code{\link{i_parameters}}
+#' \item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 #' }
-#' @param sp_names names of the species / cohorsts used for the simulations.The `sp_names` shall be identical to those from \code{species} table.
+#' @param sp_names names of the species / cohorsts used for the simulations.The `sp_names` must be identical to those from \code{species} table.
 #'
 #' @details This function prepares the parameter table for the model.
 #'
@@ -20,7 +20,7 @@ prepare_parameters <- function(
 ){
 
   if( any( is.null(sp_names), is.na(sp_names), length(sp_names)==0L) ){
-    stop( 'sp_names shall be provided according to the species table.' )
+    stop( 'sp_names must be provided according to the species table.' )
   }
 
   # Prepare parameters
@@ -34,11 +34,11 @@ prepare_parameters <- function(
   if( !is.null(parameters) ){
 
     if( !identical( c("parameter"), colnames(parameters)[1]) ){
-      stop( 'First column name of the parameters table shall correspond to: parameter' )
+      stop( 'First column name of the parameters table must correspond to: parameter' )
     }
 
     if( !all( parameters$parameter %in% param.default$parameter) ){
-      stop( paste0('Parameter input table shall contains only parameters presend in: ', paste(param.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+      stop( paste0('Parameter input table must contains only parameters presend in: ', paste(param.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
     }
 
     if( !identical( sp_names, colnames(parameters)[-1]) ){

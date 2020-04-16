@@ -8,7 +8,7 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
   "Pinus sylvestris"))
 }
 \arguments{
-\item{thinning}{table containing the information about thinnings. In case there is no management it shall be equall to \code{NULL}. The following columns are required:
+\item{thinning}{table containing the information about thinnings. In case there is no management it must be equall to \code{NULL}. The following columns are required:
 \itemize{
 \item species: species or cohort id/name.
 \item age: age at which management is done.
@@ -18,7 +18,7 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
 \item root: type of management (above/below). Default is 1.
 }}
 
-\item{sp_names}{names of the species / cohorsts used for the simulations. This is required to account if `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` shall be identical to those from \code{species} table.}
+\item{sp_names}{names of the species / cohorsts used for the simulations. This is required to account if `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.}
 }
 \description{
 This function prepares the management table and ckeck for consistensy.

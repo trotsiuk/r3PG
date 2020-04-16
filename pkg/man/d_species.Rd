@@ -6,7 +6,7 @@
 \title{Species input}
 \format{A a \code{data frame} with number of rows correcponding to each species/cohort and 8 variables:
 \describe{
-  \item{species}{species or cohort id/name. It shall be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+  \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
   \item{planted}{year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01"}
   \item{fertility}{soil fertility for a given species. Range from 0 to 1}
   \item{stems_n}{number of trees per ha}

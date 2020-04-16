@@ -6,7 +6,7 @@
 \title{Thinning input}
 \format{A \code{data frame} with 3 rows and 6 variables:
 \describe{
-  \item{species}{species or cohort id/name. It shall be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+  \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
   \item{age}{age when thinning is performed}
   \item{stems_n}{number of trees remaining after management}
   \item{stem}{type of thinning (above/below). Default is 1}

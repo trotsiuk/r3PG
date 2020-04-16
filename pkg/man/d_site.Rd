@@ -9,9 +9,9 @@
   \item{latitude}{site latitude in the WGS84 coordinate system}
   \item{altitude}{site altitude, m a.s.l.}
   \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production}
-  \item{asw_i}{initial awailable soil water (mm)}
-  \item{asw_max}{minimum awailable soil water (mm)}
-  \item{asw_min}{maximum awailable soil water (mm)}
+  \item{asw_i}{initial available soil water (mm)}
+  \item{asw_max}{minimum available soil water (mm)}
+  \item{asw_min}{maximum available soil water (mm)}
   \item{from}{year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01"}
   \item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month}
 }}

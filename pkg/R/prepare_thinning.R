@@ -1,7 +1,7 @@
 #' @title Check and prepare management information.
 #' @description This function prepares the management table and ckeck for consistensy.
 #'
-#' @param thinning  table containing the information about thinnings. In case there is no management it shall be equall to \code{NULL}. The following columns are required:
+#' @param thinning  table containing the information about thinnings. In case there is no management it must be equall to \code{NULL}. The following columns are required:
 #' \itemize{
 #' \item species: species or cohort id/name.
 #' \item age: age at which management is done.
@@ -10,7 +10,7 @@
 #' \item foliage: type of management (above/below). Default is 1.
 #' \item root: type of management (above/below). Default is 1.
 #' }
-#' @param sp_names names of the species / cohorsts used for the simulations. This is required to account if `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` shall be identical to those from \code{species} table.
+#' @param sp_names names of the species / cohorsts used for the simulations. This is required to account if `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.
 #'
 #' @details This function prepares the thinning table for the model.
 #'
@@ -28,7 +28,7 @@ prepare_thinning <- function(
 ){
 
   if( any( is.null(sp_names), is.na(sp_names), length(sp_names)==0L) ){
-    stop( 'sp_names shall be provided according to the species table.' )
+    stop( 'sp_names must be provided according to the species table.' )
   }
 
   n_sp = length(sp_names)
@@ -42,7 +42,7 @@ prepare_thinning <- function(
   } else {
 
     if( !identical( c("species","age","stems_n","stem","root","foliage"), colnames(thinning) ) ){
-      stop( 'Column names of the thinning table shall correspond to: species, age, stems_n, stem, root, foliage' )
+      stop( 'Column names of the thinning table must correspond to: species, age, stems_n, stem, root, foliage' )
     }
 
     thinning = data.frame( thinning )

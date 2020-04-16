@@ -6,7 +6,7 @@
 \title{Parameters input}
 \format{A \code{data frame} with 65 rows and x variables:
 \describe{
-  \item{parameter}{name of the parameter, shall be consistent in naming with \code{\link{i_parameters}}}
+  \item{parameter}{name of the parameter, must be consistent in naming with \code{\link{i_parameters}}}
   \item{Fagus sylvatica}{parameter values for species 1}
   \item{Pinus sylvestris}{parameter values for species 2}
 }}

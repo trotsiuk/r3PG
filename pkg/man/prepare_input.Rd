@@ -13,16 +13,16 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 \item latitude: site latitude in the WGS84 coordinate system.
 \item altitude: site altitude, m a.s.l.
 \item soil_class: soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production.
-\item asw_i: initial awailable soil water (mm).
-\item asw_min: minimum awailable soil water (mm).
-\item asw_max: maximum awailable soil water (mm).
+\item asw_i: initial available soil water (mm).
+\item asw_min: minimum available soil water (mm).
+\item asw_max: maximum available soil water (mm).
 \item from: year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01".
 \item to: year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month
 }}
 
 \item{species}{table containing the information about species level data. Each row corresponds to one species/cohort.
 \itemize{
-\item species: species or cohort id/name. It shall be consistent with species names in \code{thinning}, \code{parameters} and \code{sizeDist} tables.
+\item species: species or cohort id/name. It must be consistent with species names in \code{thinning}, \code{parameters} and \code{sizeDist} tables.
 \item planted: year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01".
 \item fertility: soil fertility for a given species. Range from 0 to 1.
 \item stems_n: number of trees per ha.
@@ -46,9 +46,9 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 \item d13catm: required if calculate_d13c=1 (optional)
 }}
 
-\item{thinning}{table containing the information about thinnings. In case there is no management it shall be equall to \code{NULL}.
+\item{thinning}{table containing the information about thinnings. In case there is no management it must be equall to \code{NULL}.
 \itemize{
-\item species: species or cohort id/name. It shall be consistent with species names in \code{species}, \code{parameters} and \code{sizeDist} tables.
+\item species: species or cohort id/name. It must be consistent with species names in \code{species}, \code{parameters} and \code{sizeDist} tables.
 \item age: age when thinning is performed.
 \item stems_n: number of trees remaining after management
 \item foliage: type of management (above/below). Default is 1.
@@ -58,14 +58,14 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 
 \item{parameters}{table containing the information about parameters to be modified. Values that are not provided are replaced by defaults.
 \itemize{
-\item parameter: name of the parameter, shall be consistent in naming with \code{\link{i_parameters}}
-\item species: each column shall correspond to species/cohort id/name, as defined in \code{species} table
+\item parameter: name of the parameter, must be consistent in naming with \code{\link{i_parameters}}
+\item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 }}
 
 \item{size_dist}{table containing the information about size distribution to be modified. Values that are not provided are replaced by defaults.
 \itemize{
-\item parameter: name of the parameter, shall be consistent in naming with \code{\link{i_sizeDist}}
-\item species: each column shall correspond to species/cohort id/name, as defined in \code{species} table
+\item parameter: name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}
+\item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 }}
 
 \item{settings}{a list with settings for the model. Values that are not provided are replaced by defaults.

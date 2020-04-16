@@ -35,7 +35,7 @@ prepare_climate <- function(
 
   # Test for the columns consistensy
   if( !all(c("tmp_min","tmp_max","prcp","srad","frost_days") %in% colnames(climate)) ){
-    stop( 'Climate table shall include the following columns: tmp_min, tmp_max, prcp, srad, frost_days' )
+    stop( 'Climate table must include the following columns: tmp_min, tmp_max, prcp, srad, frost_days' )
   }
 
   # Test for NA
@@ -77,7 +77,7 @@ prepare_climate <- function(
 
     # test if year and month column are present
     if( !all(c("year", "month") %in% colnames(climate)) ){
-      stop( 'Climate table shall include year and month for subsettins.' )
+      stop( 'Climate table must include year and month for subsettins.' )
     }
 
     climate$date = as.Date( paste(climate$year, '-', climate$month, "-01",sep="") )
