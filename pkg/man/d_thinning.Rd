@@ -8,7 +8,7 @@
 \describe{
   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
   \item{age}{age when thinning is performed}
-  \item{stems_n}{number of trees remaining after management}
+  \item{stems_n}{number of trees remaining after thinning}
   \item{stem}{type of thinning (above/below). Default is 1}
   \item{root}{type of thinning (above/below). Default is 1}
   \item{foliage}{type of thinning (above/below). Default is 1}

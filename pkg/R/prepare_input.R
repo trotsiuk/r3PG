@@ -1,11 +1,11 @@
 #' @title Check and prepare input for running 3-PG model
-#' @description This function check and prepare all input tables to be used in \code{\link{run_3PG}}.
+#' @description This function checks and prepares all input tables to be used in \code{\link{run_3PG}}.
 #'
 #' @param site table containing the information about site conditions.
 #' \itemize{
 #' \item latitude: site latitude in the WGS84 coordinate system.
 #' \item altitude: site altitude, m a.s.l.
-#' \item soil_class: soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production.
+#' \item soil_class: 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production.
 #' \item asw_i: initial available soil water (mm).
 #' \item asw_min: minimum available soil water (mm).
 #' \item asw_max: maximum available soil water (mm).
@@ -18,14 +18,14 @@
 #' \item planted: year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01".
 #' \item fertility: soil fertility for a given species. Range from 0 to 1.
 #' \item stems_n: number of trees per ha.
-#' \item biom_stem: stem biomass for a given species (T/ha).
-#' \item biom_root: root biomass for a given species (T/ha).
-#' \item biom_foliage: initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in summer.
+#' \item biom_stem: stem biomass for a given species (Mg/ha).
+#' \item biom_root: root biomass for a given species (Mg/ha).
+#' \item biom_foliage: initial foliage biomass (Mg/ha). If this is a leafless period, provide the spring foliage biomass.
 #' }
-#' @param climate  table containing the information about monthly values for climatic data. If the climate table have exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. More details about preparin climate data are at \code{\link{prepare_climate}}.
+#' @param climate  table containing the information about monthly values for climatic data. If the climate table has exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. More details about preparing climate data are at \code{\link{prepare_climate}}.
 #' \itemize{
-#' \item year: year of observation (only reguired for subsetting) (optional).
-#' \item month: months of observation (only reguired for subsetting) (optional).
+#' \item year: year of observation (only required for subsetting) (optional).
+#' \item month: months of observation (only required for subsetting) (optional).
 #' \item tmp_min: monthly mean daily minimum temperature (C).
 #' \item tmp_max: monthly mean daily maximum temperature (C).
 #' \item tmp_ave: monthly mean daily maximum temperature (C) (optional).
@@ -33,17 +33,17 @@
 #' \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 #' \item frost_days: frost days per month (d month-1).
 #' \item vpd_day: frost days per month (mbar) (optional).
-#' \item co2: required if calculate_d13c=1 (optional)
-#' \item d13catm: required if calculate_d13c=1 (optional)
+#' \item co2: monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional)
+#' \item d13catm: monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional)
 #' }
-#' @param thinning table containing the information about thinnings. In case there is no management it must be equall to \code{NULL}.
+#' @param thinning table containing the information about thinnings. If there is no thinning, it must be \code{NULL}.
 #' \itemize{
 #' \item species: species or cohort id/name. It must be consistent with species names in \code{species}, \code{parameters} and \code{sizeDist} tables.
 #' \item age: age when thinning is performed.
-#' \item stems_n: number of trees remaining after management
-#' \item foliage: type of management (above/below). Default is 1.
-#' \item root: type of management (above/below). Default is 1.
-#' \item stem: type of management (above/below). Default is 1.
+#' \item stems_n: number of trees remaining after thinning
+#' \item foliage: type of thinning (above/below). Default is 1.
+#' \item root: type of thinning (above/below). Default is 1.
+#' \item stem: type of thinning (above/below). Default is 1.
 #' }
 #' @param parameters table containing the information about parameters to be modified. Values that are not provided are replaced by defaults.
 #' \itemize{
@@ -55,7 +55,7 @@
 #' \item parameter: name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}
 #' \item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 #' }
-#' @param settings a list with settings for the model. Values that are not provided are replaced by defaults.
+#' @param settings a list with settings for the model. Values that are not provided are replaced by defaults.For detailed descriptions of these options, see \href{https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}{Forrester (2020)}.
 #' \itemize{
 #' \item light_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
 #' \item transp_model: `1` - 3-PGpjs (default); `2` - 3-PGmix

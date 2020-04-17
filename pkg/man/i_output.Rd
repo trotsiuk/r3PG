@@ -12,7 +12,7 @@
   \item{variable_name}{variable name as named in output}
   \item{description}{description of the variable}
   \item{unit}{unit of the variable}
-  \item{variable_vba}{corresponding name of the variable in the VBA output}
+  \item{variable_vba}{corresponding name of the variable as output from Excel version of 3-PGmix}
 }}
 \usage{
 i_output

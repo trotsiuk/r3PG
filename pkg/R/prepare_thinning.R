@@ -1,22 +1,22 @@
 #' @title Check and prepare management information.
-#' @description This function prepares the management table and ckeck for consistensy.
+#' @description This function prepares the management table and checks for consistency.
 #'
-#' @param thinning  table containing the information about thinnings. In case there is no management it must be equall to \code{NULL}. The following columns are required:
+#' @param thinning  table containing the information about thinnings. If there is no thinning, it must be \code{NULL}. The following columns are required:
 #' \itemize{
 #' \item species: species or cohort id/name.
-#' \item age: age at which management is done.
-#' \item stems_n: number of trees remaining after management
-#' \item stem: type of management (above/below). Default is 1.
-#' \item foliage: type of management (above/below). Default is 1.
-#' \item root: type of management (above/below). Default is 1.
+#' \item age: age at which thinning is done.
+#' \item stems_n: number of trees remaining after thinning
+#' \item stem: type of thinning (above/below). Default is 1.
+#' \item foliage: type of thinning (above/below). Default is 1.
+#' \item root: type of thinning (above/below). Default is 1.
 #' }
-#' @param sp_names names of the species / cohorsts used for the simulations. This is required to account if `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.
+#' @param sp_names names of the species / cohorts used for the simulations. This is required whether `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.
 #'
 #' @details This function prepares the thinning table for the model.
 #'
-#' In case there is no management it will return empty 3-d array.
+#' In case there is no thinning it will return empty 3-d array.
 #'
-#' In case there will be management it will return 3-d array, where one dimention correspond to each species.
+#' In case there will be thinning it will return 3-d array, where one dimension correspond to each species.
 #'
 #' @example inst/examples/prepare_thinning-help.R
 #'

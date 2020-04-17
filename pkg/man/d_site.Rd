@@ -8,7 +8,7 @@
 \describe{
   \item{latitude}{site latitude in the WGS84 coordinate system}
   \item{altitude}{site altitude, m a.s.l.}
-  \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production}
+  \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of available soil water on production}
   \item{asw_i}{initial available soil water (mm)}
   \item{asw_max}{minimum available soil water (mm)}
   \item{asw_min}{maximum available soil water (mm)}

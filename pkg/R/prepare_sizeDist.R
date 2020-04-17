@@ -6,7 +6,7 @@
 #' \item parameter: name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}.
 #' \item species: each column must correspond to species/cohort id/name, as defined in \code{species} table.
 #' }
-#' @param sp_names names of the species / cohorsts used for the simulations.The `sp_names` must be identical to those from \code{species} table.
+#' @param sp_names names of the species / cohorts used for the simulations.The `sp_names` must be identical to those from \code{species} table.
 #'
 #' @details This function prepares the parameter table for the model.
 #'

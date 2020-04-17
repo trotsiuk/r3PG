@@ -9,7 +9,7 @@
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}
   \item{unit}{unit}
-  \item{default}{default value for E.globus from original 3-PG}
+  \item{default}{default value for E.globulus from original 3-PG}
 }}
 \usage{
 i_parameters

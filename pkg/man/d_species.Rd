@@ -4,15 +4,15 @@
 \name{d_species}
 \alias{d_species}
 \title{Species input}
-\format{A a \code{data frame} with number of rows correcponding to each species/cohort and 8 variables:
+\format{A \code{data frame} with number of rows corresponding to each species/cohort and 8 variables:
 \describe{
   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
-  \item{planted}{year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01"}
+  \item{planted}{year and month indicating when the species was planted. Provided in form of year-month. E.g. "2000-01"}
   \item{fertility}{soil fertility for a given species. Range from 0 to 1}
   \item{stems_n}{number of trees per ha}
-  \item{biom_stem}{stem biomass for a given species  (T/ha)}
-  \item{biom_root}{root biomass for a given species  (T/ha)}
-  \item{biom_foliage}{initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.}
+  \item{biom_stem}{stem biomass for a given species  (Mg/ha)}
+  \item{biom_root}{root biomass for a given species  (Mg/ha)}
+  \item{biom_foliage}{initial foliage biomass (Mg/ha). If this is a leafless period, provide the spring foliage biomass.}
 }}
 \usage{
 d_species

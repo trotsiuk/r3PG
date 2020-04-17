@@ -5,13 +5,13 @@
 
 ## Purpose
 
-`r3PG` provides an implementation of the Physiological Processes Predicting Growth ([3-PG](https://3pg.forestry.ubc.ca)) model (Landsberg & Waring, 1997), which simulate forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
+`r3PG` provides an implementation of the Physiological Processes Predicting Growth ([3-PG](https://3pg.forestry.ubc.ca)) model (Landsberg & Waring, 1997), which simulate forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) model written in `Fortran`. The package enables fast and easy interaction with the model, and the `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
 
 ## Usage
 
-Below is a basic example, for more extended exaple please visit package [vignette](https://htmlpreview.github.io/?https://github.com/trotsiuk/r3PG/blob/master/pkg/vignettes/r3PG-ReferenceManual.html).
+Below is a basic example, for more extended examples please visit package [vignette](https://htmlpreview.github.io/?https://github.com/trotsiuk/r3PG/blob/master/pkg/vignettes/r3PG-ReferenceManual.html).
 
-The main function is `run_3PG()` which returns all 108 simulated variables for each species at a monthly time-step either as a 4-dimentional array or a long format data frame.
+The main function is `run_3PG()` which returns all 108 simulated variables for each species at a monthly time-step, either as a 4-dimentional array or a long format data frame.
 
 ```r
 library(r3PG)
@@ -44,7 +44,7 @@ out_3PG %>%
   theme_classic()
 ```
 
-If you prefer to use data stored in `xcell`, you can use the below example. Data to reproduce this example are stored in [data-raw/internal_data/data.input.xlsx](https://github.com/trotsiuk/r3PG/blob/master/pkg/data-raw/internal_data/data.input.xlsx).
+If you prefer to use data stored in `Excell`, you can use the following example. Data to reproduce this example are stored in [data-raw/internal_data/data.input.xlsx](https://github.com/trotsiuk/r3PG/blob/master/pkg/data-raw/internal_data/data.input.xlsx).
 
 ``` r
 library(readxl)
@@ -65,9 +65,9 @@ run_3PG(
 
 ## Installation
 
-### Stable release
+### Latest release
 
-`r3PG` can be installed from the latest stable [release](https://github.com/trotsiuk/r3PG/releases).
+`r3PG` can be installed from the latest [release](https://github.com/trotsiuk/r3PG/releases).
 
 ### Development release
 
@@ -77,7 +77,7 @@ if(!require(devtools)){install.packages(devtools)}
 devtools::install_github(repo = "trotsiuk/r3PG", subdir = "pkg", build_vignettes = T)
 ```
 
-## Issues, suggestions, contribution
+## Issues, suggestions, contributions
 
 Please submit issues, bugs and suggestions in the dedicated [page](https://github.com/trotsiuk/r3PG/issues). Contribution and improvements are always welcome!
 
@@ -89,7 +89,7 @@ Please submit issues, bugs and suggestions in the dedicated [page](https://githu
 
 ## References
 
-Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi.org/10.1016/j.ecolmodel.2015.07.010
+Forrester, D. I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi.org/10.1016/j.ecolmodel.2015.07.010
 
 Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. Forest Ecology and Management, 95(3), 209–228. https://doi.org/10.1016/S0378-1127(97)00026-1
 

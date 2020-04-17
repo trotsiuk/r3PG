@@ -14,6 +14,6 @@
 d_sizeDist
 }
 \description{
-Table containing the information about size distribution to be modified.
+Table containing the information about size distribution.
 }
 \keyword{datasets}

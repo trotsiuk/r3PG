@@ -4,7 +4,7 @@
 \name{d_climate}
 \alias{d_climate}
 \title{Climate input}
-\format{Aa \code{data frame} with 156 rows and 7 variables:
+\format{A \code{data frame} with 156 rows and 7 variables:
 \describe{
   \item{year}{calendar year}
   \item{month}{month}
@@ -14,8 +14,8 @@
   \item{prcp}{monthly rainfall (mm month-1)}
   \item{srad}{monthly mean daily solar radiation (MJ m-2 d-1)}
   \item{frost_days}{frost days per month (d month-1)}
-  \item{co2}{required if calculate_d13c=1 (optional)}
-  \item{d13catm}{required if calculate_d13c=1 (optional)}
+  \item{co2}{monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional)}
+  \item{d13catm}{Monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional)}
 }}
 \usage{
 d_climate

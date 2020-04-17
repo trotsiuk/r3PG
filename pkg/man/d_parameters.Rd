@@ -14,6 +14,6 @@
 d_parameters
 }
 \description{
-Table containing the information about parameters to be modified.
+Table containing the information about parameters.
 }
 \keyword{datasets}

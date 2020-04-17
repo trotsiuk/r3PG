@@ -14,7 +14,7 @@ prepare_parameters(parameters = NULL, sp_names = c("Fagus sylvatica",
 \item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 }}
 
-\item{sp_names}{names of the species / cohorsts used for the simulations.The `sp_names` must be identical to those from \code{species} table.}
+\item{sp_names}{names of the species / cohorts used for the simulations.The `sp_names` must be identical to those from \code{species} table.}
 }
 \description{
 This function prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.

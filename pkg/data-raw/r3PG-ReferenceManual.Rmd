@@ -2,7 +2,7 @@
 title: "The r3PG R package"
 author: "Volodymyr Trotsiuk, Florian Hartig, David I. Forrester"
 date: "`r Sys.Date()`"
-abstract: "This vignette provides an overview of the r3PG R package functions and options. We provide an working exampleswhich (i) demonstrates the basic functionality and use of the package, (ii) performs a sensitivity analysis and a Bayesian calibration of the model, and (iii) uses the calibrated model to simulate spatial patterns of forest growth across Switzerland.  \n \n \n"
+abstract: "This vignette provides an overview of the r3PG R package functions and options. We provide a working examples that (i) demonstrates the basic functionality and use of the package, (ii) performs a sensitivity analysis and a Bayesian calibration of the model, and (iii) uses the calibrated model to simulate spatial patterns of forest growth across Switzerland.  \n \n \n"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -27,18 +27,18 @@ library(knitr)
 
 ## Purpose
 
-`r3PG` provides an implementation of the Physiological Processes Predicting Growth ([3-PG](https://3pg.forestry.ubc.ca)) model (Landsberg & Waring, 1997), which simulate forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
+`r3PG` provides an implementation of the Physiological Processes Predicting Growth ([3-PG](https://3pg.forestry.ubc.ca)) model (Landsberg & Waring, 1997). The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) models written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
 
 
 ## Single model runs
 
-To demonstrate the basic functionality of the `r3PG` R package, we will perform a simple simulations with the `3-PGmix` model. The central function to run `3-PG` from within R is `run_3PG`. When called, the function will:
+To demonstrate the basic functionality of the `r3PG` R package, we will perform a simple simulation with the `3-PGmix` model. The central function to run `3-PG` from within R is `run_3PG`. When called, the function will:
 
 - check the model input for the consistency in structure
 - replace the default parameters if new ones are provided
 - run and return the simulated output from the model.
 
-Before using `run_3PG` it is required that the user prepares the input data as described in the package description. In particular, it is important to prepare information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). In the  example presented, we run a simulation for the mixed *Fagus sylvatica* and *Pinus sylvestris* stands (Forrester et al., 2017). The input data are provided in the package. The output of the `run_3PG` function can be either a long format dataframe or the  4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get the information about output variables and their group, please look at `data('i_output')`. 
+Before using `run_3PG` the user must prepare the input data as described in the package description. In particular, it is important to prepare information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). In the  example presented, we run a simulation for mixed *Fagus sylvatica* and *Pinus sylvestris* stands (Forrester et al., 2017). The input data are provided in the package. The output of the `run_3PG` function can be either a long format dataframe or a  4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get information about output variables and their group, please look at `data('i_output')`. 
 
 ```{r run_model}
 library(r3PG)
@@ -59,7 +59,7 @@ out_3PG <- run_3PG(
 head( out_3PG )
 ```
 
-To visualize the output we select six main variables: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. For visualization we are using a `ggplot` function, which allows us to visualize all the outputs side-by-side. The simulation indicates that *P. sylvestris* retains its dominant position within the canopy but that *F. sylvatica* is catching up, in terms of height and foliage mass. 
+To visualize the output we select six main variables: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. For visualization we are using a `ggplot` function, which allows us to visualize all the outputs side-by-side.
 ```{r morris_figure, fig.height=4.5, fig.width=6.6}
 i_var <- c('stems_n',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage')
 i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass')
@@ -80,15 +80,15 @@ out_3PG %>%
 
 ## Sensitivity analysis and Bayesian calibration
 
-For the following case studie, we will be using freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220). There is an R package available that allows accessing the database (which is in sql format) conventiently from R. 
+For the following case study, we use freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220). There is an R package that allows acess to the database (which is in sql format) from R. 
 
-For convenience, however, we have included the extracted and cleaned data in required format in the `r3PG` package. We also saved the meteorological data used for simulations on Swiss scale. The interpolation of the meteorological data used to force 3-PG model was done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton et al., 1997). 
+For convenience, however, we have included the extracted and cleaned data in the required format in the `r3PG` package. We also saved the meteorological data used for simulations on a Swiss scale. The interpolation of the meteorological data used to force the 3-PG model was done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton et al., 1997). 
 
 ```{r data}
 load('vignette_data/solling.rda')
 ```
 
-Loading neccessary packages
+Loading necessary packages
 
 ```{r libraries}
 library(tidyr)
@@ -98,7 +98,7 @@ library(sensitivity)
 ```
 
 
-As a second example, we will first performed a `Morris` screening and then perform the `Bayesian calibration` of 3-PGpjs model. We will use the `Solling` forest flux site located in Germany at an elevation of 508 m.a.s.l., and dominated by *Pice abies*. We obtained data for this site via the [PROFOUND database](https://doi.org/10.5194/essd-2019-220) for evaluating vegetation models and simulating climate impacts on forests (Reyer et al., 2019). There are almost 50 years of records for various stand and flux variables for `Solling` site.
+As a second example, we will first performed a `Morris` screening and then perform the `Bayesian calibration` of the 3-PGpjs model. We will use the `Solling` forest flux site located in Germany at an elevation of 508 m.a.s.l., and dominated by *Picea abies*. We obtained data for this site via the [PROFOUND database](https://doi.org/10.5194/essd-2019-220) that was set up for evaluating vegetation models and simulating climate impacts on forests (Reyer et al., 2019). There are almost 50 years of records for various stand and flux variables for `Solling` site.
 
 ### Likelihood function
 
@@ -106,7 +106,7 @@ To perform a `morris` sensitivity analysis and `Bayesian calibration` we constru
 
 ```{r funs}
 r3pg_sim <- function( par_df, ...){
-  #' @description function to simulate the model for a given parameters
+  #' @description function to simulate the model for a given parameter
   #' @param par_df data frame of the parameters with two columns: parameter, piab
   
   sim.df <- run_3PG(
@@ -150,13 +150,13 @@ r3pg_ll <- function( par_v ){
 
 ### Priors and default
 
-For Morris sensitivity analysis and Bayesian callibration we define the parameters range, for which we will evaluate first the sensitivity and later perform calibration. In addition, we specified error parameters for each of those observational data. 
+For Morris sensitivity analysis and Bayesian calibration we define each parameters range, for which we will evaluate the sensitivity and later perform the calibration. In addition, we specified error parameters for the observational data. 
 ```{r def_input}
 # default parameters
 par_def <- setNames(param_solling$default, param_solling$param_name)
 err_def <- setNames(error_solling$default, error_solling$param_name)
 
-# parameters for callibration and their ranges
+# parameters for calibration and their ranges
 param_morris.df <- bind_rows(param_solling, error_solling) %>% filter(!is.na(min))
 par_cal_names <- param_morris.df$param_name
 par_cal_min <- param_morris.df$min
@@ -168,7 +168,7 @@ r3pg_ll( par_cal_best)
 
 ### Morris sensitivity
 
-With below specified settings we will run a total of 30500 model runs (N (length(factors)+1)) and visualize the results The morris sensitivity run will take approximately 4 minutes on the working computer.
+Using the settings specified below, we will run a total of 30500 model runs (N (length(factors)+1)) and visualize the results. The morris sensitivity run will take approximately 4 minutes on the working computer.
 
 ```{r morris, eval = F}
 morris_setup <- createBayesianSetup(
@@ -198,7 +198,7 @@ morrisOut.df <- data.frame(
 load('vignette_data/morris.rda')
 ```
 
-We visualize the results of `morris` analysis by listing all the parameters and error parametsr. A high $\mu^{*}$ indicates a factor with an important overall influence on model output; a high $\alpha$ indicates either a factor interacting with other factors or a factor whose effects are non-linear. 
+We visualize the results of the `morris` analysis by listing all the parameters and error parameters. A high $\mu^{*}$ indicates a factor with an important overall influence on model output; a high $\alpha$ indicates either a factor interacting with other factors or a factor whose effects are non-linear. 
 
 ```{r morris_vis, fig.height=4, fig.width=6.6, }
 morrisOut.df %>%
@@ -217,7 +217,7 @@ morrisOut.df %>%
 
 ### Bayesian calibration
 
-We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity plus six errors parrameters for each of the observational variable. We will run 3 parallel chains, each on the separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours. 
+We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity plus six errors parameters for each of the observational variables. We will run 3 parallel chains, each on a separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours. 
 
 ```{r mcmc_par, eval=T}
 # which parameters to calibrate
@@ -244,7 +244,7 @@ mcmc_out <- runMCMC(
 load('vignette_data/mcmc.rda')
 ```
 
-As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted as the multivariate potential scale reduction factor was $\le$ 1.1. 
+As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted because the multivariate potential scale reduction factor was $\le$ 1.1. 
 
 ```{r mcmc_gelamn}
 gelmanDiagnostics( mcmc_out )
@@ -264,7 +264,7 @@ param.draw <- getSample(mcmc_out, numSamples = 500, coda = F, whichParameters = 
     pars = map(pars, ~bind_rows(.x, filter(par_def.df, !parameter %in% par_cal_names))))
 ```
 
-We then simulate the forest growth using the defaults and the drawn parameters combination. Afterwards, we visualize the posteriori predition range by drawing the $5^{th}$ and $95^{th}$ range of predictions. The callibrated model simulate well the observational data.
+We then simulate forest growth using the defaults and the drawn parameters combinations. Afterwards, we visualize the posteriori prediction range by drawing the $5^{th}$ and $95^{th}$ range of predictions. The calibrated model simulates the observational data well.
 ```{r sim_post, fig.height=4.5, fig.width=6.6}
 # default run
 def_run.df <- r3pg_sim( par_df = par_def.df, df_out = T) %>%
@@ -313,22 +313,22 @@ sim.df %>%
 
 ## Spatial simulations
 
-3-PG is a cohort level model. Thus, to make a simulation across a landscapes we need to explicitly simulate each individual grid point. For this purpose, we will simulate  the *Picea abies* stand biomass across distribution in Switzerland on a 1x1 km grid. In total it summed to ~18’000 grid points over Switzerland. We have prepared the input data, including climate and soil information for each of the grid point. We used interpolated meteorological data done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton, Running, & White, 1997). Grid-specific information on soil type and plant available soil water was retrieved from European Soil Database Derived data (Hiederer 2013). In addition, we use ~500 samples drawn from the previously obtained mcmc object and run model simulations for each of the parameter combinations to understand simulation uncertainties. 
+3-PG is a cohort level model. Thus, to make a simulation across a landscapes, we need to explicitly simulate each individual grid point. For this purpose, we will simulate *Picea abies* stand biomass across Switzerland on a 1x1 km grid. In total, this sums to ~18’000 grid points over Switzerland. We have prepared the input data, including climate and soil information for each of the grid points. We used interpolated meteorological data from the Landscape Dynamics group (WSL, Switzerland) based on data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton, Running, & White, 1997). Grid-specific information on soil type and plant available soil water was retrieved from European Soil Database Derived data (Hiederer 2013). In addition, we use ~500 samples drawn from the previously obtained mcmc object and run model simulations for each of the parameter combinations to understand simulation uncertainties. 
 
 ```{r grid_input}
 load('vignette_data/grid_input.rda')
 library(multidplyr)
 ```
 
-We construct a function, which requires site and climate information as input, and calculate $5^{th}$, $50^{th}$ and $95^{th}$ percentile from ~500 simulated runs. To do so, we use the `multidplyr` package for distributing computing. In total, it takes less than 1 hour on a computer cluster with 50 processes (CPU time ~20 hours). 
+We construct a function, which requires site and climate information as input, and calculates the $5^{th}$, $50^{th}$ and $95^{th}$ percentile from ~500 simulated runs. To do so, we use the `multidplyr` package for distributing computing. In total, it takes less than 1 hour on a computer cluster with 50 processes (CPU time ~20 hours). 
 
 ```{r grid_sim, eval=F}
 r3pg_grid <- function(site, forc){
-  #' @description simulate the n runs for a given site with the drawn parameters combination
+  #' @description simulate the n runs for a given site with the drawn parameter combination
   
   
   r3pg_int <- function( par_df){
-    #' @description function to run one site and return reguired output on standing biomass
+    #' @description function to run one site and return required output on standing biomass
     #' @param par_df a data.frame of parameters
     
     out <- run_3PG(site, species.grid, forc, thinn.grid, par_df, NULL, 

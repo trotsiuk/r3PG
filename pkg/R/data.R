@@ -10,7 +10,7 @@
 #'   \item{variable_name}{variable name as named in output}
 #'   \item{description}{description of the variable}
 #'   \item{unit}{unit of the variable}
-#'   \item{variable_vba}{corresponding name of the variable in the VBA output}
+#'   \item{variable_vba}{corresponding name of the variable as output from Excel version of 3-PGmix}
 #' }
 "i_output"
 
@@ -24,7 +24,7 @@
 #'   \item{parameter}{parameter name}
 #'   \item{description}{description of the parameter}
 #'   \item{unit}{unit}
-#'   \item{default}{default value for E.globus from original 3-PG}
+#'   \item{default}{default value for E.globulus from original 3-PG}
 #' }
 "i_parameters"
 
@@ -51,7 +51,7 @@
 #' \describe{
 #'   \item{latitude}{site latitude in the WGS84 coordinate system}
 #'   \item{altitude}{site altitude, m a.s.l.}
-#'   \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production}
+#'   \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of available soil water on production}
 #'   \item{asw_i}{initial available soil water (mm)}
 #'   \item{asw_max}{minimum available soil water (mm)}
 #'   \item{asw_min}{maximum available soil water (mm)}
@@ -65,15 +65,15 @@
 #'
 #' Table containing the information about species level data. Each row corresponds to one species/cohort.
 #'
-#' @format A a \code{data frame} with number of rows correcponding to each species/cohort and 8 variables:
+#' @format A \code{data frame} with number of rows corresponding to each species/cohort and 8 variables:
 #' \describe{
 #'   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
-#'   \item{planted}{year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01"}
+#'   \item{planted}{year and month indicating when the species was planted. Provided in form of year-month. E.g. "2000-01"}
 #'   \item{fertility}{soil fertility for a given species. Range from 0 to 1}
 #'   \item{stems_n}{number of trees per ha}
-#'   \item{biom_stem}{stem biomass for a given species  (T/ha)}
-#'   \item{biom_root}{root biomass for a given species  (T/ha)}
-#'   \item{biom_foliage}{initial foliage biomass (T/ha). If this is a leafless period provide a foliage biomass in spring.}
+#'   \item{biom_stem}{stem biomass for a given species  (Mg/ha)}
+#'   \item{biom_root}{root biomass for a given species  (Mg/ha)}
+#'   \item{biom_foliage}{initial foliage biomass (Mg/ha). If this is a leafless period, provide the spring foliage biomass.}
 #' }
 "d_species"
 
@@ -82,7 +82,7 @@
 #'
 #' Table containing the information about monthly values for climatic data.
 #'
-#' @format Aa \code{data frame} with 156 rows and 7 variables:
+#' @format A \code{data frame} with 156 rows and 7 variables:
 #' \describe{
 #'   \item{year}{calendar year}
 #'   \item{month}{month}
@@ -92,8 +92,8 @@
 #'   \item{prcp}{monthly rainfall (mm month-1)}
 #'   \item{srad}{monthly mean daily solar radiation (MJ m-2 d-1)}
 #'   \item{frost_days}{frost days per month (d month-1)}
-#'   \item{co2}{required if calculate_d13c=1 (optional)}
-#'   \item{d13catm}{required if calculate_d13c=1 (optional)}
+#'   \item{co2}{monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional)}
+#'   \item{d13catm}{Monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional)}
 #' }
 "d_climate"
 
@@ -106,7 +106,7 @@
 #' \describe{
 #'   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
 #'   \item{age}{age when thinning is performed}
-#'   \item{stems_n}{number of trees remaining after management}
+#'   \item{stems_n}{number of trees remaining after thinning}
 #'   \item{stem}{type of thinning (above/below). Default is 1}
 #'   \item{root}{type of thinning (above/below). Default is 1}
 #'   \item{foliage}{type of thinning (above/below). Default is 1}
@@ -116,7 +116,7 @@
 
 #' Parameters input
 #'
-#' Table containing the information about parameters to be modified.
+#' Table containing the information about parameters.
 #'
 #' @format A \code{data frame} with 65 rows and x variables:
 #' \describe{
@@ -129,7 +129,7 @@
 
 #' sizeDist input
 #'
-#' Table containing the information about size distribution to be modified.
+#' Table containing the information about size distribution.
 #'
 #' @format A data frame with 47 rows and x variables:
 #' \describe{

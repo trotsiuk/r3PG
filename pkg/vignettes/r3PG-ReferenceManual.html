@@ -12,7 +12,7 @@
 
 <meta name="author" content="Volodymyr Trotsiuk, Florian Hartig, David I. Forrester" />
 
-<meta name="date" content="2020-04-10" />
+<meta name="date" content="2020-04-17" />
 
 <title>The r3PG R package</title>
 
@@ -313,10 +313,10 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">The r3PG R package</h1>
 <h4 class="author">Volodymyr Trotsiuk, Florian Hartig, David I. Forrester</h4>
-<h4 class="date">2020-04-10</h4>
+<h4 class="date">2020-04-17</h4>
 <div class="abstract">
 <p class="abstract">Abstract</p>
-<p>This vignette provides an overview of the r3PG R package functions and options. We provide an working exampleswhich (i) demonstrates the basic functionality and use of the package, (ii) performs a sensitivity analysis and a Bayesian calibration of the model, and (iii) uses the calibrated model to simulate spatial patterns of forest growth across Switzerland.</p>
+<p>This vignette provides an overview of the r3PG R package functions and options. We provide a working examples that (i) demonstrates the basic functionality and use of the package, (ii) performs a sensitivity analysis and a Bayesian calibration of the model, and (iii) uses the calibrated model to simulate spatial patterns of forest growth across Switzerland.</p>
 </div>
 
 
@@ -337,17 +337,17 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <div id="purpose" class="section level2">
 <h2>Purpose</h2>
-<p><code>r3PG</code> provides an implementation of the Physiological Processes Predicting Growth (<a href="https://3pg.forestry.ubc.ca">3-PG</a>) model (Landsberg &amp; Waring, 1997), which simulate forest growth and productivity. The <code>r3PG</code> serves as a flexible and easy-to-use interface for the <code>3-PGpjs</code> (Sands, 2010) and the <code>3-PGmix</code> (Forrester &amp; Tang, 2016) model written in <code>Fortran</code>. The package, allows for fast and easy interaction with the model, and <code>Fortran</code> re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original <code>3-PGpjs</code> model version for monospecific, even-aged and evergreen forests and the <code>3-PGmix</code> model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.</p>
+<p><code>r3PG</code> provides an implementation of the Physiological Processes Predicting Growth (<a href="https://3pg.forestry.ubc.ca">3-PG</a>) model (Landsberg &amp; Waring, 1997). The <code>r3PG</code> serves as a flexible and easy-to-use interface for the <code>3-PGpjs</code> (Sands, 2010) and the <code>3-PGmix</code> (Forrester &amp; Tang, 2016) models written in <code>Fortran</code>. The package, allows for fast and easy interaction with the model, and <code>Fortran</code> re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules to use the original <code>3-PGpjs</code> model version for monospecific, even-aged and evergreen forests and the <code>3-PGmix</code> model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.</p>
 </div>
 <div id="single-model-runs" class="section level2">
 <h2>Single model runs</h2>
-<p>To demonstrate the basic functionality of the <code>r3PG</code> R package, we will perform a simple simulations with the <code>3-PGmix</code> model. The central function to run <code>3-PG</code> from within R is <code>run_3PG</code>. When called, the function will:</p>
+<p>To demonstrate the basic functionality of the <code>r3PG</code> R package, we will perform a simple simulation with the <code>3-PGmix</code> model. The central function to run <code>3-PG</code> from within R is <code>run_3PG</code>. When called, the function will:</p>
 <ul>
 <li>check the model input for the consistency in structure</li>
 <li>replace the default parameters if new ones are provided</li>
 <li>run and return the simulated output from the model.</li>
 </ul>
-<p>Before using <code>run_3PG</code> it is required that the user prepares the input data as described in the package description. In particular, it is important to prepare information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). In the example presented, we run a simulation for the mixed <em>Fagus sylvatica</em> and <em>Pinus sylvestris</em> stands (Forrester et al., 2017). The input data are provided in the package. The output of the <code>run_3PG</code> function can be either a long format dataframe or the 4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get the information about output variables and their group, please look at <code>data('i_output')</code>.</p>
+<p>Before using <code>run_3PG</code> the user must prepare the input data as described in the package description. In particular, it is important to prepare information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). In the example presented, we run a simulation for mixed <em>Fagus sylvatica</em> and <em>Pinus sylvestris</em> stands (Forrester et al., 2017). The input data are provided in the package. The output of the <code>run_3PG</code> function can be either a long format dataframe or a 4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get information about output variables and their group, please look at <code>data('i_output')</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(r3PG)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(ggplot2)</a>
@@ -371,7 +371,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb1-21" data-line-number="21"><span class="co">#&gt; 4 2001-04-30 Fagus sylvatica climate  tmp_min  2.7947164</span></a>
 <a class="sourceLine" id="cb1-22" data-line-number="22"><span class="co">#&gt; 5 2001-05-31 Fagus sylvatica climate  tmp_min  9.7551870</span></a>
 <a class="sourceLine" id="cb1-23" data-line-number="23"><span class="co">#&gt; 6 2001-06-30 Fagus sylvatica climate  tmp_min 10.0666666</span></a></code></pre></div>
-<p>To visualize the output we select six main variables: <em>basal area</em>, <em>dbh</em>, <em>height</em>, <em>stem biomass</em>, <em>foliage biomass</em>, and <em>root biomass</em>. For visualization we are using a <code>ggplot</code> function, which allows us to visualize all the outputs side-by-side. The simulation indicates that <em>P. sylvestris</em> retains its dominant position within the canopy but that <em>F. sylvatica</em> is catching up, in terms of height and foliage mass.</p>
+<p>To visualize the output we select six main variables: <em>basal area</em>, <em>dbh</em>, <em>height</em>, <em>stem biomass</em>, <em>foliage biomass</em>, and <em>root biomass</em>. For visualization we are using a <code>ggplot</code> function, which allows us to visualize all the outputs side-by-side.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">i_var &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'stems_n'</span>,  <span class="st">'dbh'</span>, <span class="st">'height'</span>, <span class="st">'biom_stem'</span>, <span class="st">'biom_root'</span>, <span class="st">'biom_foliage'</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">i_lab &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'Stem density'</span>, <span class="st">'DBH'</span>, <span class="st">'Height'</span>, <span class="st">'Stem biomass'</span>, <span class="st">'Root biomass'</span>, <span class="st">'Foliage biomass'</span>)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"></a>
@@ -390,20 +390,20 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="sensitivity-analysis-and-bayesian-calibration" class="section level2">
 <h2>Sensitivity analysis and Bayesian calibration</h2>
-<p>For the following case studie, we will be using freely available forest growth data from the <a href="https://doi.org/10.5194/essd-2019-220">PROFOUND database</a>. There is an R package available that allows accessing the database (which is in sql format) conventiently from R.</p>
-<p>For convenience, however, we have included the extracted and cleaned data in required format in the <code>r3PG</code> package. We also saved the meteorological data used for simulations on Swiss scale. The interpolation of the meteorological data used to force 3-PG model was done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton et al., 1997).</p>
+<p>For the following case study, we use freely available forest growth data from the <a href="https://doi.org/10.5194/essd-2019-220">PROFOUND database</a>. There is an R package that allows acess to the database (which is in sql format) from R.</p>
+<p>For convenience, however, we have included the extracted and cleaned data in the required format in the <code>r3PG</code> package. We also saved the meteorological data used for simulations on a Swiss scale. The interpolation of the meteorological data used to force the 3-PG model was done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton et al., 1997).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">load</span>(<span class="st">'vignette_data/solling.rda'</span>)</a></code></pre></div>
-<p>Loading neccessary packages</p>
+<p>Loading necessary packages</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(tidyr)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(purrr)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(BayesianTools)</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">library</span>(sensitivity)</a></code></pre></div>
-<p>As a second example, we will first performed a <code>Morris</code> screening and then perform the <code>Bayesian calibration</code> of 3-PGpjs model. We will use the <code>Solling</code> forest flux site located in Germany at an elevation of 508 m.a.s.l., and dominated by <em>Pice abies</em>. We obtained data for this site via the <a href="https://doi.org/10.5194/essd-2019-220">PROFOUND database</a> for evaluating vegetation models and simulating climate impacts on forests (Reyer et al., 2019). There are almost 50 years of records for various stand and flux variables for <code>Solling</code> site.</p>
+<p>As a second example, we will first performed a <code>Morris</code> screening and then perform the <code>Bayesian calibration</code> of the 3-PGpjs model. We will use the <code>Solling</code> forest flux site located in Germany at an elevation of 508 m.a.s.l., and dominated by <em>Picea abies</em>. We obtained data for this site via the <a href="https://doi.org/10.5194/essd-2019-220">PROFOUND database</a> that was set up for evaluating vegetation models and simulating climate impacts on forests (Reyer et al., 2019). There are almost 50 years of records for various stand and flux variables for <code>Solling</code> site.</p>
 <div id="likelihood-function" class="section level3">
 <h3>Likelihood function</h3>
 <p>To perform a <code>morris</code> sensitivity analysis and <code>Bayesian calibration</code> we construct the log Likelihood function. The log Likelihood function was calculated using normal error assumptions for six variables that describe stand stocks and characteristics: <em>basal area</em>, <em>dbh</em>, <em>height</em>, <em>stem biomass</em>, <em>foliage biomass</em>, and <em>root biomass</em>. To calculate the stand-level stocks, we applied the biomass equations developed for European forests following Forrester et al. (2017) for each measured tree, and summed it up to the stand level in Mg dry matter <span class="math inline">\(ha^{-1}\)</span>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">r3pg_sim &lt;-<span class="st"> </span><span class="cf">function</span>( par_df, ...){</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">  <span class="co">#' @description function to simulate the model for a given parameters</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">  <span class="co">#' @description function to simulate the model for a given parameter</span></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3">  <span class="co">#' @param par_df data frame of the parameters with two columns: parameter, piab</span></a>
 <a class="sourceLine" id="cb5-4" data-line-number="4">  </a>
 <a class="sourceLine" id="cb5-5" data-line-number="5">  sim.df &lt;-<span class="st"> </span><span class="kw">run_3PG</span>(</a>
@@ -446,12 +446,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="priors-and-default" class="section level3">
 <h3>Priors and default</h3>
-<p>For Morris sensitivity analysis and Bayesian callibration we define the parameters range, for which we will evaluate first the sensitivity and later perform calibration. In addition, we specified error parameters for each of those observational data.</p>
+<p>For Morris sensitivity analysis and Bayesian calibration we define each parameters range, for which we will evaluate the sensitivity and later perform the calibration. In addition, we specified error parameters for the observational data.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># default parameters</span></a>
 <a class="sourceLine" id="cb6-2" data-line-number="2">par_def &lt;-<span class="st"> </span><span class="kw">setNames</span>(param_solling<span class="op">$</span>default, param_solling<span class="op">$</span>param_name)</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3">err_def &lt;-<span class="st"> </span><span class="kw">setNames</span>(error_solling<span class="op">$</span>default, error_solling<span class="op">$</span>param_name)</a>
 <a class="sourceLine" id="cb6-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co"># parameters for callibration and their ranges</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co"># parameters for calibration and their ranges</span></a>
 <a class="sourceLine" id="cb6-6" data-line-number="6">param_morris.df &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(param_solling, error_solling) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(min))</a>
 <a class="sourceLine" id="cb6-7" data-line-number="7">par_cal_names &lt;-<span class="st"> </span>param_morris.df<span class="op">$</span>param_name</a>
 <a class="sourceLine" id="cb6-8" data-line-number="8">par_cal_min &lt;-<span class="st"> </span>param_morris.df<span class="op">$</span>min</a>
@@ -463,7 +463,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="morris-sensitivity" class="section level3">
 <h3>Morris sensitivity</h3>
-<p>With below specified settings we will run a total of 30500 model runs (N (length(factors)+1)) and visualize the results The morris sensitivity run will take approximately 4 minutes on the working computer.</p>
+<p>Using the settings specified below, we will run a total of 30500 model runs (N (length(factors)+1)) and visualize the results. The morris sensitivity run will take approximately 4 minutes on the working computer.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">morris_setup &lt;-<span class="st"> </span><span class="kw">createBayesianSetup</span>(</a>
 <a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="dt">likelihood =</span> r3pg_ll, </a>
 <a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="dt">prior =</span> <span class="kw">createUniformPrior</span>(par_cal_min, par_cal_max, par_cal_best), </a>
@@ -486,7 +486,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb7-20" data-line-number="20">  <span class="dt">sigma =</span> <span class="kw">apply</span>(morrisOut<span class="op">$</span>ee, <span class="dv">2</span>, sd, <span class="dt">na.rm =</span> T)</a>
 <a class="sourceLine" id="cb7-21" data-line-number="21">) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb7-22" data-line-number="22"><span class="st">  </span><span class="kw">arrange</span>( mu.star )</a></code></pre></div>
-<p>We visualize the results of <code>morris</code> analysis by listing all the parameters and error parametsr. A high <span class="math inline">\(\mu^{*}\)</span> indicates a factor with an important overall influence on model output; a high <span class="math inline">\(\alpha\)</span> indicates either a factor interacting with other factors or a factor whose effects are non-linear.</p>
+<p>We visualize the results of the <code>morris</code> analysis by listing all the parameters and error parameters. A high <span class="math inline">\(\mu^{*}\)</span> indicates a factor with an important overall influence on model output; a high <span class="math inline">\(\alpha\)</span> indicates either a factor interacting with other factors or a factor whose effects are non-linear.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">morrisOut.df <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2"><span class="st">  </span><span class="kw">gather</span>(variable, value, <span class="op">-</span>parameter) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb8-3" data-line-number="3"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="kw">reorder</span>(parameter, value), value, <span class="dt">fill =</span> variable), <span class="dt">color =</span> <span class="ot">NA</span>)<span class="op">+</span></a>
@@ -503,7 +503,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="bayesian-calibration" class="section level3">
 <h3>Bayesian calibration</h3>
-<p>We will run the Bayesian calibration for the 20 most sensitive parameters defined by the <code>morris</code> sensitivity plus six errors parrameters for each of the observational variable. We will run 3 parallel chains, each on the separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours.</p>
+<p>We will run the Bayesian calibration for the 20 most sensitive parameters defined by the <code>morris</code> sensitivity plus six errors parameters for each of the observational variables. We will run 3 parallel chains, each on a separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># which parameters to calibrate</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2">par_select &lt;-<span class="st"> </span>morrisOut.df<span class="op">$</span>parameter <span class="op">%&gt;%</span><span class="st"> </span>.[<span class="op">-</span><span class="kw">grep</span>(<span class="st">'err'</span>, .)] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>(., <span class="dv">20</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.character</span>()</a>
 <a class="sourceLine" id="cb9-3" data-line-number="3">par_id &lt;-<span class="st"> </span><span class="kw">which</span>(par_cal_names <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(par_select,  error_solling<span class="op">$</span>param_name) )</a>
@@ -521,7 +521,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="dt">bayesianSetup =</span> mcmc_setup, </a>
 <a class="sourceLine" id="cb10-3" data-line-number="3">  <span class="dt">sampler =</span> <span class="st">&quot;DEzs&quot;</span>,</a>
 <a class="sourceLine" id="cb10-4" data-line-number="4">  <span class="dt">settings =</span> <span class="kw">list</span>(<span class="dt">iterations =</span> <span class="fl">4e+03</span>, <span class="dt">nrChains =</span> <span class="dv">3</span>))</a></code></pre></div>
-<p>As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted as the multivariate potential scale reduction factor was <span class="math inline">\(\le\)</span> 1.1.</p>
+<p>As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted because the multivariate potential scale reduction factor was <span class="math inline">\(\le\)</span> 1.1.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">gelmanDiagnostics</span>( mcmc_out )</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="co">#&gt; Potential scale reduction factors:</span></a>
 <a class="sourceLine" id="cb11-3" data-line-number="3"><span class="co">#&gt; </span></a>
@@ -567,7 +567,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb12-8" data-line-number="8">    <span class="dt">pars =</span> <span class="kw">map</span>(pars, unlist),</a>
 <a class="sourceLine" id="cb12-9" data-line-number="9">    <span class="dt">pars =</span> <span class="kw">map</span>(pars, <span class="op">~</span>tibble<span class="op">::</span><span class="kw">enframe</span>(.x, <span class="st">'parameter'</span>, <span class="st">'piab'</span>)),</a>
 <a class="sourceLine" id="cb12-10" data-line-number="10">    <span class="dt">pars =</span> <span class="kw">map</span>(pars, <span class="op">~</span><span class="kw">bind_rows</span>(.x, <span class="kw">filter</span>(par_def.df, <span class="op">!</span>parameter <span class="op">%in%</span><span class="st"> </span>par_cal_names))))</a></code></pre></div>
-<p>We then simulate the forest growth using the defaults and the drawn parameters combination. Afterwards, we visualize the posteriori predition range by drawing the <span class="math inline">\(5^{th}\)</span> and <span class="math inline">\(95^{th}\)</span> range of predictions. The callibrated model simulate well the observational data.</p>
+<p>We then simulate forest growth using the defaults and the drawn parameters combinations. Afterwards, we visualize the posteriori prediction range by drawing the <span class="math inline">\(5^{th}\)</span> and <span class="math inline">\(95^{th}\)</span> range of predictions. The calibrated model simulates the observational data well.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co"># default run</span></a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">def_run.df &lt;-<span class="st"> </span><span class="kw">r3pg_sim</span>( <span class="dt">par_df =</span> par_def.df, <span class="dt">df_out =</span> T) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span><span class="kw">select</span>(date, variable, value) <span class="op">%&gt;%</span></a>
@@ -616,16 +616,16 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="spatial-simulations" class="section level2">
 <h2>Spatial simulations</h2>
-<p>3-PG is a cohort level model. Thus, to make a simulation across a landscapes we need to explicitly simulate each individual grid point. For this purpose, we will simulate the <em>Picea abies</em> stand biomass across distribution in Switzerland on a 1x1 km grid. In total it summed to ~18’000 grid points over Switzerland. We have prepared the input data, including climate and soil information for each of the grid point. We used interpolated meteorological data done by the Landscape Dynamics group (WSL, Switzerland) using data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton, Running, &amp; White, 1997). Grid-specific information on soil type and plant available soil water was retrieved from European Soil Database Derived data (Hiederer 2013). In addition, we use ~500 samples drawn from the previously obtained mcmc object and run model simulations for each of the parameter combinations to understand simulation uncertainties.</p>
+<p>3-PG is a cohort level model. Thus, to make a simulation across a landscapes, we need to explicitly simulate each individual grid point. For this purpose, we will simulate <em>Picea abies</em> stand biomass across Switzerland on a 1x1 km grid. In total, this sums to ~18’000 grid points over Switzerland. We have prepared the input data, including climate and soil information for each of the grid points. We used interpolated meteorological data from the Landscape Dynamics group (WSL, Switzerland) based on data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton, Running, &amp; White, 1997). Grid-specific information on soil type and plant available soil water was retrieved from European Soil Database Derived data (Hiederer 2013). In addition, we use ~500 samples drawn from the previously obtained mcmc object and run model simulations for each of the parameter combinations to understand simulation uncertainties.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">load</span>(<span class="st">'vignette_data/grid_input.rda'</span>)</a>
 <a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">library</span>(multidplyr)</a></code></pre></div>
-<p>We construct a function, which requires site and climate information as input, and calculate <span class="math inline">\(5^{th}\)</span>, <span class="math inline">\(50^{th}\)</span> and <span class="math inline">\(95^{th}\)</span> percentile from ~500 simulated runs. To do so, we use the <code>multidplyr</code> package for distributing computing. In total, it takes less than 1 hour on a computer cluster with 50 processes (CPU time ~20 hours).</p>
+<p>We construct a function, which requires site and climate information as input, and calculates the <span class="math inline">\(5^{th}\)</span>, <span class="math inline">\(50^{th}\)</span> and <span class="math inline">\(95^{th}\)</span> percentile from ~500 simulated runs. To do so, we use the <code>multidplyr</code> package for distributing computing. In total, it takes less than 1 hour on a computer cluster with 50 processes (CPU time ~20 hours).</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">r3pg_grid &lt;-<span class="st"> </span><span class="cf">function</span>(site, forc){</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">  <span class="co">#' @description simulate the n runs for a given site with the drawn parameters combination</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">  <span class="co">#' @description simulate the n runs for a given site with the drawn parameter combination</span></a>
 <a class="sourceLine" id="cb15-3" data-line-number="3">  </a>
 <a class="sourceLine" id="cb15-4" data-line-number="4">  </a>
 <a class="sourceLine" id="cb15-5" data-line-number="5">  r3pg_int &lt;-<span class="st"> </span><span class="cf">function</span>( par_df){</a>
-<a class="sourceLine" id="cb15-6" data-line-number="6">    <span class="co">#' @description function to run one site and return reguired output on standing biomass</span></a>
+<a class="sourceLine" id="cb15-6" data-line-number="6">    <span class="co">#' @description function to run one site and return required output on standing biomass</span></a>
 <a class="sourceLine" id="cb15-7" data-line-number="7">    <span class="co">#' @param par_df a data.frame of parameters</span></a>
 <a class="sourceLine" id="cb15-8" data-line-number="8">    </a>
 <a class="sourceLine" id="cb15-9" data-line-number="9">    out &lt;-<span class="st"> </span><span class="kw">run_3PG</span>(site, species.grid, forc, thinn.grid, par_df, <span class="ot">NULL</span>, </a>
