@@ -12,11 +12,13 @@
 #' }
 #' @param sp_names names of the species / cohorts used for the simulations. This is required whether `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.
 #'
-#' @details This function prepares the thinning table for the model.
+#' @details This function prepares the thinning table for \code{\link{run_3PG}}.
 #'
 #' In case there is no thinning it will return empty 3-d array.
 #'
 #' In case there will be thinning it will return 3-d array, where one dimension correspond to each species.
+#'
+#' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_climate}}
 #'
 #' @example inst/examples/prepare_thinning-help.R
 #'

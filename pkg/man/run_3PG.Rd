@@ -12,13 +12,13 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
 
 \item{species}{table containing the information about species level data. Each row corresponds to one species/cohort.}
 
-\item{climate}{table containing the information about monthly values for climatic data.}
+\item{climate}{table containing the information about monthly values for climatic data. For details see \code{\link{prepare_climate}}}
 
-\item{thinning}{table containing the information about thinnings.}
+\item{thinning}{table containing the information about thinnings.  For details see \code{\link{prepare_thinning}}}
 
-\item{parameters}{table containing the information about parameters to be modified.}
+\item{parameters}{table containing the information about parameters to be modified.  For details see \code{\link{prepare_parameters}}}
 
-\item{size_dist}{table containing the information about size distributions.}
+\item{size_dist}{table containing the information about size distributions. For details see \code{\link{prepare_sizeDist}}}
 
 \item{settings}{a list with settings for the model.}
 
@@ -30,7 +30,7 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
 either a 4-dimentional array or a data.frame, depending on the parameter df_out.
 }
 \description{
-This function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
+The function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
 }
 \details{
 `r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model (Landsberg & Waring, 1997), which simulates forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (\href{https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf}{Sands, 2010}) and the `3-PGmix` (\href{https://doi.org/10.1016/j.ecolmodel.2015.07.010}{Forrester & Tang, 2016}) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
@@ -55,5 +55,5 @@ out <- run_3PG(
 str(out) # List output format
 }
 \seealso{
-\code{\link{prepare_input}}
+\code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 }

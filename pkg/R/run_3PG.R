@@ -1,13 +1,13 @@
 #' @title Runs a 3-PG simulation
 #'
-#' @description This function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
+#' @description The function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
 #'
 #' @param site table containing the information about site conditions.
 #' @param species table containing the information about species level data. Each row corresponds to one species/cohort.
-#' @param climate  table containing the information about monthly values for climatic data.
-#' @param thinning table containing the information about thinnings.
-#' @param parameters table containing the information about parameters to be modified.
-#' @param size_dist table containing the information about size distributions.
+#' @param climate  table containing the information about monthly values for climatic data. For details see \code{\link{prepare_climate}}
+#' @param thinning table containing the information about thinnings.  For details see \code{\link{prepare_thinning}}
+#' @param parameters table containing the information about parameters to be modified.  For details see \code{\link{prepare_parameters}}
+#' @param size_dist table containing the information about size distributions. For details see \code{\link{prepare_sizeDist}}
 #' @param settings a list with settings for the model.
 #' @param check_input \code{logical} if the input shall be checked for consistency. It will call \code{\link{prepare_input}} function.
 #' @param df_out \code{logical} if the output shall be long data.frame (TRUE) the 4-dimensional array (FALSE).
@@ -20,7 +20,7 @@
 #'
 #' @return either a 4-dimentional array or a data.frame, depending on the parameter df_out.
 #'
-#' @seealso \code{\link{prepare_input}}
+#' @seealso \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 #'
 #' @example inst/examples/run_3PG-help.R
 #'

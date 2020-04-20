@@ -17,11 +17,13 @@
 #' @param from year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01".
 #' @param to  year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month.
 #'
-#' @details This function prepares the climate table for the model.
+#' @details This function prepares the climate table for \code{\link{run_3PG}}.
 #'
 #' In case a user provides only average climate, this is replicated for the desired simulation period.
 #'
 #' In case a larger climate file is provided, the simulation period is selected from this.
+#'
+#' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}
 #'
 #' @example inst/examples/prepare_climate-help.R
 #'

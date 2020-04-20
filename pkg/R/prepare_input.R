@@ -67,11 +67,12 @@
 #'
 #' @details This function checks and prepares the input data for the \code{\link{run_3PG}}. The output is a list with 7 tables. Each of them corresponds to the one from input.
 #'
+#' @seealso \code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
+#'
 #' @example inst/examples/prepare_input-help.R
 #'
 #' @export
 #'
-
 prepare_input <- function(
   site,
   species,
