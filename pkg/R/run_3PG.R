@@ -2,13 +2,13 @@
 #'
 #' @description The function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
 #'
-#' @param site table containing the information about site conditions.
-#' @param species table containing the information about species level data. Each row corresponds to one species/cohort.
-#' @param climate  table containing the information about monthly values for climatic data. For details see \code{\link{prepare_climate}}
-#' @param thinning table containing the information about thinnings.  For details see \code{\link{prepare_thinning}}
-#' @param parameters table containing the information about parameters to be modified.  For details see \code{\link{prepare_parameters}}
-#' @param size_dist table containing the information about size distributions. For details see \code{\link{prepare_sizeDist}}
-#' @param settings a list with settings for the model.
+#' @param site table as described in \code{\link{prepare_input}} containing the information about site conditions.
+#' @param species table as described in \code{\link{prepare_input}} containing the information about species level data. Each row corresponds to one species/cohort.
+#' @param climate  table as described in \code{\link{prepare_input}} containing the information about monthly values for climatic data. See also \code{\link{prepare_climate}}
+#' @param thinning table as described in \code{\link{prepare_input}} containing the information about thinnings. See also \code{\link{prepare_thinning}}
+#' @param parameters table as described in \code{\link{prepare_input}} containing the information about parameters to be modified. See also \code{\link{prepare_parameters}}
+#' @param size_dist table as described in \code{\link{prepare_input}} containing the information about size distributions. See also \code{\link{prepare_sizeDist}}
+#' @param settings a list as described in \code{\link{prepare_input}} with settings for the model.
 #' @param check_input \code{logical} if the input shall be checked for consistency. It will call \code{\link{prepare_input}} function.
 #' @param df_out \code{logical} if the output shall be long data.frame (TRUE) the 4-dimensional array (FALSE).
 #'
@@ -16,7 +16,7 @@
 #'
 #' This implementation of 3-PG includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for bias corrections and \eqn{\delta^13 C} calculations (see parameters). For a detailed description of the 3-PG model (equations, run options, data requirements ...) see \href{https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}{Forrester (2020)}.
 #'
-#' @note The \code{run_3PG} also checks the quality of input data. When names, or structures are not consistent with requirements it will return an error.
+#' @note The \code{run_3PG} also checks the quality of input data. When names, or structures are not consistent with requirements it will return an error. Turn this off to optimize for speed.
 #'
 #' @return either a 4-dimentional array or a data.frame, depending on the parameter df_out.
 #'
