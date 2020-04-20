@@ -63,7 +63,7 @@ run_3PG(
   check_input = TRUE, df_out = TRUE)
 ```
 
-## Installation
+## Installation 
 
 ### Latest release
 
