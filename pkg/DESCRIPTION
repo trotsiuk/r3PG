@@ -19,6 +19,7 @@ Suggests:
     R.rsp (>= 0.40.0),
     testthat (>= 1.0.2),
     roxygen2,
+    BayesianTools,
     sensitivity
 VignetteBuilder: R.rsp
 Encoding: UTF-8

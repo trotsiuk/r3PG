@@ -8,7 +8,9 @@
 #' }
 #' @param sp_names names of the species / cohorts used for the simulations.The `sp_names` must be identical to those from \code{species} table.
 #'
-#' @details This function prepares the parameter table for the model.
+#' @details This function prepares the parameter table for \code{\link{run_3PG}}.
+#'
+#' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 #'
 #' @example inst/examples/prepare_sizeDist-help.R
 #'

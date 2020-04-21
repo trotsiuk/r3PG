@@ -24,7 +24,7 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
 This function prepares the management table and checks for consistency.
 }
 \details{
-This function prepares the thinning table for the model.
+This function prepares the thinning table for \code{\link{run_3PG}}.
 
 In case there is no thinning it will return empty 3-d array.
 
@@ -34,4 +34,7 @@ In case there will be thinning it will return 3-d array, where one dimension cor
 prepare_thinning( thinning = NULL, sp_names = c('Quercus', 'Abies'))
 
 prepare_thinning( thinning = d_thinning, sp_names = c('Fagus sylvatica', 'Pinus sylvestris'))
+}
+\seealso{
+\code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_climate}}
 }

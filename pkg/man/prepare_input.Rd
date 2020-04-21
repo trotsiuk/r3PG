@@ -87,3 +87,6 @@ This function checks and prepares the input data for the \code{\link{run_3PG}}. 
 \examples{
 prepare_input( site = d_site, species = d_species, climate = d_climate, d_thinning)
 }
+\seealso{
+\code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
+}

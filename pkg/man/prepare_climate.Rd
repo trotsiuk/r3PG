@@ -29,7 +29,7 @@ prepare_climate(climate, from = "2000-04", to = "2010-11")
 This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from a longer time-series of climate data.
 }
 \details{
-This function prepares the climate table for the model.
+This function prepares the climate table for \code{\link{run_3PG}}.
 
 In case a user provides only average climate, this is replicated for the desired simulation period.
 
@@ -44,4 +44,7 @@ climate = matrix(rnorm(60), ncol = 5)
 colnames(climate) = c("tmp_min", "tmp_max", "prcp", "srad", "frost_days")
 
 prepare_climate( climate = climate, from = '2000-04', to = '2010-11')
+}
+\seealso{
+\code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}
 }

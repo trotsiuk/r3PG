@@ -20,7 +20,7 @@ prepare_sizeDist(size_dist = NULL, sp_names = c("Fagus sylvatica",
 This function prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
 }
 \details{
-This function prepares the parameter table for the model.
+This function prepares the parameter table for \code{\link{run_3PG}}.
 }
 \examples{
 # replace some
@@ -30,4 +30,7 @@ prepare_sizeDist( size_dist = d_sizeDist[1:4,],
 # Make default
 prepare_sizeDist( size_dist = NULL, sp_names = c('Quercus', 'Abies'))
 
+}
+\seealso{
+\code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 }
