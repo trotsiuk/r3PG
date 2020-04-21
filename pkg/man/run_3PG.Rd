@@ -8,19 +8,19 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
   size_dist = NULL, settings = NULL, check_input = TRUE, df_out = TRUE)
 }
 \arguments{
-\item{site}{table containing the information about site conditions.}
+\item{site}{table as described in \code{\link{prepare_input}} containing the information about site conditions.}
 
-\item{species}{table containing the information about species level data. Each row corresponds to one species/cohort.}
+\item{species}{table as described in \code{\link{prepare_input}} containing the information about species level data. Each row corresponds to one species/cohort.}
 
-\item{climate}{table containing the information about monthly values for climatic data. For details see \code{\link{prepare_climate}}}
+\item{climate}{table as described in \code{\link{prepare_input}} containing the information about monthly values for climatic data. See also \code{\link{prepare_climate}}}
 
-\item{thinning}{table containing the information about thinnings.  For details see \code{\link{prepare_thinning}}}
+\item{thinning}{table as described in \code{\link{prepare_input}} containing the information about thinnings. See also \code{\link{prepare_thinning}}}
 
-\item{parameters}{table containing the information about parameters to be modified.  For details see \code{\link{prepare_parameters}}}
+\item{parameters}{table as described in \code{\link{prepare_input}} containing the information about parameters to be modified. See also \code{\link{prepare_parameters}}}
 
-\item{size_dist}{table containing the information about size distributions. For details see \code{\link{prepare_sizeDist}}}
+\item{size_dist}{table as described in \code{\link{prepare_input}} containing the information about size distributions. See also \code{\link{prepare_sizeDist}}}
 
-\item{settings}{a list with settings for the model.}
+\item{settings}{a list as described in \code{\link{prepare_input}} with settings for the model.}
 
 \item{check_input}{\code{logical} if the input shall be checked for consistency. It will call \code{\link{prepare_input}} function.}
 
@@ -38,7 +38,7 @@ The function runs the 3-PGpjs or 3-PGmix model. For more details on parameters a
 This implementation of 3-PG includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for bias corrections and \eqn{\delta^13 C} calculations (see parameters). For a detailed description of the 3-PG model (equations, run options, data requirements ...) see \href{https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}{Forrester (2020)}.
 }
 \note{
-The \code{run_3PG} also checks the quality of input data. When names, or structures are not consistent with requirements it will return an error.
+The \code{run_3PG} also checks the quality of input data. When names, or structures are not consistent with requirements it will return an error. Turn this off to optimize for speed.
 }
 \examples{
 out <- run_3PG(
