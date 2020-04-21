@@ -43,11 +43,9 @@ prepare_sizeDist <- function(
       stop( paste0('size_dist input table must contains only parameters presend in: ', paste(sizeDist.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
     }
 
-    if( !identical( sp_names, colnames(size_dist)[-1]) ){
-      stop( 'Names or order of species in size_dist table does not correspond to names or order in sp_names' )
-    }
+    sp_names_replace = sp_names[sp_names %in% colnames(size_dist)]
+    size_dist_out[match(size_dist$parameter, size_dist_out$parameter), sp_names_replace] <- size_dist[,sp_names_replace]
 
-    size_dist_out[match(size_dist$parameter, size_dist_out$parameter), ] <- size_dist
   }
 
   return( size_dist_out )

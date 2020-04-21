@@ -48,6 +48,7 @@ prepare_thinning <- function(
     }
 
     thinning = data.frame( thinning )
+    thinning = thinning[thinning$species %in% sp_names, ]
     thinning$species = sp_id[thinning$species] # change sp names to integer
 
     t_t = as.integer( as.vector( table(thinning[,1]) ) )

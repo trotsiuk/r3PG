@@ -43,11 +43,8 @@ prepare_parameters <- function(
       stop( paste0('Parameter input table must contains only parameters presend in: ', paste(param.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
     }
 
-    if( !identical( sp_names, colnames(parameters)[-1]) ){
-      stop( 'Names or order of species in parameters does not correspond to names or order in sp_names' )
-    }
-
-    parameters_out[match(parameters$parameter, parameters_out$parameter), ] <- parameters
+    sp_names_replace = sp_names[sp_names %in% colnames(parameters)]
+    parameters_out[match(parameters$parameter, parameters_out$parameter), sp_names_replace] <- parameters[,sp_names_replace]
   }
 
   return( parameters_out )
