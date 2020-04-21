@@ -90,7 +90,7 @@ prepare_input <- function(
 
   # Species
   if( !identical(c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage"), colnames(species)) ){
-    stop( 'Columns names of the species table must correspond to: species, panted, fertility, stems_n, biom_stem, biom_root, biom_foliage' )
+    stop( 'Columns names of the species table must correspond to: species, planted, fertility, stems_n, biom_stem, biom_root, biom_foliage' )
   }
 
   # Settings
