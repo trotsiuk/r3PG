@@ -20,7 +20,9 @@ Suggests:
     testthat (>= 1.0.2),
     roxygen2,
     BayesianTools,
-    sensitivity
+    sensitivity,
+    dplyr,
+    ggplot2
 VignetteBuilder: R.rsp
 Encoding: UTF-8
 LazyData: true
