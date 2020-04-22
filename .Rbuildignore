@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^doc$
 ^dev$
+^vignettes_build$
