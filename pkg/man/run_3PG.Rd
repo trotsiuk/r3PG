@@ -30,7 +30,7 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
 either a 4-dimentional array or a data.frame, depending on the parameter df_out.
 }
 \description{
-The function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
+Runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
 }
 \details{
 `r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model (\href{https://doi.org/10.1016/S0378-1127(97)00026-1}{Landsberg & Waring, 1997}), which simulates forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (\href{https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf}{Sands, 2010}) and the `3-PGmix` (\href{https://doi.org/10.1016/j.ecolmodel.2015.07.010}{Forrester & Tang, 2016}) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.

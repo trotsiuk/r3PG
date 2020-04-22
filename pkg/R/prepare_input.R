@@ -1,5 +1,5 @@
 #' @title Check and prepare input for running 3-PG model
-#' @description This function checks and prepares all input tables to be used in \code{\link{run_3PG}}.
+#' @description Checks and prepares all input tables to be used in \code{\link{run_3PG}}.
 #'
 #' @param site table containing the information about site conditions.
 #' \itemize{

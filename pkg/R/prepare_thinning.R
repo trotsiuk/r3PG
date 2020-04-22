@@ -1,5 +1,5 @@
 #' @title Check and prepare management information.
-#' @description This function prepares the management table and checks for consistency.
+#' @description Prepares the management table and checks for consistency.
 #'
 #' @param thinning  table containing the information about thinnings. If there is no thinning, it must be \code{NULL}. The following columns are required:
 #' \itemize{

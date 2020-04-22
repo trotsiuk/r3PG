@@ -17,7 +17,7 @@ prepare_sizeDist(size_dist = NULL, sp_names = c("Fagus sylvatica",
 \item{sp_names}{names of the species / cohorts used for the simulations.The `sp_names` must be identical to those from \code{species} table.}
 }
 \description{
-This function prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
+Prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
 }
 \details{
 This function prepares the parameter table for \code{\link{run_3PG}}.

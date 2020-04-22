@@ -1,5 +1,5 @@
 #' @title Subsets or replicate a climate data
-#' @description This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from a longer time-series of climate data.
+#' @description Prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from a longer time-series of climate data.
 #'
 #' @param climate  table containing the information about monthly values for climatic data. If the climate table have exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. If this is required, \code{year} and \code{month} columns must be included in the climate table. The minimum required columns are listed below, but additionally you can include: tmp_ave, c02, d13catm. Please refer to \code{\link{d_climate}} for example.
 #' \itemize{

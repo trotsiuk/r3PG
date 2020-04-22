@@ -79,7 +79,7 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 }}
 }
 \description{
-This function checks and prepares all input tables to be used in \code{\link{run_3PG}}.
+Checks and prepares all input tables to be used in \code{\link{run_3PG}}.
 }
 \details{
 This function checks and prepares the input data for the \code{\link{run_3PG}}. The output is a list with 7 tables. Each of them corresponds to the one from input.

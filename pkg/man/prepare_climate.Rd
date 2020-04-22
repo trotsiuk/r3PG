@@ -26,7 +26,7 @@ prepare_climate(climate, from = "2000-04", to = "2010-11")
 \item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month.}
 }
 \description{
-This function prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from a longer time-series of climate data.
+Prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from a longer time-series of climate data.
 }
 \details{
 This function prepares the climate table for \code{\link{run_3PG}}.

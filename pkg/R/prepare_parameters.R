@@ -1,5 +1,5 @@
 #' @title Prepare parameters table
-#' @description This function prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
+#' @description Prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
 #'
 #' @param parameters table containing the information about parameters to be modified. Values that are not provided are replaced by defaults.
 #' \itemize{

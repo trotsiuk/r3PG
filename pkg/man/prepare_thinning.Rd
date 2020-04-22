@@ -21,7 +21,7 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
 \item{sp_names}{names of the species / cohorts used for the simulations. This is required whether `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.}
 }
 \description{
-This function prepares the management table and checks for consistency.
+Prepares the management table and checks for consistency.
 }
 \details{
 This function prepares the thinning table for \code{\link{run_3PG}}.

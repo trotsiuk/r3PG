@@ -1,6 +1,6 @@
 #' @title Runs a 3-PG simulation
 #'
-#' @description The function runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
+#' @description Runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
 #'
 #' @param site table as described in \code{\link{prepare_input}} containing the information about site conditions.
 #' @param species table as described in \code{\link{prepare_input}} containing the information about species level data. Each row corresponds to one species/cohort.
