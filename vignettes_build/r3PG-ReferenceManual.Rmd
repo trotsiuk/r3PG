@@ -87,7 +87,7 @@ out_3PG %>%
 
 As a second case study, we want do a slightly more ambitious project, which is a sensitivity analysis and calibration of the model. 
 
-For both tasks, we use freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220). The data can be extracted from the sql database with the ProfoundData R package, which is available on CRAN. For convenience, however, we have included the extracted and cleaned data in the required format in the `r3PG` package. All the data used in this vignette can be downloaded from [r3PG/vignettes_build](https://github.com/trotsiuk/r3PG/vignettes_build)
+For both tasks, we use freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220). The data can be extracted from the sql database with the ProfoundData R package, which is available on CRAN. For convenience, however, we have included the extracted and cleaned data in the required format in the `r3PG` package. All the data used in this vignette can be downloaded from [r3PG/vignettes_build](https://github.com/trotsiuk/r3PG/tree/master/vignettes_build)
 
 ```{r data}
 load('vignette_data/solling.rda')
