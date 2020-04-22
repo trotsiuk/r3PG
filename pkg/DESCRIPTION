@@ -5,7 +5,7 @@ Description: Provides a flexible and easy-to-use interface for the 3-PG model wr
 Date: 2020-04-04
 Version: 0.1.0
 Authors@R: c(
-    person("Volodymyr", "Trotsiuk", email = "trotsiuk@fld.czu.cz", role = c("aut", 'cre'), comment=c(ORCID="0000-0002-8363-656X")),
+    person("Volodymyr", "Trotsiuk", email = "vtrotsiuk@gmail.com", role = c("aut", 'cre'), comment=c(ORCID="0000-0002-8363-656X")),
     person("Florian", "Hartig", email = "florian.hartig@biologie.uni-regensburg.de", role = c("aut"), comment=c(ORCID="0000-0002-6255-9059")),
     person("David", "Forrester", email = "david.forrester@wsl.ch", role = c("aut"))
     )
