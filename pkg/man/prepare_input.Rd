@@ -68,7 +68,7 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 \item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 }}
 
-\item{settings}{a list with settings for the model. Values that are not provided are replaced by defaults.For detailed descriptions of these options, see \href{https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}{Forrester (2020)}.
+\item{settings}{a list with settings for the model. Values that are not provided are replaced by defaults.
 \itemize{
 \item light_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
 \item transp_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
@@ -79,13 +79,16 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 }}
 }
 \description{
-Checks and prepares all input tables to be used in \code{\link{run_3PG}}.
+Checks and prepares all input tables to be used in \code{\link{run_3PG}}. For detailed descriptions see Forrester (2020).
 }
 \details{
 This function checks and prepares the input data for the \code{\link{run_3PG}}. The output is a list with 7 tables. Each of them corresponds to the one from input.
 }
 \examples{
 prepare_input( site = d_site, species = d_species, climate = d_climate, d_thinning)
+}
+\references{
+Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload.
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}

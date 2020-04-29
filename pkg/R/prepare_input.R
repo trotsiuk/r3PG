@@ -1,5 +1,5 @@
 #' @title Check and prepare input for running 3-PG model
-#' @description Checks and prepares all input tables to be used in \code{\link{run_3PG}}.
+#' @description Checks and prepares all input tables to be used in \code{\link{run_3PG}}. For detailed descriptions see Forrester (2020).
 #'
 #' @param site table containing the information about site conditions.
 #' \itemize{
@@ -55,7 +55,7 @@
 #' \item parameter: name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}
 #' \item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
 #' }
-#' @param settings a list with settings for the model. Values that are not provided are replaced by defaults.For detailed descriptions of these options, see \href{https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}{Forrester (2020)}.
+#' @param settings a list with settings for the model. Values that are not provided are replaced by defaults.
 #' \itemize{
 #' \item light_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
 #' \item transp_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
@@ -70,6 +70,9 @@
 #' @seealso \code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 #'
 #' @example inst/examples/prepare_input-help.R
+#'
+#' @references
+#' Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload.
 #'
 #' @export
 #'
