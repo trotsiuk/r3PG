@@ -23,6 +23,8 @@
 #'
 #' In case a larger climate file is provided, the simulation period is selected from this.
 #'
+#' @return a data.frame with number of rows corresponding to number of simulated month and 10 columns
+#'
 #' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}
 #'
 #' @example inst/examples/prepare_climate-help.R

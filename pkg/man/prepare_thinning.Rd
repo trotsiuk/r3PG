@@ -20,6 +20,9 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
 
 \item{sp_names}{names of the species / cohorts used for the simulations. This is required whether `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.}
 }
+\value{
+a 3-dimentional array, where third dimention correspond to each species.
+}
 \description{
 Prepares the management table and checks for consistency.
 }

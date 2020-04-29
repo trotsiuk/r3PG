@@ -69,6 +69,8 @@
 #'
 #' @seealso \code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 #'
+#' @return a list with seven tables. Each table corresponds to one of the input tables.
+#'
 #' @example inst/examples/prepare_input-help.R
 #'
 #' @references

@@ -10,6 +10,8 @@
 #'
 #' @details This function prepares the parameter table for \code{\link{run_3PG}}
 #'
+#' @return a data.frame with 47 rows and columns corresponding to each species.
+#'
 #' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 #'
 #' @example inst/examples/prepare_parameters-help.R

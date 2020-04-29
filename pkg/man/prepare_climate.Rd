@@ -25,6 +25,9 @@ prepare_climate(climate, from = "2000-04", to = "2010-11")
 
 \item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month.}
 }
+\value{
+a data.frame with number of rows corresponding to number of simulated month and 10 columns
+}
 \description{
 Prepares the climate table, by either replicating the average climate for the required number of years, or by subsetting from a longer time-series of climate data.
 }

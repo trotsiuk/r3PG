@@ -27,7 +27,7 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
 \item{df_out}{\code{logical} if the output shall be long data.frame (TRUE) the 4-dimensional array (FALSE).}
 }
 \value{
-either a 4-dimentional array or a data.frame, depending on the parameter df_out.
+either a 4-dimentional array or a data.frame, depending on the parameter \code{df_out}.
 }
 \description{
 Runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.

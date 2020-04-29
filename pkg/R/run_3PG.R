@@ -18,7 +18,7 @@
 #'
 #' @note The \code{run_3PG} also checks the quality of input data. When names, or structures are not consistent with requirements it will return an error. Turn this off to optimize for speed.
 #'
-#' @return either a 4-dimentional array or a data.frame, depending on the parameter df_out.
+#' @return either a 4-dimentional array or a data.frame, depending on the parameter \code{df_out}.
 #'
 #' @seealso \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
 #'

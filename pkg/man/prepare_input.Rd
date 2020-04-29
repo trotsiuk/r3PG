@@ -78,6 +78,9 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 \item calculate_d13c: `0` - no (default); `1` - yes
 }}
 }
+\value{
+a list with seven tables. Each table corresponds to one of the input tables.
+}
 \description{
 Checks and prepares all input tables to be used in \code{\link{run_3PG}}. For detailed descriptions see Forrester (2020).
 }

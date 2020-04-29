@@ -18,6 +18,8 @@
 #'
 #' In case there will be thinning it will return 3-d array, where one dimension correspond to each species.
 #'
+#' @return  a 3-dimentional array, where third dimention correspond to each species.
+#'
 #' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_climate}}
 #'
 #' @example inst/examples/prepare_thinning-help.R

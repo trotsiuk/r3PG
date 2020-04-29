@@ -16,6 +16,9 @@ prepare_sizeDist(size_dist = NULL, sp_names = c("Fagus sylvatica",
 
 \item{sp_names}{names of the species / cohorts used for the simulations.The `sp_names` must be identical to those from \code{species} table.}
 }
+\value{
+a data.frame with 47 rows and columns corresponding to each species.
+}
 \description{
 Prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
 }
