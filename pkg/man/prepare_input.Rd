@@ -88,7 +88,7 @@ This function checks and prepares the input data for the \code{\link{run_3PG}}. 
 prepare_input( site = d_site, species = d_species, climate = d_climate, d_thinning)
 }
 \references{
-Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload.
+Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: \url{http://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}

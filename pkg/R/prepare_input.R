@@ -72,7 +72,7 @@
 #' @example inst/examples/prepare_input-help.R
 #'
 #' @references
-#' Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload.
+#' Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: \url{http://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}
 #'
 #' @export
 #'
