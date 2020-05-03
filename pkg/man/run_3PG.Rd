@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_3PG.R
 \name{run_3PG}
 \alias{run_3PG}
-\title{Runs a 3-PG simulation}
+\title{Runs a 3-PG model simulation}
 \usage{
 run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
   size_dist = NULL, settings = NULL, check_input = TRUE, df_out = TRUE)
@@ -30,10 +30,10 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
 either a 4-dimentional array or a data.frame, depending on the parameter \code{df_out}.
 }
 \description{
-Runs the 3-PGpjs or 3-PGmix model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
+Runs the 3-PGpjs (monospecific, evenaged and evergreen forests) or 3-PGmix (deciduous, uneven-aged or mixed-species forests) model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
 }
 \details{
-`r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model, which simulates forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` and the `3-PGmix` model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
+`r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model, which simulates forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (monospecific, evenaged and evergreen forests) and the `3-PGmix` (deciduous, uneven-aged or mixed-species forests) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
 
 This implementation of 3-PG includes several major variants / modifications of the model in particular the ability to switch between 3-PGpjs (the more classic model version for monospecific stands) vs. 3-PGmix (a version for mixed stands), as well as options for bias corrections and \eqn{\delta^13 C} calculations (see parameters).
 }
