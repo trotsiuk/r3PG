@@ -367,9 +367,28 @@ summary {
 
 <div id="version-0.1.0" class="section level1">
 <h1>Version 0.1.0</h1>
-<div id="submission-1" class="section level2">
-<h2>Submission 1</h2>
-<p>Hi, this is a new submission to CRAN</p>
+<div id="submission-2" class="section level2">
+<h2>Submission 2</h2>
+<p>This is a new (re)submission to CRAN</p>
+<p>CRAN MESSAGE</p>
+<blockquote>
+<p>Please use the description field to explain and elaborate on specific terms terms used in the title and description field. Please always explain all acronyms in the description text.</p>
+</blockquote>
+<ul>
+<li>I have explained acronyms and short tersms in the descriptison.</li>
+</ul>
+<blockquote>
+<p>If there are references describing the methods in your package, please add these in the description field of your DESCRIPTION file in the form authors (year) &lt;doi:…&gt; authors (year) &lt;arXiv:…&gt; authors (year, ISBN:…) or if those are not available: &lt;https:…&gt; with no space after ‘doi:’, ‘arXiv:’, ‘https:’ and angle brackets for auto-linking. (If you want to add a title as well please put it in quotes: “Title”)</p>
+</blockquote>
+<ul>
+<li>I have added the rederences to the DESCRIPTION</li>
+</ul>
+<blockquote>
+<p>Please add to .Rd files regarding exported methods and explain the functions results in the documentation. Please write about the structure of the output (class) and also what the output means. (If a function does not return a value, please document that too, e.g.  or similar)</p>
+</blockquote>
+<ul>
+<li>I have added to each of the function.</li>
+</ul>
 <div id="test-environments" class="section level3">
 <h3>Test environments</h3>
 <ul>
@@ -380,6 +399,27 @@ summary {
 </ul>
 </div>
 <div id="r-cmd-check-results" class="section level3">
+<h3>R CMD check results</h3>
+<p>0 errors ✓ | 0 warnings ✓ | 0 notes ✓</p>
+<p>R CMD check succeeded.</p>
+<p>In addition, rhub platform gave the following note:</p>
+<p>checking compilation flags used … NOTE Compilation used the following non-portable flag(s): ‘-mstackrealign’</p>
+<p>checking for non-standard things in the check directory … NOTE Found the following files/directories: ‘examples_i386’ ‘examples_x64’ ‘r3PG-Ex_i386.Rout’ ‘r3PG-Ex_x64.Rout’ ‘tests_i386’ ‘tests_x64’</p>
+</div>
+</div>
+<div id="submission-1" class="section level2">
+<h2>Submission 1</h2>
+<p>Hi, this is a new submission to CRAN</p>
+<div id="test-environments-1" class="section level3">
+<h3>Test environments</h3>
+<ul>
+<li>local MAC OS 10.14.1 (Mojave), R 3.6.1</li>
+<li><a href="http://win-builder.r-project.org/" class="uri">http://win-builder.r-project.org/</a> - oldrelease / devel / release</li>
+<li>Linux (Travis CI) - oldrel / release / devel</li>
+<li>rhub (using <code>rhub::check_for_cran()</code>)</li>
+</ul>
+</div>
+<div id="r-cmd-check-results-1" class="section level3">
 <h3>R CMD check results</h3>
 <p>0 errors ✓ | 0 warnings ✓ | 0 notes ✓</p>
 <p>R CMD check succeeded.</p>
