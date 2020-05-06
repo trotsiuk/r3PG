@@ -149,6 +149,11 @@ transf.out <- function( sim, sp_names, year_i, month_i ){
 
   sim <- as.data.frame.table( sim, stringsAsFactors = F, responseName = 'value')
 
+  if( month_i == 12){
+    year_i = year_i + 1
+    month_i = 0
+  }
+
   sim$date <- seq( from = as.Date( paste(year_i, month_i+1, 01, sep = '-') ), by = "month", length.out = n_ob) - 1
   sim$species <- rep(sp_names, each = n_ob)
   sim$group <- rep( unique(var.default$variable_group), each = n_ob * n_sp)
