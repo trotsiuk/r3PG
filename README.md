@@ -94,3 +94,5 @@ Forrester, D. I., & Tang, X. (2016). Analysing the spatial and temporal dynamics
 Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. Forest Ecology and Management, 95(3), 209–228. https://doi.org/10.1016/S0378-1127(97)00026-1
 
 Sands, P. J. (2010). 3PGpjs user manual. Retrieved from https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf
+
+Trotsiuk, V., Hartig, F., Cailleret, M., Babst, F., Forrester, D. I., Baltensweiler, A., … Schaub, M. (2020). Assessing the response of forest productivity to climate extremes in Switzerland using model–data fusion. Global Change Biology, 26(4), 2463–2476. https://doi.org/10.1111/gcb.15011
