@@ -4,7 +4,9 @@ C_OBJS = skeleton.o
 # Fortran objects
 FT_OBJS = md_decl_const.o md_3PG.o
 
-all: $(SHLIB) clean
+all:
+	@$(MAKE) $(SHLIB)
+	@rm -rf *.mod *.o
 
 $(SHLIB): $(FT_OBJS) $(C_OBJS)
 
@@ -18,6 +20,3 @@ mod_3PG.mod: md_3PG.o
 
 # Dependency of the C wrapper
 skeleton.o: mod_3PG.mod
-
-clean:
-	@rm -rf *.mod *.o
