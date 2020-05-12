@@ -1,4 +1,9 @@
 r3PG 0.1.0
 ============
 
-- initial release of the package
+This is a first stable release available also on [CRAN](https://cran.r-project.org/web/packages/r3PG/index.html). The main functionality includes:
+
+- simulating forest growth with 3-PGpjs (single species, even aged) and 3-PGmix (mixed, uneven aged)
+- adjusting size distribution due to Jens inequality
+- calculating delta13C
+- preparing the input data

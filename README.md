@@ -1,6 +1,9 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/r3PG)](https://cran.r-project.org/package=r3PG)
+[![](https://cranlogs.r-pkg.org/badges/r3PG)](https://cran.r-project.org/package=r3PG)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 
 
 ## Purpose
@@ -65,9 +68,13 @@ run_3PG(
 
 ## Installation 
 
-### Latest release
+### Stable release
 
-`r3PG` can be installed from the latest [release](https://github.com/trotsiuk/r3PG/releases).
+`r3PG` is available for instalation from [CRAN](https://cran.r-project.org/web/packages/r3PG/index.html) 
+
+```r
+install.packages("r3PG")
+```
 
 ### Development release
 
