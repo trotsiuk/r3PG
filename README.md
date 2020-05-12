@@ -79,10 +79,13 @@ install.packages("r3PG")
 ### Development release
 
 To install the current (development) version from the repository, run the following command:
+
 ```r
 if(!require(devtools)){install.packages(devtools)}
 devtools::install_github(repo = "trotsiuk/r3PG", subdir = "pkg", build_vignettes = T)
 ```
+
+The unit test status of the master (development) branch is [![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)
 
 ## Other implementations in R
 
