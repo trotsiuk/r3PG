@@ -84,6 +84,16 @@ if(!require(devtools)){install.packages(devtools)}
 devtools::install_github(repo = "trotsiuk/r3PG", subdir = "pkg", build_vignettes = T)
 ```
 
+## Other implementations in R
+
+| Maintainer          | Source |
+| ------------------- | ------ |
+| Daniel M. Griffith  | https://github.com/griffithdan/r3PG |
+| Georgios Xenakis    | https://github.com/drGeorgeXenakis/fr3PGD |
+| Francesco Minunno   | https://github.com/checcomi/threePGN-package |
+| Quinn Thomas        | https://github.com/EcoDynForecast/DAPPER |
+
+
 ## Issues, suggestions, contributions
 
 Please submit issues, bugs and suggestions in the dedicated [page](https://github.com/trotsiuk/r3PG/issues). Contribution and improvements are always welcome!
