@@ -1,0 +1,1 @@
+A compiled version (last release) of the vignette is available [here](https://cran.r-project.org/web/packages/r3PG/vignettes/r3PG-ReferenceManual.html)
