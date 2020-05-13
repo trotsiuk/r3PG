@@ -87,7 +87,9 @@ devtools::install_github(repo = "trotsiuk/r3PG", subdir = "pkg", build_vignettes
 
 The unit test status of the master (development) branch is [![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)
 
-## Other implementations in R
+## Other 3-PG implementations in R
+
+We would like to acknowledge that r3PG is not the only 3-PG implementations in R. We are aware of the following other packages:
 
 | Maintainer          | Source |
 | ------------------- | ------ |
@@ -96,6 +98,7 @@ The unit test status of the master (development) branch is [![Build Status](http
 | Francesco Minunno   | https://github.com/checcomi/threePGN-package |
 | Quinn Thomas        | https://github.com/EcoDynForecast/DAPPER |
 
+We explain in a recent publication (Trotsiuk et al, submitted) how this r3PG packages differs and / or improves over these. 
 
 ## Issues, suggestions, contributions
 
