@@ -1,7 +1,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/r3PG)](https://cran.r-project.org/package=r3PG)
-[![](https://cranlogs.r-pkg.org/badges/r3PG)](https://cran.r-project.org/package=r3PG)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/r3PG)](https://cran.r-project.org/package=r3PG)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
