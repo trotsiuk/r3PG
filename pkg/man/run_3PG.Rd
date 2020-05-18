@@ -27,7 +27,7 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
 \item{df_out}{\code{logical} if the output shall be long data.frame (TRUE) the 4-dimensional array (FALSE).}
 }
 \value{
-either a 4-dimentional array or a data.frame, depending on the parameter \code{df_out}.
+either a 4-dimentional array or a data.frame, depending on the parameter \code{df_out}. More details on the output is \code{\link{i_output}}
 }
 \description{
 Runs the 3-PGpjs (monospecific, evenaged and evergreen forests) or 3-PGmix (deciduous, uneven-aged or mixed-species forests) model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.

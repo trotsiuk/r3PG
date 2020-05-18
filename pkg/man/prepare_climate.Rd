@@ -13,7 +13,7 @@ prepare_climate(climate, from = "2000-04", to = "2010-11")
 \item month: months of observation (only required for subsetting) (numeric).
 \item tmp_min: monthly mean daily minimum temperature (C).
 \item tmp_max: monthly mean daily maximum temperature (C).
-\item tmp_ave: monthly mean daily mean temperature (C) (optional).
+\item tmp_ave: monthly mean daily average temperature (C) (optional).
 \item prcp: monthly rainfall (mm month-1).
 \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 \item frost_days: frost days per month (d month-1).
