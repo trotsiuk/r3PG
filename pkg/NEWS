@@ -1,3 +1,12 @@
+r3PG 0.1.1
+============
+
+Minor changes
+
+- adjusting `src/Makevars` to avoid failures with parallel makes
+- small typos in the description files
+
+
 r3PG 0.1.0
 ============
 

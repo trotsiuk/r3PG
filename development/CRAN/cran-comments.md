@@ -1,3 +1,23 @@
+# Version 0.1.1
+
+## Submission 1, 19.05.2020
+
+This is a minor update of r3PG, with adjustment to avoid failures with parallel makes.
+
+### Test environments
+
+* local MAC OS 10.14.1 (Mojave), R 3.6.1
+* http://win-builder.r-project.org/ - oldrelease / devel / release
+* Linux (Travis CI) - oldrel / release / devel
+* rhub (using `rhub::check_for_cran()`)
+
+### R CMD check results
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check succeeded.
+
+
 # Version 0.1.0
 
 ## Submission 3
