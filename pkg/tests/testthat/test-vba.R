@@ -30,7 +30,7 @@ test_that("Evergreen 3-PGmix check", {
       height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
-  testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(127.185, 41.156, 3.994) ) )
+  testthat::expect_true( all( floor( out[120,,4,1:3]) == c(127, 41, 3) ) )
 })
 
 
