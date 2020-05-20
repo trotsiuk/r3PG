@@ -943,6 +943,7 @@ contains
         real(kind=8), allocatable, dimension(:) :: Height_layer ! maximum height of each layer
     
         integer :: i
+        integer :: n_l
     
         ! Sort all height and crown heigh
         Height_all = [Heightcrown(:), height(:)] ! put height and crown beginning into vector
@@ -954,23 +955,28 @@ contains
 
     !   cumulative sum
         ones_sum(1) = ones(1)
-        if( n_sp > 1 ) then
+        !if( n_sp > 1 ) then
             do i = 2, n_sp*2
                 ones_sum(i) = ones_sum(i-1) + ones(i)
             end do
-        end if
+        !end if
     
         ! Max height of each layer
+        n_l = count(ones_sum == 0)
+        allocate( Height_layer(n_l) )
+        Height_layer(:) = 0
         Height_layer = Height_all(PACK(Height_ind, ones_sum == 0))
     
         ! Assign layer to each species
         layer_id(:) = 1
-        if( size(Height_layer) > 1 ) then
-            do i = 1, size(Height_layer)-1
+        if( n_l > 1 ) then
+            do i = 1, n_l-1
                 where ( height(:) > Height_layer(i) ) layer_id(:) = i+1
             end do
         end if
-    
+        
+        deallocate( Height_layer )
+
         ! revert the order, so highest trees are 1 layer and lowest is n
         layer_id(:) = maxval( layer_id(:) ) - layer_id(:) + 1
     
