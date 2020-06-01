@@ -1,3 +1,27 @@
+# Version 0.1.2
+
+## Submission 1, 01.06.2020
+
+This is a minor update of r3PG.
+
+> There was an error on memory allocation while checking with Valgrind.
+
+- Done
+
+### Test environments
+
+* local MAC OS 10.14.1 (Mojave), R 3.6.1
+* http://win-builder.r-project.org/ - oldrelease / devel / release
+* Linux (Travis CI) - oldrel / release / devel
+* rhub (using `rhub::check_for_cran()`, `rhub::check_with_valgrind()`)
+
+### R CMD check results
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check succeeded.
+
+
 # Version 0.1.1
 
 ## Submission 1, 19.05.2020

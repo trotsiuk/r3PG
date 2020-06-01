@@ -1,3 +1,11 @@
+r3PG 0.1.2
+============
+
+Minor changes
+
+- check with valgrind for memory allocation.
+
+
 r3PG 0.1.1
 ============
 

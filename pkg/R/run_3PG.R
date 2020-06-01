@@ -100,7 +100,8 @@ run_3PG <- function(
       if( dim(thinning)[3] == 1 ){
         t_t = as.integer( length(thinning[,1,]))
       }else{
-        t_t = as.integer( colSums(!is.na(thinning[,1,])) )
+        t_t = colSums( matrix( !is.na(thinning[,1,]), ncol = dim(thinning)[3]) )
+        t_t = as.integer(t_t)
       }
     }
 
