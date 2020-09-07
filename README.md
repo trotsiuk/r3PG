@@ -110,6 +110,11 @@ Please submit issues, bugs and suggestions in the dedicated [page](https://githu
 [Florian Hartig; ](mailto:florian.hartig@biologie.uni-regensburg.de)
 [David I. Forrester](mailto:david.forrester@wsl.ch)
 
+
+## Citation
+Trotsiuk, V., Hartig, F., Forrester, D.I., n.d. r3PG – an R package for simulating forest growth using the 3-PG process-based model. Methods Ecol. Evol. n/a. https://doi.org/10.1111/2041-210X.13474
+
+
 ## References
 
 Forrester, D. I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi.org/10.1016/j.ecolmodel.2015.07.010
