@@ -164,10 +164,12 @@ contains
         ii = 1
         month = month_i
 
-        stems_n(:) = stems_n_i(:)
-        biom_stem(:) = biom_stem_i(:)
-        biom_foliage(:) = biom_foliage_i(:)
-        biom_root(:) = biom_root_i(:)
+        where (age(ii,:) >= 0.d0 )
+          stems_n(:) = stems_n_i(:)
+          biom_stem(:) = biom_stem_i(:)
+          biom_foliage(:) = biom_foliage_i(:)
+          biom_root(:) = biom_root_i(:)
+        end where
 
         ! Check if this is the dormant period or previous/following period is dormant
         ! to allocate foliage if needed, etc.
@@ -180,11 +182,15 @@ contains
         end do
 
         ! Initial stand characteristics
-        biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-        dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-        basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
-        lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+        where (age(ii,:) >= 0.d0 )
+          biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+          dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+          basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+          lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+        end where
+
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+
 
         if( height_model .eq. 1 ) then
             height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
@@ -233,6 +239,18 @@ contains
 
             if (month > 12) then
                 month = int(1)
+            end if
+
+            ! Add new cohort ----------------------------------------------------------------------
+            where (age(ii,:) .eq. 0.d0 )
+              stems_n(:) = stems_n_i(:)
+              biom_stem(:) = biom_stem_i(:)
+              biom_foliage(:) = biom_foliage_i(:)
+              biom_root(:) = biom_root_i(:)
+            end where
+
+            if( any(age(ii,:) .eq. 0.d0) ) then
+              b_cor = .TRUE.
             end if
 
 

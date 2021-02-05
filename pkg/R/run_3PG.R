@@ -129,6 +129,11 @@ run_3PG <- function(
     settings = settings)
 
 
+  # Remove the values for dead cohort or not recruited cohort
+  remove_sim_arr <- array(r3PG_out[,,2,2] <= 0 | r3PG_out[,,2,1] < 0, dim=dim(r3PG_out))
+  r3PG_out[remove_sim_arr] <- NA_real_
+
+
   if( df_out ){
     r3PG_out = transf.out( sim = r3PG_out, sp_names = sp_names, year_i = site[7], month_i = site[8] )
   }
@@ -160,7 +165,7 @@ transf.out <- function( sim, sp_names, year_i, month_i ){
   sim$group <- rep( unique(var.default$variable_group), each = n_ob * n_sp)
   sim$variable <- rep( var.default$variable_name[order(var.default$variable_id)], each = n_ob * n_sp)
 
-  sim <- sim[!sim$value %in% -9999,]
+  sim <- sim[!is.na(sim$value),]
 
   sim <- sim[,c('date', 'species', 'group', 'variable', 'value')]
 
