@@ -1,3 +1,15 @@
+r3PG 0.1.3
+============
+
+Bug fixed
+
+- continue simulation even if one of the cohort was removed earlier (was only an issue if `correct_bias = 1`)
+- simulation if one of the cohort appear later (sensu regeneration)
+
+Minor changes
+
+- re-arangement some of the variables in the `fortran` code (no effect on input/output)
+
 r3PG 0.1.2
 ============
 
