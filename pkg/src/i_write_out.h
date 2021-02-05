@@ -1,4 +1,4 @@
-! Writing the main output 
+! Writing the main output
 
 
 ! Climatic variables -------------
