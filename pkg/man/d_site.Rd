@@ -4,7 +4,8 @@
 \name{d_site}
 \alias{d_site}
 \title{Site input}
-\format{A \code{data frame} with 1 rows and 8 variables:
+\format{
+A \code{data frame} with 1 rows and 8 variables:
 \describe{
   \item{latitude}{site latitude in the WGS84 coordinate system}
   \item{altitude}{site altitude, m a.s.l.}
@@ -14,7 +15,8 @@
   \item{asw_min}{maximum available soil water (mm)}
   \item{from}{year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01"}
   \item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month}
-}}
+}
+}
 \usage{
 d_site
 }

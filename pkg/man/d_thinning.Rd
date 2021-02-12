@@ -4,7 +4,8 @@
 \name{d_thinning}
 \alias{d_thinning}
 \title{Thinning input}
-\format{A \code{data frame} with 3 rows and 6 variables:
+\format{
+A \code{data frame} with 3 rows and 6 variables:
 \describe{
   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
   \item{age}{age when thinning is performed}
@@ -12,7 +13,8 @@
   \item{stem}{type of thinning (above/below). Default is 1}
   \item{root}{type of thinning (above/below). Default is 1}
   \item{foliage}{type of thinning (above/below). Default is 1}
-}}
+}
+}
 \usage{
 d_thinning
 }

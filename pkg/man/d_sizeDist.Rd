@@ -4,12 +4,14 @@
 \name{d_sizeDist}
 \alias{d_sizeDist}
 \title{sizeDist input}
-\format{A data frame with 47 rows and x variables:
+\format{
+A data frame with 47 rows and x variables:
 \describe{
   \item{parameter}{name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}}
   \item{Fagus sylvatica}{parameter values for species 1}
   \item{Pinus sylvestris}{parameter values for species 2}
-}}
+}
+}
 \usage{
 d_sizeDist
 }

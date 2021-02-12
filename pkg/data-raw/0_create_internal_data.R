@@ -15,11 +15,11 @@ library(readxl)
 options(digits=16)
 
 # internal data
-var.default <- read_excel('data-raw/internal_data/info.default.xlsx', sheet = 'output')
+var.default <- read_excel('data-raw/info.default.xlsx', sheet = 'output')
 
-param.default <- read_excel('data-raw/internal_data/info.default.xlsx', sheet = 'parameters')
+param.default <- read_excel('data-raw/info.default.xlsx', sheet = 'parameters')
 
-sizeDist.default <- read_excel('data-raw/internal_data/info.default.xlsx', sheet = 'sizeDist')
+sizeDist.default <- read_excel('data-raw/info.default.xlsx', sheet = 'sizeDist')
 
 usethis::use_data(var.default, param.default, sizeDist.default, internal = TRUE, overwrite = TRUE)
 

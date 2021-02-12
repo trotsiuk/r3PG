@@ -4,13 +4,15 @@
 \name{i_sizeDist}
 \alias{i_sizeDist}
 \title{Information about size distribution parameters}
-\format{A data frame with 30 rows and 3 variables:
+\format{
+A data frame with 30 rows and 3 variables:
 \describe{
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}
   \item{unit}{unit}
   \item{default}{default value equal to 0}
-}}
+}
+}
 \usage{
 i_sizeDist
 }

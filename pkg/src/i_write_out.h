@@ -72,7 +72,7 @@ output(ii,:,5,12) = f_transp_scale
 ! Production ---------------
 output(ii,:,6,1) = gpp(:)
 output(ii,:,6,2) = npp_f(:)
-output(ii,:,6,3) = par(:)
+output(ii,:,6,3) = apar(:)
 output(ii,:,6,4) = fi(:)
 output(ii,:,6,5) = alpha_c(:)
 output(ii,:,6,6) = epsilon_gpp(:)

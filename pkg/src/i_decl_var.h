@@ -32,7 +32,7 @@ real(kind=8), dimension(n_sp) :: stems_n_i      ! initial stand stocking for a s
 ! Climate ------------------------------
 real(kind=8), dimension(n_m) :: tmp_min         ! minimum daily temperature
 real(kind=8), dimension(n_m) :: tmp_max         ! maximum daily temperature
-real(kind=8), dimension(n_m) :: tmp_ave 
+real(kind=8), dimension(n_m) :: tmp_ave
 real(kind=8), dimension(n_m) :: prcp            ! monthly precipitation sum
 real(kind=8), dimension(n_m) :: solar_rad       ! mean daily incident solar radiation
 real(kind=8), dimension(n_m) :: frost_days      ! number of frost days per month
@@ -62,13 +62,13 @@ real(kind=8), dimension(n_sp) :: Tmin           ! Minimum temperature for growth
 real(kind=8), dimension(n_sp) :: Topt           ! Optimum temperature for growth
 real(kind=8), dimension(n_sp) :: Tmax           ! Maximum temperature for growth
 real(kind=8), dimension(n_sp) :: kF             ! Days production lost per frost day
-real(kind=8), dimension(n_sp) :: SWconst0       ! Moisture ratio deficit for fq = 0.5 
+real(kind=8), dimension(n_sp) :: SWconst0       ! Moisture ratio deficit for fq = 0.5
 real(kind=8), dimension(n_sp) :: SWpower0       ! Power of moisture ratio deficit
 real(kind=8), dimension(n_sp) :: fCalpha700     ! Assimilation enhancement factor at 700 ppm
 real(kind=8), dimension(n_sp) :: fCg700         ! Canopy conductance enhancement factor at 700 ppm
 real(kind=8), dimension(n_sp) :: m0             ! Value of 'm' when FR = 0
 real(kind=8), dimension(n_sp) :: fN0            ! Value of 'fNutr' when FR = 0
-real(kind=8), dimension(n_sp) :: fNn            ! Power of (1-FR) in 'fNutr' 
+real(kind=8), dimension(n_sp) :: fNn            ! Power of (1-FR) in 'fNutr'
 real(kind=8), dimension(n_sp) :: MaxAge         ! Maximum stand age used in age modifier
 real(kind=8), dimension(n_sp) :: nAge           ! Power of relative age in function for f_age
 real(kind=8), dimension(n_sp) :: rAge           ! Relative age to give f_age = 0.5
@@ -89,7 +89,7 @@ real(kind=8), dimension(n_sp) :: SLA0           ! Specific leaf area at age 0
 real(kind=8), dimension(n_sp) :: SLA1           ! Specific leaf area for mature leaves
 real(kind=8), dimension(n_sp) :: tSLA           ! Age at which specific leaf area = (SLA0+SLA1)/2
 real(kind=8), dimension(n_sp) :: k              ! Extinction coefficient for absorption of PAR by canopy
-real(kind=8), dimension(n_sp) :: fullCanAge     ! Age at canopy closure 
+real(kind=8), dimension(n_sp) :: fullCanAge     ! Age at canopy closure
 real(kind=8), dimension(n_sp) :: MaxIntcptn     ! Maximum proportion of rainfall evaporated from canopy
 real(kind=8), dimension(n_sp) :: LAImaxIntcptn  ! LAI for maximum rainfall interception
 real(kind=8), dimension(n_sp) :: cVPD           ! 'DF LAI for 50% reduction of VPD in canopy
@@ -125,8 +125,8 @@ real(kind=8), dimension(n_sp) :: Qa, Qb
 real(kind=8), dimension(n_sp) :: gDM_mol, molPAR_MJ
 
 ! Bias correction
-real(kind=8), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC 
-real(kind=8), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC 
+real(kind=8), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC
+real(kind=8), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC
 real(kind=8), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
 real(kind=8), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
 real(kind=8), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
@@ -138,14 +138,14 @@ real(kind=8), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocat
 ! Helpers ------------------------------
 integer :: i = 1                                ! indexing for species
 integer :: ii = 1                               ! indexing for month (row of climatic data)
-integer :: month = 1       
+integer :: month = 1
 integer :: b_n = 2                              ! how many times to iterate for biass correction
 integer :: n = 1                                ! count for bias correction
-logical :: b_cor = .TRUE.                            ! if something has changed and wee need to correct bias       
+logical :: b_cor = .TRUE.                            ! if something has changed and wee need to correct bias
 
 ! Climatic variables -------------
 real(kind=8), dimension(12) :: adjSolarZenithAngle
-real(kind=8), dimension(12) :: day_length  
+real(kind=8), dimension(12) :: day_length
 
 
 ! Stand variables ----------------
@@ -177,7 +177,7 @@ real(kind=8), dimension(n_m, n_sp) :: wood_density  ! Whole-tree basic density
 
 
 ! Canopy variables ---------------
-real(kind=8), dimension(n_sp) :: LAI            ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation) 
+real(kind=8), dimension(n_sp) :: LAI            ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation)
 real(kind=8), dimension(n_sp) :: lai_total      ! total competition of the forest
 real(kind=8), dimension(n_sp) :: LAI_per        ! species specific proportion of lai
 real(kind=8), dimension(n_sp) :: lai_above      ! leaf area above the given species
@@ -198,7 +198,7 @@ real(kind=8), dimension(n_sp) :: biom_incr_foliage
 real(kind=8), dimension(n_sp) :: biom_incr_root
 real(kind=8), dimension(n_sp) :: biom_incr_stem
 
-real(kind=8), dimension(n_sp) :: biom_loss_foliage  ! Litter fall 
+real(kind=8), dimension(n_sp) :: biom_loss_foliage  ! Litter fall
 real(kind=8), dimension(n_sp) :: biom_loss_root
 
 
@@ -207,8 +207,8 @@ real(kind=8), dimension(n_m, n_sp) :: f_age     ! Age related modifier
 real(kind=8), dimension(n_m, n_sp) :: f_tmp     ! Temperature modifier
 real(kind=8), dimension(n_m, n_sp) :: f_tmp_gc  ! gc canopy conductance modifier as in Feikema et al 2010 FEM 260,663–678
 real(kind=8), dimension(n_m, n_sp) :: f_frost   ! Frost modifier
-real(kind=8), dimension(n_m, n_sp) :: f_calpha  ! 
-real(kind=8), dimension(n_m, n_sp) :: f_cg      ! 
+real(kind=8), dimension(n_m, n_sp) :: f_calpha  !
+real(kind=8), dimension(n_m, n_sp) :: f_cg      !
 
 real(kind=8), dimension(n_sp) :: f_vpd
 real(kind=8), dimension(n_sp) :: f_sw
@@ -229,7 +229,7 @@ real(kind=8), dimension(n_sp) :: npp_fract_root
 real(kind=8), dimension(n_sp) :: npp_fract_stem
 real(kind=8), dimension(n_sp) :: npp_fract_foliage
 
-real(kind=8), dimension(n_sp) :: par            ! RADint
+real(kind=8), dimension(n_sp) :: apar            ! RADint
 real(kind=8), dimension(n_sp) :: aero_resist    ! # 'DF aerodynamic resistance within the canopy at the height of the given species (s m-1)
 real(kind=8), dimension(n_sp) :: VPD_sp         ! # 'DF VPD around the crowns of the given species
 real(kind=8), dimension(n_sp) :: alpha_c        ! Canopy quantum efficiency after modifiers
@@ -313,4 +313,3 @@ integer :: phys_model                           ! 1 - 3PGpjs; 2 - 3PGmix
 integer :: height_model                         ! 1 - linear; 2-non-linear
 integer :: correct_bias                         ! 0 - no; 1 - 3PGmix
 integer :: calculate_d13c                       ! 0 - no; 1 - 3PGmix
-
