@@ -9,7 +9,7 @@ library(ggplot2)
 library(r3PG)
 
 # 1. Load and simulate the r3PG -------------------------------------------
-f_input <- 'data-raw/r_vba_compare/r3PG_input.xls'
+f_input <- 'tests/r_vba_compare/r3PG_input.xls'
 
 site.df <- read_xls(f_input, 'site')
 species.df <- read_xls(f_input, 'species')
@@ -61,7 +61,7 @@ var_names_vba <- select(i_output, variable_vba, variable_name) %>%
 tranf_vba <- function(sk = 5, n_m = 111, sp_names = 'Fagus sylvatica', site = 'evergreen_pjs'){
   #' @description tranforming the output of the Excel VBA 3PG run to match the long format
   
-  out <- readxl::read_xls( 'data-raw/r_vba_compare/VBA_3PG_output.xls', sheet = 'Output', skip = sk, n_max = n_m) %>%
+  out <- readxl::read_xls( 'tests/r_vba_compare/VBA_3PG_output.xls', sheet = 'Output', skip = sk, n_max = n_m) %>%
     # head() %>%
     rename( date = `Year & month`) %>%
     mutate( date = gsub("[[:space:]]", "", date) %>% anytime::anydate(.) ) %>%

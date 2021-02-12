@@ -295,7 +295,7 @@ contains
             if ( light_model .eq. int(1) ) then
                 call s_light_3pgpjs ( n_sp, age_m(ii,:), fullCanAge(:), k(:), lai(:), &
                     solar_rad(ii), daysInMonth(month), &
-                    canopy_cover(:), par(:) )
+                    canopy_cover(:), apar(:) )
 
                 VPD_sp(:) = vpd_day(ii)
 
@@ -304,7 +304,7 @@ contains
                 ! Calculate the absorbed PAR. If this is first month, then it will be only potential
                 call s_light_3pgmix ( n_sp, height(:), crown_length(:), crown_width(:), lai(:), stems_n(:), &
                     solar_rad(ii), CrownShape(:), k(:), adjSolarZenithAngle(month), daysInMonth(month), &
-                    par(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:), lai_sa_ratio(:))
+                    apar(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:), lai_sa_ratio(:))
 
                 VPD_sp(:) = vpd_day(ii) * Exp(lai_above(:) * (-Log(2.d0)) / cVPD(:))
             end if
@@ -354,7 +354,7 @@ contains
             alpha_c(:) = alphaCx(:) * f_nutr(:) * f_tmp(ii,:) * f_frost(ii,:) * f_calpha(ii,:) * f_phys(:)
             where( lai(:) == 0.d0 ) alpha_c(:) = 0.d0
             epsilon(:) = gDM_mol * molPAR_MJ * alpha_c(:)
-            GPP(:) = epsilon(:) * par(:) / 100        ! tDM/ha (par is MJ/m^2)
+            GPP(:) = epsilon(:) * apar(:) / 100        ! tDM/ha (apar is MJ/m^2)
             NPP(:) = GPP(:) * y(:)                       ! assumes respiratory rate is constant
 
 
@@ -799,11 +799,11 @@ contains
             basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
             ! Efficiency
-            epsilon_gpp(:) = 100 * gpp(:) / par(:)
-            epsilon_npp(:) = 100 * npp_f(:) / par(:)
-            epsilon_biom_stem(:) = 100 * biom_incr_stem(:) / par(:)
+            epsilon_gpp(:) = 100 * gpp(:) / apar(:)
+            epsilon_npp(:) = 100 * npp_f(:) / apar(:)
+            epsilon_biom_stem(:) = 100 * biom_incr_stem(:) / apar(:)
 
-            where( par(:) .eq. 0.d0 )
+            where( apar(:) .eq. 0.d0 )
                 epsilon_gpp(:) = 0.d0
                 epsilon_npp(:) = 0.d0
                 epsilon_biom_stem(:) = 0.d0
@@ -1173,7 +1173,7 @@ contains
 
 
     subroutine s_light_3pgpjs ( n_sp, age, fullCanAge, k, lai, solar_rad, days_in_month, &
-        canopy_cover, par )
+        canopy_cover, apar )
 
         implicit none
 
@@ -1188,7 +1188,7 @@ contains
 
         ! output
         real(kind=8), dimension(n_sp), intent(out) :: canopy_cover
-        real(kind=8), dimension(n_sp), intent(out) :: par
+        real(kind=8), dimension(n_sp), intent(out) :: apar
 
         ! Additional variables for calculation distribution
         real(kind=8), dimension(n_sp) :: RADt ! Total available radiation
@@ -1203,16 +1203,16 @@ contains
         lightIntcptn = (1.d0 - (Exp(-k * lai / canopy_cover)))
 
         RADt = solar_rad * days_in_month ! MJ m-2 month-1
-        par = RADt * lightIntcptn * canopy_cover
+        apar = RADt * lightIntcptn * canopy_cover
 
     end subroutine s_light_3pgpjs
 
 
     subroutine s_light_3pgmix ( n_sp, height, crown_length, crown_width, lai, stems_n, solar_rad, &
         CrownShape, k, solarAngle,days_in_month, &
-        par, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio)
+        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio)
 
-        ! Subroutine calculate the par for the mixed species forest
+        ! Subroutine calculate the apar for the mixed species forest
         ! It first allocate each species to a specific layer based on height and crown length
         ! and then distribute the light between those layers
 
@@ -1235,9 +1235,9 @@ contains
         integer, intent(in) :: days_in_month
 
         ! output
-        real(kind=8), dimension(n_sp), intent(out) :: par
+        real(kind=8), dimension(n_sp), intent(out) :: apar
         real(kind=8), dimension(n_sp), intent(out) :: lai_above !leaf area above the given species
-        real(kind=8), dimension(n_sp), intent(out) :: fi !***DF the proportion of above canopy PAR absorbed by each species
+        real(kind=8), dimension(n_sp), intent(out) :: fi !***DF the proportion of above canopy apar absorbed by each species
         real(kind=8), dimension(n_sp), intent(out) :: lambda_v       !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
         real(kind=8), dimension(n_sp), intent(out) :: lambda_h         !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
         real(kind=8), dimension(n_sp), intent(out) :: canopy_vol_frac !Fraction of canopy space (between lowest crown crown height to tallest height) filled by crowns
@@ -1258,7 +1258,7 @@ contains
         real(kind=8), dimension(n_sp) :: kL_l          !sum of k x L for all species within the given layer
         real(kind=8), dimension(n_sp) :: lambdaV_l     ! sum of lambda_v per layer
         real(kind=8), dimension(n_sp) :: kLSweightedave   !calculates the contribution each species makes to the sum of all kLS products in a given layer (see Equation 6 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-        real(kind=8), dimension(n_sp) :: parl  !The absorbed PAR for the given  layer
+        real(kind=8), dimension(n_sp) :: aparl  !The absorbed apar for the given  layer
         real(kind=8) :: RADt ! Total available radiation
         real(kind=8), dimension(n_sp) :: LAI_l ! Layer LAI
 
@@ -1267,8 +1267,8 @@ contains
         Crownvolume(:) = 0.d0
         Height_max_l(:) = 0.d0
         Heightcrown_min_l(:) = 0.d0
-        parl(:) = 0.d0
-        par(:) = 0.d0
+        aparl(:) = 0.d0
+        apar(:) = 0.d0
         lai_above(:) = 0.d0
 
         !Calculate the mid crown height, crown surface and volume
@@ -1390,16 +1390,16 @@ contains
         RADt = solar_rad * days_in_month ! MJ m-2 month-1
         do i = 1, nLayers
             where ( layer_id(:) == i )
-                parl(:) = RADt * (1.d0 - 2.71828182845905d0 ** (-kL_l(:)))
+                aparl(:) = RADt * (1.d0 - 2.71828182845905d0 ** (-kL_l(:)))
             end where
-            RADt = RADt - maxval(parl(:), mask=layer_id(:)==i ) ! subtract the layer RAD from total
+            RADt = RADt - maxval(aparl(:), mask=layer_id(:)==i ) ! subtract the layer RAD from total
         end do
 
         ! ***DF this used to have month in it but this whole sub is run each month so month is now redundant here.
-        par(:) = parl(:) * lambda_h(:) * lambda_v(:)
+        apar(:) = aparl(:) * lambda_h(:) * lambda_v(:)
 
-        ! The proportion of above canopy PAR absorbed by each species. This is used for net radiation calculations in the gettranspiration sub
-        fi(:) = par(:) / (solar_rad * days_in_month)
+        ! The proportion of above canopy apar absorbed by each species. This is used for net radiation calculations in the gettranspiration sub
+        fi(:) = apar(:) / (solar_rad * days_in_month)
 
         ! calculate the LAI above the given species for within canopy VPD calculations
         LAI_l = f_get_layer_sum(n_sp, nLayers, LAI(:), layer_id(:))

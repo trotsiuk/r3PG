@@ -4,13 +4,15 @@
 \name{i_parameters}
 \alias{i_parameters}
 \title{Information about parameters}
-\format{A data frame with 82 rows and 3 variables:
+\format{
+A data frame with 82 rows and 3 variables:
 \describe{
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}
   \item{unit}{unit}
   \item{default}{default value for E.globulus from original 3-PG}
-}}
+}
+}
 \usage{
 i_parameters
 }
