@@ -106,13 +106,13 @@ Please submit issues, bugs and suggestions in the dedicated [page](https://githu
 
 ## Author and contact
 
-[Volodymyr Trotsiuk; ](mailto:trotsiuk@fld.czu.cz)
+[Volodymyr Trotsiuk; ](volodymyr.trotsiuk@wsl.ch)
 [Florian Hartig; ](mailto:florian.hartig@biologie.uni-regensburg.de)
 [David I. Forrester](mailto:david.forrester@wsl.ch)
 
 
 ## Citation
-Trotsiuk, V., Hartig, F., Forrester, D.I., n.d. r3PG – an R package for simulating forest growth using the 3-PG process-based model. Methods Ecol. Evol. n/a. https://doi.org/10.1111/2041-210X.13474
+Trotsiuk, V., Hartig, F., Forrester, D.I. (2020). r3PG – an R package for simulating forest growth using the 3-PG process-based model. Methods Ecol. Evol., 11, 1470–1475. https://doi.org/10.1111/2041-210X.13474
 
 
 ## References

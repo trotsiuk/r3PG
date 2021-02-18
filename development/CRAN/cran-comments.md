@@ -1,3 +1,33 @@
+# Version 0.1.3
+
+## Submission 1, 18.02.2021
+
+This is a minor update of r3PG.
+
+Bug fixed
+
+- continue simulation even if one of the cohort was removed earlier (was only an issue if `correct_bias = 1`)
+- simulation if one of the cohort appear later (sensu regeneration)
+
+Minor changes
+
+- re-arangement some of the variables in the `fortran` code (no effect on input/output)
+
+### Test environments
+
+* local MAC OS 10.15.7 (Catalina), R 4.0.2
+* http://win-builder.r-project.org/ - oldrelease / devel / release
+* Linux (Travis CI) - oldrel / release / devel
+* rhub (using `rhub::check_for_cran()`, `rhub::check_with_valgrind()`)
+
+### R CMD check results
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check succeeded.
+
+
+
 # Version 0.1.2
 
 ## Submission 1, 01.06.2020
