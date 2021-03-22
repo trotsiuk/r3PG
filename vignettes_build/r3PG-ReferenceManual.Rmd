@@ -359,17 +359,14 @@ r3pg_grid <- function(site, forc){
   return( site_out )
 }
 
-cl_in <- create_cluster() %>%
+cl_in <- new_cluster(n = 2) %>% # or more cores if desired
   cluster_library(c('r3PG', 'purrr', 'dplyr', 'tidyr')) %>%
-  cluster_copy( r3pg_grid ) %>%
-  cluster_copy( species.grid ) %>%
-  cluster_copy( thinn.grid ) %>%
-  cluster_copy( param.draw )
+  cluster_copy(names = c("r3pg_grid", "species.grid", "thinn.grid", "param.draw"))
 
 #' `hide the sample_n`
 sim.grid <- inner_join(site.grid, climate.grid, by = 'grid_id')  %>%
   sample_n(10) %>% # remove this for full simulation
-  partition(grid_id, cluster = cl_in) %>%
+  partition(cluster = cl_in) %>%
   mutate( out = map2(site, forc, ~r3pg_grid(.x, .y))) %>%
   select( grid_id, out) %>%
   collect() %>%
@@ -407,3 +404,10 @@ sim.grid %>%
 * Reyer, C. P. O., Silveyra Gonzalez, R., Dolos, K., Hartig, F., Hauf, Y., Noack, M., … Frieler, K. (2019). The PROFOUND database for evaluating vegetation models and simulating climate impacts on forests. Earth System Science Data Discussions, 1–47. https://doi.org/10.5194/essd-2019-220
 
 * Thornton, P. E., Running, S. W., & White, M. A. (1997). Generating surfaces of daily meteorological variables over large regions of complex terrain. Journal of Hydrology, 190(3), 214–251. https://doi.org/10.1016/S0022-1694(96)03128-9
+
+
+## Session 
+
+```{r session_info}
+sessionInfo()
+```
