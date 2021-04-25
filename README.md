@@ -98,7 +98,7 @@ We would like to acknowledge that r3PG is not the only 3-PG implementations in R
 | Francesco Minunno   | https://github.com/checcomi/threePGN-package |
 | Quinn Thomas        | https://github.com/EcoDynForecast/DAPPER |
 
-We explain in a recent publication (Trotsiuk et al, submitted) how this r3PG packages differs and / or improves over these. 
+We explain in a recent publication (Trotsiuk et al, submitted) how these r3PG packages differs and / or improves over these. 
 
 ## Issues, suggestions, contributions
 
