@@ -143,7 +143,7 @@ r3pg_ll <- function( par_v ){
   
   # calculate the log likelihood
   logpost <- sapply(1:6, function(i) {
-    likelihoodIidNormal( sim.df[,i], observ_solling_mat[,i], err_def[i] ) 
+    likelihoodIidNormal( sim.df[,i], observ_solling_mat[,i], err_v[i] ) 
   }) %>% sum(.)
   
   if(is.nan(logpost) | is.na(logpost) | logpost == 0 ){logpost <- -Inf}
