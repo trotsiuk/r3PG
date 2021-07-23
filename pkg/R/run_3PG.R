@@ -165,7 +165,6 @@ transf.out <- function( sim, sp_names, year_i, month_i ){
   sim$group <- rep( unique(var.default$variable_group), each = n_ob * n_sp)
   sim$variable <- rep( var.default$variable_name[order(var.default$variable_id)], each = n_ob * n_sp)
 
-  sim <- sim[!is.na(sim$value),]
 
   sim <- sim[,c('date', 'species', 'group', 'variable', 'value')]
 
