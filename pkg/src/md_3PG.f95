@@ -587,6 +587,7 @@ contains
 
             volume_change(:) = volume(:) - volume_old(:)
             where( lai(:) .eq. 0.d0 ) volume_change(:) = 0.d0
+            where( volume_change(:) .le. 0.d0 ) volume_change(:) = 0.d0
 
             volume_cum(:) = volume_cum(:) + volume_change(:)
             volume_old(:) = volume(:)
