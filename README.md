@@ -124,3 +124,5 @@ Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest producti
 Sands, P. J. (2010). 3PGpjs user manual. Retrieved from https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf
 
 Trotsiuk, V., Hartig, F., Cailleret, M., Babst, F., Forrester, D. I., Baltensweiler, A., … Schaub, M. (2020). Assessing the response of forest productivity to climate extremes in Switzerland using model–data fusion. Global Change Biology, 26(4), 2463–2476. https://doi.org/10.1111/gcb.15011
+
+Forrester, D. I., Hobi M. L., Mathys A. S., Stadelmann G., Trotsiuk V. (2021). Calibration of the process-based model 3-PG for major central European tree species. European Journal of Forest Research, 140, 847-868. https://doi.org/10.1007/s10342-021-01370-3
