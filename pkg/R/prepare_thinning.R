@@ -52,6 +52,7 @@ prepare_thinning <- function(
     thinning = data.frame( thinning )
     thinning = thinning[thinning$species %in% sp_names, ]
     thinning$species = sp_id[thinning$species] # change sp names to integer
+    thinning = thinning[order(thinning$species, thinning$age),] # order the age of the trees
 
     t_t = as.integer( as.vector( table(thinning[,1]) ) )
     n_man = as.integer( max(t_t) )
