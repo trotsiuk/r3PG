@@ -94,7 +94,7 @@ prepare_input <- function(
   site = prepare_site(site = site)
 
   # Species
-  species = prepare_site(site = species)
+  species = prepare_species(species = species)
 
   # Settings
   set_def = list(light_model = 1, transp_model = 1, phys_model = 1, height_model = 1, correct_bias = 0, calculate_d13c = 0)

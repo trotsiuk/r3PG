@@ -52,7 +52,7 @@ prepare_thinning <- function(
     thinning = data.frame( thinning )
 
     # check whether the thinning above/below are within plausible range
-    if( any(d_thinning[ c("stem","root","foliage") ] < 0 | d_thinning[ c("stem","root","foliage") ] > 5) ){
+    if( any(thinning[ c("stem","root","foliage") ] < 0 | thinning[ c("stem","root","foliage") ] > 5) ){
       stop( 'Thinning values for stem, root, foliage shall be in a range [0, 10]' )
     }
 

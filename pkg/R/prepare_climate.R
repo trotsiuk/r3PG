@@ -37,6 +37,9 @@ prepare_climate <- function(
   to = '2010-11'
 ){
 
+  # make data.frame
+  climate = data.frame(climate)
+
   # Test for the columns consistensy
   if( !all(c("tmp_min","tmp_max","prcp","srad","frost_days") %in% colnames(climate)) ){
     stop( 'Climate table must include the following columns: tmp_min, tmp_max, prcp, srad, frost_days' )
@@ -54,9 +57,6 @@ prepare_climate <- function(
   if( from >= to ){
     stop( 'The start date is later than the end date' )
   }
-
-  # make data.frame
-  climate = data.frame(climate)
 
   # Replicate or subset the data
   if( dim(climate)[1] == 12 ){
