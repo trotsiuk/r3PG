@@ -29,14 +29,8 @@ Prepares the site table, by checking whether the input information is consistent
 This function check the site table for \code{\link{run_3PG}}.
 }
 \examples{
-# subsetting climate data
-prepare_site( climate = d_site)
-
-# replicating climate data
-climate = matrix(rnorm(60), ncol = 5)
-colnames(climate) = c("tmp_min", "tmp_max", "prcp", "srad", "frost_days")
-
-prepare_climate( climate = climate, from = '2000-04', to = '2010-11')
+# check site data
+prepare_site( site = d_site)
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}

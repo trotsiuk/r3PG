@@ -41,7 +41,7 @@ prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
 \item prcp: monthly rainfall (mm month-1).
 \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 \item frost_days: frost days per month (d month-1).
-\item vpd_day: frost days per month (mbar) (optional).
+\item vpd_day: water pressure deficit (mbar) (optional).
 \item co2: monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional)
 \item d13catm: monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional)
 }}
@@ -96,5 +96,5 @@ Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Sn
 Sands, P. J., 2010. 3PGpjs user manual. Available at the following web site: \url{http://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf}
 }
 \seealso{
-\code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
+\code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}, \code{\link{prepare_site}}
 }

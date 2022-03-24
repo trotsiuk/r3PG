@@ -39,7 +39,7 @@ prepare_site <- function(
 
   # Test for NA
   if( any( is.na(site) ) ){
-    stop( "Climate table should not contain NA's" )
+    stop( "Climate table should not contain NAs" )
   }
 
   # prepare the time period
