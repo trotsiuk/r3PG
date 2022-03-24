@@ -38,7 +38,7 @@ prepare_sizeDist <- function(
   if( !is.null(size_dist) ){
 
     if( !identical( c("parameter"), colnames(size_dist)[1]) ){
-      stop( 'First column name of the parameters table must correspond to: parameter' )
+      stop( 'First column name of the size_dist table must correspond to: parameter' )
     }
 
     if( !all( size_dist$parameter %in% sizeDist.default$parameter) ){

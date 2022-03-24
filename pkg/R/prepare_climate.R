@@ -43,8 +43,8 @@ prepare_climate <- function(
   }
 
   # Test for NA
-  if( any( is.na(climate) ) ){
-    stop( "Climate table should not contain NA's" )
+  if( any( is.na(climate[c("tmp_min","tmp_max","prcp","srad","frost_days")]) ) ){
+    stop( "Climate table should not contain NAs" )
   }
 
   # prepare the time period

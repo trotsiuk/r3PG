@@ -32,7 +32,7 @@
 #' \item prcp: monthly rainfall (mm month-1).
 #' \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
 #' \item frost_days: frost days per month (d month-1).
-#' \item vpd_day: frost days per month (mbar) (optional).
+#' \item vpd_day: water pressure deficit (mbar) (optional).
 #' \item co2: monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional)
 #' \item d13catm: monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional)
 #' }
@@ -67,7 +67,7 @@
 #'
 #' @details This function checks and prepares the input data for the \code{\link{run_3PG}}. The output is a list with 7 tables. Each of them corresponds to the one from input.
 #'
-#' @seealso \code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}
+#' @seealso \code{\link{run_3PG}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_climate}}, \code{\link{prepare_site}}
 #'
 #' @return a list with seven tables. Each table corresponds to one of the input tables.
 #'
@@ -91,9 +91,7 @@ prepare_input <- function(
 ){
 
   # Site
-  if( !identical( c("latitude","altitude","soil_class","asw_i","asw_min","asw_max","from","to"), colnames(site)) ){
-    stop( 'Columns names of the site table must correspond to: latitude, altitude, soil_class, asw_i, asw_min, asw_max, from, to')
-  }
+  site = prepare_site(site = site)
 
   # Species
   if( !identical(c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage"), colnames(species)) ){
