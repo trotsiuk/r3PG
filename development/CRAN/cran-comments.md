@@ -23,6 +23,7 @@ New function and data sets
 Minor changes
 
 - adding the LICENSE
+- renaming and exporting the `param.default`, `var.default` and `sizedist.default` internal data
 
 ### Test environments
 

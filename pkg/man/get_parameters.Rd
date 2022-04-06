@@ -22,19 +22,19 @@ a data.frame with parameter sets for all available species, or only the
 Gets parameters sets for species from published studies
 }
 \details{
-This function access the internal parameter database stored in the package. If 
-df_out = overview, a simplified table with all existing parameter sets will be returned. 
+This function access the internal parameter database stored in the package. If
+df_out = overview, a simplified table with all existing parameter sets will be returned.
 A extended version including information related to the source can be obtained
 with df_out = source. The complete version of this table (species,source, comments,
-parameters) will be returned if df_out = full. 
+parameters) will be returned if df_out = full.
 Alternatively, with df_out = run, it is possible to
 obtain only the parameters in the format required by \code{\link{run_3PG}}.
 Passing species names with sp_names means selecting from the table
-the desired species. Please note that one species might have more than one 
+the desired species. Please note that one species might have more than one
 available parameter sets.
 
 The parameter sets were obtained from published studies. Basic information about the
-sets and the corresponding studies is provided in the table. For further information, 
+sets and the corresponding studies is provided in the table. For further information,
 please consider checking the original publication.
 }
 \examples{

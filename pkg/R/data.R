@@ -12,6 +12,7 @@
 #'   \item{unit}{unit of the variable}
 #'   \item{variable_vba}{corresponding name of the variable as output from Excel version of 3-PGmix}
 #' }
+#' @export
 "i_output"
 
 
@@ -26,6 +27,7 @@
 #'   \item{unit}{unit}
 #'   \item{default}{default value for E.globulus from original 3-PG}
 #' }
+#' @export
 "i_parameters"
 
 
@@ -40,7 +42,20 @@
 #'   \item{unit}{unit}
 #'   \item{default}{default value equal to 0}
 #' }
+#' @export
 "i_sizeDist"
+
+
+#' Information about literature parameters
+#'
+#' A dataset containing the parameters order and description.
+#'
+#' @format A data frame with XX:
+#' \describe{
+#'   \item{parameter}{parameter name}
+#' }
+#' @export
+"i_parameters_lit"
 
 
 #' Site input
