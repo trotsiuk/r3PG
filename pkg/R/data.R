@@ -48,14 +48,29 @@
 
 #' Information about literature parameters
 #'
-#' A dataset containing the parameters order and description.
+#' A dataset containing parameter sets from published studies with 3PG
 #'
-#' @format A data frame with XX:
+#' @format A data frame with 110 rows and  124 variables. 
+#' Each row refers an unique parameter set. The variables are:
 #' \describe{
-#'   \item{parameter}{parameter name}
+#'   \item{parset_id}{id of the parameter set}
+#'   \item{species}{species scientific name}
+#'   \item{age}{whether the parameter set was was used in even or uneven stands.}
+#'   \item{type}{whether the parameter set was used in monocultures or mixed stands.}
+#'   \item{year}{year of publication}
+#'   \item{region}{geographical region in which the parameters were tested. NA values are allowed.}
+#'   \item{country}{country or countries in which the parameters were tested.}
+#'   \item{notes}{any relevant remark about how the parameters were processed. NA values are allowed.}
+#'   \item{source}{short reference to publication}
+#'   \item{source_comments}{any relevant comment about the paramereters present in the publication. NA values are allowed.}
+#'   \item{source_full}{full reference to publication}
+#'   \item{link}{a link to the publication, e.g. doi}
+#'   \item{remaining columns}{name of the parameters, consistent in naming with  \code{\link{i_parameters}}
+#'    or  \code{\link{i_sizeDist}}}
 #' }
-#' @export
+#' @details The function \code{\link{get_parameters}} eases the use to this dataset.
 "i_parameters_lit"
+
 
 
 #' Site input
@@ -153,3 +168,5 @@
 #'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
 "d_sizeDist"
+
+
