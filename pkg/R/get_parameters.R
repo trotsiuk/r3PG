@@ -70,6 +70,7 @@ get_parameters <- function(
   }else if(mode == "parameters"){
     out_col <- i_parameters$parameter
     parameters_out <- as.data.frame(cbind(out_col, t(i_parameters_lit[, out_col])))
+    parameters_out[, 2:ncol(parameters_out)] <- apply(parameters_out[, 2:ncol(parameters_out)],2, function(x){as.numeric(x)})
     rownames(parameters_out) <- NULL
     colnames(parameters_out) <- c("parameter",
                                   paste(i_parameters_lit[["species"]],
@@ -78,6 +79,7 @@ get_parameters <- function(
   }else if(mode == "sizeDist"){    
     out_col <- i_sizeDist$parameter
     parameters_out <- as.data.frame(cbind(out_col, t(i_parameters_lit[, out_col])))
+    parameters_out[, 2:ncol(parameters_out)] <- apply(parameters_out[, 2:ncol(parameters_out)],2, function(x){as.numeric(x)})
     rownames(parameters_out) <- NULL
     colnames(parameters_out) <- c("parameter",
                                   paste(i_parameters_lit[["species"]],
