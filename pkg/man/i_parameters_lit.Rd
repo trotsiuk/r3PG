@@ -6,7 +6,7 @@
 \title{Information about literature parameters}
 \format{
 A data frame with 110 rows and  124 variables. 
-Each row refers an unique parameter set. The variables are:
+Each row refers to an unique parameter set. The variables are:
 \describe{
   \item{parset_id}{id of the parameter set}
   \item{species}{species scientific name}

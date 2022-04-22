@@ -51,7 +51,7 @@
 #' A dataset containing parameter sets from published studies with 3PG
 #'
 #' @format A data frame with 110 rows and  124 variables. 
-#' Each row refers an unique parameter set. The variables are:
+#' Each row refers to an unique parameter set. The variables are:
 #' \describe{
 #'   \item{parset_id}{id of the parameter set}
 #'   \item{species}{species scientific name}

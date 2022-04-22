@@ -1,6 +1,5 @@
 #' @title Get parameter sets
-#' @description Gets parameters sets for species from published studies, which are
-#' in the dataset \code{\link{i_parameters_lit}}
+#' @description Gets parameter sets from published studies with 3PG
 #'
 #' @param mode must be one of the following: full, overview, source, comments,
 #'  parameters, sizeDist
@@ -12,9 +11,9 @@
 #' If unsure, consider using first the option \code{mode = overview} with \code{sp_names = NULL}.
 #' See details below for more information.
 #'
-#' @details This function access the internal parameter database stored in the package,
+#' @details This function access the parameter database stored in the package,
 #' which is named \code{\link{i_parameters_lit}}, and also accessible without this function.
-#'  If \code{mode = overview}, a simplified table with 
+#' If \code{mode = overview}, a simplified table with 
 #' all existing parameter sets will be returned.  A extended version including information
 #' about to the source and remarks can be obtained with \code{mode = comments}.
 #' A complete description of the source is returned with \code{mode = source}. 

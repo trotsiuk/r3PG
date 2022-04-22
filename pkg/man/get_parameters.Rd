@@ -22,13 +22,12 @@ a data frame with parameter sets for all available species, or only the
  requested species, if \code{sp_names} is not null.
 }
 \description{
-Gets parameters sets for species from published studies, which are
-in the dataset \code{\link{i_parameters_lit}}
+Gets parameter sets from published studies with 3PG
 }
 \details{
-This function access the internal parameter database stored in the package,
+This function access the parameter database stored in the package,
 which is named \code{\link{i_parameters_lit}}, and also accessible without this function.
- If \code{mode = overview}, a simplified table with 
+If \code{mode = overview}, a simplified table with 
 all existing parameter sets will be returned.  A extended version including information
 about to the source and remarks can be obtained with \code{mode = comments}.
 A complete description of the source is returned with \code{mode = source}. 
