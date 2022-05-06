@@ -8,7 +8,7 @@ Authors@R: c(
     person("Volodymyr", "Trotsiuk", email = "volodymyr.trotsiuk@wsl.ch", role = c("aut", 'cre'), comment=c(ORCID="0000-0002-8363-656X")),
     person("Florian", "Hartig", email = "florian.hartig@biologie.uni-regensburg.de", role = c("aut"), comment=c(ORCID="0000-0002-6255-9059")),
     person("David", "Forrester", email = "david.forrester@wsl.ch", role = c("aut")),
-    person("Ramiro", "Silveyra Gonzalez", email = "", role = c("aut"))
+    person("Ramiro", "Silveyra Gonzalez", email = "ramiro.gonzalez@kit.edu", role = c("aut"), comment=c(ORCID="0000-0002-3430-8383"))
     )
 License: GPL-3
 Depends:

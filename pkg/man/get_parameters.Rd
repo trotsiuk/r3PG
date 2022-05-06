@@ -4,59 +4,71 @@
 \alias{get_parameters}
 \title{Get parameter sets}
 \usage{
-get_parameters(df_out = "overview", sp_names = NULL)
+get_parameters(mode = "overview", sp_names = NULL)
 }
 \arguments{
-\item{df_out}{must be one of the following: overview, source, full, run.}
+\item{mode}{must be one of the following: full, overview, source, comments,
+parameters, sizeDist}
 
 \item{sp_names}{names of the species. The `sp_names` must be either a scientific name
-(Picea abies) or a scientific name with a integer (Picea abies 37) with df_out = run.
-If unsure, consider using first the option df_out = overview with no species.
+(Picea abies). If passing parameters or sizeDist to mode, it also possible
+to use a scientific name with a integer, which is the value of parset_id, e.g.
+Picea abies 37.
+If unsure, consider using first the option \code{mode = overview} with \code{sp_names = NULL}.
 See details below for more information.}
 }
 \value{
-a data.frame with parameter sets for all available species, or only the
- requested species, if sp_names is not null.
+a data frame with parameter sets for all available species, or only the
+ requested species, if \code{sp_names} is not null.
 }
 \description{
-Gets parameters sets for species from published studies
+Gets parameter sets from published studies with 3PG
 }
 \details{
-This function access the internal parameter database stored in the package. If
-df_out = overview, a simplified table with all existing parameter sets will be returned.
-A extended version including information related to the source can be obtained
-with df_out = source. The complete version of this table (species,source, comments,
-parameters) will be returned if df_out = full.
-Alternatively, with df_out = run, it is possible to
-obtain only the parameters in the format required by \code{\link{run_3PG}}.
-Passing species names with sp_names means selecting from the table
-the desired species. Please note that one species might have more than one
-available parameter sets.
+This function access the parameter database stored in the package,
+which is named \code{\link{i_parameters_lit}}, and also accessible without this function.
+If \code{mode = overview}, a simplified table with 
+all existing parameter sets will be returned.  A extended version including information
+about to the source and remarks can be obtained with \code{mode = comments}.
+A complete description of the source is returned with \code{mode = source}. 
+The full  version of this table (species,source, comments,
+parameters) will be returned if \code{mode = full}. Alternatively, with \code{mode = parameters} 
+and \code{mode = sizeDist}, it is possible to obtain parameters in the format
+required by \code{\link{run_3PG}}.
 
-The parameter sets were obtained from published studies. Basic information about the
-sets and the corresponding studies is provided in the table. For further information,
-please consider checking the original publication.
+Passing species names with \code{sp_names} will selecting from the table
+the desired species. Please note that one species might have more than one
+available parameter sets, unless species names contain the parset_id value.
+Please also note that \code{mode = source} is not compatible with \code{sp_names}.
+
+The parameter sets were obtained from published studies. For basic information about this 
+dataset check in  \code{\link{i_parameters_lit}}. Relevant information about 
+the parameter sets and the corresponding studies is provided in the table.
+For further information,  please consider checking the original publications.
 }
 \examples{
 # see an overview of the existing parameter sets
-get_parameters(df_out = 'overview')
-get_parameters(df_out = 'overview', sp_names = c('Eucalyptus globulus', 'Pinus sylvestris' ) )
+get_parameters(mode = 'overview')
+get_parameters(mode = 'overview', sp_names = c('Eucalyptus globulus', 'Pinus sylvestris' ) )
+
+# see existing parameter sets and comments
+get_parameters(mode = 'comments')
+get_parameters(mode = 'comments', sp_names = c('Eucalyptus globulus', 'Pinus sylvestris' ) )
 
 # see parameters and source information
-get_parameters(df_out = 'source')
-get_parameters(df_out = 'source', sp_names = c('Fagus sylvatica', 'Salix dasyclados' ) )
-
-# see parameter sets with full information (species, source, parameters)
-get_parameters(df_out = 'full')
-get_parameters(df_out = 'full', sp_names = c('Fagus sylvatica', 'Pinus radiata' ) )
+get_parameters(mode = 'source')
 
 # obtain parameter sets in for some species in the format required by run_3PG
-get_parameters(df_out = 'run', sp_names = c('Fagus sylvatica', 'Picea abies'))
-get_parameters(df_out = 'run', sp_names = 'Fagus sylvatica 34' )
-get_parameters(df_out = 'run', sp_names = c('Fagus sylvatica 9', 'Picea abies 37'))
+get_parameters(mode = 'parameters', sp_names = c('Fagus sylvatica', 'Picea abies'))
+get_parameters(mode = 'parameters', sp_names = 'Fagus sylvatica 34' )
+get_parameters(mode = 'sizeDist', sp_names = c('Fagus sylvatica 9', 'Picea abies 37'))
+
+# see parameter sets with full information (species, source, parameters)
+get_parameters(mode = 'full')
+get_parameters(mode = 'full', sp_names = c('Fagus sylvatica', 'Pinus radiata' ) )
 
 
 }
 \seealso{
-\code{\link{run_3PG}}, \code{\link{i_parameters}}
+\code{\link{run_3PG}}, \code{\link{i_parameters_list}}
 }
