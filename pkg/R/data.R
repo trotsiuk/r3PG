@@ -177,6 +177,7 @@
 #'   \item{gDM_mol}{Molecular weight of dry matter}
 #'   \item{molPAR_MJ}{Conversion of solar radiation to PAR}
 #' }
+#' @export
 #' @details Each row refers to an unique parameter set. 
 #' The function \code{\link{get_parameters}} eases the use to this dataset. 
 "i_parameters_lit"
