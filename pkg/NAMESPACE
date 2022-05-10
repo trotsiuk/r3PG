@@ -3,6 +3,7 @@
 export(get_parameters)
 export(i_output)
 export(i_parameters)
+export(i_parameters_lit)
 export(i_sizeDist)
 export(prepare_climate)
 export(prepare_input)
