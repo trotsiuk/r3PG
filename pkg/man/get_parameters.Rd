@@ -27,12 +27,12 @@ Gets parameter sets from published studies with 3PG
 \details{
 This function access the parameter database stored in the package,
 which is named \code{\link{i_parameters_lit}}, and also accessible without this function.
-If \code{mode = overview}, a simplified table with 
+If \code{mode = overview}, a simplified table with
 all existing parameter sets will be returned.  A extended version including information
 about to the source and remarks can be obtained with \code{mode = comments}.
-A complete description of the source is returned with \code{mode = source}. 
+A complete description of the source is returned with \code{mode = source}.
 The full  version of this table (species,source, comments,
-parameters) will be returned if \code{mode = full}. Alternatively, with \code{mode = parameters} 
+parameters) will be returned if \code{mode = full}. Alternatively, with \code{mode = parameters}
 and \code{mode = sizeDist}, it is possible to obtain parameters in the format
 required by \code{\link{run_3PG}}.
 
@@ -41,8 +41,8 @@ the desired species. Please note that one species might have more than one
 available parameter sets, unless species names contain the parset_id value.
 Please also note that \code{mode = source} is not compatible with \code{sp_names}.
 
-The parameter sets were obtained from published studies. For basic information about this 
-dataset check in  \code{\link{i_parameters_lit}}. Relevant information about 
+The parameter sets were obtained from published studies. For basic information about this
+dataset check in  \code{\link{i_parameters_lit}}. Relevant information about
 the parameter sets and the corresponding studies is provided in the table.
 For further information,  please consider checking the original publications.
 }
@@ -70,5 +70,5 @@ get_parameters(mode = 'full', sp_names = c('Fagus sylvatica', 'Pinus radiata' ) 
 
 }
 \seealso{
-\code{\link{run_3PG}}, \code{\link{i_parameters_list}}
+\code{\link{run_3PG}}, \code{\link{i_parameters_lit}}
 }
