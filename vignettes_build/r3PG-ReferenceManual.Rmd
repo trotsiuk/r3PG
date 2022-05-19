@@ -29,18 +29,17 @@ library(knitr)
 
 `r3PG` provides an implementation of the Physiological Processes Predicting Growth ([3-PG](https://3pg.forestry.ubc.ca)) model (Landsberg & Waring, 1997). The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) models written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
 
-
 ## Single model runs
 
 To demonstrate the basic functionality of the `r3PG` R package, we will perform a simple simulation with the `3-PGmix` model. The central function to run `3-PG` from R is `run_3PG`. When called, the function will:
 
-- check the model input for the consistency in structure
-- replace the default parameters if new ones are provided
-- run and return the simulated output from the model.
+-   check the model input for the consistency in structure
+-   replace the default parameters if new ones are provided
+-   run and return the simulated output from the model.
 
-Before using `run_3PG` the user must prepare the input data as described in the help of `run_3PG`. The inputs include information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified). 
+Before using `run_3PG` the user must prepare the input data as described in the help of `run_3PG`. The inputs include information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified).
 
-In this example, we run a simulation for mixed *Fagus sylvatica* and *Pinus sylvestris* stands (Forrester et al., 2017). The input data are provided as internal data in `r3PG`. 
+In this example, we run a simulation for mixed *Fagus sylvatica* and *Pinus sylvestris* stands (Forrester et al., 2017). The input data are provided as internal data in `r3PG`.
 
 ```{r run_model}
 library(r3PG)
@@ -61,7 +60,7 @@ out_3PG <- run_3PG(
 head( out_3PG )
 ```
 
-The output of the `run_3PG` function can be either a long format dataframe or a  4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get information about output variables and their group, please look at `data('i_output')`. 
+The output of the `run_3PG` function can be either a long format dataframe or a 4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get information about output variables and their group, please look at `data('i_output')`.
 
 As an example for how to visualize the output, we select six variables: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. For visualization we are using a `ggplot` function, which allows us to visualize all the outputs side-by-side.
 
@@ -82,10 +81,9 @@ out_3PG %>%
   xlab("Calendar date") + ylab('Value')
 ```
 
-
 ## Sensitivity analysis and Bayesian calibration
 
-As a second case study, we want do a slightly more ambitious project, which is a sensitivity analysis and calibration of the model. 
+As a second case study, we want do a slightly more ambitious project, which is a sensitivity analysis and calibration of the model.
 
 For both tasks, we use freely available forest growth data from the [PROFOUND database](https://doi.org/10.5194/essd-2019-220). The data can be extracted from the sql database with the ProfoundData R package, which is available on CRAN. For convenience, however, we have included the extracted and cleaned data in the required format in the `r3PG` package. All the data used in this vignette can be downloaded from [r3PG/vignettes_build](https://github.com/trotsiuk/r3PG/tree/master/vignettes_build)
 
@@ -106,7 +104,7 @@ As a second example, we will first performed a `Morris` screening and then perfo
 
 ### Likelihood function
 
-To perform a `morris` sensitivity analysis and `Bayesian calibration` we construct the log Likelihood function. The log Likelihood function was calculated using normal error assumptions for six variables that describe stand stocks and characteristics: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. To calculate the stand-level stocks, we applied the biomass equations developed for European forests following Forrester et al. (2017) for each measured tree, and summed it up to the stand level in Mg dry matter $ha^{-1}$. 
+To perform a `morris` sensitivity analysis and `Bayesian calibration` we construct the log Likelihood function. The log Likelihood function was calculated using normal error assumptions for six variables that describe stand stocks and characteristics: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. To calculate the stand-level stocks, we applied the biomass equations developed for European forests following Forrester et al. (2017) for each measured tree, and summed it up to the stand level in Mg dry matter $ha^{-1}$.
 
 ```{r funs}
 r3pg_sim <- function( par_df, ...){
@@ -154,7 +152,8 @@ r3pg_ll <- function( par_v ){
 
 ### Priors and default
 
-For Morris sensitivity analysis and Bayesian calibration we define each parameters range, for which we will evaluate the sensitivity and later perform the calibration. In addition, we specified error parameters for the observational data. 
+For Morris sensitivity analysis and Bayesian calibration we define each parameters range, for which we will evaluate the sensitivity and later perform the calibration. In addition, we specified error parameters for the observational data.
+
 ```{r def_input}
 # default parameters
 par_def <- setNames(param_solling$default, param_solling$param_name)
@@ -198,11 +197,12 @@ morrisOut.df <- data.frame(
 ) %>%
   arrange( mu.star )
 ```
+
 ```{r morris_load}
 load('vignette_data/morris.rda')
 ```
 
-We visualize the results of the `morris` analysis by listing all the parameters and error parameters. A high $\mu^{*}$ indicates a factor with an important overall influence on model output; a high $\alpha$ indicates either a factor interacting with other factors or a factor whose effects are non-linear. 
+We visualize the results of the `morris` analysis by listing all the parameters and error parameters. A high $\mu^{*}$ indicates a factor with an important overall influence on model output; a high $\alpha$ indicates either a factor interacting with other factors or a factor whose effects are non-linear.
 
 ```{r morris_vis, fig.height=4, fig.width=6.6, }
 morrisOut.df %>%
@@ -221,7 +221,7 @@ morrisOut.df %>%
 
 ### Bayesian calibration
 
-We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity plus six errors parameters for each of the observational variables. We will run 3 parallel chains, each on a separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours. 
+We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity plus six errors parameters for each of the observational variables. We will run 3 parallel chains, each on a separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours.
 
 ```{r mcmc_par, eval=T}
 # which parameters to calibrate
@@ -238,23 +238,25 @@ mcmc_setup <- createBayesianSetup(
   prior = createUniformPrior(par_cal_min, par_cal_max, par_cal_best), 
   names = par_cal_names)
 ```
+
 ```{r mcmc, eval=F}
 mcmc_out <- runMCMC(
   bayesianSetup = mcmc_setup, 
   sampler = "DEzs",
   settings = list(iterations = 4e+03, nrChains = 3))
 ```
+
 ```{r mcmc_load}
 load('vignette_data/mcmc.rda')
 ```
 
-As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted because the multivariate potential scale reduction factor was $\le$ 1.1. 
+As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted because the multivariate potential scale reduction factor was $\le$ 1.1.
 
 ```{r mcmc_gelamn}
 gelmanDiagnostics( mcmc_out )
 ```
 
-To evaluate the model performance, we draw ~500 samples from the mcmc object and run model simulations for each of the parameter combinations to understand model uncertainties.
+To evaluate the model performance, we draw \~500 samples from the mcmc object and run model simulations for each of the parameter combinations to understand model uncertainties.
 
 ```{r mcmc_draw}
 par_def.df <- select(param_solling, parameter = param_name, piab = default)
@@ -319,15 +321,15 @@ sim.df %>%
 
 ## Spatial simulations
 
-3-PG is a cohort level model. Thus, to make a simulation across a landscapes, we need to explicitly simulate each individual grid point. For this purpose, we will simulate *Picea abies* stand biomass across Switzerland on a 1x1 km grid. In total, this sums to ~18’000 grid points over Switzerland. 
+3-PG is a cohort level model. Thus, to make a simulation across a landscapes, we need to explicitly simulate each individual grid point. For this purpose, we will simulate *Picea abies* stand biomass across Switzerland on a 1x1 km grid. In total, this sums to \~18'000 grid points over Switzerland.
 
-We have prepared the input data, including climate and soil information for each of the grid points. We used interpolated meteorological data from the Landscape Dynamics group (WSL, Switzerland) based on data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton, Running, & White, 1997). Grid-specific information on soil type and plant available soil water was retrieved from European Soil Database Derived data (Hiederer 2013). In addition, we use ~500 samples drawn from the previously obtained mcmc object and run model simulations for each of the parameter combinations to understand simulation uncertainties. 
+We have prepared the input data, including climate and soil information for each of the grid points. We used interpolated meteorological data from the Landscape Dynamics group (WSL, Switzerland) based on data from MeteoSwiss stations (Swiss Federal Office of Meteorology and Climatology) by employing the DAYMET method (Thornton, Running, & White, 1997). Grid-specific information on soil type and plant available soil water was retrieved from European Soil Database Derived data (Hiederer 2013). In addition, we use \~500 samples drawn from the previously obtained mcmc object and run model simulations for each of the parameter combinations to understand simulation uncertainties.
 
 ```{r grid_input}
 load('vignette_data/grid_input.rda')
 ```
 
-We construct a function, which requires site and climate information as input, and calculates the $5^{th}$, $50^{th}$ and $95^{th}$ percentile from ~500 simulated runs. To do so, we use the `multidplyr` package for distributing computing. In total, it takes less than 1 hour on a computer cluster with 50 processes (CPU time ~20 hours). 
+We construct a function, which requires site and climate information as input, and calculates the $5^{th}$, $50^{th}$ and $95^{th}$ percentile from \~500 simulated runs. To do so, we use the `multidplyr` package for distributing computing. In total, it takes less than 1 hour on a computer cluster with 50 processes (CPU time \~20 hours).
 
 ```{r grid_sim, eval=F}
 library(multidplyr)
@@ -373,11 +375,13 @@ sim.grid <- inner_join(site.grid, climate.grid, by = 'grid_id')  %>%
   unnest_legacy() %>%
   ungroup()
 ```
+
 ```{r grid_load}
 load('vignette_data/grid_sim.rda')
 ```
 
 Once the simulations are done, we visualize the results for average standing biomass and associated uncertainties for the whole landscape.
+
 ```{r grid_vis, fig.height=3.5, fig.width=6.6}
 sim.grid %>%
   mutate( range = q95 - q05) %>%
@@ -392,21 +396,19 @@ sim.grid %>%
   scale_fill_distiller( '', palette = 'Spectral', limits = c(0, 250))
 ```
 
-
 ## References
 
-* Forrester, D. I., Tachauer, I. H. H., Annighoefer, P., Barbeito, I., Pretzsch, H., Ruiz-Peinado, R., … Sileshi, G. W. (2017). Generalized biomass and leaf area allometric equations for European tree species incorporating stand structure, tree age and climate. Forest Ecology and Management, 396, 160–175. https://doi.org/10.1016/j.foreco.2017.04.011
+-   Forrester, D. I., Tachauer, I. H. H., Annighoefer, P., Barbeito, I., Pretzsch, H., Ruiz-Peinado, R., ... Sileshi, G. W. (2017). Generalized biomass and leaf area allometric equations for European tree species incorporating stand structure, tree age and climate. Forest Ecology and Management, 396, 160--175. <https://doi.org/10.1016/j.foreco.2017.04.011>
 
-* Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233–254. https://doi.org/10.1016/j.ecolmodel.2015.07.010
+-   Forrester, David I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. Ecological Modelling, 319, 233--254. <https://doi.org/10.1016/j.ecolmodel.2015.07.010>
 
-* Hiederer, R. 2013. Mapping Soil Properties for Europe - Spatial Representation of Soil Database Attributes. Luxembourg: Publications Office of the European Union – 2013 – 47pp. – EUR26082EN Scientific and Technical Research series, ISSN 1831-9424, https://doi.org/10.2788/94128
+-   Hiederer, R. 2013. Mapping Soil Properties for Europe - Spatial Representation of Soil Database Attributes. Luxembourg: Publications Office of the European Union -- 2013 -- 47pp. -- EUR26082EN Scientific and Technical Research series, ISSN 1831-9424, <https://doi.org/10.2788/94128>
 
-* Reyer, C. P. O., Silveyra Gonzalez, R., Dolos, K., Hartig, F., Hauf, Y., Noack, M., … Frieler, K. (2019). The PROFOUND database for evaluating vegetation models and simulating climate impacts on forests. Earth System Science Data Discussions, 1–47. https://doi.org/10.5194/essd-2019-220
+-   Reyer, C. P. O., Silveyra Gonzalez, R., Dolos, K., Hartig, F., Hauf, Y., Noack, M., ... Frieler, K. (2019). The PROFOUND database for evaluating vegetation models and simulating climate impacts on forests. Earth System Science Data Discussions, 1--47. <https://doi.org/10.5194/essd-2019-220>
 
-* Thornton, P. E., Running, S. W., & White, M. A. (1997). Generating surfaces of daily meteorological variables over large regions of complex terrain. Journal of Hydrology, 190(3), 214–251. https://doi.org/10.1016/S0022-1694(96)03128-9
+-   Thornton, P. E., Running, S. W., & White, M. A. (1997). Generating surfaces of daily meteorological variables over large regions of complex terrain. Journal of Hydrology, 190(3), 214--251. [https://doi.org/10.1016/S0022-1694(96)03128-9](https://doi.org/10.1016/S0022-1694(96)03128-9){.uri}
 
-
-## Session 
+## Session
 
 ```{r session_info}
 sessionInfo()
