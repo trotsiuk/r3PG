@@ -28,11 +28,11 @@ prepare_parameters <- function(
   }
 
   # Prepare parameters
-  parameters_out = param.default['parameter']
+  parameters_out = i_parameters['parameter']
 
   parameters_out[sp_names] <- NA_real_
 
-  parameters_out[sp_names] <- param.default$default
+  parameters_out[sp_names] <- i_parameters$default
 
 
   if( !is.null(parameters) ){
@@ -41,8 +41,8 @@ prepare_parameters <- function(
       stop( 'First column name of the parameters table must correspond to: parameter' )
     }
 
-    if( !all( parameters$parameter %in% param.default$parameter) ){
-      stop( paste0('Parameter input table must contains only parameters presend in: ', paste(param.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+    if( !all( parameters$parameter %in% i_parameters$parameter) ){
+      stop( paste0('Parameter input table must contains only parameters presend in: ', paste(i_parameters$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
     }
 
     sp_names_replace = sp_names[sp_names %in% colnames(parameters)]

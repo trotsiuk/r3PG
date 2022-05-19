@@ -1,3 +1,44 @@
+# Version 0.1.4
+
+## Submission 1, 19.05.2022
+
+This is a minor update of r3PG.
+
+### Bug fixed
+
+- minor bug fixes for the `prepare_input.R`, `prepare_climate.R`, `prepare_sizeDist.R` #69
+- ensuring that thinning values are withing plausible range `prepare_thinning.R` #75
+- correct ordering of species in `prepare_thinning.R` #70
+- insuring that the cumulative volume is not decreasing `md_3PG.f95` #63
+- likelihood function in the vignette contained wrong error values `r3pg_ll` #54
+- adjusting the vignette for the new `multidplyr` version #47
+
+### New function and data sets
+
+- `get_parameters` Gets parameters sets for species from published studies
+- `param.db` Data.frame containing all parameters from the literature review.
+- `prepare_site` to check whether the site data are within the plausible range #73.
+- `prepare_species` to check whether the species data are within the plausible range #73.
+
+### Minor changes
+
+- adding the LICENSE
+- renaming and exporting the `param.default`, `var.default` and `sizedist.default` internal data
+
+### Test environments
+
+* local MAC OS 12.2.1 (Monterey), R 4.0.2
+* http://win-builder.r-project.org/ - oldrelease / devel / release
+* Linux (Travis CI) - oldrel / release / devel
+* rhub (using `rhub::check_for_cran()`, `rhub::check_with_valgrind()`)
+
+### R CMD check results
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check succeeded.
+
+
 # Version 0.1.3
 
 ## Submission 1, 18.02.2021

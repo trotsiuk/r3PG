@@ -28,21 +28,21 @@ prepare_sizeDist <- function(
   }
 
   # Prepare parameters
-  size_dist_out = sizeDist.default['parameter']
+  size_dist_out = i_sizeDist['parameter']
 
   size_dist_out[sp_names] <- NA_real_
 
-  size_dist_out[sp_names] <- as.numeric( sizeDist.default$default )
+  size_dist_out[sp_names] <- as.numeric( i_sizeDist$default )
 
 
   if( !is.null(size_dist) ){
 
     if( !identical( c("parameter"), colnames(size_dist)[1]) ){
-      stop( 'First column name of the parameters table must correspond to: parameter' )
+      stop( 'First column name of the size_dist table must correspond to: parameter' )
     }
 
-    if( !all( size_dist$parameter %in% sizeDist.default$parameter) ){
-      stop( paste0('size_dist input table must contains only parameters presend in: ', paste(sizeDist.default$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
+    if( !all( size_dist$parameter %in% i_sizeDist$parameter) ){
+      stop( paste0('size_dist input table must contains only parameters presend in: ', paste(i_sizeDist$parameter, collapse = ','),'. Check `param_info`` for more details.' ))
     }
 
     sp_names_replace = sp_names[sp_names %in% colnames(size_dist)]
