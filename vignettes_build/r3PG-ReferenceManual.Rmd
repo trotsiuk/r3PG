@@ -131,8 +131,11 @@ r3pg_ll <- function( par_v ){
   
   # replace the default values for the selected parameters
   err_id = grep('err', par_cal_names)
+
+  par_df = dplyr::bind_rows(
+    dplyr::filter(par_def.df, !parameter %in% par_cal_names),
+    data.frame(parameter = par_cal_names[-err_id], piab = par_v[-err_id]))
   
-  par_df = data.frame(parameter = par_cal_names[-err_id], piab = par_v[-err_id])
   err_v = par_v[err_id]
   
   # simulate the model
@@ -155,9 +158,8 @@ r3pg_ll <- function( par_v ){
 For Morris sensitivity analysis and Bayesian calibration we define each parameters range, for which we will evaluate the sensitivity and later perform the calibration. In addition, we specified error parameters for the observational data.
 
 ```{r def_input}
-# default parameters
-par_def <- setNames(param_solling$default, param_solling$param_name)
-err_def <- setNames(error_solling$default, error_solling$param_name)
+# default parameters for simulations
+par_def.df <- select(param_solling, parameter = param_name, piab = default)
 
 # parameters for calibration and their ranges
 param_morris.df <- bind_rows(param_solling, error_solling) %>% filter(!is.na(min))
@@ -189,7 +191,7 @@ morrisOut <- morris(
   bsup = par_cal_max, 
   scale = TRUE)
 
-# summarise the moris output
+# summaries the morris output
 morrisOut.df <- data.frame(
   parameter = par_cal_names,
   mu.star = apply(abs(morrisOut$ee), 2, mean, na.rm = T),
