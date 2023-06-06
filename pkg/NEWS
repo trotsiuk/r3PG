@@ -10,8 +10,6 @@ r3PG 0.1.5
 
 ### Minor changes
 
-- the vignette function `r3pg_ll` and `r3pg_sim` are not using global variables any longer. All variable need to be specified.
-
 
 r3PG 0.1.4
 ============
