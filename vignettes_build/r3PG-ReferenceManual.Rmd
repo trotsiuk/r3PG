@@ -39,7 +39,7 @@ To demonstrate the basic functionality of the `r3PG` R package, we will perform 
 
 Before using `run_3PG` the user must prepare the input data as described in the help of `run_3PG`. The inputs include information about site conditions, species initial conditions, climate data, and parameters (if they need to be modified).
 
-In this example, we run a simulation for mixed *Fagus sylvatica* and *Pinus sylvestris* stands (Forrester et al., 2017). The input data are provided as internal data in `r3PG`.
+In this example, we run a simulation for mixed *Fagus sylvatica* and *Pinus sylvestris* stands (Forrester et al., 2017). The input data are provided as internal data in `r3PG`. You can inspect their structure by exploring, e.g., `d_site`.
 
 ```{r run_model}
 library(r3PG)
@@ -56,11 +56,15 @@ out_3PG <- run_3PG(
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
                       height_model = 1, correct_bias = 0, calculate_d13c = 0),
   check_input = TRUE, df_out = TRUE)
+```
 
+The output of the `run_3PG` function can be either a long format dataframe or a 4-dimentional array where each row corresponds to one month of simulations, depending on your choice of the variable `df_out`. If setting `df_out = T` , the output will be in the array format, where the first dimension is time, the second dimension corresponds to species (each column represents one species), and the third dimension corresponds to variable groups and the variables themselves. In our simulation above, we set `df_out = T` , which means that our output is in the long format.
+
+```{r}
 head( out_3PG )
 ```
 
-The output of the `run_3PG` function can be either a long format dataframe or a 4-dimentional array where each row corresponds to one month of simulations. The second dimension corresponds to species, where each column represents one species. The third dimension corresponds to variable groups and the variables themselves To get information about output variables and their group, please look at `data('i_output')`.
+To get information about output variables and their group, please look at `data('i_output')`.
 
 As an example for how to visualize the output, we select six variables: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. For visualization we are using a `ggplot` function, which allows us to visualize all the outputs side-by-side.
 
@@ -104,7 +108,9 @@ As a second example, we will first performed a `Morris` screening and then perfo
 
 ### Likelihood function
 
-To perform a `morris` sensitivity analysis and `Bayesian calibration` we construct the log Likelihood function. The log Likelihood function was calculated using normal error assumptions for six variables that describe stand stocks and characteristics: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. To calculate the stand-level stocks, we applied the biomass equations developed for European forests following Forrester et al. (2017) for each measured tree, and summed it up to the stand level in Mg dry matter $ha^{-1}$.
+A sensitivity analysis requires a target variable for which we want to evaluate sensitivity. In principle, any variable that is predicted by the model could be used as target, including any of the variables that we plotted above. In this case, we are planning to run a Bayesian calibration later, and thus it makes sense to run the sensitivity on the difference between model predictions and data, which is measured by the likelihood function.
+
+For the likelihood, we assumed normal errors for the six variables that describe stand stocks and characteristics: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. To calculate the stand-level stocks, we applied the biomass equations developed for European forests following Forrester et al. (2017) for each measured tree, and summed it up to the stand level in Mg dry matter $ha^{-1}$.
 
 ```{r funs}
 r3pg_sim <- function( par_df, ...){
@@ -153,9 +159,9 @@ r3pg_ll <- function( par_v ){
 }
 ```
 
-### Priors and default
+### Morris sensitivity
 
-For Morris sensitivity analysis and Bayesian calibration we define each parameters range, for which we will evaluate the sensitivity and later perform the calibration. In addition, we specified error parameters for the observational data.
+To evaluate the sensitivity of the likelihood above to changes of the model parameters, we used Morris screening. Morris screening is a so-called global sensitivity method which quantifies parameter sensitivity in defined area of the parameter space. This means that we require to set min / max values for all model parameters, which should be set on sensible ranges. Here, we provide expert-chosen values for all parameters, including the error parameters that are used in the likelihood.
 
 ```{r def_input}
 # default parameters for simulations
@@ -171,9 +177,7 @@ par_cal_best <- param_morris.df$default
 r3pg_ll( par_cal_best)
 ```
 
-### Morris sensitivity
-
-Using the settings specified below, we will run a total of 30500 model runs (N (length(factors)+1)) and visualize the results. The morris sensitivity run will take approximately 4 minutes on the working computer.
+With these ranges and using the settings specified below, we run a Morris screening with 30500 model evaluations (N (length(factors)+1)) and visualize the results. This code ran approximately 4 minutes on our local computer.
 
 ```{r morris, eval = F}
 morris_setup <- createBayesianSetup(
@@ -223,7 +227,11 @@ morrisOut.df %>%
 
 ### Bayesian calibration
 
-We will run the Bayesian calibration for the 20 most sensitive parameters defined by the `morris` sensitivity plus six errors parameters for each of the observational variables. We will run 3 parallel chains, each on a separate computer node for 4e+06 iterations. This can easily be done on a computer server, and takes approximately 21 hours.
+As a next step, we want to calibrate the model. To speed up this task, we calibrate only the 20 most sensitive parameters identified in the `morris` screening plus the six errors parameters for each of the observational variables.
+
+As Priors for the Bayesian analysis, we used uniform priors with the same ranges that we used for the Morris screening.
+
+To estimate the posterior, we run 3 chains, each for 4e+06 iterations. On a local computer, this takes approximately 21 hours per chain.
 
 ```{r mcmc_par, eval=T}
 # which parameters to calibrate
@@ -245,20 +253,20 @@ mcmc_setup <- createBayesianSetup(
 mcmc_out <- runMCMC(
   bayesianSetup = mcmc_setup, 
   sampler = "DEzs",
-  settings = list(iterations = 4e+03, nrChains = 3))
+  settings = list(iterations = 4e+03, nrChains = 3, thin = 10))
 ```
 
 ```{r mcmc_load}
 load('vignette_data/mcmc.rda')
 ```
 
-As the first step, we would look at the Gelman-Rubin diagnostic. The convergence can be accepted because the multivariate potential scale reduction factor was $\le$ 1.1.
+As the first step, we can look at the summary of the outputs, which includes both estimated posterior mean values and convergence diagnostics (Gelman-Rubin potential scale reduction factors = psrf) for all parameters. For an MCMC chain to be converged, one typically requires the univariate psrf to be \< 1.05 and the multivariate psrf $\le$ 1.1 or 1.2, which is the case here.
 
 ```{r mcmc_gelamn}
-gelmanDiagnostics( mcmc_out )
+summary( mcmc_out )
 ```
 
-To evaluate the model performance, we draw \~500 samples from the mcmc object and run model simulations for each of the parameter combinations to understand model uncertainties.
+To create model predictions with their uncertainties and evaluate the model performance, we forwarded the parameter uncertainty to model outputs (posterior predictions) by drawing 500 samples from the mcmc object and run model simulations for each of the parameter combinations.
 
 ```{r mcmc_draw}
 par_def.df <- select(param_solling, parameter = param_name, piab = default)
