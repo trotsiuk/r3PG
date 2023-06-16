@@ -4,6 +4,7 @@ r3PG 0.1.5
 ### Bug fixed
 
 - update of the `r3pg_ll` function in the vignette #89. There were wrong default parameters used.
+- new mcmc run for the vignette.
 
 ### New function and data sets
 

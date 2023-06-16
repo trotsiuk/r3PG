@@ -263,7 +263,7 @@ load('vignette_data/mcmc.rda')
 As the first step, we can look at the summary of the outputs, which includes both estimated posterior mean values and convergence diagnostics (Gelman-Rubin potential scale reduction factors = psrf) for all parameters. For an MCMC chain to be converged, one typically requires the univariate psrf to be \< 1.05 and the multivariate psrf $\le$ 1.1 or 1.2, which is the case here.
 
 ```{r mcmc_gelamn}
-summary( mcmc_out )
+gelmanDiagnostics( mcmc_out )
 ```
 
 To create model predictions with their uncertainties and evaluate the model performance, we forwarded the parameter uncertainty to model outputs (posterior predictions) by drawing 500 samples from the mcmc object and run model simulations for each of the parameter combinations.
