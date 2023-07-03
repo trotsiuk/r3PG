@@ -253,17 +253,31 @@ mcmc_setup <- createBayesianSetup(
 mcmc_out <- runMCMC(
   bayesianSetup = mcmc_setup, 
   sampler = "DEzs",
-  settings = list(iterations = 4e+03, nrChains = 3, thin = 10))
+  settings = list(iterations = 4000000, nrChains = 3, thin = 10))
+
 ```
 
 ```{r mcmc_load}
 load('vignette_data/mcmc.rda')
 ```
 
-As the first step, we can look at the summary of the outputs, which includes both estimated posterior mean values and convergence diagnostics (Gelman-Rubin potential scale reduction factors = psrf) for all parameters. For an MCMC chain to be converged, one typically requires the univariate psrf to be \< 1.05 and the multivariate psrf $\le$ 1.1 or 1.2, which is the case here.
+As the first step, we can look at the trace plots of the MCMC to estimate the burn-in time. Here, we plot only the first parameters for reasons of space.
 
-```{r mcmc_gelamn}
-gelmanDiagnostics( mcmc_out )
+```{r, fig.height=6, fig.width=6}
+plot(mcmc_out, which = c(1,2))
+```
+
+The plots suggest that the MCMC has run into equilibrium after approximately 100,000 steps. We can then check convergence of the MCMC for sampling after the burnin. For an MCMC chain to be converged, one typically requires the univariate psrf to be \< 1.05 and the multivariate psrf $\le$ 1.1 or 1.2, which is the case here. 
+
+```{r}
+gelmanDiagnostics(mcmc_out, start =  100000 )
+```
+
+After having confirmed that the MCMC is converged, we can summarize the MCMC chains, for example using the summary() or MAP() functions (MAP = maximum aposteriori value = parameter value with the highest posterior probability density). For reasons of space, we do not show output of these functions here.
+
+```{r, eval=FALSE}
+summary(mcmc_out, start = 100.000)
+MAP(mcmc_out)
 ```
 
 To create model predictions with their uncertainties and evaluate the model performance, we forwarded the parameter uncertainty to model outputs (posterior predictions) by drawing 500 samples from the mcmc object and run model simulations for each of the parameter combinations.
@@ -271,7 +285,7 @@ To create model predictions with their uncertainties and evaluate the model perf
 ```{r mcmc_draw}
 par_def.df <- select(param_solling, parameter = param_name, piab = default)
 
-param.draw <- getSample(mcmc_out, numSamples = 500, coda = F, whichParameters = 1:20) %>%
+param.draw <- getSample(mcmc_out, start = 10000, numSamples = 500, coda = F, whichParameters = 1:20) %>%
   as.data.frame() %>%
   mutate(mcmc_id = 1:n()) %>%
   nest_legacy(-mcmc_id, .key = 'pars')   %>%
