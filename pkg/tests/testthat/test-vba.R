@@ -15,7 +15,7 @@ test_that("Evergreen 3-PGpjs check", {
       height_model = 1, correct_bias = 0, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
-  testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(125.401, 39.128, 3.843) ) )
+  testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(125.423, 39.146, 3.845) ) )
 })
 
 test_that("Evergreen 3-PGmix check", {
@@ -46,7 +46,7 @@ test_that("Broadleaf 3-PGpjs check", {
       height_model = 1, correct_bias = 0, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
-  testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(129.985, 31.348, 0.000) ) )
+  testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(129.988, 31.350, 0.000) ) )
 })
 
 test_that("Broadleaf 3-PGmix check", {
@@ -61,7 +61,7 @@ test_that("Broadleaf 3-PGmix check", {
       height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
-  testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(132.313, 32.994, 0.000) ) )
+  testthat::expect_true( all( round( out[120,,4,1:3], 3) == c(132.316, 32.996, 0.000) ) )
 })
 
 
@@ -77,7 +77,7 @@ test_that("Mixtures 3-PGmix check", {
       height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE)
 
-  testthat::expect_true( all( round( out[120,1,4,1:3], 3) == c(85.934, 19.359, 0.000) ) )
+  testthat::expect_true( all( round( out[120,1,4,1:3], 3) == c(85.939, 19.359, 0.000) ) )
 
-  testthat::expect_true( all( round( out[120,2,4,1:3], 3) == c(59.909, 17.670, 1.741) ) )
+  testthat::expect_true( all( round( out[120,2,4,1:3], 3) == c(59.917, 17.677, 1.742) ) )
 })

@@ -1,7 +1,7 @@
 ! Declaration file for all the variables used in the program
 ! Structure
 ! Group
-!   - site; species; climate; parameters
+!    site; species; climate; parameters
 ! Inputs are ordered by the order they are provided for the program
 ! Other variables are ordered by group and alphabeticaly
 
@@ -92,7 +92,7 @@ real(kind=8), dimension(n_sp) :: k              ! Extinction coefficient for abs
 real(kind=8), dimension(n_sp) :: fullCanAge     ! Age at canopy closure
 real(kind=8), dimension(n_sp) :: MaxIntcptn     ! Maximum proportion of rainfall evaporated from canopy
 real(kind=8), dimension(n_sp) :: LAImaxIntcptn  ! LAI for maximum rainfall interception
-real(kind=8), dimension(n_sp) :: cVPD           ! 'DF LAI for 50% reduction of VPD in canopy
+real(kind=8), dimension(n_sp) :: cVPD           ! DF LAI for 50% reduction of VPD in canopy
 real(kind=8), dimension(n_sp) :: alphaCx        ! Canopy quantum efficiency
 real(kind=8), dimension(n_sp) :: y              ! Ratio NPP/GPP
 real(kind=8), dimension(n_sp) :: MinCond        ! Minimum canopy conductance
@@ -146,7 +146,7 @@ logical :: b_cor = .TRUE.                            ! if something has changed 
 ! Climatic variables -------------
 real(kind=8), dimension(12) :: adjSolarZenithAngle
 real(kind=8), dimension(12) :: day_length
-
+integer, dimension(n_m) :: month_vector        ! A vector of month which will be used for the simulation
 
 ! Stand variables ----------------
 real(kind=8), dimension(n_m, n_sp) :: age     ! Age of each species and month

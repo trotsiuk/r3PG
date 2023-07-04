@@ -58,6 +58,13 @@ contains
         fCalphax(:) = fCalpha700(:) / (2.d0 - fCalpha700(:))
         fCg0(:) = fCg700(:) / (2.d0 * fCg700(:) - 1.d0)
 
+        ! Generate the sequence of months
+        ! we need it to calculate the frost days and limit it
+        month = month_i
+        do i = 1, n_m
+            month_vector(i) = month
+            month = mod(month, 12) + 1
+        end do
 
         ! Temperature --------
         do i = 1, n_sp
@@ -78,7 +85,7 @@ contains
             end where
 
             ! frost modifier
-            f_frost(:,i) = 1.d0 - kF(i) * ( frost_days(:) / 30.d0)
+            f_frost(:,i) = 1.d0 - kF(i) * ( frost_days(:) / daysInMonth(month_vector(:)) )
 
             ! CO2 modifiers
             f_calpha(:,i) = fCalphax(i) * co2(:) / (350.d0 * (fCalphax(i) - 1.d0) + co2(:))
