@@ -57,6 +57,11 @@ prepare_species <- function(
     stop( 'Biomas foliage shall be greater than 0' )
   }
 
+  if( any(species$biom_stem > 10000)){
+    warning( 'Biomass stem is greater than 10000, unplausible value!')
+  }
+
+
   # Select final table
   species = species[,c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage")]
 

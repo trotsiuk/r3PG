@@ -13,7 +13,7 @@ r3PG 0.1.5
 - constrain the `frost_days` to the maximum days in month `prepare_climate` #68. Additionaly, in the main Fortran program f_frost is now calculated using the number of days per month (not standard 30 days as in original program). Consequently this lead to the deviation in the output of biomass to the third digit (see tests).
 
 ### Minor changes
-
+- improved checks for the climate data (whether within hard ranges) #90
 
 r3PG 0.1.4
 ============
