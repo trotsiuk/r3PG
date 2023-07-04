@@ -40,7 +40,7 @@ prepare_climate <- function(
   # make data.frame
   climate = data.frame(climate)
 
-  # Test for the columns consistensy
+  # Test for the columns consistency
   if( !all(c("tmp_min","tmp_max","prcp","srad","frost_days") %in% colnames(climate)) ){
     stop( 'Climate table must include the following columns: tmp_min, tmp_max, prcp, srad, frost_days' )
   }
@@ -123,6 +123,8 @@ prepare_climate <- function(
   # Select final table
   climate = climate[,c("year", "month",'tmp_min', 'tmp_max', 'tmp_ave', 'prcp', 'srad', 'frost_days', 'vpd_day', 'co2', 'd13catm')]
 
+  clim_range( climate )
+
   return( climate )
 }
 
@@ -140,3 +142,60 @@ get_vpd <- function(tmin, tmax){
 }
 
 
+clim_range <- function( climate ){
+  # internal function to check whether climate data are within the plausible range
+
+  # Temperature hard limit
+  if( any( max(climate$tmp_min, climate$tmp_max, climate$tmp_ave) > 50,
+           min(climate$tmp_min, climate$tmp_max, climate$tmp_ave) < -50) ){
+    warning( 'Temperature is outside of the limits (-50 - 50 Deg C)!')
+  }
+
+  if( any(climate$tmp_max < climate$tmp_ave) ) {
+    stop( 'Average temperature is greated then Maximum temperature!')
+  }
+
+  if( any(climate$tmp_ave < climate$tmp_min) ) {
+    stop( 'Minimun temperature is greated then Average temperature!')
+  }
+
+
+  # Precipitation
+  if( any( climate$prcp < 0 ) ){
+    stop( 'Precipitation have negative values.')
+  }
+
+  if( any( climate$prcp > 10000 ) ){
+    warning( 'Precipitation is outside of the plausible range (0 - 10000)!')
+  }
+
+
+  # Solar radiation
+  if( any( climate$srad < 0 ) ){
+    stop( 'Solar radiation have negative values.')
+  }
+
+  if( any( climate$srad > 100 ) ){
+    warning( 'Solar radiation is outside of the plausible range (0 - 100)!')
+  }
+
+  # Frost days
+  if( any( climate$frost_days < 0 ) ){
+    stop( 'Frost days have negative values.')
+  }
+
+  if( any( climate$frost_days > 31 ) ){
+    warning( 'Frost days is outside of the plausible range (0 - 31)!')
+  }
+
+
+  # VPD
+  if( any( climate$vpd_day < 0 ) ){
+    stop( 'VPD have negative values.')
+  }
+
+  if( any( climate$vpd_day > 40 ) ){
+    warning( 'VPD is outside of the plausible range (0 - 40)!')
+  }
+
+}

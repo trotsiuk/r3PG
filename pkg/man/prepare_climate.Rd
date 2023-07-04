@@ -39,14 +39,19 @@ In case a user provides only average climate, this is replicated for the desired
 In case a larger climate file is provided, the simulation period is selected from this.
 }
 \examples{
-# subsetting climate data
+# sub-setting climate data
 prepare_climate( climate = d_climate, from = '2003-04', to = '2010-11')
 
 # replicating climate data
-climate = matrix(rnorm(60), ncol = 5)
-colnames(climate) = c("tmp_min", "tmp_max", "prcp", "srad", "frost_days")
+set.seed(1)
+climate = data.frame( tmp_min = rnorm(12, mean = 10),
+                      tmp_max = rnorm(12, mean = 20),
+                      prcp = sample(c(0:200), 12),
+                      srad = sample(c(1:100), 12),
+                      frost_days = sample(c(0:30), 12))
 
 prepare_climate( climate = climate, from = '2000-04', to = '2010-11')
+
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}

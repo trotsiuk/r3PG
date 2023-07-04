@@ -46,6 +46,10 @@ prepare_site <- function(
   from = as.Date(paste(site$from,"-01",sep=""))
   to = as.Date(paste(site$to,"-01",sep=""))
 
+  if( any(is.na(from), is.na(to))) {
+    stop('The simulation dates (from/to) are in the wrong format')
+  }
+
   if( from >= to ){
     stop( 'The start date is later than the end date' )
   }
