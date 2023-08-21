@@ -3,6 +3,7 @@
 \docType{package}
 \name{r3PG}
 \alias{r3PG}
+\alias{r3PG-package}
 \title{Simulating Forest Growth using the 3-PG Process-Based Vegetation Model}
 \value{
 None
