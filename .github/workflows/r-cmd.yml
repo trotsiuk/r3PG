@@ -14,6 +14,10 @@ on:
 
 name: R-CMD-check
 
+defaults:
+  run:
+    working-directory: ./pkg
+
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
@@ -37,38 +41,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: r-lib/actions/setup-pandoc@v2
+
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
 
-      - uses: r-lib/actions/setup-pandoc@v2
-
-      - name: Install dependencies
-        run: |
-          setwd("pkg")
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
-
-      - name: Check_II
-        env:
-          _R_CHECK_CRAN_INCOMING_REMOTE_: false
-          CI: true
-        run: |
-          rcmdcheck::rcmdcheck("pkg", args = c("--no-multiarch", "--no-manual"), error_on = "warning", check_dir = "check")
-        shell: Rscript {0}
-
-      - name: Check
-        env:
-          _R_CHECK_CRAN_INCOMING_REMOTE_: false
-          CI: true
-        run: |
-          rcmdcheck::rcmdcheck("pkg", args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
-        shell: Rscript {0}
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@main
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
