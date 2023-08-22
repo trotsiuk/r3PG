@@ -12,7 +12,7 @@
 
 ## Usage
 
-Below is a basic example, for more extended examples please visit package [vignette](https://htmlpreview.github.io/?https://github.com/trotsiuk/r3PG/blob/master/pkg/vignettes/r3PG-ReferenceManual.html).
+Below is a basic example, for more extended examples please visit package [vignette](https://htmlpreview.github.io/?https://github.com/trotsiuk/r3PG/blob/master/vignettes/r3PG-ReferenceManual.html).
 
 The main function is `run_3PG()` which returns all 108 simulated variables for each species at a monthly time-step, either as a 4-dimentional array or a long format data frame.
 
@@ -47,7 +47,7 @@ out_3PG %>%
   theme_classic()
 ```
 
-If you prefer to use data stored in `Excell`, you can use the following example. Data to reproduce this example are stored in [data-raw/internal_data/data.input.xlsx](https://github.com/trotsiuk/r3PG/blob/master/pkg/data-raw/).
+If you prefer to use data stored in `Excell`, you can use the following example. Data to reproduce this example are stored in [data-raw/internal_data/data.input.xlsx](https://github.com/trotsiuk/r3PG/blob/master/data-raw/).
 
 ``` r
 library(readxl)
@@ -85,7 +85,7 @@ if(!require(devtools)){install.packages(devtools)}
 devtools::install_github(repo = "trotsiuk/r3PG", build_vignettes = T)
 ```
 
-The unit test status of the master (development) branch is [![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)
+The unit test status of the master (development) branch is [![R-CMD-check](https://github.com/trotsiuk/r3PG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/trotsiuk/r3PG/actions/workflows/R-CMD-check.yaml)
 
 ## Other 3-PG implementations in R
 
