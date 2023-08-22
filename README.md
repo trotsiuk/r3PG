@@ -1,5 +1,5 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)
+[![R-CMD-check](https://github.com/trotsiuk/r3PG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/trotsiuk/r3PG/actions/workflows/R-CMD-check.yaml)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/r3PG)](https://cran.r-project.org/package=r3PG)
 [![](https://cranlogs.r-pkg.org/badges/grand-total/r3PG)](https://cran.r-project.org/package=r3PG)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -82,7 +82,7 @@ To install the current (development) version from the repository, run the follow
 
 ```r
 if(!require(devtools)){install.packages(devtools)}
-devtools::install_github(repo = "trotsiuk/r3PG", subdir = "pkg", build_vignettes = T)
+devtools::install_github(repo = "trotsiuk/r3PG", build_vignettes = T)
 ```
 
 The unit test status of the master (development) branch is [![Build Status](https://travis-ci.org/trotsiuk/r3PG.svg?branch=master)](https://travis-ci.org/trotsiuk/r3PG)

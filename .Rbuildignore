@@ -3,3 +3,5 @@
 ^doc$
 ^dev$
 ^vignettes_build$
+^issues$
+^\.github$
