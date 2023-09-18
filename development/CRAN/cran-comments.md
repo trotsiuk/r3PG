@@ -1,23 +1,17 @@
 # Version 0.1.6
 
-## Submission 1, 04.07.2023
+## Submission 1, 18.09.2023
 
 This is a minor update of r3PG.
 
 ### Bug fixed
 
--   
+- replace real(kind=8) with real(kind=kind(0.0d0)) in the more modern source files #97
 
 ### New function and data sets
 
 ### Major changes
 
--   constrain the `frost_days` to the maximum days in month
-    `prepare_climate` #68. Additional, in the main FORTRAN program
-    f_frost is now calculated using the number of days per month (not
-    standard 30 days as in original program). Consequently this lead to
-    the deviation in the output of biomass to the third digit (see
-    tests).
 
 ### Minor changes
 

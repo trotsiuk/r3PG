@@ -1,3 +1,21 @@
+r3PG 0.1.6
+============
+
+### Bug fixed
+
+- replace real(kind=8) with real(kind=kind(0.0d0)) in the more modern source files #97
+
+### New function and data sets
+
+
+### Major changes
+
+
+### Minor changes
+- re-structuring the repository and moving the files to the main directory #95
+- adding GitHub CI
+
+
 r3PG 0.1.5
 ============
 

@@ -861,11 +861,11 @@ contains
 
         ! input
         integer, intent(in) :: n_m
-        real(kind=8), dimension(n_m), intent(in) :: x
-        real(kind=8), intent(in) :: g0, gx, tg, ng
+        real(kind=kind(0.0d0)), dimension(n_m), intent(in) :: x
+        real(kind=kind(0.0d0)), intent(in) :: g0, gx, tg, ng
 
         ! output
-        real(kind=8), dimension(n_m) :: out
+        real(kind=kind(0.0d0)), dimension(n_m) :: out
 
         out(:) = gx
 
@@ -882,14 +882,14 @@ contains
 
         ! input
         integer, intent(in) :: n_m
-        real(kind=8), dimension(n_m), intent(in) :: x
-        real(kind=8), intent(in) :: f1, f0, tg
+        real(kind=kind(0.0d0)), dimension(n_m), intent(in) :: x
+        real(kind=kind(0.0d0)), intent(in) :: f1, f0, tg
 
         ! output
-        real(kind=8), dimension(n_m) :: out
+        real(kind=kind(0.0d0)), dimension(n_m) :: out
 
         ! local
-        real(kind=8) :: kg
+        real(kind=kind(0.0d0)) :: kg
 
         if( tg * f1 == 0.d0 ) then
             out(:) = f1
@@ -907,10 +907,10 @@ contains
 
         ! input
         integer, intent(in) :: n
-        real(kind=8), dimension(n), intent(in) :: x
+        real(kind=kind(0.0d0)), dimension(n), intent(in) :: x
 
         ! output
-        real(kind=8), dimension(n) :: out
+        real(kind=kind(0.0d0)), dimension(n) :: out
 
         out = x ** (x - 0.5d0) * 2.718282d0 ** (-x) * (2.d0 * Pi) ** (0.5d0) * &
             (1.d0 + 1.d0 / (12.d0 * x) + 1.d0 / (288.d0 * x ** 2.d0) - 139.d0 / (51840.d0 * x ** 3.d0) - &
@@ -925,14 +925,14 @@ contains
         implicit none
 
         ! input
-        real(kind=8), intent(in) :: Lat
+        real(kind=kind(0.0d0)), intent(in) :: Lat
 
         ! output
-        real(kind=8), dimension(12) :: day_length
+        real(kind=kind(0.0d0)), dimension(12) :: day_length
 
         ! local
-        real(kind=8) :: SLAt, cLat
-        real(kind=8), dimension(12) :: sinDec, cosH0
+        real(kind=kind(0.0d0)) :: SLAt, cLat
+        real(kind=kind(0.0d0)), dimension(12) :: sinDec, cosH0
 
 
         SLAt = sin(Pi * Lat / 180.d0)
@@ -957,16 +957,16 @@ contains
         implicit none
 
         integer, intent(in) :: n_sp ! number of species
-        real(kind=8), dimension(n_sp), intent(in) :: height, Heightcrown
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: height, Heightcrown
 
         ! output
         integer, dimension(n_sp) :: layer_id ! array of layer id
 
         ! local
-        real(kind=8), dimension( n_sp*2 ) :: Height_all
+        real(kind=kind(0.0d0)), dimension( n_sp*2 ) :: Height_all
         integer, dimension( n_sp*2 ) :: Height_ind
         integer, dimension( n_sp*2 ) :: ones,  ones_sum ! vector of 1, 0, -1 for calculation
-        real(kind=8), allocatable, dimension(:) :: Height_layer ! maximum height of each layer
+        real(kind=kind(0.0d0)), allocatable, dimension(:) :: Height_layer ! maximum height of each layer
 
         integer :: i
         integer :: n_l
@@ -1016,11 +1016,11 @@ contains
 
         ! input
         integer, intent(in) :: n_sp, nLayers ! number of species and layers
-        real(kind=8), dimension(n_sp), intent(in) :: x
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: x
         integer, dimension(n_sp), intent(in) :: layer_id
 
         ! output
-        real(kind=8), dimension(n_sp) :: y
+        real(kind=kind(0.0d0)), dimension(n_sp) :: y
 
         ! local
         integer :: i = 1
@@ -1042,15 +1042,15 @@ contains
         implicit none
 
         !input
-        real(kind=8), intent(in) :: stems_n, WS, mS, wSx1000, thinPower
+        real(kind=kind(0.0d0)), intent(in) :: stems_n, WS, mS, wSx1000, thinPower
 
         ! output
-        real(kind=8) :: mort_n
+        real(kind=kind(0.0d0)) :: mort_n
 
         ! local
-        real(kind=8), parameter :: accuracy = 1.d0 / 1000.d0
+        real(kind=kind(0.0d0)), parameter :: accuracy = 1.d0 / 1000.d0
         integer :: i
-        real(kind=8) :: fN,dfN,dN,n,x1,x2
+        real(kind=kind(0.0d0)) :: fN,dfN,dN,n,x1,x2
 
 
         n = stems_n / 1000.d0
@@ -1082,14 +1082,14 @@ contains
         implicit none
 
         ! input
-        real(kind=8), intent(in) :: Lat
+        real(kind=kind(0.0d0)), intent(in) :: Lat
 
         ! output
-        real(kind=8), dimension(12) :: solarangle
+        real(kind=kind(0.0d0)), dimension(12) :: solarangle
 
         ! local
-        real(kind=8) :: secondxaxisintercept, firstxaxisintercept
-        real(kind=8), dimension(12) :: gamma, declinationangle, szaprep, solarzenithangle
+        real(kind=kind(0.0d0)) :: secondxaxisintercept, firstxaxisintercept
+        real(kind=kind(0.0d0)), dimension(12) :: gamma, declinationangle, szaprep, solarzenithangle
 
 
         secondxaxisintercept = 0.0018d0 * Lat ** 3.d0 - 0.0031d0 * Lat ** 2.d0 + 2.3826d0 * Lat + 266.62d0
@@ -1130,15 +1130,15 @@ contains
         implicit none
 
         ! input
-        real(kind=8), intent(in) :: x(:)       ! array of numbers
+        real(kind=kind(0.0d0)), intent(in) :: x(:)       ! array of numbers
 
         ! output
         integer :: id( size(x) )            ! indices into the array 'x' that sort it
 
         ! local
         integer :: i, n, imin, temp1        ! helpers
-        real(kind=8) :: temp2
-        real(kind=8) :: x2( size(x) )
+        real(kind=kind(0.0d0)) :: temp2
+        real(kind=kind(0.0d0)) :: x2( size(x) )
 
         x2 = x
         n = size(x)
@@ -1166,11 +1166,11 @@ contains
 
         ! input
         integer, intent(in) :: n
-        real(kind=8), intent(in) :: mn, mx
-        real(kind=8), dimension(n) :: x
+        real(kind=kind(0.0d0)), intent(in) :: mn, mx
+        real(kind=kind(0.0d0)), dimension(n) :: x
 
         ! output
-        real(kind=8), dimension(n) :: out
+        real(kind=kind(0.0d0)), dimension(n) :: out
 
         where( x(:) > mx) x(:) = mx
         where( x(:) < mn) x(:) = mn
@@ -1187,20 +1187,20 @@ contains
 
         ! input
         integer, intent(in) :: n_sp ! number of species
-        real(kind=8), dimension(n_sp), intent(in) :: age
-        real(kind=8), dimension(n_sp), intent(in) :: fullCanAge     ! Age at canopy closure
-        real(kind=8), dimension(n_sp), intent(in) :: k
-        real(kind=8), dimension(n_sp), intent(in) :: lai
-        real(kind=8), dimension(n_sp), intent(in) :: solar_rad
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: age
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: fullCanAge     ! Age at canopy closure
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: k
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: solar_rad
         integer, dimension(n_sp), intent(in) :: days_in_month
 
         ! output
-        real(kind=8), dimension(n_sp), intent(out) :: canopy_cover
-        real(kind=8), dimension(n_sp), intent(out) :: apar
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: canopy_cover
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: apar
 
         ! Additional variables for calculation distribution
-        real(kind=8), dimension(n_sp) :: RADt ! Total available radiation
-        real(kind=8), dimension(n_sp) :: lightIntcptn
+        real(kind=kind(0.0d0)), dimension(n_sp) :: RADt ! Total available radiation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: lightIntcptn
 
 
         canopy_cover(:) = 1.d0
@@ -1231,44 +1231,44 @@ contains
 
         ! input
         integer, intent(in) :: n_sp ! number of species
-        real(kind=8), dimension(n_sp) :: height ! i'm not putting the intent(in) here as we modify those variables later
-        real(kind=8), dimension(n_sp) :: crown_length ! i'm not putting the intent(in) here as we modify those variables later
-        real(kind=8), dimension(n_sp), intent(in) :: crown_width
-        real(kind=8), dimension(n_sp), intent(in) :: lai
-        real(kind=8), dimension(n_sp), intent(in) :: stems_n
-        real(kind=8), intent(in) :: solar_rad
+        real(kind=kind(0.0d0)), dimension(n_sp) :: height ! i'm not putting the intent(in) here as we modify those variables later
+        real(kind=kind(0.0d0)), dimension(n_sp) :: crown_length ! i'm not putting the intent(in) here as we modify those variables later
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: crown_width
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: stems_n
+        real(kind=kind(0.0d0)), intent(in) :: solar_rad
         integer, dimension(n_sp), intent(in) :: CrownShape   !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
-        real(kind=8), dimension(n_sp), intent(in) :: k
-        real(kind=8), intent(in) :: solarAngle
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: k
+        real(kind=kind(0.0d0)), intent(in) :: solarAngle
         integer, intent(in) :: days_in_month
 
         ! output
-        real(kind=8), dimension(n_sp), intent(out) :: apar
-        real(kind=8), dimension(n_sp), intent(out) :: lai_above !leaf area above the given species
-        real(kind=8), dimension(n_sp), intent(out) :: fi !***DF the proportion of above canopy apar absorbed by each species
-        real(kind=8), dimension(n_sp), intent(out) :: lambda_v       !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-        real(kind=8), dimension(n_sp), intent(out) :: lambda_h         !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-        real(kind=8), dimension(n_sp), intent(out) :: canopy_vol_frac !Fraction of canopy space (between lowest crown crown height to tallest height) filled by crowns
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: apar
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: lai_above !leaf area above the given species
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: fi !***DF the proportion of above canopy apar absorbed by each species
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: lambda_v       !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: lambda_h         !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: canopy_vol_frac !Fraction of canopy space (between lowest crown crown height to tallest height) filled by crowns
         integer, dimension(n_sp), intent(out) :: layer_id
-        real(kind=8), dimension(n_sp), intent(out) :: lai_sa_ratio !the ratio of mean tree leaf area (m2) to crownSA (m2)
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: lai_sa_ratio !the ratio of mean tree leaf area (m2) to crownSA (m2)
 
         ! Additional variables for calculation distribution
         integer :: i
-        real(kind=8), dimension(n_sp) :: Heightmidcrown    !mean height of the middle of the crown (height - height to crown base)/2 + height to crown base       !***DF
-        real(kind=8), dimension(n_sp) :: Heightcrown ! height of the crown begining
-        real(kind=8), dimension(n_sp) :: CrownSA  !mean crown surface area (m2) of a species
-        real(kind=8), dimension(n_sp) :: Crownvolume   !***DF the crown volume of a given species
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Heightmidcrown    !mean height of the middle of the crown (height - height to crown base)/2 + height to crown base       !***DF
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Heightcrown ! height of the crown begining
+        real(kind=kind(0.0d0)), dimension(n_sp) :: CrownSA  !mean crown surface area (m2) of a species
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Crownvolume   !***DF the crown volume of a given species
         integer :: nLayers ! number of layers
-        real(kind=8), dimension(n_sp) :: Height_max_l
-        real(kind=8), dimension(n_sp) :: Heightcrown_min_l
-        real(kind=8), dimension(n_sp) :: Heightmidcrown_l ! maximum and minimum height of layer
-        real(kind=8), dimension(n_sp) :: Heightmidcrown_r !ratio of the mid height of the crown of a given species to the mid height of a canopy layer
-        real(kind=8), dimension(n_sp) :: kL_l          !sum of k x L for all species within the given layer
-        real(kind=8), dimension(n_sp) :: lambdaV_l     ! sum of lambda_v per layer
-        real(kind=8), dimension(n_sp) :: kLSweightedave   !calculates the contribution each species makes to the sum of all kLS products in a given layer (see Equation 6 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-        real(kind=8), dimension(n_sp) :: aparl  !The absorbed apar for the given  layer
-        real(kind=8) :: RADt ! Total available radiation
-        real(kind=8), dimension(n_sp) :: LAI_l ! Layer LAI
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Height_max_l
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Heightcrown_min_l
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Heightmidcrown_l ! maximum and minimum height of layer
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Heightmidcrown_r !ratio of the mid height of the crown of a given species to the mid height of a canopy layer
+        real(kind=kind(0.0d0)), dimension(n_sp) :: kL_l          !sum of k x L for all species within the given layer
+        real(kind=kind(0.0d0)), dimension(n_sp) :: lambdaV_l     ! sum of lambda_v per layer
+        real(kind=kind(0.0d0)), dimension(n_sp) :: kLSweightedave   !calculates the contribution each species makes to the sum of all kLS products in a given layer (see Equation 6 of Forrester et al., 2014, Forest Ecosystems, 1:17)
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aparl  !The absorbed apar for the given  layer
+        real(kind=kind(0.0d0)) :: RADt ! Total available radiation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: LAI_l ! Layer LAI
 
         ! initialization
         CrownSA(:) = 0.d0
@@ -1433,21 +1433,21 @@ contains
 
         ! input
         integer, intent(in) :: n_sp ! number of species
-        real(kind=8), intent(in) :: solar_rad
-        real(kind=8), intent(in) ::  day_length
-        real(kind=8), dimension(n_sp), intent(in) :: VPD_sp
-        real(kind=8), dimension(n_sp), intent(in) :: BLcond
-        real(kind=8), dimension(n_sp), intent(in) :: conduct_canopy
+        real(kind=kind(0.0d0)), intent(in) :: solar_rad
+        real(kind=kind(0.0d0)), intent(in) ::  day_length
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: VPD_sp
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: BLcond
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: conduct_canopy
         integer, intent(in) :: days_in_month
-        real(kind=8), dimension(n_sp), intent(in) :: Qa, Qb
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: Qa, Qb
 
         ! output
-        real(kind=8), dimension(n_sp), intent(out) :: transp_veg
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: transp_veg
 
         ! derived variables
-        real(kind=8), dimension(n_sp) :: netRad
-        real(kind=8), dimension(n_sp) :: defTerm
-        real(kind=8), dimension(n_sp) :: div
+        real(kind=kind(0.0d0)), dimension(n_sp) :: netRad
+        real(kind=kind(0.0d0)), dimension(n_sp) :: defTerm
+        real(kind=kind(0.0d0)), dimension(n_sp) :: div
 
 
         if( sum(VPD_sp(:)) == 0.d0 ) then
@@ -1478,30 +1478,30 @@ contains
         ! input
         integer, intent(in) :: n_sp ! number of species
 
-        real(kind=8), intent(in) :: solar_rad
-        real(kind=8), intent(in) :: vpd_day
-        real(kind=8), intent(in) ::  day_length
+        real(kind=kind(0.0d0)), intent(in) :: solar_rad
+        real(kind=kind(0.0d0)), intent(in) :: vpd_day
+        real(kind=kind(0.0d0)), intent(in) ::  day_length
         integer, intent(in) :: days_in_month
-        real(kind=8), dimension(n_sp), intent(in) :: lai
-        real(kind=8), dimension(n_sp), intent(in) :: fi
-        real(kind=8), dimension(n_sp), intent(in) :: VPD_sp
-        real(kind=8), dimension(n_sp), intent(in) :: aero_resist
-        real(kind=8), dimension(n_sp), intent(in) :: conduct_canopy
-        real(kind=8), intent(in) ::  conduct_soil
-        real(kind=8), dimension(n_sp), intent(in) :: Qa, Qb
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: fi
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: VPD_sp
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: aero_resist
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: conduct_canopy
+        real(kind=kind(0.0d0)), intent(in) ::  conduct_soil
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: Qa, Qb
 
         ! output
-        real(kind=8), dimension(n_sp), intent(out) :: transp_veg
-        real(kind=8), intent(out) :: evapotra_soil
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: transp_veg
+        real(kind=kind(0.0d0)), intent(out) :: evapotra_soil
 
         ! derived variables
-        real(kind=8), dimension(n_sp) :: netRad
-        real(kind=8), dimension(n_sp) :: defTerm
-        real(kind=8), dimension(n_sp) :: div
-        real(kind=8) :: lai_total ! here is is a number, while in the main subroutine it is a vector
-        real(kind=8) :: netRad_so
-        real(kind=8) :: defTerm_so
-        real(kind=8) :: div_so ! ending `so` mean soil
+        real(kind=kind(0.0d0)), dimension(n_sp) :: netRad
+        real(kind=kind(0.0d0)), dimension(n_sp) :: defTerm
+        real(kind=kind(0.0d0)), dimension(n_sp) :: div
+        real(kind=kind(0.0d0)) :: lai_total ! here is is a number, while in the main subroutine it is a vector
+        real(kind=kind(0.0d0)) :: netRad_so
+        real(kind=kind(0.0d0)) :: defTerm_so
+        real(kind=kind(0.0d0)) :: div_so ! ending `so` mean soil
 
         ! Species level calculations ---
         ! the within canopy aero_resist and VPDspecies have been calculated using information from the light submodel
@@ -1564,54 +1564,54 @@ contains
 
         ! input
         integer, intent(in) :: n_sp ! number of species
-        real(kind=8), dimension(n_sp), intent(in) :: age
-        real(kind=8), dimension(n_sp), intent(in) :: stems_n
-        real(kind=8), dimension(n_sp), intent(in) :: biom_tree
-        real(kind=8), dimension(n_sp), intent(in) :: competition_total
-        real(kind=8), dimension(n_sp), intent(in) :: lai
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: age
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: stems_n
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: biom_tree
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: competition_total
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
 
         ! parameters
         integer, intent(in) :: correct_bias ! if the distribution shall be fitted
         integer, intent(in) :: height_model ! which heigh equation
-        real(kind=8), dimension(17, n_sp), intent(in) :: pars_s ! parameters for bias
-        real(kind=8), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
-        real(kind=8), dimension(n_sp), intent(in) :: aWs, nWs
-        real(kind=8), dimension(n_sp), intent(in) :: pfsPower, pfsConst
+        real(kind=kind(0.0d0)), dimension(17, n_sp), intent(in) :: pars_s ! parameters for bias
+        real(kind=kind(0.0d0)), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: aWs, nWs
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: pfsPower, pfsConst
 
         ! output
-        real(kind=8), dimension(n_sp), intent(inout) :: dbh
-        real(kind=8), dimension(n_sp), intent(inout) :: basal_area
-        real(kind=8), dimension(n_sp), intent(inout) :: height
-        real(kind=8), dimension(n_sp), intent(out) :: crown_length
-        real(kind=8), dimension(n_sp), intent(out) :: crown_width
-        real(kind=8), dimension(n_sp), intent(out) :: pFS
-        real(kind=8), dimension(15, n_sp), intent(out) :: bias_scale
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: dbh
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: basal_area
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: height
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: crown_length
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: crown_width
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: pFS
+        real(kind=kind(0.0d0)), dimension(15, n_sp), intent(out) :: bias_scale
 
 
         ! Variables and parameters
-        real(kind=8), dimension(n_sp) :: lai_total
-        real(kind=8), dimension(n_sp) :: height_rel
+        real(kind=kind(0.0d0)), dimension(n_sp) :: lai_total
+        real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel
 
-        real(kind=8), dimension(n_sp) :: aH, nHB, nHC
-        real(kind=8), dimension(n_sp) :: aV, nVB, nVH, nVBH
-        real(kind=8), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
-        real(kind=8), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
-        real(kind=8), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC
-        real(kind=8), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC
-        real(kind=8), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
-        real(kind=8), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
-        real(kind=8), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
-        real(kind=8), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocationt, wslocationC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nHB, nHC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aV, nVB, nVH, nVBH
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocationt, wslocationC
 
         ! Additional variables for calculation distribution
-        real(kind=8), dimension(n_sp) :: DWeibullScale, DWeibullShape, DWeibullLocation
-        real(kind=8), dimension(n_sp) :: wsWeibullScale, wsWeibullShape, wsWeibullLocation
-        real(kind=8), dimension(n_sp) :: Ex, Varx, CVdbhDistribution, CVwsDistribution
-        real(kind=8), dimension(n_sp) :: DrelBiaspFS, DrelBiasheight, DrelBiasBasArea, DrelBiasLCL, DrelBiasCrowndiameter
-        real(kind=8), dimension(n_sp) :: wsrelBias
+        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullScale, DWeibullShape, DWeibullLocation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: wsWeibullScale, wsWeibullShape, wsWeibullLocation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Ex, Varx, CVdbhDistribution, CVwsDistribution
+        real(kind=kind(0.0d0)), dimension(n_sp) :: DrelBiaspFS, DrelBiasheight, DrelBiasBasArea, DrelBiasLCL, DrelBiasCrowndiameter
+        real(kind=kind(0.0d0)), dimension(n_sp) :: wsrelBias
 
-        real(kind=8), dimension(n_sp) :: dlocation, wslocation
-        real(kind=8), dimension(n_sp) :: DWeibullShape_gamma, wsWeibullShape_gamma
+        real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation, wslocation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma, wsWeibullShape_gamma
 
         include 'i_read_param_sizeDist.h'
         include 'i_read_param_sub.h'
