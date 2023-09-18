@@ -12,12 +12,6 @@ This is a minor update of r3PG.
 
 ### Major changes
 
--  constrain the `frost_days` to the maximum days in month
-    `prepare_climate` #68. Additional, in the main FORTRAN program
-    f_frost is now calculated using the number of days per month (not
-    standard 30 days as in original program). Consequently this lead to
-    the deviation in the output of biomass to the third digit (see
-    tests).
 
 ### Minor changes
 
