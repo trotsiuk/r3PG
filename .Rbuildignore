@@ -5,3 +5,8 @@
 ^vignettes_build$
 ^issues$
 ^\.github$
+^data-raw$
+^development$
+^tests/r_vba_compare$
+^NEWS
+^README.md
