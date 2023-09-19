@@ -10,7 +10,7 @@ Authors@R: c(
     person("David", "Forrester", email = "David.Forrester@csiro.au", role = c("aut")),
     person("Ramiro", "Silveyra Gonzalez", email = "ramiro.gonzalez@kit.edu", role = c("aut"), comment=c(ORCID="0000-0002-3430-8383"))
     )
-License: GPL-3 + file LICENSE
+License: GPL-3
 Depends:
     R (>= 3.5.0)
 Imports:
