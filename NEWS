@@ -1,3 +1,20 @@
+r3PG 0.1.7
+============
+
+### Bug fixed
+
+- Order of the morris output in the vignette example according to the mu.star. `err_biom_foliage` was wrongly calculated because of `Inf` during hte morris sensitivity. #101
+
+### New function and data sets
+
+
+### Major changes
+
+
+### Minor changes
+
+
+
 r3PG 0.1.6
 ============
 

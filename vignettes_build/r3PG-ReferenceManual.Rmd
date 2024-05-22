@@ -196,12 +196,15 @@ morrisOut <- morris(
   scale = TRUE)
 
 # summaries the morris output
+mourrisOut.ee <- na.omit(morrisOut$ee)
+
 morrisOut.df <- data.frame(
   parameter = par_cal_names,
-  mu.star = apply(abs(morrisOut$ee), 2, mean, na.rm = T),
-  sigma = apply(morrisOut$ee, 2, sd, na.rm = T)
+  mu.star = apply(abs(mourrisOut.ee), 2, mean),
+  sigma = apply(mourrisOut.ee, 2, sd)
 ) %>%
-  arrange( mu.star )
+  arrange( mu.star ) %>%
+  mutate(parameter = reorder(parameter, mu.star))
 ```
 
 ```{r morris_load}
