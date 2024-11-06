@@ -120,6 +120,11 @@ contains
 
         ASW = max( min( ASW, asw_max ), asw_min )
 
+
+! 20241106
+test_output = beta0/1
+
+
         ! Silvicultural events are currently not active
         Irrig = 0.d0
         water_runoff_polled = 0.d0
@@ -744,8 +749,7 @@ contains
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
 
-! 20241106
-test_output = beta0
+
 
 
 

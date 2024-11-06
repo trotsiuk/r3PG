@@ -1,4 +1,4 @@
-! Reading the mapin input 
+! Reading the mapin input
 ! Structure
 ! Group
 !   - site; species; climate; parameters
@@ -10,7 +10,7 @@
 lat         = siteInputs(1)
 altitude    = int( siteInputs(2) )
 soil_class  = int( siteInputs(3) )
-aSW         = siteInputs(4)
+asw         = siteInputs(4)
 asw_min     = siteInputs(5)
 asw_max     = siteInputs(6)
 year_i      = int( siteInputs(7) )
