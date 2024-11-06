@@ -97,6 +97,12 @@ contains
         air_pressure = 101.3d0 * Exp(-1.d0 * altitude / 8200.d0)
 
 
+
+! 20241106
+beta0 = beta0 * 1
+
+
+
         ! SOIL WATER --------
         ! Assign the SWconst and SWpower parameters for this soil class
         if ( soil_class > 0.d0 ) then
@@ -743,8 +749,7 @@ contains
             ! where( lai(:) > 0.d0 .and. basal_area_prop(:) <0.01d0 ) basal_area_prop(:) = 0.01d0
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
-! 20241106
-beta0 = beta0
+
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
