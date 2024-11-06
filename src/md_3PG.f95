@@ -122,7 +122,7 @@ contains
 
 
 ! 20241106
-test_output = beta0/1
+test_output = asw ! beta0/1
 
 
         ! Silvicultural events are currently not active
