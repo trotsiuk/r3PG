@@ -106,7 +106,7 @@ output(ii,:,8,3) = mort_thinn(:)
 output(ii,:,8,4) = mort_stress(:)
 
 ! DF add test output
-!output(ii,:,8,5) = test_output
+output(ii,:,8,5) = test_output
 
 
 
