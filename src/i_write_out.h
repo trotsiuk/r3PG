@@ -105,6 +105,11 @@ output(ii,:,8,2) = gammaN(ii,:)
 output(ii,:,8,3) = mort_thinn(:)
 output(ii,:,8,4) = mort_stress(:)
 
+! DF add test output
+output(ii,:,8,5) = beta0(:)
+
+
+
 
 ! Wood Delta ------------------
 output(ii,:,9,1) = Gc_mol(:)
