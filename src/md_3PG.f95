@@ -744,6 +744,10 @@ contains
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
 
+! 20241106
+test_output = beta0
+
+
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
