@@ -118,7 +118,7 @@ contains
             asw_min = asw_max
         end if
 
-        ASW = max( min( ASW, asw_max ), asw_min )
+        asw = max( min( asw, asw_max ), asw_min )
 
 
 ! 20241106
