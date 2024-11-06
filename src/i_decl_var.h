@@ -18,6 +18,7 @@ integer :: year_i                               ! initial year when the simulati
 integer :: month_i                              ! initial month when the simulation starts
 integer :: altitude                             ! altitude of the site location, m
 
+real(kind=kind(0.0d0)) :: test_output ! 20241106
 
 ! Species data -------------------------
 integer, dimension(n_sp) :: year_p              ! year when species was planted
@@ -139,9 +140,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: wslocation0, wslocationB, wslocationr
 integer :: i = 1                                ! indexing for species
 integer :: ii = 1                               ! indexing for month (row of climatic data)
 integer :: month = 1
-integer :: b_n = 2                              ! how many times to iterate for biass correction
+integer :: b_n = 2                              ! how many times to iterate for bias correction
 integer :: n = 1                                ! count for bias correction
-logical :: b_cor = .TRUE.                            ! if something has changed and wee need to correct bias
+logical :: b_cor = .TRUE.                            ! if something has changed and we need to correct bias
 
 ! Climatic variables -------------
 real(kind=kind(0.0d0)), dimension(12) :: adjSolarZenithAngle

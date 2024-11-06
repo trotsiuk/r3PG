@@ -97,12 +97,6 @@ contains
         air_pressure = 101.3d0 * Exp(-1.d0 * altitude / 8200.d0)
 
 
-
-! 20241106
-beta0 = beta0 * 1
-
-
-
         ! SOIL WATER --------
         ! Assign the SWconst and SWpower parameters for this soil class
         if ( soil_class > 0.d0 ) then
