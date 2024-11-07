@@ -767,50 +767,10 @@ contains
             if (stems_sum > 0.0) then
                 dbh_total = dbh_sum / stems_sum
             else
-                dbh_total = 0.0  ! Or handle as needed if there are no active cohorts
+                dbh_total = 0.0
             end if
             ! Total stems number for active cohorts
             stems_n_total = stems_sum
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            !! Calculate dbh_total and stems_n_total only for cohorts where f_dormant is .FALSE. for self-thinning when mort_model = 2 !20241106
-            !if ( mort_model .eq. int(2) ) then
-!
-            !    do i = 1, n_sp
-            !      dbh_total = 0
-            !      stems_n_total = 0
-!
-!
-            !            if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
-!
-            !            dbh_total = dbh_total + sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) )
-!
-            !            end if
-!
-            !    end do
-!
-            !end if
-
-
-
-
-
 
 
 
@@ -951,11 +911,11 @@ mort_thinn(i) = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
             ! Used when mort_model = 2   !20241106
-            !prev_dbh(:) = dbh(:)
+            prev_dbh(:) = dbh(:)
             !prev_f_nutr(:) = f_nutr(:)
             !prev_f_tmp(:,i) = f_tmp(:,i)
             !prev_f_phys(:) = f_phys(:)
-            !prev_dbh_total = dbh_total
+            prev_dbh_total = dbh_total
 
 
 
