@@ -158,6 +158,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area     ! stand level basal ar
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
 real(kind=kind(0.0d0)), dimension(n_sp) :: dbh            ! average tree DBH, cm
 
+real(kind=kind(0.0d0)) :: dbh_total            ! average tree DBH for the whole stand, cm (weighted average by basal_area_prop, and dbh_total = dbh for even-aged monocultures) !20241106
+real(kind=kind(0.0d0)) :: prev_dbh_total       ! average tree DBH for the whole stand, cm, of previous time step !20241106
+
 real(kind=kind(0.0d0)), dimension(n_sp) :: prev_dbh            ! average tree DBH, cm, of the previous time step, used when mort_model = 2 !20241106
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: height         ! average tree height, m

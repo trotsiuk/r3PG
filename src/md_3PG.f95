@@ -746,6 +746,8 @@ contains
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
 
+!dbh_total
+!prev_dbh_total
 
 
 
