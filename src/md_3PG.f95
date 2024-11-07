@@ -748,11 +748,11 @@ contains
             dbh_total = sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) ) !20241106 used to calculate self-thinning when mort_model = 2
             stems_n_total = sum( stems_n(:) ) !20241106
             ! Calculate dbh_total only for cohorts where f_dormant is .FALSE. !20241106
-            dbh_total = sum((/(dbh(i) * stems_n(i), i = 1, num_cohorts, .not. f_dormant(month, leafgrow(i), leaffall(i)))/)) / &
-                        sum((/(stems_n(i), i = 1, num_cohorts, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+            dbh_total = sum((/(dbh(i) * stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/)) / &
+                        sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
 
             ! Calculate stems_n_total only for cohorts where f_dormant is .FALSE. !20241106
-            stems_n_total = sum((/(stems_n(i), i = 1, num_cohorts, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+            stems_n_total = sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
 
 
 
