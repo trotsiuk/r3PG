@@ -36,7 +36,7 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
 
-        !real :: dbh_sum, stems_sum  ! Accumulators for summation ! 20241106
+        real :: dbh_sum, stems_sum  ! Accumulators for summation ! 20241106
 
 
         ! Variables, Parameters, Constants
