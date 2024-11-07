@@ -31,7 +31,7 @@ module mod_decl_const
     real(kind=kind(0.0d0)), parameter :: betaN = 2.16d0          !20241106
     real(kind=kind(0.0d0)), parameter :: betafN = -1.3d0         !20241106
     real(kind=kind(0.0d0)), parameter :: betafT = -1.5d0         !20241106
-    real(kind=kind(0.0d0)), parameter :: betafPhys = -2.16d0  !20241106
+    real(kind=kind(0.0d0)), parameter :: betafPhys = -2.16d0     !20241106
 
 
     integer :: mort_model = 2     ! 1 - 3PGpjs; 2 - 3PGmix       !20241106
