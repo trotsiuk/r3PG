@@ -746,7 +746,7 @@ contains
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
             dbh_total = sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) ) !20241106 used to calculate self-thinning when mort_model = 2
-
+            stems_n_total = sum( stems_n(:) ) !20241106
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
