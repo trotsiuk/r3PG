@@ -42,7 +42,10 @@ module mod_decl_const
 
     integer :: mort_model = 2     ! 1 - 3PGpjs; 2 - 3PGmix       !20241106
 
-
+! To be provided in the "species" inputs because they are species specific and not appropriate as site inputs
+    real(kind=kind(0.0d0)), parameter :: lt_fN = 0.9d0             !20241106 long-term valules of modifiers
+    real(kind=kind(0.0d0)), parameter :: ln_fT = 0.9d0             !20241106
+    real(kind=kind(0.0d0)), parameter :: ln_fPhys = 0.9d0          !20241106
 
 
 end module mod_decl_const

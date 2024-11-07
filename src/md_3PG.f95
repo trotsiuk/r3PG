@@ -747,6 +747,16 @@ contains
 
             dbh_total = sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) ) !20241106 used to calculate self-thinning when mort_model = 2
             stems_n_total = sum( stems_n(:) ) !20241106
+            ! Calculate dbh_total only for cohorts where f_dormant is .FALSE. !20241106
+            dbh_total = sum((/(dbh(i) * stems_n(i), i = 1, num_cohorts, .not. f_dormant(month, leafgrow(i), leaffall(i)))/)) / &
+                        sum((/(stems_n(i), i = 1, num_cohorts, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+
+            ! Calculate stems_n_total only for cohorts where f_dormant is .FALSE. !20241106
+            stems_n_total = sum((/(stems_n(i), i = 1, num_cohorts, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+
+
+
+
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
@@ -791,7 +801,7 @@ contains
                    else if ( mort_model .eq. int(2) ) then !20241106
 
 
-                      ! beta0, betaB, betaN, betafN, betafT, betafPhys all need to be changed to the n_sp dimension when removing the hard coding !20241106
+                      ! beta0, betaB, betaN, betafN, betafT, betafPhys, lt_fN, lt_fT, lt_fPhys all need to be changed to the n_sp dimension when removing the hard coding !20241106
 
 
                       !mort_thinn(i) = basal_area_prop(i) * ( & !20241106
