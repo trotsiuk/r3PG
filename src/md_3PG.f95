@@ -121,9 +121,6 @@ contains
         asw = max( min( asw, asw_max ), asw_min )
 
 
-! 20241106
-test_output = beta0/1
-
 
         ! Silvicultural events are currently not active
         Irrig = 0.d0
@@ -762,7 +759,7 @@ test_output = beta0/1
 
 
 
-                   if ( mort_model .eq. int(1) ) then
+                   if ( mort_model .eq. int(1) ) then        !20241106
 
 
                       if ( biom_tree_max(i) < biom_tree(i) ) then
@@ -793,15 +790,17 @@ test_output = beta0/1
                       end if
 
 
-                   else if ( mort_model .eq. int(2) ) then
+                   else if ( mort_model .eq. int(2) ) then !20241106
 
 
 
-                   biom_foliage(i) = biom_foliage(i)
+                   ! 20241106
+
+test_output = beta0/1
 
 
 
-                   end if
+                   end if !20241106
 
 
 
