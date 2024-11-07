@@ -35,6 +35,10 @@ contains
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
+
+        real :: dbh_sum, stems_sum  ! Accumulators for summation
+
+
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
 
@@ -761,7 +765,7 @@ contains
 
 
 
-            REAL :: dbh_sum, stems_sum  ! Accumulators for summation
+
 
             ! Initialize accumulators for dbh_total and stems_n_total
             dbh_sum = 0.0
