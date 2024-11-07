@@ -18,7 +18,6 @@ integer :: year_i                               ! initial year when the simulati
 integer :: month_i                              ! initial month when the simulation starts
 integer :: altitude                             ! altitude of the site location, m
 
-real(kind=kind(0.0d0)) :: test_output ! 20241106
 
 ! Species data -------------------------
 integer, dimension(n_sp) :: year_p              ! year when species was planted
@@ -158,6 +157,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_ha     ! potential number of 
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area     ! stand level basal area
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
 real(kind=kind(0.0d0)), dimension(n_sp) :: dbh            ! average tree DBH, cm
+
+real(kind=kind(0.0d0)), dimension(n_sp) :: prev_dbh            ! average tree DBH, cm, of the previous time step, used when mort_model = 2 !20241106
+
 real(kind=kind(0.0d0)), dimension(n_sp) :: height         ! average tree height, m
 real(kind=kind(0.0d0)) :: Height_max
 
@@ -215,6 +217,12 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: f_vpd
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_sw
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_nutr
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_phys
+
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_tmp ! of the previous time step, used when mort_model = 2  !20241106
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_nutr ! of the previous time step, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_phys ! of the previous time step, used when mort_model = 2 !20241106
+
+
 
 
 ! Production ---------------------

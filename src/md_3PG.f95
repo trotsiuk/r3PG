@@ -792,15 +792,26 @@ contains
 
                    else if ( mort_model .eq. int(2) ) then !20241106
 
+                !mort_thinn(i) = basal_area_prop(i) * (stems_n_ha(i) - (stems_n_ha(i) ^ (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / &
+                !                    (betaB(i) + 1) * ( prev_dbh(i) ^ (betaB(i) + 1) * prev_f_nutr(i) ^ (betafN(i)) * prev_f_tmp(i) ^ (betafT(i)) * prev_f_phys(i) ^ (betafPhys(i)) - &
+                !                                       avDBH(i) ^ (betaB(i) + 1) * f_nutr(i) ^ (betafN(i)) *       f_tmp(i) ^ (betafT(i))  * f_phys(i) ^ (betafPhys(i)) &
+                !                   )) ^ (1 / (1 - betaN(i))) )
+
+
+
 
 
                    ! 20241106
 
-test_output = beta0/10
+                   test_output = beta0/10
 
 
 
                    end if !20241106
+
+
+
+
 
 
 
@@ -835,6 +846,14 @@ test_output = beta0/10
 
             ! Additional calculations ------------------
             basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
+
+
+            ! Used when mort_model = 2   !20241106
+            prev_dbh(:) = dbh(:)
+            prev_f_nutr(:) = f_nutr(:)
+            prev_f_tmp(:) = f_tmp(:)
+            prev_f_phys(:) = f_phys(:)
+
 
             ! Efficiency
             epsilon_gpp(:) = 100 * gpp(:) / apar(:)
