@@ -794,49 +794,24 @@ contains
 
 
 ! beta0, betaB, betaN, betafN, betafT, betafPhys all need to be changed to the n_sp dimension when removing the hard coding
-!mort_thinn(i) = basal_area_prop(i) * ( &
-!    stems_n_ha(i) - ( &
-!    stems_n_ha(i) ** (1 - betaN + Exp(beta0 * (1 - betaN / (betaB + 1) * ( &
-!    prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** (betafN * &
-!    prev_f_tmp(i) ** (betafT * prev_f_phys(i) ** (betafPhys - &
-!    dbh(i) ** (betaB + 1) * f_nutr(i) ** (betafN * &
-!    f_tmp(i) ** (betafT * f_phys(i) ** (betafPhys &
-!    ) &
-!    ) ** (1 / (1 - betaN) ) &
-!    )))))
 
+
+!mort_thinn(i) = basal_area_prop(i) * ( &
+!(stems_n_ha(i) - ( &
+!stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+!(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * prev_f_tmp(:,i) ** betafT * prev_f_phys(i) ** betafPhys - &
+!(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * f_tmp(:,i) ** betafT * f_phys(i) ** betafPhys) &
+!) ** (1 / (1 - betaN)) ))
+
+
+! changed f_tmp to 1 because it has a different number of dimensions to the others
 mort_thinn(i) = basal_area_prop(i) * ( &
 (stems_n_ha(i) - ( &
 stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * prev_f_tmp(:,i) ** betafT * prev_f_phys(i) ** betafPhys - &
-(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * f_tmp(:,i) ** betafT * f_phys(i) ** betafPhys) &
+(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
+(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
 ) ** (1 / (1 - betaN)) ))
 
-
-
-
-
-!real :: temp1, temp2, temp3
-
-! Calculate intermediate terms to simplify the main expression
-!temp1 = stems_n_ha(i) ** (1 - betaN(i))
-!temp2 = Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1)
-!temp3 = prev_dbh(i) ** (betaB(i) + 1) * prev_f_nutr(i) ** (betafN(i)) * &
-!        prev_f_tmp(i) ** (betafT(i)) * prev_f_phys(i) ** (betafPhys(i)) - &
-!        avDBH(i) ** (betaB(i) + 1) * f_nutr(i) ** (betafN(i)) * &
-!        f_tmp(i) ** (betafT(i)) * f_phys(i) ** (betafPhys(i))
-!
-!! Calculate mort_thinn using the intermediate terms
-!mort_thinn(i) = basal_area_prop(i) * ( &
-!    stems_n_ha(i) - (temp1 + temp2 * temp3) ) ** (1 / (1 - betaN(i)))
-
-
-
-
-                !mort_thinn(i) = basal_area_prop(i) * ( &
-                !stems_n_ha(i) &
-                !- (stems_n_ha(i) ** ) &
-                !)
 
 
 
