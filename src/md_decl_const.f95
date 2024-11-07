@@ -26,13 +26,19 @@ module mod_decl_const
 
 
 ! Parameters for self-thinning as rates of change                !20241106
-    real(kind=kind(0.0d0)), parameter :: beta0 = -15.9d0         !20241106
-    real(kind=kind(0.0d0)), parameter :: betaB = 1d0             !20241106
-    real(kind=kind(0.0d0)), parameter :: betaN = 2.16d0          !20241106
-    real(kind=kind(0.0d0)), parameter :: betafN = -1.3d0         !20241106
-    real(kind=kind(0.0d0)), parameter :: betafT = -1.5d0         !20241106
-    real(kind=kind(0.0d0)), parameter :: betafPhys = -2.16d0     !20241106
+    !real(kind=kind(0.0d0)), parameter :: beta0 = -15.9d0         !20241106
+    !real(kind=kind(0.0d0)), parameter :: betaB = 1d0             !20241106
+    !real(kind=kind(0.0d0)), parameter :: betaN = 2.16d0          !20241106
+    !real(kind=kind(0.0d0)), parameter :: betafN = -1.3d0         !20241106
+    !real(kind=kind(0.0d0)), parameter :: betafT = -1.5d0         !20241106
+    !real(kind=kind(0.0d0)), parameter :: betafPhys = -2.16d0     !20241106
 
+    real(kind=kind(0.0d0)), parameter :: beta0 = -17.4d0         !20241106
+    real(kind=kind(0.0d0)), parameter :: betaB = 1.86d0             !20241106
+    real(kind=kind(0.0d0)), parameter :: betaN = 2.05d0          !20241106
+    real(kind=kind(0.0d0)), parameter :: betafN = 0d0         !20241106
+    real(kind=kind(0.0d0)), parameter :: betafT = 0d0         !20241106
+    real(kind=kind(0.0d0)), parameter :: betafPhys = 0d0     !20241106
 
     integer :: mort_model = 1     ! 1 - 3PGpjs; 2 - 3PGmix       !20241106
 
