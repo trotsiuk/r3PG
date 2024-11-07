@@ -36,7 +36,7 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
 
-        real :: dbh_sum, stems_sum  ! Accumulators for summation
+        real :: dbh_sum, stems_sum  ! Accumulators for summation ! 20241106
 
 
         ! Variables, Parameters, Constants
@@ -905,12 +905,12 @@ contains
 !) ** (1 / (1 - betaN)) ))
 
                       ! needs to use the dbh_total not dbh, and stems_n_total not stems_n_ha
-                      mort_thinn(i) = basal_area_prop(i) * ( &
-(stems_n_total - ( &
-stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-(prev_dbh_total ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
-dbh_total ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
-) ** (1 / (1 - betaN)) ))
+!                      mort_thinn(i) = basal_area_prop(i) * ( &
+!(stems_n_total - ( &
+!stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+!(prev_dbh_total ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
+!dbh_total ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
+!) ** (1 / (1 - betaN)) ))
 
 
 
