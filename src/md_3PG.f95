@@ -745,8 +745,10 @@ contains
             ! where( lai(:) > 0.d0 .and. basal_area_prop(:) <0.01d0 ) basal_area_prop(:) = 0.01d0
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
-            dbh_total = sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) ) !20241106 used to calculate self-thinning when mort_model = 2
-            stems_n_total = sum( stems_n(:) ) !20241106
+
+
+            !dbh_total = sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) ) !20241106 used to calculate self-thinning when mort_model = 2
+            !stems_n_total = sum( stems_n(:) ) !20241106
             ! Calculate dbh_total only for cohorts where f_dormant is .FALSE. !20241106
             dbh_total = sum((/(dbh(i) * stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/)) / &
                         sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
