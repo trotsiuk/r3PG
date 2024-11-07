@@ -315,6 +315,10 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: D13CTissue
 real(kind=kind(0.0d0)), dimension(15, n_sp) :: bias_scale
 
 
+
+real(kind=kind(0.0d0)) :: test_output                             !20241106
+
+
 ! Settings ----------------------
 integer :: light_model                          ! 1 - 3PGpjs; 2 - 3PGmix
 integer :: transp_model                          ! 1 - 3PGpjs; 2 - 3PGmix
