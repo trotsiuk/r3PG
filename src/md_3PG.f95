@@ -745,11 +745,7 @@ contains
             ! where( lai(:) > 0.d0 .and. basal_area_prop(:) <0.01d0 ) basal_area_prop(:) = 0.01d0
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
-
-!dbh_total
-!prev_dbh_total
-
-
+            dbh_total = sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) ) !20241106 used to calculate self-thinning when mort_model = 2
 
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
@@ -871,7 +867,7 @@ dbh(i) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPh
             prev_f_nutr(:) = f_nutr(:)
             prev_f_tmp(:,i) = f_tmp(:,i)
             prev_f_phys(:) = f_phys(:)
-
+            prev_dbh_total = dbh_total
 
             ! Efficiency
             epsilon_gpp(:) = 100 * gpp(:) / apar(:)
@@ -1565,7 +1561,7 @@ dbh(i) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPh
         real(kind=kind(0.0d0)), dimension(n_sp) :: netRad
         real(kind=kind(0.0d0)), dimension(n_sp) :: defTerm
         real(kind=kind(0.0d0)), dimension(n_sp) :: div
-        real(kind=kind(0.0d0)) :: lai_total ! here is is a number, while in the main subroutine it is a vector
+        real(kind=kind(0.0d0)) :: lai_total ! here it is a number, while in the main subroutine it is a vector
         real(kind=kind(0.0d0)) :: netRad_so
         real(kind=kind(0.0d0)) :: defTerm_so
         real(kind=kind(0.0d0)) :: div_so ! ending `so` mean soil
