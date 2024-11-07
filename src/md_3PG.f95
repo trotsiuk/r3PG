@@ -803,12 +803,23 @@ contains
 
 
                       ! changed f_tmp to 1 because it has a different number of dimensions to the others !20241106
+!                      mort_thinn(i) = basal_area_prop(i) * ( &
+!(stems_n_ha(i) - ( &
+!stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+!(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
+!dbh(i) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
+!) ** (1 / (1 - betaN)) ))
+
+                      ! needs to use the dbh_total not dbh
                       mort_thinn(i) = basal_area_prop(i) * ( &
 (stems_n_ha(i) - ( &
 stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
-dbh(i) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
+(prev_dbh_total ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
+dbh_total ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
 ) ** (1 / (1 - betaN)) ))
+
+
+
 
 
                           if( mort_thinn(i) > 0 ) then !20241106
