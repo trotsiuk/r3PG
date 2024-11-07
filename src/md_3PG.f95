@@ -808,11 +808,9 @@ contains
 mort_thinn(i) = basal_area_prop(i) * ( &
 (stems_n_ha(i) - ( &
 stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * prev_f_tmp(i) ** betafT * prev_f_phys(i) ** betafPhys - &
-(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * f_tmp(i) ** betafT * f_phys(i) ** betafPhys) &
+(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * prev_f_tmp(:,i) ** betafT * prev_f_phys(i) ** betafPhys - &
+(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * f_tmp(:,i) ** betafT * f_phys(i) ** betafPhys) &
 ) ** (1 / (1 - betaN)) ))
-
-
 
 
 
