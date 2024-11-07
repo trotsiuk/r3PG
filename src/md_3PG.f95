@@ -794,22 +794,22 @@ contains
 
 
 
-mort_thinn(i) = basal_area_prop(i) * ( &
-    stems_n_ha(i) - ( &
-    stems_n_ha(i) ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * ( &
-    prev_dbh(i) ** (betaB(i) + 1) * prev_f_nutr(i) ** (betafN(i)) * &
-    prev_f_tmp(i) ** (betafT(i)) * prev_f_phys(i) ** (betafPhys(i)) - &
-    avDBH(i) ** (betaB(i) + 1) * f_nutr(i) ** (betafN(i)) * &
-    f_tmp(i) ** (betafT(i)) * f_phys(i) ** (betafPhys(i)) &
-    ) &
-    ) ** (1 / (1 - betaN(i))) )
+!mort_thinn(i) = basal_area_prop(i) * ( &
+!    stems_n_ha(i) - ( &
+!    stems_n_ha(i) ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * ( &
+!    prev_dbh(i) ** (betaB(i) + 1) * prev_f_nutr(i) ** (betafN(i)) * &
+!    prev_f_tmp(i) ** (betafT(i)) * prev_f_phys(i) ** (betafPhys(i)) - &
+!    avDBH(i) ** (betaB(i) + 1) * f_nutr(i) ** (betafN(i)) * &
+!    f_tmp(i) ** (betafT(i)) * f_phys(i) ** (betafPhys(i)) &
+!    ) &
+!    ) ** (1 / (1 - betaN(i))) )
 
 
-!real :: temp1, temp2, temp3
-!
-!! Calculate intermediate terms to simplify the main expression
-!temp1 = stems_n_ha(i) ** (1 - betaN(i))
-!temp2 = exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1)
+real :: temp1, temp2, temp3
+
+! Calculate intermediate terms to simplify the main expression
+temp1 = stems_n_ha(i) ** (1 - betaN(i))
+!temp2 = Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1)
 !temp3 = prev_dbh(i) ** (betaB(i) + 1) * prev_f_nutr(i) ** (betafN(i)) * &
 !        prev_f_tmp(i) ** (betafT(i)) * prev_f_phys(i) ** (betafPhys(i)) - &
 !        avDBH(i) ** (betaB(i) + 1) * f_nutr(i) ** (betafN(i)) * &
