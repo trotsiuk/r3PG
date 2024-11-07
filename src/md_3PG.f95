@@ -809,7 +809,7 @@ contains
                                       (stems_n_ha(i) - ( &
                                       stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
                                       (prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
-                                      (dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
+                                      dbh(i) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
                                       ) ** (1 / (1 - betaN)) ))
 
 
