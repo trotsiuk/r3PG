@@ -759,32 +759,53 @@ test_output = beta0/1
 
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
 
-                    if ( biom_tree_max(i) < biom_tree(i) ) then
 
-                        mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
-                        mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                        !if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
-                        !mort_thinn(i) = ceiling( mort_thinn(i) )
 
-                        if( mort_thinn(i) < stems_n(i) ) then
+                   if ( mort_model .eq. int(1) ) then
 
-                            biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
-                            biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
-                            biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
-                            stems_n(i) = stems_n(i) - mort_thinn(i)
 
-                        else
+                      if ( biom_tree_max(i) < biom_tree(i) ) then
 
-                            biom_foliage(i) = 0.d0
-                            biom_root(i) = 0.d0
-                            biom_stem(i) = 0.d0
-                            stems_n(i) = 0.d0
-                        end if
+                          mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
+                          mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                        b_cor = .TRUE.
+                          !if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
+                          !mort_thinn(i) = ceiling( mort_thinn(i) )
 
-                    end if
+                          if( mort_thinn(i) < stems_n(i) ) then
+
+                              biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
+                              biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
+                              biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
+                              stems_n(i) = stems_n(i) - mort_thinn(i)
+
+                          else
+
+                              biom_foliage(i) = 0.d0
+                              biom_root(i) = 0.d0
+                              biom_stem(i) = 0.d0
+                              stems_n(i) = 0.d0
+                          end if
+
+                          b_cor = .TRUE.
+
+                      end if
+
+
+                   else if ( mort_model .eq. int(2) ) then
+
+
+
+                   biom_foliage(i) = biom_foliage(i)
+
+
+
+                   end if
+
+
+
+
 
                 else
                     mort_thinn(i) = 0.d0

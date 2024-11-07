@@ -34,6 +34,9 @@ module mod_decl_const
     real(kind=kind(0.0d0)), parameter :: betafPhysmod = -2.16d0
 
 
+    integer :: mort_model      ! 1 - 3PGpjs; 2 - 3PGmix
+
+
 
 
 end module mod_decl_const
