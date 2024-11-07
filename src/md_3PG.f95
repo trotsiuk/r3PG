@@ -810,10 +810,10 @@ contains
 !dbh(i) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
 !) ** (1 / (1 - betaN)) ))
 
-                      ! needs to use the dbh_total not dbh
+                      ! needs to use the dbh_total not dbh, and stems_n_total not stems_n_ha
                       mort_thinn(i) = basal_area_prop(i) * ( &
-(stems_n_ha(i) - ( &
-stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+(stems_n_total - ( &
+stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
 (prev_dbh_total ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
 dbh_total ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
 ) ** (1 / (1 - betaN)) ))
@@ -879,6 +879,10 @@ dbh_total ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** beta
             prev_f_tmp(:,i) = f_tmp(:,i)
             prev_f_phys(:) = f_phys(:)
             prev_dbh_total = dbh_total
+
+
+
+
 
             ! Efficiency
             epsilon_gpp(:) = 100 * gpp(:) / apar(:)

@@ -152,7 +152,12 @@ integer, dimension(n_m) :: month_vector        ! A vector of month which will be
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age     ! Age of each species and month
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n
-real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha for monoculture equivalent
+
+real(kind=kind(0.0d0)) :: stems_n_total            ! total number of trees per ha for the whole stand, used when mort_model = 2 !20241106
+
+
+
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area     ! stand level basal area
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
