@@ -20,8 +20,8 @@ contains
         ! Number of species and month
         integer(kind=c_int), intent(in) :: n_m
         integer(kind=c_int), intent(in) :: n_sp
-        integer(kind=c_int), intent(in) :: n_man ! number of management interactiosn
-        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t ! number of management interactiosn
+        integer(kind=c_int), intent(in) :: n_man ! number of management interventions
+        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t ! number of management interventions
         integer(kind=c_int), dimension(6), intent(in) :: settings    ! settings for the models
 
         ! Initial, forcing, parameters
@@ -755,6 +755,25 @@ contains
 
             ! Calculate stems_n_total only for cohorts where f_dormant is .FALSE. !20241106
             stems_n_total = sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+
+
+            !! Calculate dbh_total and stems_n_total only for cohorts where f_dormant is .FALSE. for self-thinning when mort_model = 2 !20241106
+            !if ( mort_model .eq. int(2) ) then
+!
+            !    do i = 1, n_sp
+            !      dbh_total = 0
+            !      stems_n_total = 0
+!
+!
+            !            if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+!
+            !            dbh_total = dbh_total + sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) )
+!
+            !            end if
+!
+            !    end do
+!
+            !end if
 
 
 
