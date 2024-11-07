@@ -750,11 +750,56 @@ contains
             !dbh_total = sum( dbh(:)*stems_n(:) ) / sum( stems_n(:) ) !20241106 used to calculate self-thinning when mort_model = 2
             !stems_n_total = sum( stems_n(:) ) !20241106
             ! Calculate dbh_total only for cohorts where f_dormant is .FALSE. !20241106
-            dbh_total = sum((/(dbh(i) * stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/)) / &
-                        sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+            !dbh_total = sum((/(dbh(i) * stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/)) / &
+            !            sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
 
             ! Calculate stems_n_total only for cohorts where f_dormant is .FALSE. !20241106
-            stems_n_total = sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+            !stems_n_total = sum((/(stems_n(i), i = 1, n_sp, .not. f_dormant(month, leafgrow(i), leaffall(i)))/))
+
+
+
+
+
+
+            REAL :: dbh_sum, stems_sum  ! Accumulators for summation
+
+            ! Initialize accumulators for dbh_total and stems_n_total
+            dbh_sum = 0.0
+            stems_sum = 0.0
+
+            ! Loop over all species and accumulate only the active cohorts
+            do i = 1, n_sp
+                if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+                    dbh_sum = dbh_sum + dbh(i) * stems_n(i)
+                    stems_sum = stems_sum + stems_n(i)
+                end if
+            end do
+
+            ! Calculate dbh_total as the weighted mean of active cohorts
+            if (stems_sum > 0.0) then
+                dbh_total = dbh_sum / stems_sum
+            else
+                dbh_total = 0.0  ! Or handle as needed if there are no active cohorts
+            end if
+
+            ! Total stems number for active cohorts
+            stems_n_total = stems_sum
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             !! Calculate dbh_total and stems_n_total only for cohorts where f_dormant is .FALSE. for self-thinning when mort_model = 2 !20241106
@@ -774,6 +819,20 @@ contains
             !    end do
 !
             !end if
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
