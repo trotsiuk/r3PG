@@ -803,8 +803,8 @@ contains
 
 
                 mort_thinn(i) = basal_area_prop(i) * ( &
-                stems_n_ha(i) - &
-                (stems_n_ha(i) ^ (1 - betaN(i))) &
+                stems_n_ha(i) &
+                - (stems_n_ha(i) ^ (1 - betaN(i))) &
                 )
 
 
