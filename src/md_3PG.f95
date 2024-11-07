@@ -927,7 +927,7 @@ mort_thinn(i) = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
                    ! 20241106
-                   test_output = beta0/10
+                   test_output = dbh_total !beta0/10
 
                    end if !20241106
 
