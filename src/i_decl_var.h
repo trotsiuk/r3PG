@@ -219,8 +219,8 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: f_nutr
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_phys
 
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_tmp ! of the previous time step, used when mort_model = 2  !20241106
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_nutr ! of the previous time step, used when mort_model = 2 !20241106
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_phys ! of the previous time step, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)), dimension(n_sp) :: prev_f_nutr ! of the previous time step, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)), dimension(n_sp) :: prev_f_phys ! of the previous time step, used when mort_model = 2 !20241106
 
 
 
