@@ -793,41 +793,43 @@ contains
                    else if ( mort_model .eq. int(2) ) then !20241106
 
 
-! beta0, betaB, betaN, betafN, betafT, betafPhys all need to be changed to the n_sp dimension when removing the hard coding
+                      ! beta0, betaB, betaN, betafN, betafT, betafPhys all need to be changed to the n_sp dimension when removing the hard coding !20241106
 
 
-!mort_thinn(i) = basal_area_prop(i) * ( &
-!(stems_n_ha(i) - ( &
-!stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-!(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * prev_f_tmp(:,i) ** betafT * prev_f_phys(i) ** betafPhys - &
-!(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * f_tmp(:,i) ** betafT * f_phys(i) ** betafPhys) &
-!) ** (1 / (1 - betaN)) ))
+                      !mort_thinn(i) = basal_area_prop(i) * ( & !20241106
+                      !(stems_n_ha(i) - ( &
+                      !stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+                      !(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * prev_f_tmp(:,i) ** betafT * prev_f_phys(i) ** betafPhys - &
+                      !(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * f_tmp(:,i) ** betafT * f_phys(i) ** betafPhys) &
+                      !) ** (1 / (1 - betaN)) ))
 
 
-! changed f_tmp to 1 because it has a different number of dimensions to the others
-mort_thinn(i) = basal_area_prop(i) * ( &
-(stems_n_ha(i) - ( &
-stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-(prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
-(dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
-) ** (1 / (1 - betaN)) ))
+                      ! changed f_tmp to 1 because it has a different number of dimensions to the others !20241106
+                      mort_thinn(i) = basal_area_prop(i) * ( &
+                                      (stems_n_ha(i) - ( &
+                                      stems_n_ha(i) ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+                                      (prev_dbh(i) ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
+                                      (dbh(i)) ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
+                                      ) ** (1 / (1 - betaN)) ))
 
+
+                          if( mort_thinn(i) > 0 ) then !20241106
+
+                              biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
+                              biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
+                              biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
+                              stems_n(i) = stems_n(i) - mort_thinn(i)
+
+                          end if
+
+                          b_cor = .TRUE. !20241106
 
 
 
                    ! 20241106
-
                    test_output = beta0/10
 
-
-
                    end if !20241106
-
-
-
-
-
-
 
 
 
