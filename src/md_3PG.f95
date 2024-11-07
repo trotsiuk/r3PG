@@ -36,7 +36,7 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
 
-        real :: dbh_sum, stems_sum  ! Accumulators for summation ! 20241106
+        !real :: dbh_sum, stems_sum  ! Accumulators for summation ! 20241106
 
 
         ! Variables, Parameters, Constants
@@ -767,27 +767,27 @@ contains
 
 
 
-            ! Initialize accumulators for dbh_total and stems_n_total
-            dbh_sum = 0.0
-            stems_sum = 0.0
-
-            ! Loop over all species and accumulate only the active cohorts
-            do i = 1, n_sp
-                if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-                    dbh_sum = dbh_sum + dbh(i) * stems_n(i)
-                    stems_sum = stems_sum + stems_n(i)
-                end if
-            end do
-
-            ! Calculate dbh_total as the weighted mean of active cohorts
-            if (stems_sum > 0.0) then
-                dbh_total = dbh_sum / stems_sum
-            else
-                dbh_total = 0.0  ! Or handle as needed if there are no active cohorts
-            end if
-
-            ! Total stems number for active cohorts
-            stems_n_total = stems_sum
+            !! Initialize accumulators for dbh_total and stems_n_total
+            !dbh_sum = 0.0
+            !stems_sum = 0.0
+!
+            !! Loop over all species and accumulate only the active cohorts
+            !do i = 1, n_sp
+            !    if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+            !        dbh_sum = dbh_sum + dbh(i) * stems_n(i)
+            !        stems_sum = stems_sum + stems_n(i)
+            !    end if
+            !end do
+!
+            !! Calculate dbh_total as the weighted mean of active cohorts
+            !if (stems_sum > 0.0) then
+            !    dbh_total = dbh_sum / stems_sum
+            !else
+            !    dbh_total = 0.0  ! Or handle as needed if there are no active cohorts
+            !end if
+!
+            !! Total stems number for active cohorts
+            !stems_n_total = stems_sum
 
 
 
@@ -913,7 +913,7 @@ contains
 !) ** (1 / (1 - betaN)) ))
 
 
-
+mort_thinn(i) = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
                           if( mort_thinn(i) > 0 ) then !20241106
