@@ -849,10 +849,10 @@ contains
 
 
             ! Used when mort_model = 2   !20241106
-            prev_dbh(:) = dbh(:)
-            prev_f_nutr(:) = f_nutr(:)
-            prev_f_tmp(:) = f_tmp(:)
-            prev_f_phys(:) = f_phys(:)
+            !prev_dbh(:) = dbh(:)
+            !prev_f_nutr(:) = f_nutr(:)
+            !prev_f_tmp(:) = f_tmp(:)
+            !prev_f_phys(:) = f_phys(:)
 
 
             ! Efficiency
