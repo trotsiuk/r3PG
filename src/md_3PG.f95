@@ -796,7 +796,7 @@ contains
 
                    ! 20241106
 
-test_output = beta0/1
+test_output = beta0/10
 
 
 
