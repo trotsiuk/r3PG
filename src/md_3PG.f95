@@ -879,7 +879,7 @@ contains
 
 
                    ! 20241106
-                   test_output = beta0/10
+                   test_output = ave_lt_fN !beta0/10
 
                    end if !20241106
 
