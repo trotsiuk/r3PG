@@ -772,9 +772,9 @@ contains
             ave_lt_fPhys = 0.0
             do i = 1, n_sp
                 if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-                !    ave_lt_fN = ave_lt_fN + lt_fN * basal_area(i)/basal_area_sum
-                !    ave_lt_fT = ave_lt_fT + lt_fT * basal_area(i)/basal_area_sum
-                !    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys * basal_area(i)/basal_area_sum
+                    ave_lt_fN = ave_lt_fN + lt_fN * basal_area(i)/basal_area_sum
+                    ave_lt_fT = ave_lt_fT + lt_fT * basal_area(i)/basal_area_sum
+                    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys * basal_area(i)/basal_area_sum
                 end if
             end do
 
@@ -849,8 +849,8 @@ contains
                       mort_thinn(i) = basal_area_prop(i) * ( &
                                       (stems_n_total - ( &
                                       stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-                                      (prev_dbh_total ** (betaB + 1) * lt_fN ** betafN * ln_fT ** betafT * ln_fPhys ** betafPhys - &
-                                      dbh_total ** (betaB + 1) * lt_fN ** betafN * ln_fT ** betafT * ln_fPhys ** betafPhys) &
+                                      (prev_dbh_total ** (betaB + 1) * lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys - &
+                                      dbh_total ** (betaB + 1) * lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys) &
                                       ) ** (1 / (1 - betaN)) ))
 
 
