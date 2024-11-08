@@ -772,9 +772,9 @@ contains
             ave_lt_fPhys = 0.0
             do i = 1, n_sp
                 if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-                    ave_lt_fN = ave_lt_fN + lt_fN * basal_area(i)/basal_area_sum
-                    ave_lt_fT = ave_lt_fT + lt_fT * basal_area(i)/basal_area_sum
-                    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys * basal_area(i)/basal_area_sum
+                !    ave_lt_fN = ave_lt_fN + lt_fN * basal_area(i)/basal_area_sum
+                !    ave_lt_fT = ave_lt_fT + lt_fT * basal_area(i)/basal_area_sum
+                !    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys * basal_area(i)/basal_area_sum
                 end if
             end do
 
@@ -871,7 +871,7 @@ contains
 
 
                    ! 20241106
-                   test_output = ave_lt_fN !beta0/10
+                   test_output = beta0/10
 
                    end if !20241106
 
