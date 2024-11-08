@@ -155,7 +155,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha for monoculture equivalent
 
 real(kind=kind(0.0d0)) :: stems_n_total            ! total number of trees per ha for the whole stand, used when mort_model = 2 !20241106
-
+real(kind=kind(0.0d0)) :: mort_thinn_total            ! total number of trees per ha that die when mort_model = 2 !20241106
 
 
 

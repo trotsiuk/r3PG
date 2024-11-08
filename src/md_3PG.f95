@@ -847,20 +847,21 @@ contains
                       ! beta0, betaB, betaN, betafN, betafT, betafPhys all need to be changed to the n_sp dimension when removing the hard coding !20241106
                       ! needs to use the dbh_total not dbh, and stems_n_total not stems_n_ha
                       !mort_thinn(i) = basal_area_prop(i) * ( &
-                      !                (stems_n_total - ( &
-                      !                stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-                      !                (prev_dbh_total ** (betaB + 1) * lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys - &
-                      !                dbh_total ** (betaB + 1) * lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys) &
-                      !                ) ** (1 / (1 - betaN)) ))
+!(stems_n_total - ( &
+!stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+!(prev_dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys - &
+!dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys) &
+!) ** (1 / (1 - betaN)) ))
 
-                      mort_thinn(i) = basal_area_prop(i) * ( &
+
+                      mort_thinn_total = ( &
 (stems_n_total - ( &
 stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
 (prev_dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys - &
 dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys) &
 ) ** (1 / (1 - betaN)) ))
 
-
+mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 4 / n_sp / (Pi * dbh(i) * dbh(i) / 4)
 
 
                           if( mort_thinn(i) > 0 ) then !20241106
