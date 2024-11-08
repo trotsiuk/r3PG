@@ -858,8 +858,7 @@ contains
 
 
 
-                      !mort_thinn(i) = basal_area_prop(i) * ( &
-                      mort_thinn(i) = ( &
+                      mort_thinn(i) = basal_area_prop(i) * ( &
                                       (stems_n_total - ( &
                                       stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
                                       (prev_dbh_total ** (betaB + 1) * lt_fN ** betafN * ln_fT ** betafT * ln_fPhys ** betafPhys - &
