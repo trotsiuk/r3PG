@@ -36,7 +36,8 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
 
-        real :: dbh_sum, stems_sum  ! Accumulators for summation ! 20241106
+        real :: dbh_sum, stems_sum  ! Accumulators for summation for when mort_model = 2 ! 20241106
+        real :: temp1, temp2, temp3
 
 
         ! Variables, Parameters, Constants
@@ -854,6 +855,32 @@ contains
 !(prev_dbh_total ** (betaB + 1) * prev_f_nutr(i) ** betafN * 1 ** betafT * prev_f_phys(i) ** betafPhys - &
 !dbh_total ** (betaB + 1) * f_nutr(i) ** betafN * 1 ** betafT * f_phys(i) ** betafPhys) &
 !) ** (1 / (1 - betaN)) ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 mort_thinn(i) = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
