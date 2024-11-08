@@ -226,10 +226,13 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: f_sw
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_nutr
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_phys
 
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_tmp ! of the previous time step, used when mort_model = 2  !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: prev_f_nutr ! of the previous time step, used when mort_model = 2 !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: prev_f_phys ! of the previous time step, used when mort_model = 2 !20241106
+!real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: prev_f_tmp ! of the previous time step, used when mort_model = 2  !20241106
+!real(kind=kind(0.0d0)), dimension(n_sp) :: prev_f_nutr ! of the previous time step, used when mort_model = 2 !20241106
+!real(kind=kind(0.0d0)), dimension(n_sp) :: prev_f_phys ! of the previous time step, used when mort_model = 2 !20241106
 
+real(kind=kind(0.0d0)) :: ave_lt_fN ! weighted average (by basal area) long-term average lt_fN, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)) :: ave_lt_fT ! weighted average (by basal area) long-term average lt_fT, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)) :: ave_lt_fPhys ! weighted average (by basal area) long-term average lt_fPhys, used when mort_model = 2 !20241106
 
 
 
