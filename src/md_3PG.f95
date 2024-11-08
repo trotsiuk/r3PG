@@ -857,7 +857,7 @@ contains
                                       (stems_n_total - ( &
                                       stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
                                       (prev_dbh_total ** (betaB + 1) * lt_fN ** betafN * ave_lt_fT ** betafT * lt_fPhys ** betafPhys - &
-                                      dbh_total ** (betaB + 1) * lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys) &
+                                      dbh_total ** (betaB + 1) * lt_fN ** betafN * ave_lt_fT ** betafT * lt_fPhys ** betafPhys) &
                                       ) ** (1 / (1 - betaN)) ))
 
             !ave_lt_fN = 0.0
