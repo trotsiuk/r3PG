@@ -36,7 +36,7 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
 
-        real :: dbh_sum, stems_sum  ! Accumulators for summation for when mort_model = 2 ! 20241106
+        real :: dbh_sum, stems_sum, basal_area_sum  ! Accumulators for summation for when mort_model = 2 ! 20241106
         real :: temp1, temp2, temp3
 
 
@@ -757,13 +757,28 @@ contains
             ! Initialize accumulators for dbh_total and stems_n_total, used to calculate self-thinning when mort_model = 2 !20241106
             dbh_sum = 0.0
             stems_sum = 0.0
+            basal_area_sum = 0.0
             ! Loop over all species and accumulate only the active cohorts
             do i = 1, n_sp
                 if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
                     dbh_sum = dbh_sum + dbh(i) * stems_n(i)
                     stems_sum = stems_sum + stems_n(i)
+                    basal_area_sum = basal_area_sum + basal_area(i)
                 end if
             end do
+            ! Loop over all species to get the weighted average of the 3 modifiers used when mort_model = 2 Note that lt_fN, lt_fT, lt_fPhys need dimensions added
+            ave_lt_fN = 0.0
+            ave_lt_fT = 0.0
+            ave_lt_fPhys = 0.0
+            do i = 1, n_sp
+                if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+                    ave_lt_fN = ave_lt_fN + lt_fN * basal_area(i)/basal_area_sum
+                    ave_lt_fT = ave_lt_fT + lt_fT * basal_area(i)/basal_area_sum
+                    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys * basal_area(i)/basal_area_sum
+                end if
+            end do
+
+
             ! Calculate dbh_total as the weighted mean of active cohorts
             if (stems_sum > 0.0) then
                 dbh_total = dbh_sum / stems_sum
@@ -856,7 +871,7 @@ contains
 
 
                    ! 20241106
-                   test_output = dbh_total !beta0/10
+                   test_output = ave_lt_fN !beta0/10
 
                    end if !20241106
 
