@@ -854,11 +854,11 @@ contains
                       !                ) ** (1 / (1 - betaN)) ))
 
                       mort_thinn(i) = basal_area_prop(i) * ( &
-                                      (stems_n_total - ( &
-                                      stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-                                      (prev_dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys - &
-                                      dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys) &
-                                      ) ** (1 / (1 - betaN)) ))
+(stems_n_total - ( &
+stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
+(prev_dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys - &
+dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys) &
+) ** (1 / (1 - betaN)) ))
 
             !ave_lt_fN = 0.0
             !ave_lt_fT = 0.0
