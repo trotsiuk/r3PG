@@ -33,7 +33,7 @@ module mod_decl_const
     !real(kind=kind(0.0d0)), parameter :: betafT = -1.5d0         !20241106
     !real(kind=kind(0.0d0)), parameter :: betafPhys = -2.16d0     !20241106
 
-    real(kind=kind(0.0d0)), parameter :: beta0 = -14.4d0         !20241106
+    real(kind=kind(0.0d0)), parameter :: beta0 = -20.4d0         !20241106
     real(kind=kind(0.0d0)), parameter :: betaB = 1.86d0             !20241106
     real(kind=kind(0.0d0)), parameter :: betaN = 2.6d0          !20241106
     real(kind=kind(0.0d0)), parameter :: betafN = 0d0         !20241106
