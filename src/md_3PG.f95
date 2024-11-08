@@ -844,15 +844,14 @@ contains
                    else if ( mort_model .eq. int(2) ) then !20241106
 
 
-                      ! beta0, betaB, betaN, betafN, betafT, betafPhys, lt_fN, lt_fT, lt_fPhys all need to be changed to the n_sp dimension when removing the hard coding !20241106
+                      ! beta0, betaB, betaN, betafN, betafT, betafPhys all need to be changed to the n_sp dimension when removing the hard coding !20241106
                       ! needs to use the dbh_total not dbh, and stems_n_total not stems_n_ha
                       mort_thinn(i) = basal_area_prop(i) * ( &
                                       (stems_n_total - ( &
                                       stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-                                      (prev_dbh_total ** (betaB + 1) * lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys - &
-                                      dbh_total ** (betaB + 1) * lt_fN ** betafN * lt_fT ** betafT * lt_fPhys ** betafPhys) &
+                                      (prev_dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys - &
+                                      dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys) &
                                       ) ** (1 / (1 - betaN)) ))
-
 
 
 
@@ -871,7 +870,7 @@ contains
 
 
                    ! 20241106
-                   test_output = beta0/10
+                   test_output = ave_lt_fT !beta0/10
 
                    end if !20241106
 
