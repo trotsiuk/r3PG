@@ -29,7 +29,7 @@ contains
         real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs
         real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(82,n_sp), intent(in) :: pars_i
+        real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                         !20241106
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
         ! Output array
@@ -217,7 +217,7 @@ contains
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
             call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                correct_bias, height_model,  pars_i(68:84,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &  !20241106
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
         end do
 
@@ -299,7 +299,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(68:84,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &         !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
                 b_cor = .FALSE.
@@ -589,7 +589,7 @@ contains
                 competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                 call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                    correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                    correct_bias, height_model,  pars_i(68:84,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                     dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
             end do
 
@@ -684,7 +684,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(68:84,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -737,7 +737,7 @@ contains
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(68:84,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -902,7 +902,7 @@ mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 4 / n_sp / (Pi *
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(62:78,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+                        correct_bias, height_model,  pars_i(68:84,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 

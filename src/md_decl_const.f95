@@ -25,17 +25,17 @@ module mod_decl_const
 
 
 
-! Parameters for self-thinning as rates of change                !20241106
-    real(kind=kind(0.0d0)), parameter :: beta0 = -20.4d0         !20241106
-    real(kind=kind(0.0d0)), parameter :: betaB = 1.86d0             !20241106
-    real(kind=kind(0.0d0)), parameter :: betaN = 2.6d0          !20241106
-    real(kind=kind(0.0d0)), parameter :: betafN = 0d0         !20241106
-    real(kind=kind(0.0d0)), parameter :: betafT = 0d0         !20241106
-    real(kind=kind(0.0d0)), parameter :: betafPhys = 0d0     !20241106
-
-    !integer :: mort_model = 1     ! 1 - 3PGpjs; 2 - 3PGmix       !20241106
-
-! To be provided in the "species" inputs because they are species specific and not appropriate as site inputs
+!! Parameters for self-thinning as rates of change                !20241106
+!    real(kind=kind(0.0d0)), parameter :: beta0 = -20.4d0         !20241106
+!    real(kind=kind(0.0d0)), parameter :: betaB = 1.86d0             !20241106
+!    real(kind=kind(0.0d0)), parameter :: betaN = 2.6d0          !20241106
+!    real(kind=kind(0.0d0)), parameter :: betafN = 0d0         !20241106
+!    real(kind=kind(0.0d0)), parameter :: betafT = 0d0         !20241106
+!    real(kind=kind(0.0d0)), parameter :: betafPhys = 0d0     !20241106
+!
+!    integer :: mort_model = 1     ! 1 - 3PGpjs; 2 - 3PGmix       !20241106
+!
+!! To be provided in the "species" inputs because they are species specific and not appropriate as site inputs
     real(kind=kind(0.0d0)), parameter :: lt_fN = 0.9d0             !20241106 long-term valules of modifiers
     real(kind=kind(0.0d0)), parameter :: lt_fT = 0.9d0             !20241106
     real(kind=kind(0.0d0)), parameter :: lt_fPhys = 0.9d0          !20241106
