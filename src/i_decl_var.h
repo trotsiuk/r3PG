@@ -337,3 +337,7 @@ integer :: phys_model                           ! 1 - 3PGpjs; 2 - 3PGmix
 integer :: height_model                         ! 1 - linear; 2-non-linear
 integer :: correct_bias                         ! 0 - no; 1 - 3PGmix
 integer :: calculate_d13c                       ! 0 - no; 1 - 3PGmix
+integer :: mort_model                           ! 1 - 3PGpjs; 2 - 3PGmix    !20241106
+
+
+
