@@ -22,7 +22,7 @@ contains
         integer(kind=c_int), intent(in) :: n_sp
         integer(kind=c_int), intent(in) :: n_man ! number of management interventions
         integer(kind=c_int), dimension(n_sp), intent(in) :: t_t ! number of management interventions
-        integer(kind=c_int), dimension(6), intent(in) :: settings    ! settings for the models
+        integer(kind=c_int), dimension(7), intent(in) :: settings    ! settings for the models                !20241106
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
