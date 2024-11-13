@@ -28,8 +28,8 @@ prepare_species <- function(
 
   species = data.frame(species)
 
-  if( !identical(c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage"), colnames(species)) ){
-    stop( 'Columns names of the species table must correspond to: species, planted, fertility, stems_n, biom_stem, biom_root, biom_foliage' )
+  if( !identical(c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage","lt_fN","lt_fT","lt_fPhys"), colnames(species)) ){
+    stop( 'Columns names of the species table must correspond to: species, planted, fertility, stems_n, biom_stem, biom_root, biom_foliage, lt_fN, lt_fT, lt_fPhys' )
   }
 
   # Test for NA
@@ -61,9 +61,20 @@ prepare_species <- function(
     warning( 'Biomass stem is greater than 10000, unplausible value!')
   }
 
+  if( any(species$lt_fN < 0) ){
+    stop( 'long-term nutrition modifier (lt_fN) should be greater than 0' )
+  }
+
+  if( any(species$lt_fT < 0) ){
+    stop( 'long-term nutrition modifier (lt_fT) should be greater than 0' )
+  }
+
+  if( any(species$lt_fPhys < 0) ){
+    stop( 'long-term nutrition modifier (lt_fPhys) should be greater than 0' )
+  }
 
   # Select final table
-  species = species[,c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage")]
+  species = species[,c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage","lt_fN","lt_fT","lt_fPhys")]
 
   return( species )
 }
