@@ -84,7 +84,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: beta0          ! constant for self-th
 real(kind=kind(0.0d0)), dimension(n_sp) :: betaB          ! Power for B when mort_model = 2                      !20241106
 real(kind=kind(0.0d0)), dimension(n_sp) :: betaN          ! Power in tree density when mort_model = 2            !20241106
 real(kind=kind(0.0d0)), dimension(n_sp) :: betafN         ! Power in fertility modifier when mort_model = 2      !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: betaT          ! Power in temperature modifier when mort_model = 2    !20241106
+real(kind=kind(0.0d0)), dimension(n_sp) :: betafT         ! Power in temperature modifier when mort_model = 2    !20241106
 real(kind=kind(0.0d0)), dimension(n_sp) :: betafPhys      ! Power in physmod modifier when mort_model = 2        !20241106
 real(kind=kind(0.0d0)), dimension(n_sp) :: mF             ! Fraction mean single-tree foliage biomass lost per dead tree
 real(kind=kind(0.0d0)), dimension(n_sp) :: mR             ! Fraction mean single-tree root biomass lost per dead tree
