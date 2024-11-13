@@ -204,7 +204,7 @@ contains
         end where
 
                    ! 20241106
-                   test_output = dbh(1) !20241106
+                   test_output = 10 !20241106
 
 
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
@@ -770,7 +770,7 @@ contains
                     basal_area_sum = basal_area_sum + basal_area(i)
                 end if
             end do
-            ! Loop over all species to get the weighted average of the 3 modifiers used when mort_model = 2 Note that lt_fN, lt_fT, lt_fPhys need dimensions added
+            ! Loop over all species to get the weighted average of the 3 modifiers used when mort_model = 2
             ave_lt_fN = 0.0
             ave_lt_fT = 0.0
             ave_lt_fPhys = 0.0
