@@ -26,7 +26,7 @@ contains
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
-        real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs
+        real(kind=c_double), dimension(n_sp,10), intent(in) :: speciesInputs                   !20241106
         real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                         !20241106
@@ -772,9 +772,9 @@ contains
             ave_lt_fPhys = 0.0
             do i = 1, n_sp
                 if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-                    ave_lt_fN = ave_lt_fN + lt_fN * basal_area(i)/basal_area_sum
-                    ave_lt_fT = ave_lt_fT + lt_fT * basal_area(i)/basal_area_sum
-                    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys * basal_area(i)/basal_area_sum
+                    ave_lt_fN = ave_lt_fN + lt_fN(i) * basal_area(i)/basal_area_sum
+                    ave_lt_fT = ave_lt_fT + lt_fT(i) * basal_area(i)/basal_area_sum
+                    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys(i) * basal_area(i)/basal_area_sum
                 end if
             end do
 
