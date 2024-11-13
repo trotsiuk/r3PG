@@ -204,7 +204,7 @@ contains
         end where
 
                    ! 20241106
-                   test_output = dbh(1) !20241106
+                   test_output = dbh(2) !20241106
 
 
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
