@@ -36,7 +36,7 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
 
-        real :: dbh_sum, stems_sum, basal_area_sum  ! Accumulators for summation for when mort_model = 2 ! 20241106
+        real :: dbh_sum, stems_sum, basal_area_sum  ! Accumulators for summation when mort_model = 2 ! 20241106
         real :: temp1, temp2, temp3
 
 
@@ -202,6 +202,10 @@ contains
           basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
           lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
         end where
+
+                   ! 20241106
+                   test_output = dbh(1) !20241106
+
 
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
@@ -877,8 +881,7 @@ mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 4 / n_sp / (Pi *
 
 
 
-                   ! 20241106
-                   test_output = ave_lt_fN !beta0/10
+
 
                    end if !20241106
 
