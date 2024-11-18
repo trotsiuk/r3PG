@@ -877,6 +877,13 @@ mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 4 / n_sp / (Pi *
 
                           end if
 
+                          if( stems_n(i) <= 0) then !20241118
+                                biom_foliage(i) = 0.d0
+                              biom_root(i) = 0.d0
+                              biom_stem(i) = 0.d0
+                              stems_n(i) = 0.d0
+                            end if
+
                           b_cor = .TRUE. !20241106
 
 
