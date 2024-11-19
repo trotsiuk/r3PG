@@ -867,7 +867,8 @@ dbh_total ** (betaB(i) + 1) * ave_lt_fN ** betafN(i) * ave_lt_fT ** betafT(i) * 
 
 !mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 4 / n_sp / (Pi * dbh(i) * dbh(i) / 4)
 
-mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 40000 / basal_area_sum * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
+mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 40000 / basal_area_sum * basal_area(i) / &
+(Pi * dbh(i) * dbh(i) / 40000)
 
                           if( mort_thinn(i) > 0 ) then !20241106
 
