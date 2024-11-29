@@ -113,9 +113,9 @@ output(ii,:,8,7) = ave_lt_fN        ! 20241129
 output(ii,:,8,8) = ave_lt_fT        ! 20241129
 output(ii,:,8,9) = ave_lt_fPhys     ! 20241129
 
-output(ii,:,8,10) = lt_fN(:)        ! 20241129
-output(ii,:,8,11) = lt_fT(:)        ! 20241129
-output(ii,:,8,12) = lt_fPhys(:)     ! 20241129
+output(ii,:,8,10) = lt_fN(ii,:)        ! 20241129
+output(ii,:,8,11) = lt_fT(ii,:)        ! 20241129
+output(ii,:,8,12) = lt_fPhys(ii,:)     ! 20241129
 
 output(ii,:,8,13) = dbh_total        ! 20241129
 output(ii,:,8,14) = stems_n_total     ! 20241129
