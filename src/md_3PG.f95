@@ -35,11 +35,6 @@ contains
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
 
-
-        real :: dbh_sum, stems_sum, basal_area_sum  ! Accumulators for summation when mort_model = 2 ! 20241106
-        real :: temp1, temp2, temp3
-
-
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
 
@@ -125,8 +120,6 @@ contains
 
         asw = max( min( asw, asw_max ), asw_min )
 
-
-
         ! Silvicultural events are currently not active
         Irrig = 0.d0
         water_runoff_polled = 0.d0
@@ -202,10 +195,6 @@ contains
           basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
           lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
         end where
-
-                   ! 20241106
-                   test_output = 10 !20241106
-
 
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
@@ -754,19 +743,15 @@ contains
             ! where( lai(:) > 0.d0 .and. basal_area_prop(:) <0.01d0 ) basal_area_prop(:) = 0.01d0
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
-
-
-
-
             ! Initialize accumulators for dbh_total and stems_n_total, used to calculate self-thinning when mort_model = 2 !20241106
             dbh_sum = 0.0
-            stems_sum = 0.0
+            stems_n_total = 0.0 ! Total stems number for active cohorts
             basal_area_sum = 0.0
             ! Loop over all species and accumulate only the active cohorts
             do i = 1, n_sp
                 if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
                     dbh_sum = dbh_sum + dbh(i) * stems_n(i)
-                    stems_sum = stems_sum + stems_n(i)
+                    stems_n_total = stems_n_total + stems_n(i)
                     basal_area_sum = basal_area_sum + basal_area(i)
                 end if
             end do
@@ -784,24 +769,11 @@ contains
 
 
             ! Calculate dbh_total as the weighted mean of active cohorts
-            if (stems_sum > 0.0) then
-                dbh_total = dbh_sum / stems_sum
+            if (stems_n_total > 0.0) then
+                dbh_total = dbh_sum / stems_n_total
             else
                 dbh_total = 0.0
             end if
-            ! Total stems number for active cohorts
-            stems_n_total = stems_sum
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -811,90 +783,51 @@ contains
 
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
 
+                    if ( mort_model .eq. int(1) ) then        !20241106
 
+                        if ( biom_tree_max(i) < biom_tree(i) ) then
 
+                            mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
+                            mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                   if ( mort_model .eq. int(1) ) then        !20241106
+                            b_cor = .TRUE.
+                            
+                        end if
 
+                    else if ( mort_model .eq. int(2) ) then !20241106
 
-                      if ( biom_tree_max(i) < biom_tree(i) ) then
+                        mort_thinn_total = ( (stems_n_total - ( &
+                            stems_n_total ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * &
+                            (prev_dbh_total ** (betaB(i) + 1) * ave_lt_fN ** betafN(i) * ave_lt_fT ** betafT(i) * &
+                            ave_lt_fPhys ** betafPhys(i) - dbh_total ** (betaB(i) + 1) * ave_lt_fN ** betafN(i) * &
+                            ave_lt_fT ** betafT(i) * ave_lt_fPhys ** betafPhys(i))) ** (1 / (1 - betaN(i))) ))
 
-                          mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
-                          mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
+                        mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 40000 / &
+                            basal_area_sum * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
 
-                          !if( stems_n(i) < 1.d0 ) mort_thinn(i) = stems_n(i)
-                          !mort_thinn(i) = ceiling( mort_thinn(i) )
+                        b_cor = .TRUE. !20241106
 
-                          if( mort_thinn(i) < stems_n(i) ) then
+                    end if !20241106
 
-                              biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
-                              biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
-                              biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
-                              stems_n(i) = stems_n(i) - mort_thinn(i)
+                    if ( b_cor .eqv. .TRUE. ) then
 
-                          else
+                        if( mort_thinn(i) < stems_n(i) .and. mort_thinn(i) > 0) then !20241106
 
-                              biom_foliage(i) = 0.d0
-                              biom_root(i) = 0.d0
-                              biom_stem(i) = 0.d0
-                              stems_n(i) = 0.d0
-                          end if
+                            biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
+                            biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
+                            biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
+                            stems_n(i) = stems_n(i) - mort_thinn(i)
 
-                          b_cor = .TRUE.
+                        end if
+                        
+                        if( stems_n(i) <= 0) then !20241118
+                            biom_foliage(i) = 0.d0
+                            biom_root(i) = 0.d0
+                            biom_stem(i) = 0.d0
+                            stems_n(i) = 0.d0
+                        end if
 
-                      end if
-
-
-                   else if ( mort_model .eq. int(2) ) then !20241106
-
-
-                      ! beta0, betaB, betaN, betafN, betafT, betafPhys all need to be changed to the n_sp dimension when removing the hard coding !20241106
-                      ! need to use the dbh_total not dbh, and stems_n_total not stems_n_ha
-                      !mort_thinn(i) = basal_area_prop(i) * ( &
-!(stems_n_total - ( &
-!stems_n_total ** (1 - betaN) + Exp(beta0) * (1 - betaN) / (betaB + 1) * &
-!(prev_dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys - &
-!dbh_total ** (betaB + 1) * ave_lt_fN ** betafN * ave_lt_fT ** betafT * ave_lt_fPhys ** betafPhys) &
-!) ** (1 / (1 - betaN)) ))
-
-
-                      mort_thinn_total = ( &
-(stems_n_total - ( &
-stems_n_total ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * &
-(prev_dbh_total ** (betaB(i) + 1) * ave_lt_fN ** betafN(i) * ave_lt_fT ** betafT(i) * ave_lt_fPhys ** betafPhys(i) - &
-dbh_total ** (betaB(i) + 1) * ave_lt_fN ** betafN(i) * ave_lt_fT ** betafT(i) * ave_lt_fPhys ** betafPhys(i)) &
-) ** (1 / (1 - betaN(i))) ))
-
-!mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 4 / n_sp / (Pi * dbh(i) * dbh(i) / 4)
-
-mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 40000 / basal_area_sum * basal_area(i) / &
-(Pi * dbh(i) * dbh(i) / 40000)
-
-                          if( mort_thinn(i) > 0 ) then !20241106
-
-                              biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
-                              biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
-                              biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
-                              stems_n(i) = stems_n(i) - mort_thinn(i)
-
-                          end if
-
-                          if( stems_n(i) <= 0) then !20241118
-                                biom_foliage(i) = 0.d0
-                              biom_root(i) = 0.d0
-                              biom_stem(i) = 0.d0
-                              stems_n(i) = 0.d0
-                            end if
-
-                          b_cor = .TRUE. !20241106
-
-
-
-
-
-                   end if !20241106
-
-
+                    end if
 
                 else
                     mort_thinn(i) = 0.d0

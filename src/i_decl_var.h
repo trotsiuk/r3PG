@@ -162,8 +162,7 @@ real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age     ! Age of each species an
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha for monoculture equivalent
-
-real(kind=kind(0.0d0)) :: stems_n_total            ! total number of trees per ha for the whole stand, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)) :: stems_n_total            ! total number of trees per ha for the whole stand per active cohort, used when mort_model = 2 !20241106
 real(kind=kind(0.0d0)) :: mort_thinn_total            ! total number of trees per ha that die when mort_model = 2 !20241106
 
 
@@ -349,4 +348,6 @@ integer :: calculate_d13c                       ! 0 - no; 1 - 3PGmix
 integer :: mort_model                           ! 1 - 3PGpjs; 2 - 3PGmix    !20241106
 
 
-
+! ToDo moved from the
+real :: dbh_sum, stems_sum, basal_area_sum  ! Accumulators for summation when mort_model = 2 ! 20241106
+real :: temp1, temp2, temp3

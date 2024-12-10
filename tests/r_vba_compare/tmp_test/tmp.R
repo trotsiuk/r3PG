@@ -38,3 +38,9 @@ out_3PG %>%
 
 out_3PG %>%
   filter( variable %in% 'lt_fN', date %in% '1900-01-31')
+
+
+out_3PG %>%
+  filter( variable %in% 'dbh_total') %>%
+  tidyr::pivot_wider(names_from = species, values_from = value) %>%
+  tail

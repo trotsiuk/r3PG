@@ -152,7 +152,7 @@ clim_range <- function( climate ){
   # Temperature hard limit
   if( any( max(climate$tmp_min, climate$tmp_max, climate$tmp_ave) > 50,
            min(climate$tmp_min, climate$tmp_max, climate$tmp_ave) < -50) ){
-    warning("Temperature is outside the limits (-50 to 50 °C)!")
+    warning("Temperature is outside the limits (-50 to 50 C)!")
   }
 
   if (any(climate$tmp_max < climate$tmp_ave)) {
@@ -178,7 +178,7 @@ clim_range <- function( climate ){
   }
 
   if (any(climate$srad > 100)) {
-    warning("Solar radiation is outside the plausible range (0 to 100 MJ/m²/day)!")
+    warning("Solar radiation is outside the plausible range (0 to 100 MJ/m^2/day)!")
   }
 
   # Frost days checks

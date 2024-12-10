@@ -10,8 +10,8 @@ thinning_data <- data.frame(
   age = c(10, 15),
   stems_n = c(500, 400),
   stem = c(1, 1),
-  foliage = c(1, 1),
-  root = c(1, 1)
+  root = c(1, 1),
+  foliage = c(1, 1)
 )
 
 species_names <- c("Fagus sylvatica", "Pinus sylvestris")
