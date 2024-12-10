@@ -1,3 +1,24 @@
+r3PG 0.2.0
+============
+
+### Bug fixed
+
+-
+
+### New function and data sets
+
+- New mortality model (`mort_model = 2`) is included
+
+
+### Major changes
+
+
+### Minor changes
+
+- revising the documentation and functions
+- writing tests for all of the functions
+
+
 r3PG 0.1.7
 ============
 

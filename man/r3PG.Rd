@@ -2,14 +2,24 @@
 % Please edit documentation in R/r3PG.R
 \docType{package}
 \name{r3PG}
-\alias{r3PG}
 \alias{r3PG-package}
+\alias{r3PG}
 \title{Simulating Forest Growth using the 3-PG Process-Based Vegetation Model}
 \value{
 None
 }
 \description{
-The r3PG package provides a flexible and easy-to-use interface for Fortran implementations of the 3-PGpjs (monospecific, evenaged and evergreen forests) or 3-PGmix (deciduous, uneven-aged or mixed-species forests) forest growth models. The user can flexibly switch between various options and submodules, to use the original 3-PGpjs model version for monospecific, even-aged and evergreen forests and the 3-PGmix model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species. The core function to run the model is \code{\link{run_3PG}}. For more background, please consult the vignette via vignette(package = "r3PG")
+The `r3PG` package provides a flexible and user-friendly interface for Fortran implementations
+of the 3-PGpjs and 3-PGmix forest growth models. The 3-PGpjs model is suitable for simulating
+monospecific, even-aged, and evergreen forests, while the 3-PGmix model extends functionality
+to simulate multi-cohort stands, including mixtures, uneven-aged, and deciduous species.
+
+Users can seamlessly switch between different model versions and submodules, allowing for
+a wide range of applications in forest growth modeling. The package supports various options
+for customizing model inputs and outputs to suit specific research needs.
+
+The core function to run the model is \code{\link{run_3PG}}. For detailed instructions and
+examples, consult the package vignette using \code{vignette(package = "r3PG")}.
 }
 \examples{
 out <- run_3PG(
@@ -20,7 +30,7 @@ out <- run_3PG(
   parameters = d_parameters,
   size_dist = d_sizeDist,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                  correct_bias = 1, calculate_d13c = 0),
+                  correct_bias = 1, calculate_d13c = 0, mort_model = 1),
   check_input = TRUE, df_out = TRUE) # note that default is TRUE
 
 str(out) # List output format
@@ -36,4 +46,15 @@ Sands, P. J., 2010. 3PGpjs user manual. Available at the following web site: \ur
 }
 \seealso{
 \code{\link{run_3PG}}
+}
+\author{
+\strong{Maintainer}: Volodymyr Trotsiuk \email{volodymyr.trotsiuk@wsl.ch} (\href{https://orcid.org/0000-0002-8363-656X}{ORCID})
+
+Authors:
+\itemize{
+  \item Florian Hartig \email{florian.hartig@biologie.uni-regensburg.de} (\href{https://orcid.org/0000-0002-6255-9059}{ORCID})
+  \item David Forrester \email{David.Forrester@csiro.au}
+  \item Ramiro Silveyra Gonzalez \email{ramiro.gonzalez@kit.edu} (\href{https://orcid.org/0000-0002-3430-8383}{ORCID})
+}
+
 }

@@ -2,30 +2,34 @@
 % Please edit documentation in R/prepare_sizeDist.R
 \name{prepare_sizeDist}
 \alias{prepare_sizeDist}
-\title{Prepare parameters table}
+\title{Prepare size distribution table}
 \usage{
 prepare_sizeDist(size_dist = NULL, sp_names = c("Fagus sylvatica",
   "Pinus sylvestris"))
 }
 \arguments{
-\item{size_dist}{table containing the information about size distribution to be modified. Values that are not provided are replaced by defaults.
+\item{size_dist}{A data frame containing size distribution values to be modified. Columns must include:
 \itemize{
-\item parameter: name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}.
-\item species: each column must correspond to species/cohort id/name, as defined in \code{species} table.
-}}
+  \item \code{parameter}: Name of the parameter. Must match the names in \code{i_sizeDist}.
+  \item Additional columns: Each column must correspond to a species or cohort name, as defined in the \code{species} table.
+}
+If \code{NULL}, all parameters will be set to default values.}
 
-\item{sp_names}{names of the species / cohorts used for the simulations.The `sp_names` must be identical to those from \code{species} table.}
+\item{sp_names}{A character vector of species or cohort names used for the simulations. This must match the names in the \code{species} table.}
 }
 \value{
-a data.frame with 47 rows and columns corresponding to each species.
+A data frame with rows for each parameter and one column for each species or cohort.
 }
 \description{
-Prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
+Prepares the size distribution table for simulations by either replicating defaults or updating them with user-provided values.
 }
 \details{
-This function prepares the parameter table for \code{\link{run_3PG}}.
+This function prepares the size distribution table for \code{\link{run_3PG}}.
+If no size distribution values are provided, default values from \code{i_sizeDist} are used. If values are provided,
+the function ensures consistency, updates specified values, and retains defaults for unspecified parameters.
 }
 \examples{
+# Example: Prepare size distribution
 # replace some
 prepare_sizeDist( size_dist = d_sizeDist[1:4,],
   sp_names = c('Fagus sylvatica', 'Pinus sylvestris' ))

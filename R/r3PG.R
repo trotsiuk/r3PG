@@ -3,9 +3,19 @@
 #' @title Simulating Forest Growth using the 3-PG Process-Based Vegetation Model
 #'
 #' @docType package
-#' @aliases r3PG-package
 #'
-#' @description The r3PG package provides a flexible and easy-to-use interface for Fortran implementations of the 3-PGpjs (monospecific, evenaged and evergreen forests) or 3-PGmix (deciduous, uneven-aged or mixed-species forests) forest growth models. The user can flexibly switch between various options and submodules, to use the original 3-PGpjs model version for monospecific, even-aged and evergreen forests and the 3-PGmix model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species. The core function to run the model is \code{\link{run_3PG}}. For more background, please consult the vignette via vignette(package = "r3PG")
+#' @description
+#' The `r3PG` package provides a flexible and user-friendly interface for Fortran implementations
+#' of the 3-PGpjs and 3-PGmix forest growth models. The 3-PGpjs model is suitable for simulating
+#' monospecific, even-aged, and evergreen forests, while the 3-PGmix model extends functionality
+#' to simulate multi-cohort stands, including mixtures, uneven-aged, and deciduous species.
+#'
+#' Users can seamlessly switch between different model versions and submodules, allowing for
+#' a wide range of applications in forest growth modeling. The package supports various options
+#' for customizing model inputs and outputs to suit specific research needs.
+#'
+#' The core function to run the model is \code{\link{run_3PG}}. For detailed instructions and
+#' examples, consult the package vignette using \code{vignette(package = "r3PG")}.
 #'
 #' @return  None
 #'
@@ -21,4 +31,4 @@
 #'Landsberg, J. J., & Waring, R. H., 1997. A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. Forest Ecology and Management, 95(3), 209–228. \doi{10.1016/S0378-1127(97)00026-1}
 #'
 #'Sands, P. J., 2010. 3PGpjs user manual. Available at the following web site: \url{https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf}
-NULL
+"_PACKAGE"

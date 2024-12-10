@@ -2,34 +2,61 @@
 % Please edit documentation in R/prepare_species.R
 \name{prepare_species}
 \alias{prepare_species}
-\title{Check the species data for consistency}
+\title{Check and prepare species data for consistency}
 \usage{
 prepare_species(species)
 }
 \arguments{
-\item{species}{table containing the information about species level data. Each row corresponds to one species/cohort.
+\item{species}{A data frame containing species-level information. Each row corresponds to one species or cohort.
+
+Required columns:
 \itemize{
-\item species: species or cohort id/name. It must be consistent with species names in \code{thinning}, \code{parameters} and \code{sizeDist} tables.
-\item planted: year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01".
-\item fertility: soil fertility for a given species. Range from 0 to 1.
-\item stems_n: number of trees per ha.
-\item biom_stem: stem biomass for a given species (Mg/ha).
-\item biom_root: root biomass for a given species (Mg/ha).
-\item biom_foliage: initial foliage biomass (Mg/ha). If this is a leafless period, provide the spring foliage biomass.
+  \item \code{species}: Species or cohort ID/name. Must match species names in \code{thinning}, \code{parameters}, and \code{sizeDist}.
+  \item \code{planted}: Planting date in "year-month" format (e.g., "2000-01").
+  \item \code{fertility}: Soil fertility, ranging from 0 to 1.
+  \item \code{stems_n}: Number of trees per hectare.
+  \item \code{biom_stem}: Stem biomass (Mg/ha).
+  \item \code{biom_root}: Root biomass (Mg/ha).
+  \item \code{biom_foliage}: Initial foliage biomass (Mg/ha). For leafless periods, provide spring foliage biomass.
+}
+Optional columns (required if `mort_model = 2`):
+\itemize{
+  \item \code{lt_fN}: Long-term soil nutrition modifier.
+  \item \code{lt_fT}: Long-term temperature modifier.
+  \item \code{lt_fPhys}: Long-term vapour pressure deficit and soil modifier.
 }}
 }
 \value{
 a data.frame with one row
 }
 \description{
-Prepares the species table, by checking whether the input information is consistent.
+Validates and prepares the species table for use in the 3PG model.
+Ensures the input is consistent, with required columns and valid data ranges.
 }
 \details{
-This function check the species table for \code{\link{run_3PG}}.
+This function is used to validate and prepare the species table for \code{\link{run_3PG}}.
 }
 \examples{
-# check species data
+# Example: Valid species data
+# r3PG default data
 prepare_species( species = d_species)
+
+# example data
+d_species <- data.frame(
+  species = c("Pine", "Oak"),
+  planted = c("2000-01", "1995-06"),
+  fertility = c(0.8, 0.6),
+  stems_n = c(500, 300),
+  biom_stem = c(120, 90),
+  biom_root = c(30, 25),
+  biom_foliage = c(15, 10)
+)
+
+# Check species data
+prepared_species <- prepare_species(species = d_species)
+
+# Print the prepared species data
+print(prepared_species)
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}, \code{\link{prepare_site}}

@@ -2,56 +2,63 @@
 % Please edit documentation in R/prepare_climate.R
 \name{prepare_climate}
 \alias{prepare_climate}
-\title{Subsets or replicate a climate data}
+\title{Prepare climate data}
 \usage{
 prepare_climate(climate, from = "2000-04", to = "2010-11")
 }
 \arguments{
-\item{climate}{table containing the information about monthly values for climatic data. If the climate table have exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. If this is required, \code{year} and \code{month} columns must be included in the climate table. The minimum required columns are listed below, but additionally you can include: tmp_ave, c02, d13catm. Please refer to \code{\link{d_climate}} for example.
+\item{climate}{A data frame containing monthly climate data. The table must include the following columns:
 \itemize{
-\item year: year of observation (only required for subsetting) (numeric).
-\item month: months of observation (only required for subsetting) (numeric).
-\item tmp_min: monthly mean daily minimum temperature (C).
-\item tmp_max: monthly mean daily maximum temperature (C).
-\item tmp_ave: monthly mean daily average temperature (C) (optional).
-\item prcp: monthly rainfall (mm month-1).
-\item srad: monthly mean daily solar radiation (MJ m-2 d-1).
-\item frost_days: frost days per month (d month-1).
-\item co2: monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional).
-\item d13catm: monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional).
-}}
+  \item \code{year}: Year of observation (only required for subsetting) (numeric).
+  \item \code{month}: Month of observation (only required for subsetting) (numeric).
+  \item \code{tmp_min}: Monthly mean daily minimum temperature (°C).
+  \item \code{tmp_max}: Monthly mean daily maximum temperature (°C).
+  \item \code{tmp_ave}: Monthly mean daily average temperature (°C) (optional).
+  \item \code{prcp}: Monthly rainfall (mm month\eqn{-1}).
+  \item \code{srad}: Monthly mean daily solar radiation (MJ m\eqn{^{-2}} d\eqn{^{-1}}).
+  \item \code{frost_days}: Frost days per month (d month\eqn{-1}).
+  \item \code{co2}: Monthly mean atmospheric CO2 (ppm), required if \code{calculate_d13c = 1} (optional).
+  \item \code{d13catm}: Monthly mean isotopic composition of air (‰), required if \code{calculate_d13c = 1} (optional).
+}
+If the climate table contains exactly 12 rows, it will be replicated for the number of years and months specified
+by \code{from} and \code{to}. Otherwise, it will be subsetted to the selected time period.}
 
-\item{from}{year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01".}
+\item{from}{Start of the simulation period, provided as "YYYY-MM" (e.g., "2000-04").}
 
-\item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month.}
+\item{to}{End of the simulation period, provided as "YYYY-MM" (e.g., "2010-11").
+The simulation will include the full month specified in \code{to}.}
 }
 \value{
-a data.frame with number of rows corresponding to number of simulated month and 10 columns
+A data frame with monthly climate data for the specified simulation period, including columns:
+\code{year}, \code{month}, \code{tmp_min}, \code{tmp_max}, \code{tmp_ave}, \code{prcp},
+\code{srad}, \code{frost_days}, \code{vpd_day}, \code{co2}, \code{d13catm}.
 }
 \description{
-Prepares the climate table, by either replicating the average climate for the required number of years, or by sub-setting from a longer time-series of climate data.
+Prepares the climate data for the simulation, either by replicating the average climate
+for the required period or subsetting data from a longer time-series.
 }
 \details{
-This function prepares the climate table for \code{\link{run_3PG}}.
-
-In case a user provides only average climate, this is replicated for the desired simulation period.
-
-In case a larger climate file is provided, the simulation period is selected from this.
+If the climate data contains exactly 12 rows, it is treated as average monthly climate and replicated
+for the desired period specified by \code{from} and \code{to}.
+If the data contains more than 12 rows, it is assumed to be a time-series, and a subset of the data is extracted
+for the specified period. In this case, \code{year} and \code{month} columns are required.
 }
 \examples{
-# sub-setting climate data
+# Example: Climate data preparation
+# r3PG default data
 prepare_climate( climate = d_climate, from = '2003-04', to = '2010-11')
 
-# replicating climate data
-set.seed(1)
-climate = data.frame( tmp_min = rnorm(12, mean = 10),
-                      tmp_max = rnorm(12, mean = 20),
-                      prcp = sample(c(0:200), 12),
-                      srad = sample(c(1:100), 12),
-                      frost_days = sample(c(0:30), 12))
+d_climate <- data.frame(
+  tmp_min = runif(12, -5, 5),
+  tmp_max = runif(12, 10, 20),
+  prcp = runif(12, 50, 150),
+  srad = runif(12, 15, 25),
+  frost_days = runif(12, 0, 10)
+)
 
-prepare_climate( climate = climate, from = '2000-04', to = '2010-11')
-
+# Prepare climate for the period 2000-01 to 2005-12
+prepared_climate <- prepare_climate(d_climate, from = "2000-01", to = "2005-12")
+print(head(prepared_climate))
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}

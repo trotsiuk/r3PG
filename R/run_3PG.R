@@ -1,16 +1,17 @@
 #' @title Runs a 3-PG model simulation
 #'
-#' @description Runs the 3-PGpjs (monospecific, evenaged and evergreen forests) or 3-PGmix (deciduous, uneven-aged or mixed-species forests) model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
+#' @description Runs the 3-PGpjs (monospecific, even-aged, and evergreen forests) or 3-PGmix (deciduous, uneven-aged, or mixed-species forests) model.
+#' For detailed input requirements, see \code{\link{prepare_input}}.
 #'
-#' @param site table as described in \code{\link{prepare_input}} containing the information about site conditions.
-#' @param species table as described in \code{\link{prepare_input}} containing the information about species level data. Each row corresponds to one species/cohort.
-#' @param climate  table as described in \code{\link{prepare_input}} containing the information about monthly values for climatic data. See also \code{\link{prepare_climate}}
-#' @param thinning table as described in \code{\link{prepare_input}} containing the information about thinnings. See also \code{\link{prepare_thinning}}
-#' @param parameters table as described in \code{\link{prepare_input}} containing the information about parameters to be modified. See also \code{\link{prepare_parameters}}
-#' @param size_dist table as described in \code{\link{prepare_input}} containing the information about size distributions. See also \code{\link{prepare_sizeDist}}
-#' @param settings a list as described in \code{\link{prepare_input}} with settings for the model.
-#' @param check_input \code{logical} if the input shall be checked for consistency. It will call \code{\link{prepare_input}} function.
-#' @param df_out \code{logical} if the output shall be long data.frame (TRUE) the 4-dimensional array (FALSE).
+#' @param site Data frame as described in \code{\link{prepare_input}} containing site conditions.
+#' @param species Data frame as described in \code{\link{prepare_input}} containing species-level data.
+#' @param climate Data frame as described in \code{\link{prepare_input}} containing monthly climatic values.
+#' @param thinning Data frame as described in \code{\link{prepare_input}} containing thinning information. Default: \code{NULL}.
+#' @param parameters Data frame as described in \code{\link{prepare_input}} containing parameter values. Default: \code{NULL}.
+#' @param size_dist Data frame as described in \code{\link{prepare_input}} containing size distribution values. Default: \code{NULL}.
+#' @param settings List of model settings. See \code{\link{prepare_input}} for details. Default: \code{NULL}.
+#' @param check_input Logical. If \code{TRUE}, the input will be checked using \code{\link{prepare_input}}. Default: \code{TRUE}.
+#' @param df_out Logical. If \code{TRUE}, the output will be a long-format data frame. Otherwise, it will be a 4-dimensional array. Default: \code{TRUE}.
 #'
 #' @details `r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model, which simulates forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (monospecific, evenaged and evergreen forests) and the `3-PGmix` (deciduous, uneven-aged or mixed-species forests) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
 #'
@@ -49,29 +50,32 @@ run_3PG <- function(
   df_out = TRUE
 ){
 
-  thinn_null <- is.null(thinning)
-
-  # Check and prepare input if required
+  # Input validation
   if( check_input ){
 
-    input_checked = prepare_input(site = site, species = species, climate = climate,
-      thinning = thinning, parameters = parameters, size_dist = size_dist,
-      settings = settings)
+    input_checked = prepare_input(
+      site = site,
+      species = species,
+      climate = climate,
+      thinning = thinning,
+      parameters = parameters,
+      size_dist = size_dist,
+      settings = settings
+      )
 
-    # extract output from the list
-    site = input_checked$site
-    species = input_checked$species
-    climate = input_checked$climate
-    thinning = input_checked$thinning
-    parameters = input_checked$parameters
-    size_dist = input_checked$size_dist
-    settings = input_checked$settings
+    list2env(input_checked, envir = environment())
+    # # extract output from the list
+    # site = input_checked$site
+    # species = input_checked$species
+    # climate = input_checked$climate
+    # thinning = input_checked$thinning
+    # parameters = input_checked$parameters
+    # size_dist = input_checked$size_dist
+    # settings = input_checked$settings
 
   }
 
-  # Make small adjustments to the input and tranform it to matrix
-
-  # site
+  # Transform inputs to matrices
   from = as.Date(paste(site$from,"-01",sep=""))
   site$year_i = as.numeric(format(from,'%Y'))
   site$month_i = as.numeric(format(from,'%m'))
@@ -94,7 +98,7 @@ run_3PG <- function(
 
   # thinning
   n_man = dim(thinning)[1]
-  if( thinn_null ){
+  if( is.null(thinning) ){
     t_t = 1L
     }else{
       if( dim(thinning)[3] == 1 ){
@@ -106,10 +110,10 @@ run_3PG <- function(
     }
 
   # Parameters
-  parameters = as.matrix( parameters[,-1], nrow = 82, ncol = n_sp)
+  parameters = as.matrix( parameters[,-1], nrow = nrow(parameters), ncol = n_sp)
 
   # Size distribution
-  size_dist = as.matrix( size_dist[,-1], nrow = 30, ncol = n_sp)
+  size_dist = as.matrix( size_dist[,-1], nrow = nrow(size_dist), ncol = n_sp)
 
   # Settings
   settings <- as.integer( unlist(settings) )

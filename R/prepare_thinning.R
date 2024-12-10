@@ -1,24 +1,23 @@
-#' @title Check and prepare management information.
-#' @description Prepares the management table and checks for consistency.
+#' @title Check and prepare thinningi information
+#' @description Prepares the thinning table for simulations, ensuring data consistency and completeness.
 #'
-#' @param thinning  table containing the information about thinnings. If there is no thinning, it must be \code{NULL}. The following columns are required:
+#' @param thinning A data frame containing thinning information. If no thinning is required, set to \code{NULL}. The following columns are required:
 #' \itemize{
-#' \item species: species or cohort id/name.
-#' \item age: age at which thinning is done.
-#' \item stems_n: number of trees remaining after thinning
-#' \item stem: type of thinning (above/below). Default is 1.
-#' \item foliage: type of thinning (above/below). Default is 1.
-#' \item root: type of thinning (above/below). Default is 1.
+#'   \item \code{species}: Species or cohort ID/name.
+#'   \item \code{age}: Age (years) at which thinning is performed (numeric).
+#'   \item \code{stems_n}: Number of trees remaining after thinning (numeric).
+#'   \item \code{stem}: Type of thinning (above/below) applied to stems (numeric, default is 1).
+#'   \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
+#'   \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).
 #' }
-#' @param sp_names names of the species / cohorts used for the simulations. This is required whether `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.
+#' @param sp_names A character vector of species or cohort names used in the simulation. This must match the species names in the \code{species} table. Required even if \code{thinning = NULL}.
 #'
-#' @details This function prepares the thinning table for \code{\link{run_3PG}}.
+#' @details
+#' This function prepares the thinning table for \code{\link{run_3PG}}. If no thinning is specified (\code{thinning = NULL}),
+#' it returns a 3-dimensional array of \code{NA} values. Otherwise, it validates the thinning data, converts species names to indices,
+#' and formats the table as a 3-dimensional array.
 #'
-#' In case there is no thinning it will return empty 3-d array.
-#'
-#' In case there will be thinning it will return 3-d array, where one dimension correspond to each species.
-#'
-#' @return  a 3-dimentional array, where third dimention correspond to each species.
+#' @return A 3-dimensional array where the third dimension corresponds to each species.
 #'
 #' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_climate}}
 #'
@@ -32,39 +31,43 @@ prepare_thinning <- function(
 ){
 
   if( any( is.null(sp_names), is.na(sp_names), length(sp_names)==0L) ){
-    stop( 'sp_names must be provided according to the species table.' )
+    stop("sp_names must be provided and correspond to the species table.")
   }
 
-  n_sp = length(sp_names)
+  n_sp <- length(sp_names)
   sp_id <- 1:n_sp
   names(sp_id) <- sp_names
 
   if( is.null(thinning) ){
 
-    thinning = array(NA_real_, dim = c(1,5,n_sp))
+    thinning = array(NA_real_, dim = c(1, 5, n_sp))
 
   } else {
 
     if( !identical( c("species","age","stems_n","stem","root","foliage"), colnames(thinning) ) ){
-      stop( 'Column names of the thinning table must correspond to: species, age, stems_n, stem, root, foliage' )
+      stop("Column names of the thinning table must correspond to: species, age, stems_n, stem, root, foliage")
     }
 
-    thinning = data.frame( thinning )
+    thinning <- data.frame( thinning )
 
     # check whether the thinning above/below are within plausible range
-    if( any(thinning[ c("stem","root","foliage") ] < 0 | thinning[ c("stem","root","foliage") ] > 5) ){
-      stop( 'Thinning values for stem, root, foliage shall be in a range [0, 10]' )
+    if (any(thinning[ , c("stem", "root", "foliage")] < 0 | thinning[ , c("stem", "root", "foliage")] > 5)) {
+      stop("Thinning values for stem, root, and foliage must be in the range [0, 5].")
     }
 
-    thinning = thinning[thinning$species %in% sp_names, ]
-    thinning$species = sp_id[thinning$species] # change sp names to integer
-    thinning = thinning[order(thinning$species, thinning$age),] # order the age of the trees
+    thinning <- thinning[thinning$species %in% sp_names, ]
+    thinning$species <- sp_id[thinning$species] # Map species names to indices
+    thinning <- thinning[order(thinning$species, thinning$age), ] # Order by species and age
 
     t_t = as.integer( as.vector( table(thinning[,1]) ) )
     n_man = as.integer( max(t_t) )
 
-    thinning = merge( data.frame(species = rep(1:n_sp, each = n_man), thin_n = rep(1:n_man, times = n_sp)),
-      cbind(data.frame(thin_n = sequence(t_t)), thinning), by=c('species', 'thin_n'), all = T)
+    thinning = merge(
+      data.frame(species = rep(1:n_sp, each = n_man), thin_n = rep(1:n_man, times = n_sp)),
+      cbind(data.frame(thin_n = sequence(t_t)), thinning),
+      by=c('species', 'thin_n'),
+      all = T
+      )
 
     thinning = thinning[order(thinning$species, thinning$thin_n),]
 
@@ -72,7 +75,7 @@ prepare_thinning <- function(
   }
 
   if( n_sp > 1 ){
-    dimnames(thinning)[[3]] = sp_names
+    dimnames(thinning)[[3]] <- sp_names
   }
 
 

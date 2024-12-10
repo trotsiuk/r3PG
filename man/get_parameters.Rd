@@ -2,49 +2,42 @@
 % Please edit documentation in R/get_parameters.R
 \name{get_parameters}
 \alias{get_parameters}
-\title{Get parameter sets}
+\title{Get parameter sets from published studies}
 \usage{
 get_parameters(mode = "overview", sp_names = NULL)
 }
 \arguments{
-\item{mode}{must be one of the following: full, overview, source, comments,
-parameters, sizeDist}
+\item{mode}{A character string specifying the desired output. Must be one of:
+\itemize{
+  \item \code{"full"}: Full parameter set with all details.
+  \item \code{"overview"}: Simplified table with key information.
+  \item \code{"source"}: Summary of sources and references.
+  \item \code{"comments"}: Parameter details along with notes and source comments.
+  \item \code{"parameters"}: Parameters formatted for \code{\link{run_3PG}}.
+  \item \code{"sizeDist"}: Size distribution parameters formatted for \code{\link{run_3PG}}.
+}}
 
-\item{sp_names}{names of the species. The `sp_names` must be either a scientific name
-(Picea abies). If passing parameters or sizeDist to mode, it also possible
-to use a scientific name with a integer, which is the value of parset_id, e.g.
-Picea abies 37.
-If unsure, consider using first the option \code{mode = overview} with \code{sp_names = NULL}.
-See details below for more information.}
+\item{sp_names}{A character vector of species names. Can include:
+\itemize{
+  \item Scientific names (e.g., \code{"Picea abies"}).
+  \item Scientific names with a parameter set ID (e.g., \code{"Picea abies 37"}).
+}
+If \code{NULL}, retrieves all species (except for \code{mode = "source"}).}
 }
 \value{
-a data frame with parameter sets for all available species, or only the
- requested species, if \code{sp_names} is not null.
+A data frame containing parameter sets based on the selected mode and species.
 }
 \description{
-Gets parameter sets from published studies with 3PG
+Retrieves parameter sets for the 3-PG model from published studies, stored in the package's database.
 }
 \details{
-This function access the parameter database stored in the package,
-which is named \code{\link{i_parameters_lit}}, and also accessible without this function.
-If \code{mode = overview}, a simplified table with
-all existing parameter sets will be returned.  A extended version including information
-about to the source and remarks can be obtained with \code{mode = comments}.
-A complete description of the source is returned with \code{mode = source}.
-The full  version of this table (species,source, comments,
-parameters) will be returned if \code{mode = full}. Alternatively, with \code{mode = parameters}
-and \code{mode = sizeDist}, it is possible to obtain parameters in the format
-required by \code{\link{run_3PG}}.
-
-Passing species names with \code{sp_names} will selecting from the table
-the desired species. Please note that one species might have more than one
-available parameter sets, unless species names contain the parset_id value.
-Please also note that \code{mode = source} is not compatible with \code{sp_names}.
-
-The parameter sets were obtained from published studies. For basic information about this
-dataset check in  \code{\link{i_parameters_lit}}. Relevant information about
-the parameter sets and the corresponding studies is provided in the table.
-For further information,  please consider checking the original publications.
+This function accesses the parameter database stored in \code{\link{i_parameters_lit}}, which contains parameter sets from published studies.
+\itemize{
+  \item Use \code{mode = "overview"} to get a quick summary of available parameter sets.
+  \item Use \code{mode = "parameters"} or \code{"sizeDist"} for formatted outputs ready for \code{\link{run_3PG}}.
+  \item Use \code{sp_names} to filter results by species. Species names can optionally include the parameter set ID.
+}
+For detailed descriptions, consult the original publications referenced in \code{\link{i_parameters_lit}}.
 }
 \examples{
 # see an overview of the existing parameter sets

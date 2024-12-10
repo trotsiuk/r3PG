@@ -7,30 +7,56 @@
 prepare_site(site)
 }
 \arguments{
-\item{site}{table containing the information about site data. It shall contain exactly one row.
+\item{site}{A data frame containing site-level data. It must contain exactly one row with the following columns:
 \itemize{
-  \item latitude: site latitude in the WGS84 coordinate system.
-  \item altitude: site altitude, m a.s.l.
-  \item soil_class:  soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of available soil water on production.
-  \item asw_i: initial available soil water (mm).
-  \item asw_max: minimum available soil water (mm).
-  \item asw_min: maximum available soil water (mm).
-  \item from: year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01".
-  \item to: year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month.
+  \item \code{latitude}: Site latitude in the WGS84 coordinate system (degrees, range: [-90, 90]).
+  \item \code{altitude}: Site altitude (meters above sea level, range: [0, 4000]).
+  \item \code{soil_class}: Soil class as per 3PGpjs User Manual Table 2:
+    \itemize{
+      \item 1: Sandy
+      \item 2: Sandy loam
+      \item 3: Clay loam
+      \item 4: Clay
+      \item 0: No effect of available soil water on production
+    }
+  \item \code{asw_i}: Initial available soil water (mm, must be >= 0).
+  \item \code{asw_min}: Minimum available soil water (mm, must be >= 0).
+  \item \code{asw_max}: Maximum available soil water (mm, must be >= 0).
+  \item \code{from}: Start of simulation period (year-month, e.g., "2000-01").
+  \item \code{to}: End of simulation period (year-month, e.g., "2009-12"). The simulation includes the entire month of December 2009.
 }}
 }
 \value{
-a data.frame with one row
+A validated and prepared data frame with one row.
 }
 \description{
-Prepares the site table, by checking whether the input information is consistent.
+Validates and prepares the site table for use in the 3PG model. Ensures that the input information is consistent and formatted correctly.
 }
 \details{
-This function check the site table for \code{\link{run_3PG}}.
+This function validates the site table for \code{\link{run_3PG}} and ensures that all required fields are consistent.
 }
 \examples{
-# check site data
+# Example: Valid site data
+# r3PG default data
 prepare_site( site = d_site)
+
+# example data
+d_site <- data.frame(
+  latitude = 46.8,
+  altitude = 1200,
+  soil_class = 2,
+  asw_i = 150,
+  asw_min = 100,
+  asw_max = 200,
+  from = "2000-01",
+  to = "2009-12"
+)
+
+# Validate and prepare site data
+prepared_site <- prepare_site(d_site)
+
+# View the prepared site data
+print(prepared_site)
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}

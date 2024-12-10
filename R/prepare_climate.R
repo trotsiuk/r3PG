@@ -1,29 +1,36 @@
-#' @title Subsets or replicate a climate data
-#' @description Prepares the climate table, by either replicating the average climate for the required number of years, or by sub-setting from a longer time-series of climate data.
+#' @title Prepare climate data
+#' @description Prepares the climate data for the simulation, either by replicating the average climate
+#' for the required period or subsetting data from a longer time-series.
 #'
-#' @param climate  table containing the information about monthly values for climatic data. If the climate table have exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. If this is required, \code{year} and \code{month} columns must be included in the climate table. The minimum required columns are listed below, but additionally you can include: tmp_ave, c02, d13catm. Please refer to \code{\link{d_climate}} for example.
+#' @param climate A data frame containing monthly climate data. The table must include the following columns:
 #' \itemize{
-#' \item year: year of observation (only required for subsetting) (numeric).
-#' \item month: months of observation (only required for subsetting) (numeric).
-#' \item tmp_min: monthly mean daily minimum temperature (C).
-#' \item tmp_max: monthly mean daily maximum temperature (C).
-#' \item tmp_ave: monthly mean daily average temperature (C) (optional).
-#' \item prcp: monthly rainfall (mm month-1).
-#' \item srad: monthly mean daily solar radiation (MJ m-2 d-1).
-#' \item frost_days: frost days per month (d month-1).
-#' \item co2: monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional).
-#' \item d13catm: monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional).
+#'   \item \code{year}: Year of observation (only required for subsetting) (numeric).
+#'   \item \code{month}: Month of observation (only required for subsetting) (numeric).
+#'   \item \code{tmp_min}: Monthly mean daily minimum temperature (°C).
+#'   \item \code{tmp_max}: Monthly mean daily maximum temperature (°C).
+#'   \item \code{tmp_ave}: Monthly mean daily average temperature (°C) (optional).
+#'   \item \code{prcp}: Monthly rainfall (mm month\eqn{-1}).
+#'   \item \code{srad}: Monthly mean daily solar radiation (MJ m\eqn{^{-2}} d\eqn{^{-1}}).
+#'   \item \code{frost_days}: Frost days per month (d month\eqn{-1}).
+#'   \item \code{co2}: Monthly mean atmospheric CO2 (ppm), required if \code{calculate_d13c = 1} (optional).
+#'   \item \code{d13catm}: Monthly mean isotopic composition of air (‰), required if \code{calculate_d13c = 1} (optional).
 #' }
-#' @param from year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01".
-#' @param to  year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month.
+#' If the climate table contains exactly 12 rows, it will be replicated for the number of years and months specified
+#' by \code{from} and \code{to}. Otherwise, it will be subsetted to the selected time period.
 #'
-#' @details This function prepares the climate table for \code{\link{run_3PG}}.
+#' @param from Start of the simulation period, provided as "YYYY-MM" (e.g., "2000-04").
+#' @param to End of the simulation period, provided as "YYYY-MM" (e.g., "2010-11").
+#' The simulation will include the full month specified in \code{to}.
 #'
-#' In case a user provides only average climate, this is replicated for the desired simulation period.
+#' @details
+#' If the climate data contains exactly 12 rows, it is treated as average monthly climate and replicated
+#' for the desired period specified by \code{from} and \code{to}.
+#' If the data contains more than 12 rows, it is assumed to be a time-series, and a subset of the data is extracted
+#' for the specified period. In this case, \code{year} and \code{month} columns are required.
 #'
-#' In case a larger climate file is provided, the simulation period is selected from this.
-#'
-#' @return a data.frame with number of rows corresponding to number of simulated month and 10 columns
+#' @return A data frame with monthly climate data for the specified simulation period, including columns:
+#' \code{year}, \code{month}, \code{tmp_min}, \code{tmp_max}, \code{tmp_ave}, \code{prcp},
+#' \code{srad}, \code{frost_days}, \code{vpd_day}, \code{co2}, \code{d13catm}.
 #'
 #' @seealso \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_thinning}}
 #'
@@ -40,22 +47,23 @@ prepare_climate <- function(
   # make data.frame
   climate = data.frame(climate)
 
-  # Test for the columns consistency
-  if( !all(c("tmp_min","tmp_max","prcp","srad","frost_days") %in% colnames(climate)) ){
-    stop( 'Climate table must include the following columns: tmp_min, tmp_max, prcp, srad, frost_days' )
+  # Check for required columns
+  required_cols <- c("tmp_min", "tmp_max", "prcp", "srad", "frost_days")
+  if (!all(required_cols %in% colnames(climate))) {
+    stop("Climate table must include the following columns: tmp_min, tmp_max, prcp, srad, frost_days")
   }
 
-  # Test for NA
-  if( any( is.na(climate[c("tmp_min","tmp_max","prcp","srad","frost_days")]) ) ){
-    stop( "Climate table should not contain NAs" )
+  # Check for missing values
+  if (anyNA(climate[required_cols])) {
+    stop("Climate table must not contain NA values in required columns")
   }
 
-  # prepare the time period
-  from = as.Date(paste(from,"-01",sep=""))
-  to = as.Date(paste(to,"-01",sep=""))
+  # Convert dates
+  from <- as.Date(paste0(from, "-01"))
+  to <- as.Date(paste0(to, "-01"))
 
-  if( from >= to ){
-    stop( 'The start date is later than the end date' )
+  if (from >= to) {
+    stop("The start date must be earlier than the end date")
   }
 
   # Replicate or subset the data
@@ -79,16 +87,15 @@ prepare_climate <- function(
 
   } else {
 
-    # test if year and month column are present
-    if( !all(c("year", "month") %in% colnames(climate)) ){
-      stop( 'Climate table must include year and month for subsettins.' )
+    # Subset time-series data
+    if (!all(c("year", "month") %in% colnames(climate))) {
+      stop("Climate table must include 'year' and 'month' columns for subsetting")
     }
 
-    climate$date = as.Date( paste(climate$year, '-', climate$month, "-01",sep="") )
+    climate$date <- as.Date(paste(climate$year, climate$month, "01", sep = "-"))
 
-    # Test if we climate data cover the requested range
-    if( any( from < min(climate$date), to > max(climate$date)) ){
-      stop( 'Requested time period is outside of providate dates in climate table.')
+    if (from < min(climate$date) || to > max(climate$date)) {
+      stop("Requested period is outside the available dates in the climate table")
     }
 
     climate = climate[climate$date >= from & climate$date <= to, ]
@@ -100,24 +107,21 @@ prepare_climate <- function(
   climate$frost_days <- pmin( climate$frost_days, daysInMonth[climate$month])
 
 
-  # Add Average temperature if missing
-  if( !'tmp_ave' %in% colnames(climate) ){
-    climate$tmp_ave = (climate$tmp_min + climate$tmp_max) / 2
+  # Calculate derived columns
+  if (!"tmp_ave" %in% colnames(climate)) {
+    climate$tmp_ave <- (climate$tmp_min + climate$tmp_max) / 2
   }
 
-  # Add VPD if missing
-  if( !'vpd_day' %in% colnames(climate) ){
-    climate$vpd_day = get_vpd( climate$tmp_min, climate$tmp_max)
+  if (!"vpd_day" %in% colnames(climate)) {
+    climate$vpd_day <- get_vpd(climate$tmp_min, climate$tmp_max)
   }
 
-  # Add default CO2 if missing
-  if( !'co2' %in% colnames(climate) ){
-    climate$co2 = 350
+  if (!"co2" %in% colnames(climate)) {
+    climate$co2 <- 350
   }
 
-  # Add default d13catm if missing
-  if( !'d13catm' %in% colnames(climate) ){
-    climate$d13catm = -7.1
+  if (!"d13catm" %in% colnames(climate)) {
+    climate$d13catm <- -7.1
   }
 
   # Select final table
@@ -148,54 +152,51 @@ clim_range <- function( climate ){
   # Temperature hard limit
   if( any( max(climate$tmp_min, climate$tmp_max, climate$tmp_ave) > 50,
            min(climate$tmp_min, climate$tmp_max, climate$tmp_ave) < -50) ){
-    warning( 'Temperature is outside of the limits (-50 - 50 Deg C)!')
+    warning("Temperature is outside the limits (-50 to 50 °C)!")
   }
 
-  if( any(climate$tmp_max < climate$tmp_ave) ) {
-    stop( 'Average temperature is greated then Maximum temperature!')
+  if (any(climate$tmp_max < climate$tmp_ave)) {
+    stop("Average temperature is greater than maximum temperature!")
   }
 
-  if( any(climate$tmp_ave < climate$tmp_min) ) {
-    stop( 'Minimun temperature is greated then Average temperature!')
+  if (any(climate$tmp_ave < climate$tmp_min)) {
+    stop("Minimum temperature is greater than average temperature!")
   }
 
-
-  # Precipitation
-  if( any( climate$prcp < 0 ) ){
-    stop( 'Precipitation have negative values.')
+  # Precipitation checks
+  if (any(climate$prcp < 0)) {
+    stop("Precipitation contains negative values.")
   }
 
-  if( any( climate$prcp > 10000 ) ){
-    warning( 'Precipitation is outside of the plausible range (0 - 10000)!')
+  if (any(climate$prcp > 10000)) {
+    warning("Precipitation is outside the plausible range (0 to 10000 mm)!")
   }
 
-
-  # Solar radiation
-  if( any( climate$srad < 0 ) ){
-    stop( 'Solar radiation have negative values.')
+  # Solar radiation checks
+  if (any(climate$srad < 0)) {
+    stop("Solar radiation contains negative values.")
   }
 
-  if( any( climate$srad > 100 ) ){
-    warning( 'Solar radiation is outside of the plausible range (0 - 100)!')
+  if (any(climate$srad > 100)) {
+    warning("Solar radiation is outside the plausible range (0 to 100 MJ/m²/day)!")
   }
 
-  # Frost days
-  if( any( climate$frost_days < 0 ) ){
-    stop( 'Frost days have negative values.')
+  # Frost days checks
+  if (any(climate$frost_days < 0)) {
+    stop("Frost days contain negative values.")
   }
 
-  if( any( climate$frost_days > 31 ) ){
-    warning( 'Frost days is outside of the plausible range (0 - 31)!')
+  if (any(climate$frost_days > 31)) {
+    warning("Frost days are outside the plausible range (0 to 31 days)!")
   }
 
-
-  # VPD
-  if( any( climate$vpd_day < 0 ) ){
-    stop( 'VPD have negative values.')
+  # VPD checks
+  if (any(climate$vpd_day < 0)) {
+    stop("VPD contains negative values.")
   }
 
-  if( any( climate$vpd_day > 40 ) ){
-    warning( 'VPD is outside of the plausible range (0 - 40)!')
+  if (any(climate$vpd_day > 40)) {
+    warning("VPD is outside the plausible range (0 to 40 kPa)!")
   }
 
 }

@@ -2,41 +2,57 @@
 % Please edit documentation in R/prepare_thinning.R
 \name{prepare_thinning}
 \alias{prepare_thinning}
-\title{Check and prepare management information.}
+\title{Check and prepare thinningi information}
 \usage{
 prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
   "Pinus sylvestris"))
 }
 \arguments{
-\item{thinning}{table containing the information about thinnings. If there is no thinning, it must be \code{NULL}. The following columns are required:
+\item{thinning}{A data frame containing thinning information. If no thinning is required, set to \code{NULL}. The following columns are required:
 \itemize{
-\item species: species or cohort id/name.
-\item age: age at which thinning is done.
-\item stems_n: number of trees remaining after thinning
-\item stem: type of thinning (above/below). Default is 1.
-\item foliage: type of thinning (above/below). Default is 1.
-\item root: type of thinning (above/below). Default is 1.
+  \item \code{species}: Species or cohort ID/name.
+  \item \code{age}: Age (years) at which thinning is performed (numeric).
+  \item \code{stems_n}: Number of trees remaining after thinning (numeric).
+  \item \code{stem}: Type of thinning (above/below) applied to stems (numeric, default is 1).
+  \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
+  \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).
 }}
 
-\item{sp_names}{names of the species / cohorts used for the simulations. This is required whether `thinning=NULL` or if not all species are indicated in the `thinning` table. The `sp_names` must be identical to those from \code{species} table.}
+\item{sp_names}{A character vector of species or cohort names used in the simulation. This must match the species names in the \code{species} table. Required even if \code{thinning = NULL}.}
 }
 \value{
-a 3-dimentional array, where third dimention correspond to each species.
+A 3-dimensional array where the third dimension corresponds to each species.
 }
 \description{
-Prepares the management table and checks for consistency.
+Prepares the thinning table for simulations, ensuring data consistency and completeness.
 }
 \details{
-This function prepares the thinning table for \code{\link{run_3PG}}.
-
-In case there is no thinning it will return empty 3-d array.
-
-In case there will be thinning it will return 3-d array, where one dimension correspond to each species.
+This function prepares the thinning table for \code{\link{run_3PG}}. If no thinning is specified (\code{thinning = NULL}),
+it returns a 3-dimensional array of \code{NA} values. Otherwise, it validates the thinning data, converts species names to indices,
+and formats the table as a 3-dimensional array.
 }
 \examples{
+# Example: Preparing thinning data
+# r3PG default data
 prepare_thinning( thinning = NULL, sp_names = c('Quercus', 'Abies'))
 
 prepare_thinning( thinning = d_thinning, sp_names = c('Fagus sylvatica', 'Pinus sylvestris'))
+
+# example data
+thinning_data <- data.frame(
+  species = c("Fagus sylvatica", "Pinus sylvestris"),
+  age = c(10, 15),
+  stems_n = c(500, 400),
+  stem = c(1, 1),
+  foliage = c(1, 1),
+  root = c(1, 1)
+)
+
+species_names <- c("Fagus sylvatica", "Pinus sylvestris")
+
+# Prepare thinning
+prepared_thinning <- prepare_thinning(thinning = thinning_data, sp_names = species_names)
+print(prepared_thinning)
 }
 \seealso{
 \code{\link{run_3PG}}, \code{\link{prepare_input}}, \code{\link{prepare_parameters}}, \code{\link{prepare_sizeDist}}, \code{\link{prepare_climate}}

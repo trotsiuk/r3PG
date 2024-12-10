@@ -1,13 +1,15 @@
-# sub-setting climate data
+# Example: Climate data preparation
+# r3PG default data
 prepare_climate( climate = d_climate, from = '2003-04', to = '2010-11')
 
-# replicating climate data
-set.seed(1)
-climate = data.frame( tmp_min = rnorm(12, mean = 10),
-                      tmp_max = rnorm(12, mean = 20),
-                      prcp = sample(c(0:200), 12),
-                      srad = sample(c(1:100), 12),
-                      frost_days = sample(c(0:30), 12))
+d_climate <- data.frame(
+  tmp_min = runif(12, -5, 5),
+  tmp_max = runif(12, 10, 20),
+  prcp = runif(12, 50, 150),
+  srad = runif(12, 15, 25),
+  frost_days = runif(12, 0, 10)
+)
 
-prepare_climate( climate = climate, from = '2000-04', to = '2010-11')
-
+# Prepare climate for the period 2000-01 to 2005-12
+prepared_climate <- prepare_climate(d_climate, from = "2000-01", to = "2005-12")
+print(head(prepared_climate))

@@ -2,93 +2,111 @@
 % Please edit documentation in R/prepare_input.R
 \name{prepare_input}
 \alias{prepare_input}
-\title{Check and prepare input for running 3-PG model}
+\title{Prepare input for running 3-PG Model}
 \usage{
 prepare_input(site, species, climate, thinning = NULL, parameters = NULL,
   size_dist = NULL, settings = NULL)
 }
 \arguments{
-\item{site}{table containing the information about site conditions.
+\item{site}{A data frame containing site-level data. It must contain exactly one row with the following columns:
 \itemize{
-\item latitude: site latitude in the WGS84 coordinate system.
-\item altitude: site altitude, m a.s.l.
-\item soil_class: 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of asw on production.
-\item asw_i: initial available soil water (mm).
-\item asw_min: minimum available soil water (mm).
-\item asw_max: maximum available soil water (mm).
-\item from: year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01".
-\item to: year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month
+  \item \code{latitude}: Site latitude in the WGS84 coordinate system (degrees, range: [-90, 90]).
+  \item \code{altitude}: Site altitude (meters above sea level, range: [0, 4000]).
+  \item \code{soil_class}: Soil class as per 3PGpjs User Manual Table 2:
+    \itemize{
+      \item 1: Sandy
+      \item 2: Sandy loam
+      \item 3: Clay loam
+      \item 4: Clay
+      \item 0: No effect of available soil water on production
+    }
+  \item \code{asw_i}: Initial available soil water (mm, must be >= 0).
+  \item \code{asw_min}: Minimum available soil water (mm, must be >= 0).
+  \item \code{asw_max}: Maximum available soil water (mm, must be >= 0).
+  \item \code{from}: Start of simulation period (year-month, e.g., "2000-01").
+  \item \code{to}: End of simulation period (year-month, e.g., "2009-12"). The simulation includes the entire month of December 2009.
 }}
 
-\item{species}{table containing the information about species level data. Each row corresponds to one species/cohort.
+\item{species}{A data frame containing species-level information. Each row corresponds to one species or cohort.
+Required columns:
 \itemize{
-\item species: species or cohort id/name. It must be consistent with species names in \code{thinning}, \code{parameters} and \code{sizeDist} tables.
-\item planted: year and month indicating when species was planted. Provided in form of year-month. E.g. "2000-01".
-\item fertility: soil fertility for a given species. Range from 0 to 1.
-\item stems_n: number of trees per ha.
-\item biom_stem: stem biomass for a given species (Mg/ha).
-\item biom_root: root biomass for a given species (Mg/ha).
-\item biom_foliage: initial foliage biomass (Mg/ha). If this is a leafless period, provide the spring foliage biomass.
+  \item \code{species}: Species or cohort ID/name. Must match species names in \code{thinning}, \code{parameters}, and \code{sizeDist}.
+  \item \code{planted}: Planting date in "year-month" format (e.g., "2000-01").
+  \item \code{fertility}: Soil fertility, ranging from 0 to 1.
+  \item \code{stems_n}: Number of trees per hectare.
+  \item \code{biom_stem}: Stem biomass (Mg/ha).
+  \item \code{biom_root}: Root biomass (Mg/ha).
+  \item \code{biom_foliage}: Initial foliage biomass (Mg/ha). For leafless periods, provide spring foliage biomass.
+}
+Optional columns (required if `mort_model = 2`):
+\itemize{
+  \item \code{lt_fN}: Long-term soil nutrition modifier.
+  \item \code{lt_fT}: Long-term temperature modifier.
+  \item \code{lt_fPhys}: Long-term vapour pressure deficit and soil modifier.
 }}
 
-\item{climate}{table containing the information about monthly values for climatic data. If the climate table has exactly 12 rows it will be replicated for the number of years and months specified by \code{from} - \code{to}. Otherwise, it will be subsetted to the selected time period. More details about preparing climate data are at \code{\link{prepare_climate}}.
+\item{climate}{A data frame containing monthly climate data. The table must include the following columns:
 \itemize{
-\item year: year of observation (only required for subsetting) (optional).
-\item month: months of observation (only required for subsetting) (optional).
-\item tmp_min: monthly mean daily minimum temperature (C).
-\item tmp_max: monthly mean daily maximum temperature (C).
-\item tmp_ave: monthly mean daily average temperature (C) (optional).
-\item prcp: monthly rainfall (mm month-1).
-\item srad: monthly mean daily solar radiation (MJ m-2 d-1).
-\item frost_days: frost days per month (d month-1).
-\item vpd_day: water pressure deficit (mbar) (optional).
-\item co2: monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional)
-\item d13catm: monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional)
+  \item \code{year}: Year of observation (only required for subsetting) (numeric).
+  \item \code{month}: Month of observation (only required for subsetting) (numeric).
+  \item \code{tmp_min}: Monthly mean daily minimum temperature (°C).
+  \item \code{tmp_max}: Monthly mean daily maximum temperature (°C).
+  \item \code{tmp_ave}: Monthly mean daily average temperature (°C) (optional).
+  \item \code{prcp}: Monthly rainfall (mm month\eqn{-1}).
+  \item \code{srad}: Monthly mean daily solar radiation (MJ m\eqn{^{-2}} d\eqn{^{-1}}).
+  \item \code{frost_days}: Frost days per month (d month\eqn{-1}).
+  \item \code{co2}: Monthly mean atmospheric CO2 (ppm), required if \code{calculate_d13c = 1} (optional).
+  \item \code{d13catm}: Monthly mean isotopic composition of air (‰), required if \code{calculate_d13c = 1} (optional).
 }}
 
-\item{thinning}{table containing the information about thinnings. If there is no thinning, it must be \code{NULL}.
+\item{thinning}{A data frame containing thinning information. If no thinning is required, set to \code{NULL}. The following columns are required:
 \itemize{
-\item species: species or cohort id/name. It must be consistent with species names in \code{species}, \code{parameters} and \code{sizeDist} tables.
-\item age: age when thinning is performed.
-\item stems_n: number of trees remaining after thinning
-\item foliage: type of thinning (above/below). Default is 1.
-\item root: type of thinning (above/below). Default is 1.
-\item stem: type of thinning (above/below). Default is 1.
+  \item \code{species}: Species or cohort ID/name.
+  \item \code{age}: Age (years) at which thinning is performed (numeric).
+  \item \code{stems_n}: Number of trees remaining after thinning (numeric).
+  \item \code{stem}: Type of thinning (above/below) applied to stems (numeric, default is 1).
+  \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
+  \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).
 }}
 
-\item{parameters}{table containing the information about parameters to be modified. Values that are not provided are replaced by defaults.
+\item{parameters}{A data frame with parameters to modify. Columns must include:
 \itemize{
-\item parameter: name of the parameter, must be consistent in naming with \code{\link{i_parameters}}
-\item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
+  \item \code{parameter}: Name of the parameter.
+  \item Additional columns corresponding to species/cohort names.
 }}
 
-\item{size_dist}{table containing the information about size distribution to be modified. Values that are not provided are replaced by defaults.
+\item{size_dist}{A data frame with size distribution values. Required columns:
 \itemize{
-\item parameter: name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}
-\item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
+  \item \code{parameter}: Name of the parameter.
+  \item Additional columns corresponding to species/cohort names.
 }}
 
-\item{settings}{a list with settings for the model. Values that are not provided are replaced by defaults.
+\item{settings}{A list of model settings. Defaults:
 \itemize{
-\item light_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
-\item transp_model: `1` - 3-PGpjs (default); `2` - 3-PGmix
-\item phys_model:  `1` - 3-PGpjs (default); `2` - 3-PGmix
-\item height_model: `1` - linear (default); `2` - non-linear
-\item correct_bias: `0` - no (default); `1` - yes
-\item calculate_d13c: `0` - no (default); `1` - yes
+  \item \code{light_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
+  \item \code{transp_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
+  \item \code{phys_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
+  \item \code{height_model}: 1 (default: linear), 2: non-linear.
+  \item \code{correct_bias}: 0 (default: no), 1: yes.
+  \item \code{calculate_d13c}: 0 (default: no), 1: yes.
+  \item \code{mort_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
 }}
 }
 \value{
-a list with seven tables. Each table corresponds to one of the input tables.
+A list with 7 elements: site, species, climate, thinning, parameters, size_dist, and settings.
 }
 \description{
-Checks and prepares all input tables to be used in \code{\link{run_3PG}}. For detailed descriptions see Forrester (2020).
-}
-\details{
-This function checks and prepares the input data for the \code{\link{run_3PG}}. The output is a list with 7 tables. Each of them corresponds to the one from input.
+Checks and prepares all input tables for use in \code{\link{run_3PG}}.
+For detailed descriptions, see Forrester (2020).
 }
 \examples{
-prepare_input( site = d_site, species = d_species, climate = d_climate, d_thinning)
+# Example: Climate data preparation
+# r3PG default data
+
+prepare_input( site = d_site,
+               species = d_species,
+               climate = d_climate,
+               d_thinning)
 }
 \references{
 Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: \url{http://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}

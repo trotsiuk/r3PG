@@ -8,30 +8,35 @@ prepare_parameters(parameters = NULL, sp_names = c("Fagus sylvatica",
   "Pinus sylvestris"))
 }
 \arguments{
-\item{parameters}{table containing the information about parameters to be modified. Values that are not provided are replaced by defaults.
+\item{parameters}{A data frame containing parameter values to be modified. Columns must include:
 \itemize{
-\item parameter: name of the parameter, must be consistent in naming with \code{\link{i_parameters}}
-\item species: each column must correspond to species/cohort id/name, as defined in \code{species} table
-}}
+  \item \code{parameter}: Name of the parameter. Must match the names in \code{i_parameters}.
+  \item Additional columns: Each column must correspond to a species or cohort name, as defined in the \code{species} table.
+}
+If \code{NULL}, all parameters will be set to default values.}
 
-\item{sp_names}{names of the species / cohorts used for the simulations.The `sp_names` must be identical to those from \code{species} table.}
+\item{sp_names}{A character vector of species or cohort names used for the simulations. This must match the names in the \code{species} table.}
 }
 \value{
-a data.frame with 47 rows and columns corresponding to each species.
+A data frame with parameters as rows and one column for each species or cohort.
 }
 \description{
-Prepares the parameters table, by either replicating the defaults or replicating defaults for each of the species.
+Prepares the parameters table for simulations by either replicating the defaults or updating them with user-provided values.
 }
 \details{
-This function prepares the parameter table for \code{\link{run_3PG}}
+This function prepares the parameter table for \code{\link{run_3PG}}.
+If no parameters are provided, default values from \code{i_parameters} are used. If parameters are provided,
+the function ensures consistency, updates specified values, and retains defaults for unspecified parameters.
 }
 \examples{
+# Example: Prepare parameters
 # replace some
 prepare_parameters( parameters = d_parameters[1:4,],
   sp_names = c('Fagus sylvatica', 'Pinus sylvestris' ))
 
 # Make default
 prepare_parameters( parameters = NULL, sp_names = c('Quercus', 'Abies'))
+
 
 }
 \seealso{

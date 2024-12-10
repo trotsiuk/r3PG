@@ -8,29 +8,30 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
   size_dist = NULL, settings = NULL, check_input = TRUE, df_out = TRUE)
 }
 \arguments{
-\item{site}{table as described in \code{\link{prepare_input}} containing the information about site conditions.}
+\item{site}{Data frame as described in \code{\link{prepare_input}} containing site conditions.}
 
-\item{species}{table as described in \code{\link{prepare_input}} containing the information about species level data. Each row corresponds to one species/cohort.}
+\item{species}{Data frame as described in \code{\link{prepare_input}} containing species-level data.}
 
-\item{climate}{table as described in \code{\link{prepare_input}} containing the information about monthly values for climatic data. See also \code{\link{prepare_climate}}}
+\item{climate}{Data frame as described in \code{\link{prepare_input}} containing monthly climatic values.}
 
-\item{thinning}{table as described in \code{\link{prepare_input}} containing the information about thinnings. See also \code{\link{prepare_thinning}}}
+\item{thinning}{Data frame as described in \code{\link{prepare_input}} containing thinning information. Default: \code{NULL}.}
 
-\item{parameters}{table as described in \code{\link{prepare_input}} containing the information about parameters to be modified. See also \code{\link{prepare_parameters}}}
+\item{parameters}{Data frame as described in \code{\link{prepare_input}} containing parameter values. Default: \code{NULL}.}
 
-\item{size_dist}{table as described in \code{\link{prepare_input}} containing the information about size distributions. See also \code{\link{prepare_sizeDist}}}
+\item{size_dist}{Data frame as described in \code{\link{prepare_input}} containing size distribution values. Default: \code{NULL}.}
 
-\item{settings}{a list as described in \code{\link{prepare_input}} with settings for the model.}
+\item{settings}{List of model settings. See \code{\link{prepare_input}} for details. Default: \code{NULL}.}
 
-\item{check_input}{\code{logical} if the input shall be checked for consistency. It will call \code{\link{prepare_input}} function.}
+\item{check_input}{Logical. If \code{TRUE}, the input will be checked using \code{\link{prepare_input}}. Default: \code{TRUE}.}
 
-\item{df_out}{\code{logical} if the output shall be long data.frame (TRUE) the 4-dimensional array (FALSE).}
+\item{df_out}{Logical. If \code{TRUE}, the output will be a long-format data frame. Otherwise, it will be a 4-dimensional array. Default: \code{TRUE}.}
 }
 \value{
 either a 4-dimentional array or a data.frame, depending on the parameter \code{df_out}. More details on the output is \code{\link{i_output}}
 }
 \description{
-Runs the 3-PGpjs (monospecific, evenaged and evergreen forests) or 3-PGmix (deciduous, uneven-aged or mixed-species forests) model. For more details on parameters and structure of input visit \code{\link{prepare_input}}.
+Runs the 3-PGpjs (monospecific, even-aged, and evergreen forests) or 3-PGmix (deciduous, uneven-aged, or mixed-species forests) model.
+For detailed input requirements, see \code{\link{prepare_input}}.
 }
 \details{
 `r3PG` provides an implementation of the Physiological Processes Predicting Growth \href{https://3pg.forestry.ubc.ca}{3-PG} model, which simulates forest growth and productivity. The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (monospecific, evenaged and evergreen forests) and the `3-PGmix` (deciduous, uneven-aged or mixed-species forests) model written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules, to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
@@ -49,7 +50,7 @@ out <- run_3PG(
   parameters = d_parameters,
   size_dist = d_sizeDist,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                  correct_bias = 1, calculate_d13c = 0),
+                  correct_bias = 1, calculate_d13c = 0, mort_model = 1),
   check_input = TRUE, df_out = TRUE) # note that default is TRUE
 
 str(out) # List output format
