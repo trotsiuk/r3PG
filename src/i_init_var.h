@@ -95,7 +95,14 @@ mort_thinn(:) = 0.d0
 
 mort_manag(:) = 0.d0
 t_n(:) = 1
-stems_n_total = 0.d0
+
+stems_n_total(:) = 0.d0
+basal_area_total(:) = 0.d0
+mort_thinn_total(:) = 0.d0
+dbh_total(:) = 0.d0
+lt_fN_ave(:) = 0.d0
+lt_fT_ave(:) = 0.d0
+lt_fPhys_ave(:) = 0.d0
 
 ! Wood Delta ------------------
 Gc_mol(:) = 0.d0

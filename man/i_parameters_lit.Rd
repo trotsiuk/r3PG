@@ -140,7 +140,7 @@ i_parameters_lit
 A dataset containing parameter sets from published studies with 3PG
 }
 \details{
-Each row refers to an unique parameter set. 
+Each row refers to an unique parameter set.
 The function \code{\link{get_parameters}} eases the use to this dataset.
 }
 \keyword{datasets}

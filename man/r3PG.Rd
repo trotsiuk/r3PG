@@ -52,8 +52,8 @@ Sands, P. J., 2010. 3PGpjs user manual. Available at the following web site: \ur
 
 Authors:
 \itemize{
+  \item David Forrester \email{David.Forrester@csiro.au} (\href{https://orcid.org/0000-0003-4546-3554}{ORCID})
   \item Florian Hartig \email{florian.hartig@biologie.uni-regensburg.de} (\href{https://orcid.org/0000-0002-6255-9059}{ORCID})
-  \item David Forrester \email{David.Forrester@csiro.au}
   \item Ramiro Silveyra Gonzalez \email{ramiro.gonzalez@kit.edu} (\href{https://orcid.org/0000-0002-3430-8383}{ORCID})
 }
 

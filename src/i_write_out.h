@@ -104,20 +104,12 @@ output(ii,:,8,1) = biom_tree_max(:)
 output(ii,:,8,2) = gammaN(ii,:)
 output(ii,:,8,3) = mort_thinn(:)
 output(ii,:,8,4) = mort_stress(:)
-
-output(ii,:,8,6) = mort_thinn_total        ! 20241106
-output(ii,:,8,7) = ave_lt_fN        ! 20241129
-output(ii,:,8,8) = ave_lt_fT        ! 20241129
-output(ii,:,8,9) = ave_lt_fPhys     ! 20241129
-
-output(ii,:,8,10) = lt_fN(:)        ! 20241129
-output(ii,:,8,11) = lt_fT(:)        ! 20241129
-output(ii,:,8,12) = lt_fPhys(:)     ! 20241129
-
-output(ii,:,8,13) = dbh_total        ! 20241129
-output(ii,:,8,14) = stems_n_total     ! 20241129
-
-
+output(ii,:,8,5) = mort_thinn_total(:)        ! 20241106
+output(ii,:,8,6) = lt_fN_ave(:)        ! 20241129
+output(ii,:,8,7) = lt_fT_ave(:)        ! 20241129
+output(ii,:,8,8) = lt_fPhys_ave(:)     ! 20241129
+output(ii,:,8,9) = dbh_total(:)        ! 20241129
+output(ii,:,8,10) = stems_n_total(:)     ! 20241129
 
 
 ! Wood Delta ------------------

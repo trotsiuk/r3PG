@@ -111,3 +111,32 @@ test_that("Mixed-species 3-PGmix produces expected output", {
   expect_equal(round(out[120, 1, 4, 1:3], 3), c(85.939, 19.359, 0.000))
   expect_equal(round(out[120, 2, 4, 1:3], 3), c(59.917, 17.677, 1.742))
 })
+
+
+# Regeneration
+test_that("Development test for mortality model", {
+
+  result <- run_3PG(
+    site = d_site_r,
+    species = d_species_r,
+    climate = d_climate_r,
+    thinning = d_thinning_r,
+    parameters = d_parameters_r,
+    size_dist = d_sizeDist_r,
+    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, correct_bias = 0, calculate_d13c = 0,
+                    mort_model = 2),
+    check_input = TRUE, df_out = FALSE
+  )
+
+
+  expect_equal(round(result[120, 1, 4, 1:3], 3), c(73.814, 31.426, 4.455))
+  expect_equal(round(result[120, 2, 4, 1:3], 3), c(46.255, 14.359,  1.977))
+
+  expect_equal(round(result[5000, 20:24, 4, 1], 3), c(131.198,  61.939,  78.341,  17.080,  11.148))
+  expect_equal(round(result[5000, 20:24, 4, 2], 3), c(37.647, 25.722, 34.888,  9.554,  9.856))
+
+  expect_equal(round(result[1000, 4, 8, 5], 3), c(0.694))
+  expect_equal(round(result[5000, 20, 8, 5], 3), c(2.409))
+
+})

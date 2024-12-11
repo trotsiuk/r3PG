@@ -14,7 +14,7 @@ options(digits=16)
 # EU_MIXFOR ---------------------------------------------------------------
 #' `EU MIXFOR`
 d_site <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'site')
-  
+
 d_species <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'species')
 
 d_climate <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'climate')
@@ -51,9 +51,23 @@ i_parameters_lit <- param.db_full
 
 
 #' `STORE the data`
-usethis::use_data( d_site, d_species, d_climate, d_parameters, d_sizeDist, d_thinning, 
+usethis::use_data( d_site, d_species, d_climate, d_parameters, d_sizeDist, d_thinning,
                    internal = FALSE, overwrite = TRUE)
 
 usethis::use_data( i_output, i_parameters, i_sizeDist, i_parameters_lit,
                    internal = TRUE, overwrite = TRUE)
-  
+
+
+
+# Regeneration data set ---------------------------------------------------
+f_reg <- 'data-raw/data_input_regeneration.xlsx'
+
+d_site_r <- readxl::read_excel(f_reg, sheet = 'site')
+d_species_r <- readxl::read_excel(f_reg, sheet = 'species')
+d_climate_r <- readxl::read_excel(f_reg, sheet = 'climate')
+d_parameters_r <- readxl::read_excel(f_reg, sheet = 'parameters')
+d_sizeDist_r <- readxl::read_excel(f_reg, sheet = 'sizeDist')
+d_thinning_r <- readxl::read_excel(f_reg, sheet = 'thinning')
+
+usethis::use_data( d_site_r, d_species_r, d_climate_r, d_parameters_r, d_sizeDist_r, d_thinning_r,
+                   internal = FALSE, overwrite = TRUE)

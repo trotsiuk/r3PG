@@ -178,8 +178,8 @@
 #'   \item{molPAR_MJ}{Conversion of solar radiation to PAR}
 #' }
 #' @export
-#' @details Each row refers to an unique parameter set. 
-#' The function \code{\link{get_parameters}} eases the use to this dataset. 
+#' @details Each row refers to an unique parameter set.
+#' The function \code{\link{get_parameters}} eases the use to this dataset.
 "i_parameters_lit"
 
 
@@ -279,5 +279,152 @@
 #'   \item{Pinus sylvestris}{parameter values for species 2}
 #' }
 "d_sizeDist"
+
+
+
+#' Site input
+#'
+#' Table containing the information about site conditions.
+#'
+#' @format A \code{data frame} with 1 rows and 8 variables:
+#' \describe{
+#'   \item{latitude}{site latitude in the WGS84 coordinate system}
+#'   \item{altitude}{site altitude, m a.s.l.}
+#'   \item{soil_class}{ soil class, according to table 2 user manual of 3PGpjs. 1 - Sandy; 2 - Sandy loam; 3 - Clay loam; 4 - Clay; 0 - No effect of available soil water on production}
+#'   \item{asw_i}{initial available soil water (mm)}
+#'   \item{asw_max}{minimum available soil water (mm)}
+#'   \item{asw_min}{maximum available soil water (mm)}
+#'   \item{from}{year and month indicating the start of simulation. Provided in form of year-month. E.g. "2000-01"}
+#'   \item{to}{year and month indicating the end of simulation. Provided in form of year-month. E.g. "2009-12", will include December 2009 as last simulation month}
+#' }
+"d_site_r"
+
+
+#' Species input
+#'
+#' Table containing the information about species level data. Each row corresponds to one species/cohort.
+#'
+#' @format A \code{data frame} with number of rows corresponding to each species/cohort and 8 variables:
+#' \describe{
+#'   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_thinning}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+#'   \item{planted}{year and month indicating when the species was planted. Provided in form of year-month. E.g. "2000-01"}
+#'   \item{fertility}{soil fertility for a given species. Range from 0 to 1}
+#'   \item{stems_n}{number of trees per ha}
+#'   \item{biom_stem}{stem biomass for a given species  (Mg/ha)}
+#'   \item{biom_root}{root biomass for a given species  (Mg/ha)}
+#'   \item{biom_foliage}{initial foliage biomass (Mg/ha). If this is a leafless period, provide the spring foliage biomass.}
+#'   \item{lt_fN}{Long-term nutrition modifier)}
+#'   \item{lt_fT}{Long-term temperature modifier)}
+#'   \item{lt_fPhys}{Long-term physiology modifier)}
+#' }
+"d_species_r"
+
+
+#' Climate input
+#'
+#' Table containing the information about monthly values for climatic data.
+#'
+#' @format A \code{data frame} with 156 rows and 7 variables:
+#' \describe{
+#'   \item{year}{calendar year}
+#'   \item{month}{month}
+#'   \item{tmp_min}{monthly mean daily minimum temperature (C)}
+#'   \item{tmp_max}{monthly mean daily maximum temperature (C)}
+#'   \item{tmp_ave}{monthly mean daily average temperature (C). (optional)}
+#'   \item{prcp}{monthly rainfall (mm month-1)}
+#'   \item{srad}{monthly mean daily solar radiation (MJ m-2 d-1)}
+#'   \item{frost_days}{frost days per month (d month-1)}
+#'   \item{co2}{monthly mean atmospheric co2 (ppm), required if calculate_d13c=1 (optional)}
+#'   \item{d13catm}{Monthly mean isotopic composition of air (‰), required if calculate_d13c=1 (optional)}
+#' }
+"d_climate_r"
+
+
+#' Thinning input
+#'
+#' Table containing the information about thinnings
+#'
+#' @format A \code{data frame} with 3 rows and 6 variables:
+#' \describe{
+#'   \item{species}{species or cohort id/name. It must be consistent with species names in \code{\link{d_species}}, \code{\link{d_parameters}} and \code{\link{d_sizeDist}} tables.}
+#'   \item{age}{age when thinning is performed}
+#'   \item{stems_n}{number of trees remaining after thinning}
+#'   \item{stem}{type of thinning (above/below). Default is 1}
+#'   \item{root}{type of thinning (above/below). Default is 1}
+#'   \item{foliage}{type of thinning (above/below). Default is 1}
+#' }
+"d_thinning_r"
+
+
+#' Parameters input
+#'
+#' Table containing the information about parameters.
+#'
+#' @format A \code{data frame} with 65 rows and x variables:
+#' \describe{
+#'   \item{parameter}{name of the parameter, must be consistent in naming with \code{\link{i_parameters}}}
+#'   \item{Pinus sylvestris_1}{parameter values for species}
+#'   \item{Pinus sylvestris_2}{parameter values for species}
+#'   \item{Pinus sylvestris_3}{parameter values for species}
+#'   \item{Pinus sylvestris_4}{parameter values for species}
+#'   \item{Pinus sylvestris_5}{parameter values for species}
+#'   \item{Pinus sylvestris_6}{parameter values for species}
+#'   \item{Pinus sylvestris_7}{parameter values for species}
+#'   \item{Pinus sylvestris_8}{parameter values for species}
+#'   \item{Pinus sylvestris_9}{parameter values for species}
+#'   \item{Pinus sylvestris_10}{parameter values for species}
+#'   \item{Pinus sylvestris_11}{parameter values for species}
+#'   \item{Pinus sylvestris_12}{parameter values for species}
+#'   \item{Pinus sylvestris_13}{parameter values for species}
+#'   \item{Pinus sylvestris_14}{parameter values for species}
+#'   \item{Pinus sylvestris_15}{parameter values for species}
+#'   \item{Pinus sylvestris_16}{parameter values for species}
+#'   \item{Pinus sylvestris_17}{parameter values for species}
+#'   \item{Pinus sylvestris_18}{parameter values for species}
+#'   \item{Pinus sylvestris_19}{parameter values for species}
+#'   \item{Pinus sylvestris_20}{parameter values for species}
+#'   \item{Pinus sylvestris_21}{parameter values for species}
+#'   \item{Pinus sylvestris_22}{parameter values for species}
+#'   \item{Pinus sylvestris_23}{parameter values for species}
+#'   \item{Pinus sylvestris_24}{parameter values for species}
+#'   \item{Pinus sylvestris_25}{parameter values for species}
+#' }
+"d_parameters_r"
+
+
+#' sizeDist input
+#'
+#' Table containing the information about size distribution.
+#'
+#' @format A data frame with 47 rows and x variables:
+#' \describe{
+#'   \item{parameter}{name of the parameter, must be consistent in naming with \code{\link{i_sizeDist}}}
+#'   \item{Pinus sylvestris_1}{parameter values for species}
+#'   \item{Pinus sylvestris_2}{parameter values for species}
+#'   \item{Pinus sylvestris_3}{parameter values for species}
+#'   \item{Pinus sylvestris_4}{parameter values for species}
+#'   \item{Pinus sylvestris_5}{parameter values for species}
+#'   \item{Pinus sylvestris_6}{parameter values for species}
+#'   \item{Pinus sylvestris_7}{parameter values for species}
+#'   \item{Pinus sylvestris_8}{parameter values for species}
+#'   \item{Pinus sylvestris_9}{parameter values for species}
+#'   \item{Pinus sylvestris_10}{parameter values for species}
+#'   \item{Pinus sylvestris_11}{parameter values for species}
+#'   \item{Pinus sylvestris_12}{parameter values for species}
+#'   \item{Pinus sylvestris_13}{parameter values for species}
+#'   \item{Pinus sylvestris_14}{parameter values for species}
+#'   \item{Pinus sylvestris_15}{parameter values for species}
+#'   \item{Pinus sylvestris_16}{parameter values for species}
+#'   \item{Pinus sylvestris_17}{parameter values for species}
+#'   \item{Pinus sylvestris_18}{parameter values for species}
+#'   \item{Pinus sylvestris_19}{parameter values for species}
+#'   \item{Pinus sylvestris_20}{parameter values for species}
+#'   \item{Pinus sylvestris_21}{parameter values for species}
+#'   \item{Pinus sylvestris_22}{parameter values for species}
+#'   \item{Pinus sylvestris_23}{parameter values for species}
+#'   \item{Pinus sylvestris_24}{parameter values for species}
+#'   \item{Pinus sylvestris_25}{parameter values for species}
+#' }
+"d_sizeDist_r"
 
 

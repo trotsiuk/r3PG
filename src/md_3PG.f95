@@ -743,38 +743,15 @@ contains
             ! where( lai(:) > 0.d0 .and. basal_area_prop(:) <0.01d0 ) basal_area_prop(:) = 0.01d0
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
-            ! Initialize accumulators for dbh_total and stems_n_total, used to calculate self-thinning when mort_model = 2 !20241106
-            dbh_sum = 0.0
-            stems_n_total = 0.0 ! Total stems number for active cohorts
-            basal_area_sum = 0.0
-            ! Loop over all species and accumulate only the active cohorts
-            do i = 1, n_sp
-                if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-                    dbh_sum = dbh_sum + dbh(i) * stems_n(i)
-                    stems_n_total = stems_n_total + stems_n(i)
-                    basal_area_sum = basal_area_sum + basal_area(i)
-                end if
-            end do
-            ! Loop over all species to get the weighted average of the 3 modifiers used when mort_model = 2
-            ave_lt_fN = 0.0
-            ave_lt_fT = 0.0
-            ave_lt_fPhys = 0.0
-            do i = 1, n_sp
-                if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-                    ave_lt_fN = ave_lt_fN + lt_fN(i) * basal_area(i)/basal_area_sum
-                    ave_lt_fT = ave_lt_fT + lt_fT(i) * basal_area(i)/basal_area_sum
-                    ave_lt_fPhys = ave_lt_fPhys + lt_fPhys(i) * basal_area(i)/basal_area_sum
-                end if
-            end do
+            ! Get the total numbers of the alived trees for the further calculations
+            stems_n_total(:) = sum( stems_n (:) )
+            basal_area_total(:) = sum( basal_area (:) )
+            dbh_total(:) = sum( dbh(:) * stems_n(:) ) / stems_n_total(:)
 
-
-            ! Calculate dbh_total as the weighted mean of active cohorts
-            if (stems_n_total > 0.0) then
-                dbh_total = dbh_sum / stems_n_total
-            else
-                dbh_total = 0.0
-            end if
-
+            ! Calculate the weighted average of the Long-term modifiers when the mort_model = 2 !20241211
+            lt_fN_ave(:) = sum( lt_fN(:) * basal_area(:) / sum( basal_area(:) ) )
+            lt_fT_ave(:) = sum( lt_fT(:) * basal_area(:) / sum( basal_area(:) ) )
+            lt_fPhys_ave(:) = sum( lt_fPhys(:) * basal_area(:) / sum( basal_area(:) ) )
 
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
@@ -796,14 +773,14 @@ contains
 
                     else if ( mort_model .eq. int(2) ) then !20241106
 
-                        mort_thinn_total = ( (stems_n_total - ( &
-                            stems_n_total ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * &
-                            (prev_dbh_total ** (betaB(i) + 1) * ave_lt_fN ** betafN(i) * ave_lt_fT ** betafT(i) * &
-                            ave_lt_fPhys ** betafPhys(i) - dbh_total ** (betaB(i) + 1) * ave_lt_fN ** betafN(i) * &
-                            ave_lt_fT ** betafT(i) * ave_lt_fPhys ** betafPhys(i))) ** (1 / (1 - betaN(i))) ))
+                        mort_thinn_total(i) = ( (stems_n_total(i) - ( &
+                            stems_n_total(i) ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * &
+                            (dbh_total_prev(i) ** (betaB(i) + 1) * lt_fN_ave(i) ** betafN(i) * lt_fT_ave(i) ** betafT(i) * &
+                            lt_fPhys_ave(i) ** betafPhys(i) - dbh_total(i) ** (betaB(i) + 1) * lt_fN_ave(i) ** betafN(i) * &
+                            lt_fT_ave(i) ** betafT(i) * lt_fPhys_ave(i) ** betafPhys(i))) ** (1 / (1 - betaN(i))) ))
 
-                        mort_thinn(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 40000 / &
-                            basal_area_sum * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
+                        mort_thinn(i) = mort_thinn_total(i) * Pi * dbh_total(i) * dbh_total(i) / 40000 / &
+                            basal_area_total(i) * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
 
                         b_cor = .TRUE. !20241106
 
@@ -859,17 +836,9 @@ contains
             ! Additional calculations ------------------
             basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
-
             ! Used when mort_model = 2   !20241106
-            prev_dbh(:) = dbh(:)
-            !prev_f_nutr(:) = f_nutr(:)
-            !prev_f_tmp(:,i) = f_tmp(:,i)
-            !prev_f_phys(:) = f_phys(:)
-            prev_dbh_total = dbh_total
-
-
-
-
+            dbh_prev(:) = dbh(:)
+            dbh_total_prev = dbh_total(:)
 
             ! Efficiency
             epsilon_gpp(:) = 100 * gpp(:) / apar(:)
@@ -1041,7 +1010,8 @@ contains
         Height_ind = f_orderId(Height_all) ! sort the array
 
         ! Assign index order for further calculations
-        ones(:) = -1; ones(1:n_sp) = 1
+        ones(:) = -1
+        ones(1:n_sp) = 1
         ones = ones(Height_ind)
 
     !   cumulative sum
