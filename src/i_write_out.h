@@ -134,3 +134,10 @@ output(ii,:,10,11) = bias_scale(11,:)
 output(ii,:,10,12) = bias_scale(12,:)
 output(ii,:,10,13) = bias_scale(13,:)
 output(ii,:,10,14) = bias_scale(14,:)
+
+
+! Mortality values ---------------------
+output(ii,:,11,1) = stems_loss_manag(:)
+output(ii,:,11,2) = biom_loss_stem_manag(:)
+output(ii,:,11,3) = biom_loss_root_manag(:)
+output(ii,:,11,4) = biom_loss_foliage_manag(:)

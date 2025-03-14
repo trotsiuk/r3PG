@@ -47,3 +47,4 @@ height_model = settings(4)
 correct_bias = settings(5)
 calculate_d13c = settings(6)
 mort_model = settings(7)          !20241106
+manag_model = settings(8)          !20250312

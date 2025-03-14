@@ -93,8 +93,14 @@ biom_tree_max(:) = 0.d0
 mort_stress(:) = 0.d0
 mort_thinn(:) = 0.d0
 
-mort_manag(:) = 0.d0
+! Management
 t_n(:) = 1
+manag_remove_prop = 0.d0
+manag_remove_prop_compartment(:) = 0.d0 ! 20250314
+stems_loss_manag(:) = 0.d0 !20250314
+biom_loss_stem_manag(:) = 0.d0      ! 20250224
+biom_loss_foliage_manag(:) = 0.d0      ! 20250224
+biom_loss_root_manag(:) = 0.d0      ! 20250224
 
 stems_n_total(:) = 0.d0
 basal_area_total(:) = 0.d0

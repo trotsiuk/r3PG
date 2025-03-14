@@ -1,3 +1,39 @@
+# Version 0.2.0
+
+## Submission 1 ....
+
+This is a major update of r3PG.
+
+### Bug fixed
+
+-   
+
+### New function and data sets
+
+### Major changes
+
+- new option for the management (#103). Management can be based on the number of 
+  trees (original manag_model = 1) or based on the biomass (magan_model = 2)
+- new option for the mortality ....
+
+### Minor changes
+
+-   
+
+### Test environments
+
+-   local MAC OS 13.4.1 (Monterey), R 4.0.2
+-   <http://win-builder.r-project.org/> - oldrelease / devel / release
+-   Linux (Travis CI) - oldrel / release / devel
+-   rhub (using `rhub::check_for_cran()`, `rhub::check_with_valgrind()`)
+
+### R CMD check results
+
+0 errors ✓ \| 0 warnings ✓ \| 0 notes ✓
+
+R CMD check succeeded.
+
+
 # Version 0.1.6
 
 ## Submission 1, 18.09.2023

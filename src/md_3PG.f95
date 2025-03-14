@@ -22,7 +22,7 @@ contains
         integer(kind=c_int), intent(in) :: n_sp
         integer(kind=c_int), intent(in) :: n_man ! number of management interventions
         integer(kind=c_int), dimension(n_sp), intent(in) :: t_t ! number of management interventions
-        integer(kind=c_int), dimension(7), intent(in) :: settings    ! settings for the models                !20241106
+        integer(kind=c_int), dimension(8), intent(in) :: settings    ! settings for the models                !20241106
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
@@ -33,7 +33,7 @@ contains
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
         ! Output array
-        real(kind=c_double), dimension(n_m,n_sp,10,15), intent(inout) :: output
+        real(kind=c_double), dimension(n_m,n_sp,11,15), intent(inout) :: output
 
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
@@ -604,6 +604,11 @@ contains
 
 
             ! Management -------------------------------------------------------------------------
+            !reset mortality value !20250301
+            stems_loss_manag(:) = 0.d0 
+            biom_loss_stem_manag(:) = 0.d0
+            biom_loss_root_manag(:) = 0.d0
+            biom_loss_foliage_manag(:) = 0.d0
 
             do i = 1, n_sp
 
@@ -615,41 +620,45 @@ contains
 
                             if( stems_n(i) > managementInputs(t_n(i),2,i) ) then
 
-                                mort_manag(i) = (stems_n(i) - managementInputs(t_n(i),2,i) ) / stems_n(i)
-
-                                stems_n(i) = stems_n(i) * (1.d0 - mort_manag(i))
-
-                                !if the stand is thinned from above, then the ratios (F, R and S) of stem,
-                                ! foliage and roots to be removed relative to the mean tree in the stand
-                                ! will be >1. If the product of this ratio and delN is > 1 then the new
-                                ! WF, WR or WS will be < 0, which is impossible. Therefore, make sure this is >= 0.
-
-                                if( maxval( mort_manag(i) * managementInputs( t_n(i),3:5,i)) > 1.d0 ) then
-
-                                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-                                        biom_foliage_debt(i) = 0.d0
-                                    else
-                                        biom_foliage(i) = 0.d0
-                                    end if
-
-                                    biom_root(i) = 0.d0
-                                    biom_stem(i) = 0.d0
-                                    stems_n(i) = 0.d0
-
+                                ! Calculate the proportion of management based on the stems (manag_model = 1, default)
+                                ! or biomass (manag_model = 2) !20250314
+                                if ( manag_model .eq. int(1) ) then        
+                                    manag_remove_prop = (stems_n(i) - managementInputs(t_n(i),2,i) ) / stems_n(i)
                                 else
+                                    manag_remove_prop = 1.d0 - managementInputs(t_n(i),2,i)
+                                end if
 
-                                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
+                                ! recalculate the proportion to be removed for each compartment separately
+                                ! positions in the vector 1=stem, 2-root, 3 = foliage
+                                manag_remove_prop_compartment(:) = manag_remove_prop * managementInputs(t_n(i),3:5,i)
 
-                                        biom_foliage_debt(i) = biom_foliage_debt(i) * (1.d0 - mort_manag(i) * &
-                                            managementInputs(t_n(i),5,i) )
-                                    else
+                                ! if the stand is thinned from above, then the ratios (F, R and S) of stem,
+                                ! foliage and roots to be removed relative to the mean tree in the stand
+                                ! will be >1. If the product of this ratio and delN is >= 1 then the new
+                                ! WF, WR or WS will be < 0, which is impossible. Therefore, make sure this is >= 0.
+                                ! 20250314 it shall be >= 1 (not > 1). Since if this equal 1 all trees will be removed
+                                ! Therefore we set all the compartments proportion to 1 meaning that everything will be removed
 
-                                        biom_foliage(i) = biom_foliage(i) * (1.d0 - mort_manag(i) * managementInputs(t_n(i),5,i) )
-                                    end if
+                                if( maxval( manag_remove_prop_compartment(:) ) >= 1.d0 ) then 
+                                    manag_remove_prop_compartment(:) = 1.d0
+                                    manag_remove_prop = 1.d0
+                                end if
+                              
+                                ! Calculate the losses in management & the stand values after management
+                                stems_loss_manag(i) = stems_n(i) * manag_remove_prop
+                                biom_loss_stem_manag(i) = biom_stem(i) * manag_remove_prop_compartment(1)
+                                biom_loss_root_manag(i) = biom_root(i) * manag_remove_prop_compartment(2)
 
-                                    biom_root(i) = biom_root(i)  * (1.d0 - mort_manag(i) * managementInputs(t_n(i),4,i) )
-                                    biom_stem(i) = biom_stem(i)  * (1.d0 - mort_manag(i) * managementInputs(t_n(i),3,i) )
+                                stems_n(i) = stems_n(i) - stems_loss_manag(i)
+                                biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
+                                biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
 
+                                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
+                                    biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
+                                    biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
+                                else
+                                    biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
+                                    biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
                                 end if
 
                                 b_cor = .TRUE.
