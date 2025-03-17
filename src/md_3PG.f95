@@ -704,26 +704,32 @@ contains
             ! Mortality --------------------------------------------------------------------------
 
             ! Stress related ------------------
+            !reset mortality value !20250301
+            stems_loss_stress(:) = 0.d0 
+            biom_loss_stem_stress(:) = 0.d0
+            biom_loss_root_stress(:) = 0.d0
+            biom_loss_foliage_stress(:) = 0.d0
+
             do i = 1, n_sp
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
 
                     if ( gammaN(ii,i) > 0.d0 ) then
 
-                        mort_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
-                        ! mort_stress(i) = ceiling( mort_stress(i) )
-                        mort_stress(i) = min( mort_stress(i), stems_n(i)) ! Mortality can't be more than available
+                        stems_loss_stress(i) = gammaN(ii,i) * stems_n(i) / 12.d0 /100.d0
+                        stems_loss_stress(i) = min( stems_loss_stress(i), stems_n(i)) ! Mortality can't be more than available
 
-                        biom_foliage(i) = biom_foliage(i) - mF(i) * mort_stress(i) * (biom_foliage(i) / stems_n(i))
-                        biom_root(i) = biom_root(i) - mR(i) * mort_stress(i) * (biom_root(i) / stems_n(i))
-                        biom_stem(i) = biom_stem(i) - mS(i) * mort_stress(i) * (biom_stem(i) / stems_n(i))
-                        stems_n(i) = stems_n(i) - mort_stress(i)
+                        biom_loss_stem_stress(i) = mS(i) * biom_stem(i) * stems_loss_stress(i) / stems_n(i)
+                        biom_loss_root_stress(i) = mR(i) * biom_root(i) * stems_loss_stress(i) / stems_n(i)
+                        biom_loss_foliage_stress(i) = mF(i) * biom_foliage(i) * stems_loss_stress(i) / stems_n(i)
+
+                        stems_n(i) = stems_n(i) - stems_loss_stress(i)
+                        biom_stem(i) = biom_stem(i) - biom_loss_stem_stress(i)
+                        biom_root(i) = biom_root(i) - biom_loss_root_stress(i)
+                        biom_foliage(i) = biom_foliage(i) -  biom_loss_foliage_stress(i)                 
 
                         b_cor = .TRUE.
 
                     end if
-
-                else
-                    mort_stress(i) = 0.d0
                 end if
             end do
 

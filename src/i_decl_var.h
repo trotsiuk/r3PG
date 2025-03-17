@@ -283,9 +283,13 @@ real(kind=kind(0.0d0)) :: manag_remove_prop                              ! propo
 real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed suring hte management.  20250314
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_manag      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_manag      ! 20250224
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_manag      ! 20250224
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_manag      ! 20250224
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_manag      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_manag      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_manag      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_stress      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_stress      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_stress      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_stress      ! 20250314
 
 
 

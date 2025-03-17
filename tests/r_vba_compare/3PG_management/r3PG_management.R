@@ -20,8 +20,12 @@ out_3PG <- run_3PG(
 
 
 
-i_var <- c('stems_n',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage', 'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag')
-i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass', 'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag')
+i_var <- c('stems_n',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage',
+           'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag',
+           'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress')
+i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass',
+           'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag',
+           'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress')
 
 out_3PG %>%
   filter(variable %in% i_var) %>%
@@ -53,9 +57,6 @@ out_3PG <- run_3PG(
   check_input = TRUE, df_out = TRUE)
 
 
-
-i_var <- c('stems_n',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage', 'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag')
-i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass', 'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag')
 
 out_3PG %>%
   filter(variable %in% i_var) %>%
