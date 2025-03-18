@@ -752,10 +752,13 @@ contains
                 b_cor = .FALSE.
             end if
 
-            ! Self-thinning related ------------------
+            ! Self-thinning / Density dependent related ------------------
+            stems_loss_density(:) = 0.d0 
+            biom_loss_stem_density(:) = 0.d0
+            biom_loss_root_density(:) = 0.d0
+            biom_loss_foliage_density(:) = 0.d0
+
             basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
-            ! basal_area_prop(:) if basal_area_prop(:) > 0 and basal_area_prop(:) < 0.01 put 0.01
-            ! where( lai(:) > 0.d0 .and. basal_area_prop(:) <0.01d0 ) basal_area_prop(:) = 0.01d0
             stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
 
             ! Get the total numbers of the alived trees for the further calculations
@@ -764,10 +767,9 @@ contains
             dbh_total(:) = sum( dbh(:) * stems_n(:) ) / stems_n_total(:)
 
             ! Calculate the weighted average of the Long-term modifiers when the mort_model = 2 !20241211
-            lt_fN_ave(:) = sum( lt_fN(:) * basal_area(:) / sum( basal_area(:) ) )
-            lt_fT_ave(:) = sum( lt_fT(:) * basal_area(:) / sum( basal_area(:) ) )
-            lt_fPhys_ave(:) = sum( lt_fPhys(:) * basal_area(:) / sum( basal_area(:) ) )
-
+            lt_fN_ave(:) = sum( lt_fN(:) * basal_area_prop(:) )
+            lt_fT_ave(:) = sum( lt_fT(:) * basal_area_prop(:) )
+            lt_fPhys_ave(:) = sum( lt_fPhys(:) * basal_area_prop(:) )
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
@@ -779,7 +781,7 @@ contains
 
                         if ( biom_tree_max(i) < biom_tree(i) ) then
 
-                            mort_thinn(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
+                            stems_loss_density(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                             mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
                             b_cor = .TRUE.
@@ -794,7 +796,7 @@ contains
                             lt_fPhys_ave(i) ** betafPhys(i) - dbh_total(i) ** (betaB(i) + 1) * lt_fN_ave(i) ** betafN(i) * &
                             lt_fT_ave(i) ** betafT(i) * lt_fPhys_ave(i) ** betafPhys(i))) ** (1 / (1 - betaN(i))) ))
 
-                        mort_thinn(i) = mort_thinn_total(i) * Pi * dbh_total(i) * dbh_total(i) / 40000 / &
+                        stems_loss_density(i) = mort_thinn_total(i) * Pi * dbh_total(i) * dbh_total(i) / 40000 / &
                             basal_area_total(i) * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
 
                         b_cor = .TRUE. !20241106
@@ -803,12 +805,16 @@ contains
 
                     if ( b_cor .eqv. .TRUE. ) then
 
-                        if( mort_thinn(i) < stems_n(i) .and. mort_thinn(i) > 0) then !20241106
+                        if( stems_loss_density(i) > 0.d0) then !20241106
 
-                            biom_foliage(i) = biom_foliage(i) - mF(i) * mort_thinn(i) * (biom_foliage(i) / stems_n(i))
-                            biom_root(i) = biom_root(i) - mR(i) * mort_thinn(i) * (biom_root(i) / stems_n(i))
-                            biom_stem(i) = biom_stem(i) - mS(i) * mort_thinn(i) * (biom_stem(i) / stems_n(i))
-                            stems_n(i) = stems_n(i) - mort_thinn(i)
+                            biom_loss_stem_density(i) = mS(i) * biom_stem(i) * stems_loss_density(i) / stems_n(i)
+                            biom_loss_root_density(i) = mR(i) * biom_root(i) * stems_loss_density(i) / stems_n(i)
+                            biom_loss_foliage_density(i) = mF(i) * biom_foliage(i) * stems_loss_density(i) / stems_n(i)
+
+                            stems_n(i) = stems_n(i) - stems_loss_density(i)
+                            biom_stem(i) = biom_stem(i) - biom_loss_stem_density(i)
+                            biom_root(i) = biom_root(i) - biom_loss_root_density(i)
+                            biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
 
                         end if
                         
@@ -821,11 +827,9 @@ contains
 
                     end if
 
-                else
-                    mort_thinn(i) = 0.d0
-
                 end if
             end do
+
 
 
             ! Correct the bias

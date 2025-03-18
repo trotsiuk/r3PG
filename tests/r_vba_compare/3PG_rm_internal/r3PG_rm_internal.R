@@ -1,5 +1,6 @@
 library(r3PG)
 library(ggplot2)
+library(dplyr)
 
 
 # Run the model -----------------------------------------------------------
@@ -21,13 +22,14 @@ out.df <- run_3PG(
 
 # Visualise the data ------------------------------------------------------
 
-i_var <- c('stems_n', 'biom_stem', 'biom_root', 'biom_foliage')
-i_var <- c('mort_thinn','mort_thinn_total','ave_lt_fN','ave_lt_fT','ave_lt_fPhys','lt_fN','lt_fT','lt_fPhys','dbh_total','stems_n_total')
+# i_var <- c('stems_n', 'biom_stem', 'biom_root', 'biom_foliage',)
+i_var <- c('stems_n', 'stems_loss_density', 'biom_loss_stem_density',
+           'mort_thinn_total', 'dbh_total','stems_n_total')
 
 
 out.df %>%
   dplyr::filter(variable %in% i_var) %>%
-  dplyr::mutate(variable = factor(variable, levels = i_var)) %>%
+  # dplyr::mutate(variable = factor(variable, levels = i_var)) %>%
   ggplot( aes(date, value))+
   geom_line( aes(color = species), linewidth = 0.5)+
   facet_wrap( ~variable, scales = 'free_y') +

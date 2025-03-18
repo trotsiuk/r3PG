@@ -108,6 +108,13 @@ biom_loss_stem_stress(:) = 0.d0      ! 20250314
 biom_loss_foliage_stress(:) = 0.d0      ! 20250314
 biom_loss_root_stress(:) = 0.d0      ! 20250314
 
+! Density dependent
+stems_loss_density(:) = 0.d0 !20250314
+biom_loss_stem_density(:) = 0.d0      ! 20250314
+biom_loss_foliage_density(:) = 0.d0      ! 20250314
+biom_loss_root_density(:) = 0.d0      ! 20250314
+
+
 stems_n_total(:) = 0.d0
 basal_area_total(:) = 0.d0
 mort_thinn_total(:) = 0.d0

@@ -20,20 +20,23 @@ out_3PG <- run_3PG(
 
 
 
-i_var <- c('stems_n',  'dbh', 'height', 'biom_stem', 'biom_root', 'biom_foliage',
-           'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag',
-           'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress')
-i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass',
-           'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag',
-           'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress')
+i_var <- c('stems_n',  'biom_stem', 'biom_root', 'biom_foliage',
+           'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag', 'biom_loss_root_manag',
+           'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress', 'biom_loss_root_stress',
+           'stems_loss_density', 'biom_loss_stem_density', 'biom_loss_foliage_density', 'biom_loss_root_density')
+# i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass',
+#            'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag',
+#            'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress',
+#            'stems_loss_density', 'biom_loss_stem_density', 'biom_loss_foliage_density')
+
 
 out_3PG %>%
   filter(variable %in% i_var) %>%
   mutate(variable = factor(variable, levels = i_var)) %>%
   ggplot( aes(date, value))+
   geom_line( aes(color = species), size = 0.5)+
-  facet_wrap( ~ variable, scales = 'free_y', ncol = 3,
-              labeller = labeller(variable = setNames(i_lab, i_var) )) +
+  facet_wrap( ~ variable, scales = 'free_y', ncol = 4,
+              labeller = labeller(variable = setNames(i_var, i_var) )) +
   scale_color_brewer('', palette = 'Dark2') +
   theme_classic()+
   theme(legend.position="bottom")+
