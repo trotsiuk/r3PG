@@ -784,7 +784,7 @@ contains
                             stems_loss_density(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                             mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                            b_cor = .TRUE.
+                            !b_cor = .TRUE.
                             
                         end if
 
@@ -802,8 +802,16 @@ contains
                         b_cor = .TRUE. !20241106
 
                     end if !20241106
+                    
+                    ! It happends that somethines stems_loss_density provide negative values
+                    ! this shall be neglected
 
-                    if ( b_cor .eqv. .TRUE. ) then
+                    if( stems_loss_density(i) <= 0.d0) then
+                        stems_loss_density(i) = 0.d0
+                    end if
+
+
+                    !if ( b_cor .eqv. .TRUE. ) then
 
                         if( stems_loss_density(i) > 0.d0) then !20241106
 
@@ -816,6 +824,8 @@ contains
                             biom_root(i) = biom_root(i) - biom_loss_root_density(i)
                             biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
 
+                            b_cor = .TRUE. !20241106
+
                         end if
                         
                         if( stems_n(i) <= 0) then !20241118
@@ -825,7 +835,7 @@ contains
                             stems_n(i) = 0.d0
                         end if
 
-                    end if
+                    !end if
 
                 end if
             end do

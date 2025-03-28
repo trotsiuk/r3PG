@@ -66,8 +66,8 @@ out_3PG %>%
   mutate(variable = factor(variable, levels = i_var)) %>%
   ggplot( aes(date, value))+
   geom_line( aes(color = species), size = 0.5)+
-  facet_wrap( ~ variable, scales = 'free_y', ncol = 3,
-              labeller = labeller(variable = setNames(i_lab, i_var) )) +
+  facet_wrap( ~ variable, scales = 'free_y', ncol = 4,
+              labeller = labeller(variable = setNames(i_var, i_var) )) +
   scale_color_brewer('', palette = 'Dark2') +
   theme_classic()+
   theme(legend.position="bottom")+
