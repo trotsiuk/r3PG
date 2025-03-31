@@ -93,6 +93,8 @@ biom_tree_max(:) = 0.d0
 mort_stress(:) = 0.d0
 mort_thinn(:) = 0.d0
 
+stems_loss_total = 0.d0
+
 ! Management
 t_n(:) = 1
 manag_remove_prop = 0.d0
@@ -103,7 +105,7 @@ biom_loss_foliage_manag(:) = 0.d0      ! 20250314
 biom_loss_root_manag(:) = 0.d0      ! 20250224
 
 ! Stress related
-stems_loss_stress(:) = 0.d0 !20250314
+stems_loss_stress = 0.d0 !20250314
 biom_loss_stem_stress(:) = 0.d0      ! 20250314
 biom_loss_foliage_stress(:) = 0.d0      ! 20250314
 biom_loss_root_stress(:) = 0.d0      ! 20250314

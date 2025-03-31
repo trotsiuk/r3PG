@@ -773,45 +773,48 @@ contains
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
-            do i = 1, n_sp
+            ! do not calculate density-dependent mortality for any cohorts if there was already mortality for any single cohort (because dbh_prev(:) and dbh_total_prev will be inappropriate) ! 20250301
+            stems_loss_total = sum(stems_loss_manag(:)  + stems_loss_stress(:)) !+ mort_defol(:)
 
-                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+            if( stems_loss_total < 1.0e-6 ) then
 
-                    if ( mort_model .eq. int(1) ) then        !20241106
+                do i = 1, n_sp
 
-                        if ( biom_tree_max(i) < biom_tree(i) ) then
+                    if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
 
-                            stems_loss_density(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
-                            mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
+                        if ( mort_model .eq. int(1) ) then        !20241106
 
-                            !b_cor = .TRUE.
-                            
+                            if ( biom_tree_max(i) < biom_tree(i) ) then
+
+                                stems_loss_density(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
+                                mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
+
+                                !b_cor = .TRUE.
+                                
+                            end if
+
+                        else if ( mort_model .eq. int(2) ) then !20241106
+
+                            mort_thinn_total(i) = ( (stems_n_total(i) - ( &
+                                stems_n_total(i) ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * &
+                                (dbh_total_prev(i) ** (betaB(i) + 1) * lt_fN_ave(i) ** betafN(i) * lt_fT_ave(i) ** betafT(i) * &
+                                lt_fPhys_ave(i) ** betafPhys(i) - dbh_total(i) ** (betaB(i) + 1) * lt_fN_ave(i) ** betafN(i) * &
+                                lt_fT_ave(i) ** betafT(i) * lt_fPhys_ave(i) ** betafPhys(i))) ** (1 / (1 - betaN(i))) ))
+
+                            stems_loss_density(i) = mort_thinn_total(i) * Pi * dbh_total(i) * dbh_total(i) / 40000 / &
+                                basal_area_total(i) * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
+
+                            !b_cor = .TRUE. !20241106
+
+                        end if !20241106
+                        
+                        ! It happends that somethines stems_loss_density provide negative values
+                        ! this shall be neglected
+
+                        if( stems_loss_density(i) <= 0.d0) then
+                            stems_loss_density(i) = 0.d0
                         end if
 
-                    else if ( mort_model .eq. int(2) ) then !20241106
-
-                        mort_thinn_total(i) = ( (stems_n_total(i) - ( &
-                            stems_n_total(i) ** (1 - betaN(i)) + Exp(beta0(i)) * (1 - betaN(i)) / (betaB(i) + 1) * &
-                            (dbh_total_prev(i) ** (betaB(i) + 1) * lt_fN_ave(i) ** betafN(i) * lt_fT_ave(i) ** betafT(i) * &
-                            lt_fPhys_ave(i) ** betafPhys(i) - dbh_total(i) ** (betaB(i) + 1) * lt_fN_ave(i) ** betafN(i) * &
-                            lt_fT_ave(i) ** betafT(i) * lt_fPhys_ave(i) ** betafPhys(i))) ** (1 / (1 - betaN(i))) ))
-
-                        stems_loss_density(i) = mort_thinn_total(i) * Pi * dbh_total(i) * dbh_total(i) / 40000 / &
-                            basal_area_total(i) * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
-
-                        b_cor = .TRUE. !20241106
-
-                    end if !20241106
-                    
-                    ! It happends that somethines stems_loss_density provide negative values
-                    ! this shall be neglected
-
-                    if( stems_loss_density(i) <= 0.d0) then
-                        stems_loss_density(i) = 0.d0
-                    end if
-
-
-                    !if ( b_cor .eqv. .TRUE. ) then
 
                         if( stems_loss_density(i) > 0.d0) then !20241106
 
@@ -835,11 +838,10 @@ contains
                             stems_n(i) = 0.d0
                         end if
 
-                    !end if
-
-                end if
-            end do
-
+                    end if
+                end do
+            
+            end if
 
 
             ! Correct the bias

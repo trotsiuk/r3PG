@@ -297,6 +297,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_density      ! 2025031
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_density      ! 20250314
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_density      ! 20250314
 
+real(kind=kind(0.0d0)) :: stems_loss_total      ! Sum of mort_stress, mort_defol, and mort_manag for all cohorts combined !20250301
 
 ! Water use ----------------------
 real(kind=kind(0.0d0)), dimension(n_sp) :: SWconst         ! soil parameters for soil class
