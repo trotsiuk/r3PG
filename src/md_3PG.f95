@@ -605,7 +605,7 @@ contains
 
             ! Management -------------------------------------------------------------------------
             !reset mortality value !20250301
-            stems_loss_manag(:) = 0.d0 
+            stems_loss_manag(:) = 0.d0
             biom_loss_stem_manag(:) = 0.d0
             biom_loss_root_manag(:) = 0.d0
             biom_loss_foliage_manag(:) = 0.d0
@@ -622,7 +622,7 @@ contains
 
                                 ! Calculate the proportion of management based on the stems (manag_model = 1, default)
                                 ! or biomass (manag_model = 2) !20250314
-                                if ( manag_model .eq. int(1) ) then        
+                                if ( manag_model .eq. int(1) ) then
                                     manag_remove_prop = (stems_n(i) - managementInputs(t_n(i),2,i) ) / stems_n(i)
                                 else
                                     manag_remove_prop = 1.d0 - managementInputs(t_n(i),2,i)
@@ -639,11 +639,11 @@ contains
                                 ! 20250314 it shall be >= 1 (not > 1). Since if this equal 1 all trees will be removed
                                 ! Therefore we set all the compartments proportion to 1 meaning that everything will be removed
 
-                                if( maxval( manag_remove_prop_compartment(:) ) >= 1.d0 ) then 
+                                if( maxval( manag_remove_prop_compartment(:) ) >= 1.d0 ) then
                                     manag_remove_prop_compartment(:) = 1.d0
                                     manag_remove_prop = 1.d0
                                 end if
-                              
+
                                 ! Calculate the losses in management & the stand values after management
                                 stems_loss_manag(i) = stems_n(i) * manag_remove_prop
                                 biom_loss_stem_manag(i) = biom_stem(i) * manag_remove_prop_compartment(1)
@@ -705,7 +705,7 @@ contains
 
             ! Stress related ------------------
             !reset mortality value !20250301
-            stems_loss_stress(:) = 0.d0 
+            stems_loss_stress(:) = 0.d0
             biom_loss_stem_stress(:) = 0.d0
             biom_loss_root_stress(:) = 0.d0
             biom_loss_foliage_stress(:) = 0.d0
@@ -725,7 +725,7 @@ contains
                         stems_n(i) = stems_n(i) - stems_loss_stress(i)
                         biom_stem(i) = biom_stem(i) - biom_loss_stem_stress(i)
                         biom_root(i) = biom_root(i) - biom_loss_root_stress(i)
-                        biom_foliage(i) = biom_foliage(i) -  biom_loss_foliage_stress(i)                 
+                        biom_foliage(i) = biom_foliage(i) -  biom_loss_foliage_stress(i)
 
                         b_cor = .TRUE.
 
@@ -753,7 +753,7 @@ contains
             end if
 
             ! Self-thinning / Density dependent related ------------------
-            stems_loss_density(:) = 0.d0 
+            stems_loss_density(:) = 0.d0
             biom_loss_stem_density(:) = 0.d0
             biom_loss_root_density(:) = 0.d0
             biom_loss_foliage_density(:) = 0.d0
@@ -774,7 +774,8 @@ contains
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
             ! do not calculate density-dependent mortality for any cohorts if there was already mortality for any single cohort (because dbh_prev(:) and dbh_total_prev will be inappropriate) ! 20250301
-            stems_loss_total = sum(stems_loss_manag(:)  + stems_loss_stress(:)) !+ mort_defol(:)
+            !stems_loss_total = sum(stems_loss_manag(:)  + stems_loss_stress(:)) !+ mort_defol(:)
+            stems_loss_total = 0.0d0
 
             if( stems_loss_total < 1.0e-6 ) then
 
@@ -790,7 +791,7 @@ contains
                                 mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
                                 !b_cor = .TRUE.
-                                
+
                             end if
 
                         else if ( mort_model .eq. int(2) ) then !20241106
@@ -804,10 +805,10 @@ contains
                             stems_loss_density(i) = mort_thinn_total(i) * Pi * dbh_total(i) * dbh_total(i) / 40000 / &
                                 basal_area_total(i) * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
 
-                            !b_cor = .TRUE. !20241106
+                            b_cor = .TRUE. !20241106
 
                         end if !20241106
-                        
+
                         ! It happends that somethines stems_loss_density provide negative values
                         ! this shall be neglected
 
@@ -830,7 +831,7 @@ contains
                             b_cor = .TRUE. !20241106
 
                         end if
-                        
+
                         if( stems_n(i) <= 0) then !20241118
                             biom_foliage(i) = 0.d0
                             biom_root(i) = 0.d0
@@ -840,7 +841,7 @@ contains
 
                     end if
                 end do
-            
+
             end if
 
 
