@@ -111,7 +111,6 @@ output(ii,:,8,8) = lt_fPhys_ave(:)     ! 20241129
 output(ii,:,8,9) = dbh_total(:)        ! 20241129
 output(ii,:,8,10) = stems_n_total(:)     ! 20241129
 
-
 ! Wood Delta ------------------
 output(ii,:,9,1) = Gc_mol(:)
 output(ii,:,9,2) = Gw_mol(:)

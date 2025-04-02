@@ -120,7 +120,7 @@ test_that("Development test for mortality model", {
     site = d_site_r,
     species = d_species_r,
     climate = d_climate_r,
-    thinning = d_thinning_r,
+    thinning = dplyr::mutate(d_thinning_r, dplyr::across(c(stem, root, foliage), ~1)),
     parameters = d_parameters_r,
     size_dist = d_sizeDist_r,
     settings = list(light_model = 2, transp_model = 2, phys_model = 2,

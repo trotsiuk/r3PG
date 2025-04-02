@@ -774,8 +774,8 @@ contains
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
             ! do not calculate density-dependent mortality for any cohorts if there was already mortality for any single cohort (because dbh_prev(:) and dbh_total_prev will be inappropriate) ! 20250301
-            !stems_loss_total = sum(stems_loss_manag(:)  + stems_loss_stress(:)) !+ mort_defol(:)
-            stems_loss_total = 0.0d0
+            stems_loss_total = sum(stems_loss_manag(:)  + stems_loss_stress(:)) !+ mort_defol(:)
+            !stems_loss_total = 0.0d0
 
             if( stems_loss_total < 1.0e-6 ) then
 
@@ -790,8 +790,6 @@ contains
                                 stems_loss_density(i) = f_get_mortality( stems_n_ha(i), biom_stem(i) / basal_area_prop(i) , &
                                 mS(i), wSx1000(i), thinPower(i) ) * basal_area_prop(i)
 
-                                !b_cor = .TRUE.
-
                             end if
 
                         else if ( mort_model .eq. int(2) ) then !20241106
@@ -805,7 +803,7 @@ contains
                             stems_loss_density(i) = mort_thinn_total(i) * Pi * dbh_total(i) * dbh_total(i) / 40000 / &
                                 basal_area_total(i) * basal_area(i) / (Pi * dbh(i) * dbh(i) / 40000)
 
-                            b_cor = .TRUE. !20241106
+                            !b_cor = .TRUE. !20241106
 
                         end if !20241106
 

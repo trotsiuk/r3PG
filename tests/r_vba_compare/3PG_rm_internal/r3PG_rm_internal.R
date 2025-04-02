@@ -9,7 +9,7 @@ out.df <- run_3PG(
   site = d_site_r,
   species = d_species_r,
   climate = d_climate_r,
-  thinning = d_thinning_r,
+  thinning = dplyr::mutate(d_thinning_r, dplyr::across(c(stem, root, foliage), ~1)),
   parameters = d_parameters_r,
   size_dist = d_sizeDist_r,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
@@ -36,11 +36,41 @@ out.df %>%
   theme_classic()+
   theme(legend.position = 'bottom')
 
-ggsave('tests/r_vba_compare/3PG_rm_internal/r3pg_rm_biomas.png', width = 15, height = 8, units = c("in"), dpi = 'retina', bg = "transparent")
+# ggsave('tests/r_vba_compare/3PG_rm_internal/r3pg_rm_biomas.png', width = 15, height = 8, units = c("in"), dpi = 'retina', bg = "transparent")
+
+
+# Explore the results
+out.df %>%
+  dplyr::filter( date >= as.Date('1939-11-01'),
+                 variable %in% c('stems_n_total', 'stems_n', 'stems_loss_density', 'mort_thinn_total', 'age')) %>%
+  tidyr::pivot_wider(names_from = 'species', values_from = 'value') %>%
+  dplyr::arrange( date, variable) %>%
+  dplyr::select(-group) %>%
+  dplyr::distinct() %>%
+  head(12)
+
+
+out_raw.df[479:482, 1:5, 2, 2] #stems_n
+
+out_raw.df[479:482, 1:6, 8, 3] #stems_loss_density
+out_raw.df[479:482, 1:6, 8, 5] #mort_thinn_total
+
+out_raw.df[479:482, 1:6, 8, 9] #dbh_total
+out_raw.df[479:482, 1:6, 8, 10] #stems_n_total
+out_raw.df[479:482, 1:6, 8, 15] #stems_n before density
+out_raw.df[479:482, 1:6, 11, 1]  # stems_loss_manag
+out_raw.df[479:482, 1:6, 11, 2]  # stems_loss_manag
+
+out_raw.df[479:482, 1:6, 4, 1] # biom_stem
+out_raw.df[479:482, 1:6, 4, 4] # biom_tree
+
+out_raw.df[479:482, 1:6, 3, 3] # lai
+
+out_raw.df[479:482, 1:6, 2, 1] # age
 
 
 
-
+60.9 * 3 + 107 + 198
 # Mortality module on test data -------------------------------------------
 
 out_3PG <- run_3PG(
