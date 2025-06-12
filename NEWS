@@ -12,6 +12,8 @@ r3PG 0.2.0
 
 ### Major changes
 
+- Foliage biomass after dormant period is now generated from carbohydrates, and not from the current year NPP. This is a major change, leading to difference with previous version.
+
 
 ### Minor changes
 

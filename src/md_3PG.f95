@@ -540,17 +540,18 @@ contains
                     ! if there is enough NPP then growth all the leaves, otherwise wait for next period
                     if( biom_foliage(i) == 0.d0 ) then
                         biom_foliage(i) = biom_foliage_debt(i)
+                        biom_foliage_debt(i) = 0.d0
                     end if
 
-                    if( NPP(i) >= biom_foliage_debt(i) ) then
-                        !if there is enough NPP
-                        NPP(i) = NPP(i) - biom_foliage_debt(i)
-                        biom_foliage_debt(i) = 0.d0
-                    else
-                        ! IF there is not enough NPP to regrow the leaves we regrow part and wait for
-                        biom_foliage_debt(i) = biom_foliage_debt(i) - NPP(i)
-                        NPP(i) = 0.d0
-                    end if
+                    ! if( NPP(i) >= biom_foliage_debt(i) ) then
+                    !     !if there is enough NPP
+                    !     NPP(i) = NPP(i) - biom_foliage_debt(i)
+                    !     biom_foliage_debt(i) = 0.d0
+                    ! else
+                    !     ! IF there is not enough NPP to regrow the leaves we regrow part and wait for
+                    !     biom_foliage_debt(i) = biom_foliage_debt(i) - NPP(i)
+                    !     NPP(i) = 0.d0
+                    ! end if
 
                     ! Calculate biomass loss
                     biom_loss_foliage(i) = gammaF(ii, i) * biom_foliage(i)
@@ -1045,12 +1046,14 @@ contains
         ones = ones(Height_ind)
 
     !   cumulative sum
-        ones_sum(1) = ones(1)
-        !if( n_sp > 1 ) then
-            do i = 2, n_sp*2
+        ones_sum = 0           
+        do i = 1, n_sp*2
+            if (i == 1) then
+                ones_sum(i) = ones(i)
+            else
                 ones_sum(i) = ones_sum(i-1) + ones(i)
-            end do
-        !end if
+            end if
+        end do
 
         ! Max height of each layer
         n_l = count(ones_sum == 0)
