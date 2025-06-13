@@ -1522,7 +1522,15 @@ contains
             transp_veg(:) = 0.d0
 
         else
-            netRad(:) = (Qa + Qb * (solar_rad * 10.d0 ** 6.d0 / day_length))
+            
+            ! In the norther latitudes the radiation shall not go below there if
+            ! there is a short daylangs
+            if ( day_length > 0.d0 ) then
+                netRad = Qa + Qb * (solar_rad * 1.d6 / day_length)
+            else
+                netRad = 0.d0          ! no short-wave input during polar night
+            endif
+
             !netRad(:) = max(netRad(:), 0.d0) ! net radiation can't be negative
             !SolarRad in MJ/m2/day ---> * 10^6 J/m2/day ---> /day_length converts to only daytime period ---> W/m2
             defTerm(:) = rhoAir * lambda * (VPDconv * VPD_sp(:)) * BLcond(:)
