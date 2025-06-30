@@ -19,6 +19,7 @@ r3PG 0.2.0
 
 - revising the documentation and functions
 - writing tests for all of the functions
+- in the northern latitudes netRad could go to NaN if the daylenght is 0. This caused crash in calulations. Corrected.
 
 
 r3PG 0.1.7

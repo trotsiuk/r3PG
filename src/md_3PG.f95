@@ -536,22 +536,12 @@ contains
 
                 else
 
-                    ! if there is some leaves to be growth put first NPP to the leaf growth
-                    ! if there is enough NPP then growth all the leaves, otherwise wait for next period
+                    ! Leaves are now re-created from carbohydrates and the NPP is 
+                    ! distributed amont the compartments
                     if( biom_foliage(i) == 0.d0 ) then
                         biom_foliage(i) = biom_foliage_debt(i)
                         biom_foliage_debt(i) = 0.d0
                     end if
-
-                    ! if( NPP(i) >= biom_foliage_debt(i) ) then
-                    !     !if there is enough NPP
-                    !     NPP(i) = NPP(i) - biom_foliage_debt(i)
-                    !     biom_foliage_debt(i) = 0.d0
-                    ! else
-                    !     ! IF there is not enough NPP to regrow the leaves we regrow part and wait for
-                    !     biom_foliage_debt(i) = biom_foliage_debt(i) - NPP(i)
-                    !     NPP(i) = 0.d0
-                    ! end if
 
                     ! Calculate biomass loss
                     biom_loss_foliage(i) = gammaF(ii, i) * biom_foliage(i)

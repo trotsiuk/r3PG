@@ -77,7 +77,7 @@ test_that("Broadleaf 3-PGpjs produces expected output", {
                     height_model = 1, correct_bias = 0, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(out[120, , 4, 1:3], 3), c(129.988, 31.350, 0.000))
+  expect_equal(round(out[120, , 4, 1:3], 3), c(140.099, 38.013, 0.000))
 })
 
 test_that("Broadleaf 3-PGmix produces expected output", {
@@ -92,7 +92,7 @@ test_that("Broadleaf 3-PGmix produces expected output", {
                     height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(out[120, , 4, 1:3], 3), c(132.316, 32.996, 0.000))
+  expect_equal(round(out[120, , 4, 1:3], 3), c(142.919,  40.056, 0.000))
 })
 
 # Mixed-species model check
@@ -108,8 +108,8 @@ test_that("Mixed-species 3-PGmix produces expected output", {
                     height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(out[120, 1, 4, 1:3], 3), c(85.939, 19.359, 0.000))
-  expect_equal(round(out[120, 2, 4, 1:3], 3), c(59.917, 17.677, 1.742))
+  expect_equal(round(out[120, 1, 4, 1:3], 3), c(94.901, 25.239, 0.000))
+  expect_equal(round(out[120, 2, 4, 1:3], 3), c(59.262, 17.022,  1.659))
 })
 
 
