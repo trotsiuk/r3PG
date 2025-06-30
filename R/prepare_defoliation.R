@@ -38,6 +38,10 @@ prepare_defoliation <- function(defoliation = NULL,
       stop(paste("Column names of defoliation table must be:", paste(required_cols, collapse = ", ")))
     }
 
+    if( !any(defoliation$species %in% sp_names) ){
+      stop("species and sp_names does not match.")
+    }
+
     defoliation <- data.frame(defoliation)
     defoliation <- defoliation[defoliation$species %in% sp_names, ]
     defoliation$species <- sp_id[defoliation$species]

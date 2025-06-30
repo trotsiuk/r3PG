@@ -9,8 +9,8 @@ module mod_3PG
 
 contains
 
-    subroutine s_3PG_f ( siteInputs, speciesInputs, forcingInputs, managementInputs, pars_i, pars_b, &
-        n_sp, n_m, n_man, t_t, settings, output) bind(C, name = "s_3PG_f_")
+    subroutine s_3PG_f ( siteInputs, speciesInputs, forcingInputs, managementInputs, defoliationInputs, &
+        pars_i, pars_b, n_sp, n_m, n_man, t_t, n_def, t_d, settings, output) bind(C, name = "s_3PG_f_")
 
         implicit none
 
@@ -20,14 +20,15 @@ contains
         ! Number of species and month
         integer(kind=c_int), intent(in) :: n_m
         integer(kind=c_int), intent(in) :: n_sp
-        integer(kind=c_int), intent(in) :: n_man ! number of management interventions
-        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t ! number of management interventions
+        integer(kind=c_int), intent(in) :: n_man, n_def ! number of management and defoliation interventions
+        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t, t_d! number of management and defoliation interventions
         integer(kind=c_int), dimension(8), intent(in) :: settings    ! settings for the models                !20241106
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,10), intent(in) :: speciesInputs                   !20241106
         real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs
+        real(kind=c_double), dimension(n_man,8,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                         !20241106
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b

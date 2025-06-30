@@ -4,18 +4,21 @@
 #include <Rmath.h>
 #include <R_ext/Rdynload.h>
 
-void F77_NAME(s_3PG_f)(double *siteInputs, double *speciesInputs, double *forcingInputs, double *managementInputs, 
-    double *parameterInputs, double *sizeDistInputs, int *n_sp, int *n_m, int *n_man, int *t_t, int *settings, 
-    double *output);
+void F77_NAME(s_3PG_f)(double *siteInputs, double *speciesInputs, double *forcingInputs, double *managementInputs,
+                       double *defoliationInputs, double *parameterInputs, double *sizeDistInputs, int *n_sp, int *n_m,
+                       int *n_man, int *t_t, int *n_def, int *t_d, int *settings,
+                       double *output);
 
-extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEXP managementInputs, SEXP parameterInputs,
-    SEXP sizeDistInputs, SEXP n_sp, SEXP n_m, SEXP n_man, SEXP t_t, SEXP settings){
+extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEXP managementInputs, SEXP defoliationInputs,
+                    SEXP parameterInputs, SEXP sizeDistInputs, SEXP n_sp, SEXP n_m, SEXP n_man, SEXP t_t,
+                    SEXP n_def, SEXP t_d, SEXP settings)
+{
 
     int n;
 
     const int n_m_c = INTEGER(n_m)[0];
     const int n_sp_c = INTEGER(n_sp)[0];
-    
+
 
     n = n_m_c * n_sp_c * 11 * 15;
 
@@ -29,8 +32,9 @@ extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEX
 
     setAttrib( output, R_DimSymbol, dims);
 
-    F77_CALL(s_3PG_f)(REAL(siteInputs), REAL(speciesInputs), REAL(forcingInputs), REAL(managementInputs), REAL(parameterInputs),
-        REAL(sizeDistInputs), INTEGER(n_sp), INTEGER(n_m), INTEGER(n_man), INTEGER(t_t), INTEGER(settings), REAL(output));
+    F77_CALL(s_3PG_f)(REAL(siteInputs), REAL(speciesInputs), REAL(forcingInputs), REAL(managementInputs), REAL(defoliationInputs),
+                      REAL(parameterInputs), REAL(sizeDistInputs), INTEGER(n_sp), INTEGER(n_m), INTEGER(n_man), INTEGER(t_t),
+                      INTEGER(n_def), INTEGER(t_d), INTEGER(settings), REAL(output));
 
     UNPROTECT(2);
 
@@ -38,7 +42,7 @@ extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEX
 }
 
 static const R_CallMethodDef CallEntries[] = {
-  {"s_3PG_c",   (DL_FUNC) &s_3PG_c,   11},
+  {"s_3PG_c",   (DL_FUNC) &s_3PG_c,   14},
   {NULL,         NULL,                0}
 };
 

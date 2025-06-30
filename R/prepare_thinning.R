@@ -48,6 +48,10 @@ prepare_thinning <- function(
       stop("Column names of the thinning table must correspond to: species, age, stems_n, stem, root, foliage")
     }
 
+    if( !any(thinning$species %in% sp_names) ){
+      stop("species and sp_names does not match.")
+    }
+
     thinning <- data.frame( thinning )
 
     # check whether the thinning above/below are within plausible range

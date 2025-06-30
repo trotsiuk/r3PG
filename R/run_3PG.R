@@ -7,6 +7,7 @@
 #' @param species Data frame as described in \code{\link{prepare_input}} containing species-level data.
 #' @param climate Data frame as described in \code{\link{prepare_input}} containing monthly climatic values.
 #' @param thinning Data frame as described in \code{\link{prepare_input}} containing thinning information. Default: \code{NULL}.
+#' @param defoliation Data frame as described in \code{\link{prepare_defoliation}} containing defoliation information. Default: \code{NULL}.
 #' @param parameters Data frame as described in \code{\link{prepare_input}} containing parameter values. Default: \code{NULL}.
 #' @param size_dist Data frame as described in \code{\link{prepare_input}} containing size distribution values. Default: \code{NULL}.
 #' @param settings List of model settings. See \code{\link{prepare_input}} for details. Default: \code{NULL}.
@@ -43,6 +44,7 @@ run_3PG <- function(
   species,
   climate,
   thinning = NULL,
+  defoliation = NULL,
   parameters = NULL,
   size_dist = NULL,
   settings = NULL,
@@ -64,14 +66,6 @@ run_3PG <- function(
       )
 
     list2env(input_checked, envir = environment())
-    # # extract output from the list
-    # site = input_checked$site
-    # species = input_checked$species
-    # climate = input_checked$climate
-    # thinning = input_checked$thinning
-    # parameters = input_checked$parameters
-    # size_dist = input_checked$size_dist
-    # settings = input_checked$settings
 
   }
 
@@ -109,6 +103,20 @@ run_3PG <- function(
       }
     }
 
+  # Defoliation
+  n_def = dim(defoliation)[1]
+  if( is.null(defoliation) ){
+    t_d = 1L
+  }else{
+    if( dim(defoliation)[3] == 1 ){
+      t_d = as.integer( length(defoliation[,1,]))
+    }else{
+      t_d = colSums( matrix( !is.na(defoliation[,1,]), ncol = dim(defoliation)[3]) )
+      t_d = as.integer(t_d)
+    }
+  }
+
+
   # Parameters
   parameters = as.matrix( parameters[,-1], nrow = nrow(parameters), ncol = n_sp)
 
@@ -124,12 +132,15 @@ run_3PG <- function(
     speciesInputs = species,
     forcingInputs = climate,
     managementInputs = thinning,
+    defoliationInputs = defoliation,
     parameterInputs = parameters,
     sizeDistInputs = size_dist,
     n_sp = n_sp,
     n_m = n_m,
     n_man = n_man,
     t_t = t_t,
+    n_def = n_def,
+    t_d = t_d,
     settings = settings)
 
 

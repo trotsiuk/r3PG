@@ -13,7 +13,7 @@ test_that("prepare_input processes all inputs correctly", {
 
   # Check structure of result
   expect_type(result, "list")
-  expect_named(result, c("site", "species", "climate", "thinning", "parameters", "size_dist", "settings"))
+  expect_named(result, c("site", "species", "climate", "thinning", "defoliation","parameters", "size_dist", "settings"))
 
   # Check species table
   expect_equal(nrow(result$species), 2)

@@ -59,6 +59,18 @@
 #'   \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
 #'   \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).
 #' }
+#' @param defoliation A data frame containing defoliation information. If no defoliation is required, set to \code{NULL}. The following columns are required:
+#' \itemize{
+#'   \item \code{species}: Species or cohort ID/name.
+#'   \item \code{age}: Age (years) at which defoliation occurs (numeric).
+#'   \item \code{stem_retained}: Proportion of stem mass retained after defoliation (0 to 1).
+#'   \item \code{foliage_retained}: Proportion of foliage mass retained after defoliation (0 to 1).
+#'   \item \code{root_retained}: Proportion of root mass retained after defoliation (0 to 1).
+#'   \item \code{stem}: Fraction of average tree stem mass of killed trees (numeric, default 1).
+#'   \item \code{t_recover}: Time (months) to recover from defoliation (numeric).
+#'   \item \code{prop_carbs}: Proportion of pre-defoliation carbs used to regenerate foliage (0 to 1).
+#'   \item \code{prop_npp}: Proportion of new photosynthate allocated to foliage (0 to 1).
+#' }
 #' @param parameters A data frame with parameters to modify. Columns must include:
 #' \itemize{
 #'   \item \code{parameter}: Name of the parameter.
@@ -99,6 +111,7 @@ prepare_input <- function(
   species,
   climate,
   thinning = NULL,
+  defoliation = NULL,
   parameters = NULL,
   size_dist = NULL,
   settings = NULL
@@ -135,6 +148,9 @@ prepare_input <- function(
   # Thinning
   thinning = prepare_thinning( thinning = thinning, sp_names = species$species)
 
+  # Defoliation
+  defoliation = prepare_defoliation( defoliation = defoliation, sp_names = species$species)
+
   # Parameters
   parameters = prepare_parameters( parameters = parameters, sp_names = species$species)
 
@@ -146,7 +162,9 @@ prepare_input <- function(
 
 
   # return the checked output
-  out <- list( site = site, species = species, climate = climate, thinning = thinning, parameters = parameters, size_dist = size_dist, settings = set_def)
+  out <- list( site = site, species = species, climate = climate, thinning = thinning,
+               defoliation = defoliation,
+               parameters = parameters, size_dist = size_dist, settings = set_def)
 
   return( out )
 }
