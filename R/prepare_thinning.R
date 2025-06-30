@@ -1,11 +1,11 @@
-#' @title Check and prepare thinningi information
+#' @title Check and prepare thinning information
 #' @description Prepares the thinning table for simulations, ensuring data consistency and completeness.
 #'
 #' @param thinning A data frame containing thinning information. If no thinning is required, set to \code{NULL}. The following columns are required:
 #' \itemize{
 #'   \item \code{species}: Species or cohort ID/name.
 #'   \item \code{age}: Age (years) at which thinning is performed (numeric).
-#'   \item \code{stems_n}: Number of trees remaining after thinning (numeric).
+#'   \item \code{stems_n}: Number of trees remaining after thinning (numeric). Or the Proportion of above ground biomass retained following the thinning event (0 to 1).
 #'   \item \code{stem}: Type of thinning (above/below) applied to stems (numeric, default is 1).
 #'   \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
 #'   \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).

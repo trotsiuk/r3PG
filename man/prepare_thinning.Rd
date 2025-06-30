@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_thinning.R
 \name{prepare_thinning}
 \alias{prepare_thinning}
-\title{Check and prepare thinningi information}
+\title{Check and prepare thinning information}
 \usage{
 prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
   "Pinus sylvestris"))
@@ -12,7 +12,7 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
 \itemize{
   \item \code{species}: Species or cohort ID/name.
   \item \code{age}: Age (years) at which thinning is performed (numeric).
-  \item \code{stems_n}: Number of trees remaining after thinning (numeric).
+  \item \code{stems_n}: Number of trees remaining after thinning (numeric). Or the Proportion of above ground biomass retained following the thinning event (0 to 1).
   \item \code{stem}: Type of thinning (above/below) applied to stems (numeric, default is 1).
   \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
   \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).

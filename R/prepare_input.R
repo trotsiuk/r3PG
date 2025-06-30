@@ -78,7 +78,7 @@
 #'   \item \code{correct_bias}: 0 (default: no), 1: yes.
 #'   \item \code{calculate_d13c}: 0 (default: no), 1: yes.
 #'   \item \code{mort_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
-#'   \item \code{manag_model}: 1 (default: 3-PGpjs thinning based on the number of trees), 2: 3-PGmix.
+#'   \item \code{manag_model}: 1 (default: 3-PGpjs thinning based on the number of trees), 2: 3-PGmix based on the biomass proportion.
 #' }
 #'
 #' @return A list with 7 elements: site, species, climate, thinning, parameters, size_dist, and settings.

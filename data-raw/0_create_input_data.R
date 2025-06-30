@@ -12,20 +12,6 @@ options(digits=16)
 
 
 # EU_MIXFOR ---------------------------------------------------------------
-#' `EU MIXFOR`
-d_site <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'site')
-
-d_species <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'species')
-
-d_climate <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'climate')
-
-d_parameters <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'parameters')
-
-d_sizeDist <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'sizeDist')
-
-d_thinning <- readxl::read_excel('data-raw/data.input.xlsx', sheet = 'thinning')
-
-
 #' `INFO data`
 i_output <- readxl::read_excel('data-raw/data.default.xlsx', sheet = 'output')
 
@@ -51,12 +37,35 @@ i_parameters_lit <- param.db_full
 
 
 #' `STORE the data`
-usethis::use_data( d_site, d_species, d_climate, d_parameters, d_sizeDist, d_thinning,
-                   internal = FALSE, overwrite = TRUE)
-
 usethis::use_data( i_output, i_parameters, i_sizeDist, i_parameters_lit,
                    internal = TRUE, overwrite = TRUE)
 
+
+
+
+# Default data ------------------------------------------------------------
+#' `EU MIXFOR`
+f_reg <- 'data-raw/data.input.xlsx'
+
+d_site <- readxl::read_excel(f_reg, sheet = 'site')
+d_species <- readxl::read_excel(f_reg, sheet = 'species')
+d_climate <- readxl::read_excel(f_reg, sheet = 'climate')
+d_parameters <- readxl::read_excel(f_reg, sheet = 'parameters')
+d_sizeDist <- readxl::read_excel(f_reg, sheet = 'sizeDist')
+d_thinning <- readxl::read_excel(f_reg, sheet = 'thinning')
+
+# Create a named list using the actual variables
+d_input <- list(
+  site = d_site,
+  species = d_species,
+  climate = d_climate,
+  parameters = d_parameters,
+  sizeDist = d_sizeDist,
+  thinning = d_thinning
+)
+
+# Save the list as a single data object
+usethis::use_data(d_input, internal = FALSE, overwrite = TRUE)
 
 
 # Regeneration data set ---------------------------------------------------
@@ -69,5 +78,43 @@ d_parameters_r <- readxl::read_excel(f_reg, sheet = 'parameters')
 d_sizeDist_r <- readxl::read_excel(f_reg, sheet = 'sizeDist')
 d_thinning_r <- readxl::read_excel(f_reg, sheet = 'thinning')
 
-usethis::use_data( d_site_r, d_species_r, d_climate_r, d_parameters_r, d_sizeDist_r, d_thinning_r,
-                   internal = FALSE, overwrite = TRUE)
+# Create a named list using the actual variables
+d_regeneration <- list(
+  site = d_site_r,
+  species = d_species_r,
+  climate = d_climate_r,
+  parameters = d_parameters_r,
+  sizeDist = d_sizeDist_r,
+  thinning = d_thinning_r
+)
+
+# Save the list as a single data object
+usethis::use_data(d_regeneration, internal = FALSE, overwrite = TRUE)
+
+
+
+# Defoliation data set ----------------------------------------------------
+f_reg <- 'data-raw/data_input_defoliation.xlsx'
+
+# Read data from each sheet
+d_site_d <- readxl::read_excel(f_reg, sheet = 'site')
+d_species_d <- readxl::read_excel(f_reg, sheet = 'species')
+d_climate_d <- readxl::read_excel(f_reg, sheet = 'climate')
+d_parameters_d <- readxl::read_excel(f_reg, sheet = 'parameters')
+d_sizeDist_d <- readxl::read_excel(f_reg, sheet = 'sizeDist')
+d_thinning_d <- readxl::read_excel(f_reg, sheet = 'thinning')
+d_defoliation_d <- readxl::read_excel(f_reg, sheet = 'defoliation')
+
+# Create a named list using the actual variables
+d_defoliation <- list(
+  site = d_site_d,
+  species = d_species_d,
+  climate = d_climate_d,
+  parameters = d_parameters_d,
+  sizeDist = d_sizeDist_d,
+  thinning = d_thinning_d,
+  defoliation = d_defoliation_d
+)
+
+# Save the list as a single data object
+usethis::use_data(d_defoliation, internal = FALSE, overwrite = TRUE)

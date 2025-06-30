@@ -5,10 +5,10 @@ test_that("prepare_input processes all inputs correctly", {
 
   # Run the function
   result <- prepare_input(
-    site = d_site,
-    species = d_species,
-    climate = d_climate,
-    thinning = d_thinning
+    site = d_input$site,
+    species = d_input$species,
+    climate = d_input$climate,
+    thinning = d_input$thinning
   )
 
   # Check structure of result
