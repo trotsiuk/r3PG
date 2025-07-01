@@ -6,12 +6,12 @@ library(dplyr)
 # Run the model -----------------------------------------------------------
 
 out.df <- run_3PG(
-  site = d_site_r,
-  species = d_species_r,
-  climate = d_climate_r,
-  thinning = dplyr::mutate(d_thinning_r, dplyr::across(c(stem, root, foliage), ~1)),
-  parameters = d_parameters_r,
-  size_dist = d_sizeDist_r,
+  site = d_regeneration$site,
+  species = d_regeneration$species,
+  climate = d_regeneration$climate,
+  thinning = d_regeneration$thinning,
+  parameters = d_regeneration$parameters,
+  size_dist = d_regeneration$sizeDist,
   settings = list(light_model = 2, transp_model = 2, phys_model = 2,
                   height_model = 1, correct_bias = 0, calculate_d13c = 0,
                   mort_model = 2),
@@ -20,7 +20,7 @@ out.df <- run_3PG(
 
 
 
-# Visualise the data ------------------------------------------------------
+# Visualise the data
 
 # i_var <- c('stems_n', 'biom_stem', 'biom_root', 'biom_foliage',)
 i_var <- c('stems_n', 'stems_loss_density', 'biom_loss_stem_density',
@@ -37,6 +37,24 @@ out.df %>%
   theme(legend.position = 'bottom')
 
 # ggsave('tests/r_vba_compare/3PG_rm_internal/r3pg_rm_biomas.png', width = 15, height = 8, units = c("in"), dpi = 'retina', bg = "transparent")
+
+
+
+# Mortality basead on the biomass -----------------------------------------
+out.df <- run_3PG(
+  site = d_regeneration$site,
+  species = d_regeneration$species,
+  climate = d_regeneration$climate,
+  thinning = d_regeneration$thinning,
+  parameters = d_regeneration$parameters,
+  size_dist = d_regeneration$sizeDist,
+  settings = list(light_model = 2, transp_model = 2, phys_model = 2,
+                  height_model = 1, correct_bias = 0, calculate_d13c = 0,
+                  mort_model = 2, manag_model = 2),
+  check_input = TRUE, df_out = TRUE
+)
+
+
 
 
 # Explore the results

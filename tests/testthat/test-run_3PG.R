@@ -62,7 +62,7 @@ test_that("Evergreen 3-PGmix produces expected output", {
                     height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(floor(out[120, , 4, 1:3]), c(127, 41, 3))
+  expect_equal(round(out[120, , 4, 1:3], 3), c(127.204, 41.171, 3.995))
 })
 
 # Broadleaf model checks
@@ -115,7 +115,7 @@ test_that("Mixed-species 3-PGmix produces expected output", {
 
 
 # Regeneration
-test_that("Development test for mortality model", {
+test_that("Mortality model", {
 
   result <- run_3PG(
     site = d_regeneration$site,
@@ -141,3 +141,45 @@ test_that("Development test for mortality model", {
   expect_equal(round(result[5000, 20, 8, 5], 3), c(2.409))
 
 })
+
+
+
+test_that("Mixed-species management based on biomass", {
+  out <- run_3PG(
+    site = d_regeneration$site,
+    species = d_regeneration$species,
+    climate = d_regeneration$climate,
+    thinning = d_regeneration$thinning,
+    parameters = d_regeneration$parameters,
+    size_dist = d_regeneration$sizeDist,
+    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, correct_bias = 0, calculate_d13c = 0,
+                    mort_model = 2, manag_model = 2),
+    check_input = TRUE, df_out = FALSE
+  )
+
+  expect_equal(round(out[120, 1, 4, 1:3], 3), c(73.814, 31.426,  4.455))
+  expect_equal(round(out[120, 2, 4, 1:3], 3), c(46.255, 14.359,  1.977))
+})
+
+
+
+
+test_that("Evergreen defoliation", {
+  out <- run_3PG(
+    site = d_defoliation$site,
+    species = d_defoliation$species,
+    climate = d_defoliation$climate,
+    thinning = d_defoliation$thinning,
+    defoliation = d_defoliation$defoliation,
+    parameters = d_defoliation$parameters,
+    size_dist = d_defoliation$sizeDist,
+    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, correct_bias = 0, calculate_d13c = 0,
+                    mort_model = 2, manag_model = 2),
+    check_input = TRUE, df_out = FALSE
+  )
+
+  expect_equal(round(out[601, , 4, 1:3], 3), c(225.131, 82.174, 4.686))
+})
+

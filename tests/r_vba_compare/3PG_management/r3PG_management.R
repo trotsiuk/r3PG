@@ -7,12 +7,12 @@ library(ggplot2)
 
 # Management based on number of trees -------------------------------------
 out_3PG <- run_3PG(
-  site        = d_site,
-  species     = d_species,
-  climate     = d_climate,
-  thinning    = d_thinning,
-  parameters  = d_parameters,
-  size_dist   = d_sizeDist,
+  site        = d_input$site,
+  species     = d_input$species,
+  climate     = d_input$climate,
+  thinning    = d_input$thinning,
+  parameters  = d_input$parameters,
+  size_dist   = d_input$sizeDist,
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2,
                      height_model = 1, correct_bias = 0, calculate_d13c = 0,
                      mort_model = 1, manag_model = 1),
@@ -43,17 +43,14 @@ out_3PG %>%
   xlab("Calendar date") + ylab('Value')
 
 # Management based on Biomass -------------------------------------
-d_thinning_biomass <- d_thinning
-d_thinning_biomass$stems_n<- 0.5
-
 
 out_3PG <- run_3PG(
-  site        = d_site,
-  species     = d_species,
-  climate     = d_climate,
-  thinning    = d_thinning_biomass,
-  parameters  = d_parameters,
-  size_dist   = d_sizeDist,
+  site        = d_input$site,
+  species     = d_input$species,
+  climate     = d_input$climate,
+  thinning    = dplyr::mutate(d_input$thinning, stems_n = 0.5),
+  parameters  = d_input$parameters,
+  size_dist   = d_input$sizeDist,
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2,
                      height_model = 1, correct_bias = 0, calculate_d13c = 0,
                      mort_model = 1, manag_model = 2),
