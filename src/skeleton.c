@@ -20,7 +20,7 @@ extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEX
     const int n_sp_c = INTEGER(n_sp)[0];
 
 
-    n = n_m_c * n_sp_c * 11 * 15;
+    n = n_m_c * n_sp_c * 11 * 20;
 
     SEXP output = PROTECT( allocVector(REALSXP, n) );
     SEXP dims = PROTECT( allocVector(INTSXP, 4) );
@@ -28,7 +28,7 @@ extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEX
     INTEGER(dims)[0] = n_m_c;
     INTEGER(dims)[1] = n_sp_c;
     INTEGER(dims)[2] = 11;
-    INTEGER(dims)[3] = 15;
+    INTEGER(dims)[3] = 20;
 
     setAttrib( output, R_DimSymbol, dims);
 

@@ -14,6 +14,7 @@ r3PG 0.2.0
 
 - Foliage biomass after dormant period is now generated from carbohydrates, and not from the current year NPP. This is a major change, leading to difference with previous version.
 - All the test data vere grouped into a specific `d_` file. So each file contain information on site, species, etc....
+- The output dimentions has been increased to 20 variables per group. See `i_output` for more details
 
 ### Minor changes
 

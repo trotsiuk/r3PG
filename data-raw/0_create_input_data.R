@@ -41,8 +41,6 @@ usethis::use_data( i_output, i_parameters, i_sizeDist, i_parameters_lit,
                    internal = TRUE, overwrite = TRUE)
 
 
-
-
 # Default data ------------------------------------------------------------
 #' `EU MIXFOR`
 f_reg <- 'data-raw/data.input.xlsx'

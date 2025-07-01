@@ -34,7 +34,7 @@ contains
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
         ! Output array
-        real(kind=c_double), dimension(n_m,n_sp,11,15), intent(inout) :: output
+        real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
 
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
@@ -691,6 +691,16 @@ contains
 
                 b_cor = .FALSE.
             end if
+
+
+            ! Defoliation --------------------------------------------------------------------------
+            !reset defoliation value
+            stems_loss_def(:) = 0.d0
+            biom_loss_stem_def(:) = 0.d0
+            biom_loss_root_def(:) = 0.d0
+            biom_loss_foliage_def(:) = 0.d0
+
+
 
 
             ! Mortality --------------------------------------------------------------------------

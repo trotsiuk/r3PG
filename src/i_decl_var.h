@@ -297,6 +297,11 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_density      ! 2025031
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_density      ! 20250314
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_density      ! 20250314
 
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_def
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_def
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_def
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_def
+
 real(kind=kind(0.0d0)) :: stems_loss_total      ! Sum of mort_stress, mort_defol, and mort_manag for all cohorts combined !20250301
 
 ! Water use ----------------------
@@ -348,11 +353,11 @@ real(kind=kind(0.0d0)), dimension(15, n_sp) :: bias_scale
 
 
 ! Settings ----------------------
-integer :: light_model                          ! 1 - 3PGpjs; 2 - 3PGmix
-integer :: transp_model                          ! 1 - 3PGpjs; 2 - 3PGmix
-integer :: phys_model                           ! 1 - 3PGpjs; 2 - 3PGmix
-integer :: height_model                         ! 1 - linear; 2-non-linear
-integer :: correct_bias                         ! 0 - no; 1 - 3PGmix
-integer :: calculate_d13c                       ! 0 - no; 1 - 3PGmix
-integer :: mort_model                           ! 1 - 3PGpjs; 2 - 3PGmix    !20241106
-integer :: manag_model                           ! 1 - 3PGpjs (based on tree number); 2 - 3PGmix    !20241106
+integer :: light_model               ! 1 - 3PGpjs; 2 - 3PGmix 2 - 3PGmix 
+integer :: transp_model              !1 - 3PGpjs; 2 - 3PGmix 
+integer :: phys_model                !1 - 3PGpjs; 2 - 3PGmix 
+integer :: height_model              !1 - linear; 2 - non - linear 
+integer :: correct_bias              !0 - no; 1 - 3PGmix 
+integer :: calculate_d13c             !0 - no; 1 - 3PGmix 
+integer :: mort_model                !1 - 3PGpjs; 2 - 3PGmix !20241106 
+integer :: manag_model               !1 - 3PGpjs(based on tree number); 2 - 3PGmix !20241106
