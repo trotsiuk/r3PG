@@ -60,6 +60,7 @@ run_3PG <- function(
       species = species,
       climate = climate,
       thinning = thinning,
+      defoliation = defoliation,
       parameters = parameters,
       size_dist = size_dist,
       settings = settings
@@ -106,13 +107,13 @@ run_3PG <- function(
   # Defoliation
   n_def = dim(defoliation)[1]
   if( is.null(defoliation) ){
-    t_d = 1L
+    d_t = 1L
   }else{
     if( dim(defoliation)[3] == 1 ){
-      t_d = as.integer( length(defoliation[,1,]))
+      d_t = as.integer( length(defoliation[,1,]))
     }else{
-      t_d = colSums( matrix( !is.na(defoliation[,1,]), ncol = dim(defoliation)[3]) )
-      t_d = as.integer(t_d)
+      d_t = colSums( matrix( !is.na(defoliation[,1,]), ncol = dim(defoliation)[3]) )
+      d_t = as.integer(d_t)
     }
   }
 
@@ -140,7 +141,7 @@ run_3PG <- function(
     n_man = n_man,
     t_t = t_t,
     n_def = n_def,
-    t_d = t_d,
+    d_t = d_t,
     settings = settings)
 
 

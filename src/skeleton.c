@@ -6,12 +6,12 @@
 
 void F77_NAME(s_3PG_f)(double *siteInputs, double *speciesInputs, double *forcingInputs, double *managementInputs,
                        double *defoliationInputs, double *parameterInputs, double *sizeDistInputs, int *n_sp, int *n_m,
-                       int *n_man, int *t_t, int *n_def, int *t_d, int *settings,
+                       int *n_man, int *t_t, int *n_def, int *d_t, int *settings,
                        double *output);
 
 extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEXP managementInputs, SEXP defoliationInputs,
                     SEXP parameterInputs, SEXP sizeDistInputs, SEXP n_sp, SEXP n_m, SEXP n_man, SEXP t_t,
-                    SEXP n_def, SEXP t_d, SEXP settings)
+                    SEXP n_def, SEXP d_t, SEXP settings)
 {
 
     int n;
@@ -34,7 +34,7 @@ extern SEXP s_3PG_c(SEXP siteInputs, SEXP speciesInputs, SEXP forcingInputs, SEX
 
     F77_CALL(s_3PG_f)(REAL(siteInputs), REAL(speciesInputs), REAL(forcingInputs), REAL(managementInputs), REAL(defoliationInputs),
                       REAL(parameterInputs), REAL(sizeDistInputs), INTEGER(n_sp), INTEGER(n_m), INTEGER(n_man), INTEGER(t_t),
-                      INTEGER(n_def), INTEGER(t_d), INTEGER(settings), REAL(output));
+                      INTEGER(n_def), INTEGER(d_t), INTEGER(settings), REAL(output));
 
     UNPROTECT(2);
 

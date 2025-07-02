@@ -21,11 +21,19 @@ out_3PG <- run_3PG(
 )
 
 
+
+ast <- out_3PG %>%
+  dplyr::filter( variable %in% c('age', 'var_11_17', 'var_11_18')) %>%
+  dplyr::select(-group) %>%
+  tidyr::pivot_wider(names_from = variable, values_from = value)
+
+
 i_var <- c('stems_n', 'dbh', 'height', 'basal_area',
            'biom_stem', 'biom_root', 'biom_foliage', 'volume_mai',
            'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag', 'biom_loss_root_manag',
            'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress', 'biom_loss_root_stress',
-           'stems_loss_density', 'biom_loss_stem_density', 'biom_loss_foliage_density', 'biom_loss_root_density')
+           'stems_loss_density', 'biom_loss_stem_density', 'biom_loss_foliage_density', 'biom_loss_root_density',
+           'stems_loss_def', 'biom_loss_stem_def', 'biom_loss_foliage_def', 'biom_loss_root_def')
 # i_lab <- c('Stem density', 'DBH', 'Height', 'Stem biomass', 'Root biomass', 'Foliage biomass',
 #            'stems_loss_manag', 'biom_loss_stem_manag', 'biom_loss_foliage_manag',
 #            'stems_loss_stress', 'biom_loss_stem_stress', 'biom_loss_foliage_stress',
@@ -43,4 +51,5 @@ out_3PG %>%
   theme_classic()+
   theme(legend.position="bottom")+
   xlab("Calendar date") + ylab('Value')
+
 

@@ -10,7 +10,7 @@ module mod_3PG
 contains
 
     subroutine s_3PG_f ( siteInputs, speciesInputs, forcingInputs, managementInputs, defoliationInputs, &
-        pars_i, pars_b, n_sp, n_m, n_man, t_t, n_def, t_d, settings, output) bind(C, name = "s_3PG_f_")
+        pars_i, pars_b, n_sp, n_m, n_man, t_t, n_def, d_t, settings, output) bind(C, name = "s_3PG_f_")
 
         implicit none
 
@@ -21,14 +21,14 @@ contains
         integer(kind=c_int), intent(in) :: n_m
         integer(kind=c_int), intent(in) :: n_sp
         integer(kind=c_int), intent(in) :: n_man, n_def ! number of management and defoliation interventions
-        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t, t_d! number of management and defoliation interventions
+        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t, d_t! number of management and defoliation interventions
         integer(kind=c_int), dimension(8), intent(in) :: settings    ! settings for the models                !20241106
 
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(8), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,10), intent(in) :: speciesInputs                   !20241106
         real(kind=c_double), dimension(n_man,5,n_sp), intent(in) :: managementInputs
-        real(kind=c_double), dimension(n_man,8,n_sp), intent(in) :: defoliationInputs
+        real(kind=c_double), dimension(n_def,8,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                         !20241106
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
@@ -700,6 +700,103 @@ contains
             biom_loss_root_def(:) = 0.d0
             biom_loss_foliage_def(:) = 0.d0
 
+            do i = 1, n_sp
+
+                if( d_t(i) > 0 ) then
+
+                    if(d_n(i) <= d_t(i)) then
+
+                       if( age(ii,i) >= defoliationInputs(d_n(i),1,i) ) then
+
+                        ! Check wether we need to put the defoliation type back to default after first month
+
+                            if (abs(defoliationInputs(d_n(i),4,i)) < 1.0d-6) then
+                                def_type(i) = 4  ! Stand-replacing
+
+                            else if (abs(defoliationInputs(d_n(i),2,i) - 1.0d0) < 1.0d-6 .and. &
+                                    abs(defoliationInputs(d_n(i),4,i) - 1.0d0) < 1.0d-6) then
+                                def_type(i) = 1  ! Prune event
+
+                            else if (abs(defoliationInputs(d_n(i),2,i)) < 1.0d-6 .and. defoliationInputs(d_n(i),4,i) > 1.0d-6) then
+                                def_type(i) = 2  ! Coppice event
+
+                            else if (defoliationInputs(d_n(i),2,i) > 1.0d-6 .and. defoliationInputs(d_n(i),2,i) < 1.0d0 - 1.0d-6) then
+                                def_type(i) = 3  ! Epicormic event
+
+                            else
+                                def_type(i) = -1  ! Unknown or unclassified
+                            end if
+
+                            ! Adjust pre-defoliation foliage mass
+                            if( def_type(i) == 1 .or. def_type(i) == 3 ) then
+                                biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),2,i)
+                            else if (def_type(i) == 2 ) then
+                                biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),4,i)
+                            else
+                                biom_foliage_adj_pre_def(i) = 0.0d0
+                            end if
+
+
+
+                            ! CONTINUE FROM HERE------------------------
+                            !--------------------------------------------
+                            !--------------------------------------------
+                            ! Adjust biomass pools
+
+                            ! Calculate the losses in defoliation & the stand values after management
+                            stems_loss_def(i) = stems_n(i) * manag_remove_prop
+                            biom_loss_stem_def(i) = biom_stem(i) * manag_remove_prop_compartment(1)
+                            biom_loss_root_def(i) = biom_root(i) * manag_remove_prop_compartment(2)
+
+                            stems_n(i) = stems_n(i) - stems_loss_manag(i)
+                            biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
+                            biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
+
+                            if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
+                                biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
+                                biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
+                            else
+                                biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
+                                biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
+                            end if
+
+
+
+                            if (f_dormant(month, leafgrow(i), leaffall(i))) then
+                                biom_foliage_debt(i) = biom_foliage_debt(i) * defol_stem_mass_prop_retained
+                                biom_loss_foliage_def(i) = 0.d0
+                                if (defoliation_type(i) == 1 .or. defoliation_type(i) == 3) t_recover(i) = 0.d0
+                            else
+                                biom_foliage(i) = biom_foliage(i) * defol_stem_mass_prop_retained * defol_foliage_mass_prop_retained
+                                biom_root(i)    = biom_root(i) * defol_root_mass_prop_retained
+                                biom_stem(i)    = biom_stem(i) * defol_stem_mass_prop_retained
+                            end if
+
+                            ! Adjust stems_n if root mass declined (mortality occurred)
+                            if (defol_root_mass_prop_retained < 1.d0) then
+                                mort_defol(i) = stems_n(i)
+
+                            ! Avoid increasing stems_n due to bad input ratio
+                            if (defol_stem_mass_prop_retained / max(defol_stem, 1.0e-6) > 1.d0) then
+                                mort_defol(i) = 0.d0  ! ignore change
+                            else
+                                stems_n(i) = stems_n(i) * defol_root_mass_prop_retained / defol_stem
+                                mort_defol(i) = mort_defol(i) - stems_n(i)
+                            end if
+                            end if
+
+                            b_cor = .TRUE.
+
+
+                            d_n(i) = d_n(i) + 1
+
+                        end if
+
+                    end if
+
+                end if
+
+            end do
 
 
 

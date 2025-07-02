@@ -117,6 +117,11 @@ biom_loss_foliage_density(:) = 0.d0      ! 20250314
 biom_loss_root_density(:) = 0.d0      ! 20250314
 
 
+! Defoliation
+def_type(:) = 0
+biom_foliage_adj_pre_def(:) = 0.d0
+!def_recover_t(:) = 0.d0
+
 stems_n_total(:) = 0.d0
 basal_area_total(:) = 0.d0
 mort_thinn_total(:) = 0.d0
