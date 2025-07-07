@@ -23,7 +23,7 @@ out_3PG <- run_3PG(
 
 
 ast <- out_3PG %>%
-  dplyr::filter( variable %in% c('age', 'var_11_17', 'var_11_18')) %>%
+  dplyr::filter( variable %in% c('age', 'var_11_17', 'var_11_18', 'biom_loss_stem_def')) %>%
   dplyr::select(-group) %>%
   tidyr::pivot_wider(names_from = variable, values_from = value)
 
@@ -53,3 +53,6 @@ out_3PG %>%
   xlab("Calendar date") + ylab('Value')
 
 
+
+
+prepare_defoliation(d_defoliation$defoliation, sp_names = 'Pinus sylvestris_1')

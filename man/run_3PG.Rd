@@ -4,8 +4,9 @@
 \alias{run_3PG}
 \title{Runs a 3-PG model simulation}
 \usage{
-run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
-  size_dist = NULL, settings = NULL, check_input = TRUE, df_out = TRUE)
+run_3PG(site, species, climate, thinning = NULL, defoliation = NULL,
+  parameters = NULL, size_dist = NULL, settings = NULL,
+  check_input = TRUE, df_out = TRUE)
 }
 \arguments{
 \item{site}{Data frame as described in \code{\link{prepare_input}} containing site conditions.}
@@ -15,6 +16,8 @@ run_3PG(site, species, climate, thinning = NULL, parameters = NULL,
 \item{climate}{Data frame as described in \code{\link{prepare_input}} containing monthly climatic values.}
 
 \item{thinning}{Data frame as described in \code{\link{prepare_input}} containing thinning information. Default: \code{NULL}.}
+
+\item{defoliation}{Data frame as described in \code{\link{prepare_defoliation}} containing defoliation information. Default: \code{NULL}.}
 
 \item{parameters}{Data frame as described in \code{\link{prepare_input}} containing parameter values. Default: \code{NULL}.}
 

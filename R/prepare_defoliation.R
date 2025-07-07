@@ -5,6 +5,7 @@
 #' \itemize{
 #'   \item \code{species}: Species or cohort ID/name.
 #'   \item \code{age}: Age (years) at which defoliation occurs (numeric).
+#'   \item \code{def_type}: Defoliation type: 1 - prune; 2 - copice; 3 - epicormic; 4 - stand replacing
 #'   \item \code{stem_retained}: Proportion of stem mass retained after defoliation (0 to 1).
 #'   \item \code{foliage_retained}: Proportion of foliage mass retained after defoliation (0 to 1).
 #'   \item \code{root_retained}: Proportion of root mass retained after defoliation (0 to 1).
@@ -28,7 +29,7 @@ prepare_defoliation <- function(defoliation = NULL,
   sp_id <- 1:n_sp
   names(sp_id) <- sp_names
 
-  required_cols <- c("species", "age", "stem_retained", "foliage_retained", "root_retained",
+  required_cols <- c("species", "age", "def_type", "stem_retained", "foliage_retained", "root_retained",
                      "stem", "t_recover", "prop_carbs", "prop_npp")
 
   if (is.null(defoliation)) {
@@ -58,7 +59,7 @@ prepare_defoliation <- function(defoliation = NULL,
     )
 
     defoliation <- defoliation[order(defoliation$species, defoliation$def_n), ]
-    defoliation <- simplify2array(by(defoliation[, 3:10], defoliation[, 1], as.matrix))
+    defoliation <- simplify2array(by(defoliation[, 3:11], defoliation[, 1], as.matrix))
   }
 
   if (n_sp > 1) {

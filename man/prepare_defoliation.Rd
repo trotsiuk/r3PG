@@ -12,6 +12,7 @@ prepare_defoliation(defoliation = NULL, sp_names = c("Fagus sylvatica",
 \itemize{
   \item \code{species}: Species or cohort ID/name.
   \item \code{age}: Age (years) at which defoliation occurs (numeric).
+  \item \code{def_type}: Defoliation type: 1 - prune; 2 - copice; 3 - epicormic; 4 - stand replacing
   \item \code{stem_retained}: Proportion of stem mass retained after defoliation (0 to 1).
   \item \code{foliage_retained}: Proportion of foliage mass retained after defoliation (0 to 1).
   \item \code{root_retained}: Proportion of root mass retained after defoliation (0 to 1).
