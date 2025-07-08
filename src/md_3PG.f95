@@ -733,69 +733,71 @@ contains
 
                         if( age(ii,i) >= defoliationInputs(d_n(i),1,i) ) then
 
-                        ! Check wether we need to put the defoliation type back to default after first month
-                        def_type(i) = int( defoliationInputs(d_n(i),2,i))
-                        def_recover_t(i) = defoliationInputs(d_n(i),7,i)
+                            ! Check wether we need to put the defoliation type back to default after first month
+                            def_type(i) = int( defoliationInputs(d_n(i),2,i))
+                            def_recover_t(i) = defoliationInputs(d_n(i),7,i)
 
-                        ! Adjust pre-defoliation foliage mass
-                        if( def_type(i) == 1 .or. def_type(i) == 3 ) then
-                            biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),3,i)
-                        else if (def_type(i) == 2 ) then ! copice event
-                            biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i)
-                            ! coppice_sr_ratio(i) = biom_stem(i) / biom_root(i)
+                            ! Adjust pre-defoliation foliage mass
+                            if( def_type(i) == 1 .or. def_type(i) == 3 ) then
+                                biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),3,i)
+                            else if (def_type(i) == 2 ) then ! copice event
+                                biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i)
+                                ! coppice_sr_ratio(i) = biom_stem(i) / biom_root(i)
 
-                            !! TODO we need to re-calcualte the f_age after this
-                            age(ii,i)  = 1.d0 / 12.d0
+                                !! TODO we need to re-calcualte the f_age after this
+                                age(ii,i)  = 1.d0 / 12.d0
 
-                        else if (def_type(i) == 4) then ! stand replacing
-                            def_recover_t(i) = 0.d0
-                        else
-                            biom_foliage_adj_pre_def(i) = 0.0d0
-                        end if
-
-                        age_last_def_event(i) = age(ii, i)
-
-                        if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
-                            ! foliage debt depends on stems that can resprout !20250301
-                            biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) !defol_stem_mass_prop_retained
-                            biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_def(i)
-                            
-                            ! if a prune or epicormic event occured during dormant season, then no foliage could have been removed
-                            if ( def_type(i) == 1 .or. def_type(i) == 3 ) then
+                            else if (def_type(i) == 4) then ! stand replacing
                                 def_recover_t(i) = 0.d0
-                            end if
-                        else
-                            biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
-                            biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_def(i)
-                        end if
-
-                        biom_loss_stem_def(i) = biom_stem(i) * (1.d0 - defoliationInputs(d_n(i),3,i))
-                        biom_loss_root_def(i) = biom_root(i) * (1.d0 - defoliationInputs(d_n(i),5,i))
-
-                        biom_stem(i) = biom_stem(i) - biom_loss_stem_def(i)
-                        biom_root(i) = biom_root(i) - biom_loss_root_def(i)
-
-                        ! if root biomass declined, there was mortality, so update stems_n
-                        if( defoliationInputs(d_n(i),5,i) < 1 ) then
-                            ! save the current value of mort_defol(i), before it is changed, so that the losses due to thinning can be calculated below.
-                            !mort_defol(i) = stems_n(i)
-
-                            ! if smaller trees are killed, then the ratio of stem,
-                            ! to be removed relative to the mean tree in the stand
-                            ! will be < 1. If the defol_stem_mass_prop_retained/ratio is > 1 then the new
-                            ! stems_n will be > pre-disturbance stems_n, which is impossible. Therefore, make sure defol_stem_mass_prop_retained/ratio <= 1.
-                            ! note that this is based on stem fraction, not root or foliage fractions
-                            if(  defoliationInputs(d_n(i),3,i) / defoliationInputs(d_n(i),5,i) > 1.d0 ) then ! this would mean post stems_n > pre stems_n
-
-                                biom_loss_stem_def(i) = 0.d0
-                                !stems_n(i) = stems_n(i)
-                                ! this we need to keep, so we don't remove the stems if no mortality
                             else
-                                biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i))
-                                !stems_n(i) = stems_n(i) * defol_root_mass_prop_retained / defol_stem
-                                stems_n(i) = biom_loss_stem_def(i)
+                                biom_foliage_adj_pre_def(i) = 0.0d0
                             end if
-                        end if
+
+                            age_last_def_event(i) = age(ii, i)
+
+                            if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
+                                ! foliage debt depends on stems that can resprout !20250301
+                                biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) !defol_stem_mass_prop_retained
+                                biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_def(i)
+                                
+                                ! if a prune or epicormic event occured during dormant season, then no foliage could have been removed
+                                if ( def_type(i) == 1 .or. def_type(i) == 3 ) then
+                                    def_recover_t(i) = 0.d0
+                                end if
+                            else
+                                biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
+                                biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_def(i)
+                            end if
+
+                            biom_loss_stem_def(i) = biom_stem(i) * (1.d0 - defoliationInputs(d_n(i),3,i))
+                            biom_loss_root_def(i) = biom_root(i) * (1.d0 - defoliationInputs(d_n(i),5,i))
+
+                            biom_stem(i) = biom_stem(i) - biom_loss_stem_def(i)
+                            biom_root(i) = biom_root(i) - biom_loss_root_def(i)
+
+                            ! if root biomass declined, there was mortality, so update stems_n
+                            if( defoliationInputs(d_n(i),5,i) < 1 ) then
+                                ! save the current value of mort_defol(i), before it is changed, so that the losses due to thinning can be calculated below.
+                                !mort_defol(i) = stems_n(i)
+
+                                ! if smaller trees are killed, then the ratio of stem,
+                                ! to be removed relative to the mean tree in the stand
+                                ! will be < 1. If the defol_stem_mass_prop_retained/ratio is > 1 then the new
+                                ! stems_n will be > pre-disturbance stems_n, which is impossible. Therefore, make sure defol_stem_mass_prop_retained/ratio <= 1.
+                                ! note that this is based on stem fraction, not root or foliage fractions
+                                if(  defoliationInputs(d_n(i),3,i) / defoliationInputs(d_n(i),6,i) > 1.d0 ) then ! this would mean post stems_n > pre stems_n
+
+                                    biom_loss_stem_def(i) = 0.d0
+                                    !stems_n(i) = stems_n(i)
+                                    ! this we need to keep, so we don't remove the stems if no mortality
+                                else
+                                    biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) /  defoliationInputs(d_n(i),6,i)
+                                    !stems_n(i) = stems_n(i) * defol_root_mass_prop_retained / defol_stem
+                                    stems_n(i) = biom_loss_stem_def(i)
+                                end if
+                            end if
+
+                            b_cor = .TRUE.
 
                             d_n(i) = d_n(i) + 1
 
