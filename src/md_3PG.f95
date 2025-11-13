@@ -267,7 +267,7 @@ contains
             ! If this is first month after dormancy we need to make potential LAI, so the
             ! PAR absorbption can be applied, otherwise it will be sero.
             ! In the end of the month we will re-calculate it based on the actual values
-            ! Also, for any cohort is still recovering from a defoliation event (receiving from stored 
+            ! Also, for any cohort is still recovering from a defoliation event (receiving from stored
             ! carborhydrates or altered partitioning), add that biomass.
 
             do i = 1, n_sp
@@ -290,13 +290,13 @@ contains
 
             end do
 
-            ! If any cohorts are recovering from a defoliation event, check whether they finished recovering 
+            ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
             ! after the last growth using new NPP. ! 20250301
             ! if ( t_recover(i) > 0 .and. age(ii,i) >= age_last_def_event(i) + t_recover(i)/12.d0 ) then ! t_recover(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
             !         t_recover(i) = 0.0d0
             !     end if
 
-            
+
             !     if( defoliation_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
             !     biom_foliage(i) + biom_stem(i) >= adj_pre_def_foliage_mass(i) ) then                                               ! coppice
             !         t_recover(i) = 0.0d0
@@ -560,7 +560,7 @@ contains
 
                 else
 
-                    ! Leaves are now re-created from carbohydrates and the NPP is 
+                    ! Leaves are now re-created from carbohydrates and the NPP is
                     ! distributed amont the compartments
                     if( biom_foliage(i) == 0.d0 ) then
                         biom_foliage(i) = biom_foliage_debt(i)
@@ -726,7 +726,7 @@ contains
 
             do i = 1, n_sp
 
-                
+
                 if( d_t(i) > 0 ) then
 
                     if(d_n(i) <= d_t(i)) then
@@ -759,13 +759,15 @@ contains
                                 ! foliage debt depends on stems that can resprout !20250301
                                 biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) !defol_stem_mass_prop_retained
                                 biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_def(i)
-                                
+
                                 ! if a prune or epicormic event occured during dormant season, then no foliage could have been removed
                                 if ( def_type(i) == 1 .or. def_type(i) == 3 ) then
                                     def_recover_t(i) = 0.d0
                                 end if
                             else
-                                biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
+                                !biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
+                                biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) &
+                         * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
                                 biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_def(i)
                             end if
 
@@ -791,7 +793,9 @@ contains
                                     !stems_n(i) = stems_n(i)
                                     ! this we need to keep, so we don't remove the stems if no mortality
                                 else
-                                    biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) /  defoliationInputs(d_n(i),6,i)
+                                    !biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) /  defoliationInputs(d_n(i),6,i)
+                                    biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) &
+                                    /  defoliationInputs(d_n(i),6,i)
                                     !stems_n(i) = stems_n(i) * defol_root_mass_prop_retained / defol_stem
                                     stems_n(i) = biom_loss_stem_def(i)
                                 end if
@@ -1155,7 +1159,7 @@ contains
         ones = ones(Height_ind)
 
     !   cumulative sum
-        ones_sum = 0           
+        ones_sum = 0
         do i = 1, n_sp*2
             if (i == 1) then
                 ones_sum(i) = ones(i)
@@ -1631,7 +1635,7 @@ contains
             transp_veg(:) = 0.d0
 
         else
-            
+
             ! In the norther latitudes the radiation shall not go below there if
             ! there is a short daylangs
             if ( day_length > 0.d0 ) then
