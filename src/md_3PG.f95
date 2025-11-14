@@ -640,7 +640,7 @@ contains
                                 if ( manag_model .eq. int(1) ) then
                                     manag_remove_prop = (stems_n(i) - managementInputs(t_n(i),2,i) ) / stems_n(i)
                                 else
-                                    manag_remove_prop = 1.d0 - managementInputs(t_n(i),2,i)
+                                    manag_remove_prop = 1.d0 - managementInputs(t_n(i),6,i) !20251114
                                 end if
 
                                 ! recalculate the proportion to be removed for each compartment separately
