@@ -633,7 +633,7 @@ contains
 
                         if( age(ii,i) >= managementInputs(t_n(i),1,i) ) then
 
-                            if( stems_n(i) > managementInputs(t_n(i),2,i) ) then
+                            if( stems_n(i) > managementInputs(t_n(i),2,i) .OR. (manag_model .EQ. 2) ) then !20251114
 
                                 ! Calculate the proportion of management based on the stems (manag_model = 1, default)
                                 ! or biomass (manag_model = 2) !20250314
