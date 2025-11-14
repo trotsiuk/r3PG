@@ -40,13 +40,15 @@ prepare_thinning <- function(
 
   if( is.null(thinning) ){
 
-    thinning = array(NA_real_, dim = c(1, 5, n_sp))
+    thinning = array(NA_real_, dim = c(1, 6, n_sp)) #!20251114
 
   } else {
 
-    if( !identical( c("species","age","stems_n","stem","root","foliage"), colnames(thinning) ) ){
-      stop("Column names of the thinning table must correspond to: species, age, stems_n, stem, root, foliage")
+
+    if( !identical( c("species","age","stems_n","stem","root","foliage","biom_prop_retained"), colnames(thinning) ) ){                    #!20251114
+      stop("Column names of the thinning table must correspond to: species, age, stems_n, stem, root, foliage, biom_prop_retained")       #!20251114
     }
+
 
     if( !any(thinning$species %in% sp_names) ){
       stop("species and sp_names does not match.")
@@ -57,6 +59,11 @@ prepare_thinning <- function(
     # check whether the thinning above/below are within plausible range
     if (any(thinning[ , c("stem", "root", "foliage")] < 0 | thinning[ , c("stem", "root", "foliage")] > 5)) {
       stop("Thinning values for stem, root, and foliage must be in the range [0, 5].")
+    }
+
+    # check whether the biom_prop_retained is within a plausible range                                   #!20251114
+    if (any(thinning[ , c("biom_prop_retained")] < 0 | thinning[ , c("biom_prop_retained")] > 1)) {      #!20251114
+      stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                        #!20251114
     }
 
     thinning <- thinning[thinning$species %in% sp_names, ]
@@ -75,7 +82,7 @@ prepare_thinning <- function(
 
     thinning = thinning[order(thinning$species, thinning$thin_n),]
 
-    thinning = simplify2array(by(thinning[,3:7], thinning[,1], as.matrix))
+    thinning = simplify2array(by(thinning[,3:8], thinning[,1], as.matrix)) #!20251114
   }
 
   if( n_sp > 1 ){
