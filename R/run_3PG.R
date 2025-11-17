@@ -75,7 +75,7 @@ run_3PG <- function(
   site$year_i = as.numeric(format(from,'%Y'))
   site$month_i = as.numeric(format(from,'%m'))
   site = site[,c('latitude', 'altitude', 'soil_class', 'asw_i', 'asw_min', 'asw_max', 'year_i', 'month_i','lt_mod_mths')] #!20251114
-  site = as.matrix( site, nrow = 1, ncol = 9) !!20251114
+  site = as.matrix( site, nrow = 1, ncol = 9) #!20251114
 
   # species
   n_sp = dim( species )[1]
