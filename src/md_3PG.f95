@@ -882,8 +882,8 @@ contains
 
             ! Calculate the weighted average of the Long-term modifiers when the mort_model = 2 !20241211
             lt_fN_ave(:) = sum( lt_fN(:) * basal_area_prop(:) )
-            lt_fT_ave(:) = sum( lt_fT(:) * basal_area_prop(:) )
-            lt_fPhys_ave(:) = sum( lt_fPhys(:) * basal_area_prop(:) )
+            lt_fT_ave(:) = 1.d0 ! = sum( lt_fT(:) * basal_area_prop(:) )
+            lt_fPhys_ave(:) = 1.d0 ! = sum( lt_fPhys(:) * basal_area_prop(:) )
 
             biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:)) ** thinPower(:)
 
