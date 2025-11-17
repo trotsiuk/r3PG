@@ -232,6 +232,30 @@ contains
         basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
 
+
+
+
+
+
+if (.not. allocated(lt_fT)) then
+    allocate(lt_fT(n_sp))
+    allocate(lt_fPhys(n_sp))
+    allocate(fT_hist(n_sp, lt_mod_mths))
+    allocate(fPhys_hist(n_sp, lt_mod_mths))
+    allocate(hist_ptr(n_sp))
+end if
+
+
+
+
+
+
+
+
+
+
+
+
         ! INITIALISATION (Write output)---------------------
         include 'i_write_out.h'
 
