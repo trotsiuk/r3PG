@@ -37,6 +37,14 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
 
 
+integer :: stat, s_index, m_lt, m      ! loop variables
+integer(kind=8) :: approx_bytes
+real(kind=8) :: approx_mb
+! Temporary variables for long-term modifiers
+real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
+
+
+
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
 
@@ -265,38 +273,37 @@ hist_ptr(:) = 1
 
 
 !-------------------------------------------------------------
-! Initial long-term modifiers for cohorts existing at start
+! Initialize long-term modifiers for cohorts that already exist
 !-------------------------------------------------------------
+lt_initialised(:) = .false.  ! logical flags, already allocated
+
 do i = 1, n_sp
     if (.not. lt_initialised(i)) then
 
-        !--- lt_fT: average temperature modifier over first lt_mod_mths months
+        !--- Initial lt_fT: mean of temperature response over first lt_mod_mths months
         lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
 
-        !--- lt_fPhys: compute a pseudo starting value
-        real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
-        integer :: m
-
-        ! compute average VPD over first lt_mod_mths months
+        !--- Initial lt_fPhys: estimate using f_sw and f_vpd
+        ! Using asw_max (no water limitation) and mean VPD over first lt_mod_mths months
         vpd_mean = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
-        ! compute water stress modifier assuming no limitation (ASW = asw_max)
+        ! f_sw: soil water limitation
         f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
 
-        ! compute VPD modifier
+        ! f_vpd: vapour pressure deficit effect
         f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
-        ! combine according to phys_model
+        ! Combine f_sw and f_vpd depending on phys_model
         if (phys_model == 1) then
             f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
         else if (phys_model == 2) then
             f_phys_tmp = f_sw_tmp * f_vpd_tmp
         end if
 
-        ! multiply by age modifier for first month
+        ! Multiply by age modifier for first month
         f_phys_tmp = f_phys_tmp * f_age(1, i)
 
-        ! assign to lt_fPhys
+        ! Assign to lt_fPhys
         lt_fPhys(i) = f_phys_tmp
 
         ! Fill circular buffers with initial values
@@ -306,7 +313,7 @@ do i = 1, n_sp
         ! Initialize circular buffer pointer
         hist_ptr(i) = 1
 
-        ! mark initialized
+        ! Mark cohort as initialized
         lt_initialised(i) = .true.
     end if
 end do
