@@ -238,22 +238,6 @@ contains
 
 
 
-!! Initialise the fixed-size array BEFORE any allocation
-!lt_initialised(:) = .false.
-!
-!if (.not. allocated(lt_fT)) then
-!    allocate(lt_fT(n_sp))
-!    allocate(lt_fPhys(n_sp))
-!    allocate(fT_hist(n_sp, lt_mod_mths))
-!    allocate(fPhys_hist(n_sp, lt_mod_mths))
-!    allocate(hist_ptr(n_sp))
-!endif
-!
-!lt_fT(:) = 0.0d0
-!lt_fPhys(:) = 0.0d0
-!fT_hist(:,:) = 0.0d0
-!fPhys_hist(:,:) = 0.0d0
-!hist_ptr(:) = 1
 
 !-----------------------------
 ! Long-term modifiers initialization
@@ -277,7 +261,27 @@ if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 hist_ptr(:) = 1
 
 
+! long-term modifiers for cohorts that already exist
+do i = 1, n_sp
+    if (.not. lt_initialised(i)) then
+        ! Compute initial lt_fT using first lt_mod_mths months
+        lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
 
+        ! Compute initial lt_fPhys using first lt_mod_mths months
+        ! (assuming f_phys_loose() returns the combined effect of f_sw * f_vpd)
+        lt_fPhys(i) = sum(f_phys_loose(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+
+        ! Fill circular buffers with the initial values
+        fT_hist(i, 1:lt_mod_mths) = lt_fT(i)
+        fPhys_hist(i, 1:lt_mod_mths) = lt_fPhys(i)
+
+        ! Initialize the circular buffer pointer
+        hist_ptr(i) = 1
+
+        ! Mark as initialized
+        lt_initialised(i) = .true.
+    end if
+end do
 
 
 
