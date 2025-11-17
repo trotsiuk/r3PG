@@ -237,22 +237,115 @@ contains
 
 
 
-! Initialise the fixed-size array BEFORE any allocation
-lt_initialised(:) = .false.
+!! Initialise the fixed-size array BEFORE any allocation
+!lt_initialised(:) = .false.
+!
+!if (.not. allocated(lt_fT)) then
+!    allocate(lt_fT(n_sp))
+!    allocate(lt_fPhys(n_sp))
+!    allocate(fT_hist(n_sp, lt_mod_mths))
+!    allocate(fPhys_hist(n_sp, lt_mod_mths))
+!    allocate(hist_ptr(n_sp))
+!endif
+!
+!lt_fT(:) = 0.0d0
+!lt_fPhys(:) = 0.0d0
+!fT_hist(:,:) = 0.0d0
+!fPhys_hist(:,:) = 0.0d0
+!hist_ptr(:) = 1
 
-if (.not. allocated(lt_fT)) then
-    allocate(lt_fT(n_sp))
-    allocate(lt_fPhys(n_sp))
-    allocate(fT_hist(n_sp, lt_mod_mths))
-    allocate(fPhys_hist(n_sp, lt_mod_mths))
-    allocate(hist_ptr(n_sp))
-endif
 
-lt_fT(:) = 0.0d0
-lt_fPhys(:) = 0.0d0
-fT_hist(:,:) = 0.0d0
-fPhys_hist(:,:) = 0.0d0
-hist_ptr(:) = 1
+! ----------------------------------------------------------------
+! Defensive allocation + safe initialisation for long-term arrays
+! Place this after inputs have been read (so n_sp and lt_mod_mths are set)
+! and before any code that uses these arrays (e.g. before f_tmp loops).
+! ----------------------------------------------------------------
+
+integer :: stat, m, s_index
+integer(kind=8) :: approx_bytes
+real(kind=8) :: approx_mb
+
+! Sanity checks
+if (n_sp <= 0) then
+    write(*,*) 'ERROR: n_sp <= 0 (', n_sp, ') -- aborting safely.'
+    stop 1
+end if
+
+if (lt_mod_mths <= 0) then
+    write(*,*) 'WARNING: lt_mod_mths <= 0, forcing to 1.'
+    lt_mod_mths = 1
+end if
+
+write(*,*) 'DEBUG: Preparing to allocate long-term arrays: n_sp=', n_sp, ' lt_mod_mths=', lt_mod_mths
+flush(unit=*)
+
+! Estimate approx memory (two real(8) arrays + two lt arrays + integer ptrs)
+approx_bytes = 8_int64 * ( int(n_sp,kind=8) * int(lt_mod_mths,kind=8) * 2_int64 + int(n_sp,kind=8)*2_int64 )
+approx_mb = real(approx_bytes, kind=8) / 1024.0d0 / 1024.0d0
+write(*,*) 'DEBUG: approx memory for long-term arrays ~', approx_mb, ' MB'
+flush(unit=*)
+
+if ( approx_mb > 2000.0d0 ) then
+    write(*,*) 'ERROR: requested arrays require >2GB (', approx_mb, 'MB). Reduce lt_mod_mths or n_sp.'
+    stop 1
+end if
+
+! Allocate (use stat to catch errors)
+stat = 0
+allocate(lt_fT(n_sp), stat=stat)
+if (stat /= 0) then
+    write(*,*) 'ERROR: allocate(lt_fT) failed, stat=', stat
+    stop 1
+end if
+
+allocate(lt_fPhys(n_sp), stat=stat)
+if (stat /= 0) then
+    write(*,*) 'ERROR: allocate(lt_fPhys) failed, stat=', stat
+    stop 1
+end if
+
+allocate(fT_hist(n_sp, lt_mod_mths), stat=stat)
+if (stat /= 0) then
+    write(*,*) 'ERROR: allocate(fT_hist) failed, stat=', stat
+    stop 1
+end if
+
+allocate(fPhys_hist(n_sp, lt_mod_mths), stat=stat)
+if (stat /= 0) then
+    write(*,*) 'ERROR: allocate(fPhys_hist) failed, stat=', stat
+    stop 1
+end if
+
+allocate(hist_ptr(n_sp), stat=stat)
+if (stat /= 0) then
+    write(*,*) 'ERROR: allocate(hist_ptr) failed, stat=', stat
+    stop 1
+end if
+
+! Ensure lt_initialised is allocatable too (if you declared it allocatable)
+if (.not. allocated(lt_initialised)) then
+    allocate(lt_initialised(n_sp), stat=stat)
+    if (stat /= 0) then
+        write(*,*) 'ERROR: allocate(lt_initialised) failed, stat=', stat
+        stop 1
+    end if
+end if
+
+! Safe element-wise initialisation (avoid whole-array vectorised assignments)
+do s_index = 1, n_sp
+    lt_fT(s_index)    = 0.0d0
+    lt_fPhys(s_index) = 0.0d0
+    hist_ptr(s_index) = 1
+    lt_initialised(s_index) = .false.
+    do m = 1, lt_mod_mths
+        fT_hist(s_index, m)    = 0.0d0
+        fPhys_hist(s_index, m) = 0.0d0
+    end do
+end do
+
+write(*,*) 'DEBUG: allocation and initialization successful for long-term arrays.'
+flush(unit=*)
+! ----------------------------------------------------------------
 
 
 
