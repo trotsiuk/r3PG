@@ -31,7 +31,7 @@
 #' @export
 #'
 prepare_site <- function(
-  site
+    site
 ){
 
   site = data.frame(site)
@@ -43,12 +43,6 @@ prepare_site <- function(
   required_cols <- c("latitude", "altitude", "soil_class", "asw_i", "asw_min", "asw_max", "from", "to")
   optional_cols <- c( "lt_mod_mths" ) #!20251114
 
-  # Check if all compulsory columns are present
-  missing_cols <- setdiff(required_cols, colnames(site))
-  if (length(missing_cols) > 0) {
-    stop(paste("The 'site' table must contain the following columns in order:", paste(missing_cols, collapse = ", ")))
-  }
-
   #!20251114
   #  if (!identical(required_cols, colnames(site))) {
   #    stop(paste(
@@ -56,6 +50,13 @@ prepare_site <- function(
   #      paste(required_cols, collapse = ", ")
   #    ))
   #  }
+
+  # Check if all compulsory columns are present
+  missing_cols <- setdiff(required_cols, colnames(site))
+  if (length(missing_cols) > 0) {
+    stop(paste("The 'site' table must contain the following columns in order:", paste(missing_cols, collapse = ", ")))
+  }
+
 
   # Check for NA values
   if (anyNA(site)) {
@@ -111,13 +112,6 @@ prepare_site <- function(
     }
   }
 
-
-
-
-
-
-
-
   # Return validated site table
-  return(site[, required_cols, drop = FALSE])
+  return(site[, c(required_cols,optional_cols), drop = FALSE]) #!20251114
 }
