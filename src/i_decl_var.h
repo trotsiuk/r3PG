@@ -31,6 +31,17 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN      ! long-term value of fN mo
 real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fT      ! long-term value of fT modifier for a given species         !20241106
 real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fPhys   ! long-term value of fPhysmod modifier for a given species   !20241106
 
+! Long-term modifier state variables                                                !20251114
+integer, parameter :: n_sp_max = 20                                                 !20251114
+logical :: lt_initialised(n_sp_max)    ! flags for cohorts                          !20251114
+real(kind=8) :: lt_fT(n_sp_max)        ! long-term temperature modifier             !20251114
+real(kind=8) :: lt_fPhys(n_sp_max)     ! long-term physiological modifier           !20251114
+integer :: LTwin                       ! user-provided long-term window (months)    !20251114
+! Rolling-history arrays                                                            !20251114
+real(kind=8) :: fT_hist(n_sp_max, lt_mod_mths)                                      !20251114
+real(kind=8) :: fPhys_hist(n_sp_max, lt_mod_mths)                                   !20251114
+integer      :: hist_ptr(n_sp_max)                                                  !20251114
+
 
 ! Climate ------------------------------
 real(kind=kind(0.0d0)), dimension(n_m) :: tmp_min         ! minimum daily temperature
