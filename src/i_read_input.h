@@ -15,6 +15,8 @@ asw_min     = siteInputs(5)
 asw_max     = siteInputs(6)
 year_i      = int( siteInputs(7) )
 month_i     = int( siteInputs(8) )
+lt_mod_mths = siteInputs(9) !20251114
+
 
 ! Species data -------------------------
 year_p      = int( speciesInputs(:,1) )

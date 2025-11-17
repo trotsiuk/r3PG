@@ -25,12 +25,12 @@ contains
         integer(kind=c_int), dimension(8), intent(in) :: settings    ! settings for the models                !20241106
 
         ! Initial, forcing, parameters
-        real(kind=c_double), dimension(8), intent(in) :: siteInputs
+        real(kind=c_double), dimension(9), intent(in) :: siteInputs                            !20251114
         real(kind=c_double), dimension(n_sp,10), intent(in) :: speciesInputs                   !20241106
-        real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs          !20251114
+        real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs           !20251114
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                         !20241106
+        real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                          !20241106
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
         ! Output array

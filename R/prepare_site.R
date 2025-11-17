@@ -41,12 +41,21 @@ prepare_site <- function(
   }
 
   required_cols <- c("latitude", "altitude", "soil_class", "asw_i", "asw_min", "asw_max", "from", "to")
-  if (!identical(required_cols, colnames(site))) {
-    stop(paste(
-      "The 'site' table must contain the following columns in order:",
-      paste(required_cols, collapse = ", ")
-    ))
+  optional_cols <- c( "lt_mod_mths" ) #!20251114
+
+  # Check if all compulsory columns are present
+  missing_cols <- setdiff(required_cols, colnames(site))
+  if (length(missing_cols) > 0) {
+    stop(paste("The 'site' table must contain the following columns in order:", paste(missing_cols, collapse = ", ")))
   }
+
+  #!20251114
+  #  if (!identical(required_cols, colnames(site))) {
+  #    stop(paste(
+  #      "The 'site' table must contain the following columns in order:",
+  #      paste(required_cols, collapse = ", ")
+  #    ))
+  #  }
 
   # Check for NA values
   if (anyNA(site)) {
@@ -81,6 +90,33 @@ prepare_site <- function(
   if (site$asw_i < 0) stop("Initial available soil water ('asw_i') must be >= 0.")
   if (site$asw_min < 0) stop("Minimum available soil water ('asw_min') must be >= 0.")
   if (site$asw_max < 0) stop("Maximum available soil water ('asw_max') must be >= 0.")
+
+
+
+  # Handle optional columns !20251114
+  if (!all(optional_cols %in% colnames(site))) {
+
+    # Add missing optional columns with NA values
+    missing_modifiers <- setdiff(optional_cols, colnames(site))
+    site[missing_modifiers] <- NA_real_
+
+  } else {
+
+    # Validate optional columns if present
+    if (!all(is.na(site[, optional_cols]))) {
+
+      if (any(site[, optional_cols] < 0, na.rm = TRUE)) {
+        stop("Number of months for long-term modifier calculations (lt_mod_mths) must contain non-negative values.")
+      }
+    }
+  }
+
+
+
+
+
+
+
 
   # Return validated site table
   return(site[, required_cols, drop = FALSE])

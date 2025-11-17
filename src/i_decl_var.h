@@ -17,7 +17,7 @@ real(kind=kind(0.0d0)) :: asw_min                         ! minimum available so
 integer :: year_i                               ! initial year when the simulations starts
 integer :: month_i                              ! initial month when the simulation starts
 integer :: altitude                             ! altitude of the site location, m
-
+real(kind=kind(0.0d0)) :: lt_mod_mths           ! length of time used to calculate the long-term modifiers for background mortality !20251114
 
 ! Species data -------------------------
 integer, dimension(n_sp) :: year_p              ! year when species was planted
@@ -360,11 +360,11 @@ real(kind=kind(0.0d0)), dimension(15, n_sp) :: bias_scale
 
 
 ! Settings ----------------------
-integer :: light_model               ! 1 - 3PGpjs; 2 - 3PGmix 2 - 3PGmix 
-integer :: transp_model              !1 - 3PGpjs; 2 - 3PGmix 
-integer :: phys_model                !1 - 3PGpjs; 2 - 3PGmix 
-integer :: height_model              !1 - linear; 2 - non - linear 
-integer :: correct_bias              !0 - no; 1 - 3PGmix 
-integer :: calculate_d13c             !0 - no; 1 - 3PGmix 
-integer :: mort_model                !1 - 3PGpjs; 2 - 3PGmix !20241106 
+integer :: light_model               ! 1 - 3PGpjs; 2 - 3PGmix 2 - 3PGmix
+integer :: transp_model              !1 - 3PGpjs; 2 - 3PGmix
+integer :: phys_model                !1 - 3PGpjs; 2 - 3PGmix
+integer :: height_model              !1 - linear; 2 - non - linear
+integer :: correct_bias              !0 - no; 1 - 3PGmix
+integer :: calculate_d13c             !0 - no; 1 - 3PGmix
+integer :: mort_model                !1 - 3PGpjs; 2 - 3PGmix !20241106
 integer :: manag_model               !1 - 3PGpjs(based on tree number); 2 - 3PGmix !20241106
