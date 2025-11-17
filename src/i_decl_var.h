@@ -27,9 +27,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_i ! initial foliage biom
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_root_i    ! initial root biomass for a species
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem_i    ! initial stem biomass for a species
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_i      ! initial stand stocking for a species
-real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN      ! long-term value of fN modifier for a given species         !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fT      ! long-term value of fT modifier for a given species         !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fPhys   ! long-term value of fPhysmod modifier for a given species   !20241106
+!real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN      ! long-term value of fN modifier for a given species         !20241106 !20251114
+!real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fT      ! long-term value of fT modifier for a given species         !20241106 !20251114
+!real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fPhys   ! long-term value of fPhysmod modifier for a given species   !20241106 !20251114
 
 ! Long-term modifier state variables                                                !20251114
 integer, parameter :: n_sp_max = 20                                                 !20251114
