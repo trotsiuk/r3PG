@@ -46,7 +46,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN      ! long-term value of fN mo
 integer, parameter :: n_sp_max = 200
 ! Long-term modifier state variables
 integer :: lt_mod_mths                    ! user-provided long-term window (months)
-logical :: lt_initialised(n_sp_max)       ! flags for cohorts
+logical, allocatable :: lt_initialised(:) ! flags for cohorts
 real(kind=8), allocatable :: lt_fT(:)    ! long-term temperature modifier
 real(kind=8), allocatable :: lt_fPhys(:) ! long-term physiological modifier
 ! Rolling-history arrays (for last lt_mod_mths)
