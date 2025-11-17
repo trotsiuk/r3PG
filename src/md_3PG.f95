@@ -245,6 +245,15 @@ if (.not. allocated(lt_fT)) then
     allocate(hist_ptr(n_sp))
 end if
 
+!-----------------------------------------
+! Initialize arrays
+!-----------------------------------------
+lt_fT(:) = 0.0d0
+lt_fPhys(:) = 0.0d0
+fT_hist(:,:) = 0.0d0
+fPhys_hist(:,:) = 0.0d0
+hist_ptr(:) = 1
+lt_initialised(:) = .false.
 
 
 
