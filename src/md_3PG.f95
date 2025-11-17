@@ -261,27 +261,57 @@ if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 hist_ptr(:) = 1
 
 
-! long-term modifiers for cohorts that already exist
+
+
+
+!-------------------------------------------------------------
+! Initial long-term modifiers for cohorts existing at start
+!-------------------------------------------------------------
 do i = 1, n_sp
     if (.not. lt_initialised(i)) then
-        ! Compute initial lt_fT using first lt_mod_mths months
+
+        !--- lt_fT: average temperature modifier over first lt_mod_mths months
         lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
 
-        ! Compute initial lt_fPhys using first lt_mod_mths months
-        ! (assuming f_phys_loose() returns the combined effect of f_sw * f_vpd)
-        lt_fPhys(i) = sum(f_phys_loose(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+        !--- lt_fPhys: compute a pseudo starting value
+        real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
+        integer :: m
 
-        ! Fill circular buffers with the initial values
+        ! compute average VPD over first lt_mod_mths months
+        vpd_mean = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+
+        ! compute water stress modifier assuming no limitation (ASW = asw_max)
+        f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+
+        ! compute VPD modifier
+        f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
+
+        ! combine according to phys_model
+        if (phys_model == 1) then
+            f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+        else if (phys_model == 2) then
+            f_phys_tmp = f_sw_tmp * f_vpd_tmp
+        end if
+
+        ! multiply by age modifier for first month
+        f_phys_tmp = f_phys_tmp * f_age(1, i)
+
+        ! assign to lt_fPhys
+        lt_fPhys(i) = f_phys_tmp
+
+        ! Fill circular buffers with initial values
         fT_hist(i, 1:lt_mod_mths) = lt_fT(i)
         fPhys_hist(i, 1:lt_mod_mths) = lt_fPhys(i)
 
-        ! Initialize the circular buffer pointer
+        ! Initialize circular buffer pointer
         hist_ptr(i) = 1
 
-        ! Mark as initialized
+        ! mark initialized
         lt_initialised(i) = .true.
     end if
 end do
+
+
 
 
 
