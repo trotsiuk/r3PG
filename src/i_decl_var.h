@@ -17,7 +17,6 @@ real(kind=kind(0.0d0)) :: asw_min                         ! minimum available so
 integer :: year_i                               ! initial year when the simulations starts
 integer :: month_i                              ! initial month when the simulation starts
 integer :: altitude                             ! altitude of the site location, m
-integer :: lt_mod_mths           ! length of time used to calculate the long-term modifiers for background mortality !20251114
 
 ! Species data -------------------------
 integer, dimension(n_sp) :: year_p              ! year when species was planted
@@ -31,16 +30,16 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN      ! long-term value of fN mo
 !real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fT      ! long-term value of fT modifier for a given species         !20241106 !20251114
 !real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fPhys   ! long-term value of fPhysmod modifier for a given species   !20241106 !20251114
 
-! Long-term modifier state variables                                                !20251114
-integer, parameter :: n_sp_max = 200                                                !20251114
-logical :: lt_initialised(n_sp_max)    ! flags for cohorts                          !20251114
-real(kind=8) :: lt_fT(n_sp_max)        ! long-term temperature modifier             !20251114
-real(kind=8) :: lt_fPhys(n_sp_max)     ! long-term physiological modifier           !20251114
-integer :: LTwin                       ! user-provided long-term window (months)    !20251114
-! Rolling-history arrays                                                            !20251114
-real(kind=8) :: fT_hist(n_sp_max, lt_mod_mths)                                      !20251114
-real(kind=8) :: fPhys_hist(n_sp_max, lt_mod_mths)                                   !20251114
-integer      :: hist_ptr(n_sp_max)                                                  !20251114
+! Long-term modifier state variables                                                   !20251114
+integer, parameter :: n_sp_max = 200        ! maximum number of species                !20251114
+logical :: lt_initialised(n_sp_max)         ! flags for cohorts                        !20251114
+real(kind=8) :: lt_fT(n_sp_max)            ! long-term temperature modifier            !20251114
+real(kind=8) :: lt_fPhys(n_sp_max)         ! long-term physiological modifier          !20251114
+integer :: lt_mod_mths           ! length of time used to calculate the long-term modifiers for background mortality !20251114
+! Rolling-history arrays (for the last lt_mod_mths)                                    !20251114
+real(kind=8), allocatable :: fT_hist(:,:)    ! fT history                              !20251114
+real(kind=8), allocatable :: fPhys_hist(:,:) ! fPhys history                           !20251114
+integer :: hist_ptr(n_sp_max)                ! circular buffer pointer per cohort      !20251114
 
 
 ! Climate ------------------------------
