@@ -232,28 +232,6 @@ contains
         basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
 
-
-
-
-! Allocate arrays at runtime based on n_sp and lt_mod_mths
-allocate(lt_fT(n_sp))
-allocate(lt_fPhys(n_sp))
-allocate(fT_hist(n_sp, lt_mod_mths))
-allocate(fPhys_hist(n_sp, lt_mod_mths))
-allocate(hist_ptr(n_sp))
-
-! Initialize
-lt_fT(:) = 0.0d0
-lt_fPhys(:) = 0.0d0
-fT_hist(:,:) = 0.0d0
-fPhys_hist(:,:) = 0.0d0
-hist_ptr(:) = 1
-lt_initialised(:) = .false.
-
-
-
-
-
         ! INITIALISATION (Write output)---------------------
         include 'i_write_out.h'
 

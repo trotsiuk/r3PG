@@ -42,17 +42,17 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN      ! long-term value of fN mo
 !real(kind=8), allocatable :: fPhys_hist(:,:)  ! fPhys history (n_sp x lt_mod_mths) !20251114
 !integer, allocatable :: hist_ptr(:)           ! circular buffer pointer (n_sp)     !20251114
 
-! Long-term modifier values
-real(kind=8), allocatable :: lt_fT(:)       ! long-term temperature modifier
-real(kind=8), allocatable :: lt_fPhys(:)    ! long-term physiological modifier
-! Long-term modifier state variables
+! Maximum number of species (adjust if needed)
 integer, parameter :: n_sp_max = 200
-logical :: lt_initialised(n_sp_max)         ! flags for cohorts
-integer :: lt_mod_mths                        ! user-provided window (months)
-! Rolling-history arrays
-real(kind=8), allocatable :: fT_hist(:,:)     ! fT history (n_sp x lt_mod_mths)
-real(kind=8), allocatable :: fPhys_hist(:,:)  ! fPhys history (n_sp x lt_mod_mths)
-integer, allocatable :: hist_ptr(:)           ! circular buffer pointer (n_sp)
+! Long-term modifier state variables
+integer :: lt_mod_mths                    ! user-provided long-term window (months)
+logical :: lt_initialised(n_sp_max)       ! flags for cohorts
+real(kind=8), allocatable :: lt_fT(:)    ! long-term temperature modifier
+real(kind=8), allocatable :: lt_fPhys(:) ! long-term physiological modifier
+! Rolling-history arrays (for last lt_mod_mths)
+real(kind=8), allocatable :: fT_hist(:,:)    ! fT history
+real(kind=8), allocatable :: fPhys_hist(:,:) ! fPhys history
+integer, allocatable :: hist_ptr(:)          ! circular buffer pointer per cohort
 
 
 ! Climate ------------------------------
