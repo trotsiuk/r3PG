@@ -274,49 +274,38 @@ hist_ptr(:) = 1
 
 
 !-------------------------------------------------------------
-! Initialize long-term modifiers for cohorts that already exist
+! Compute initial long-term modifiers for ALL species
 !-------------------------------------------------------------
-lt_initialised(:) = .false.  ! logical flags, already allocated
-
-! Loop over all species
 do i = 1, n_sp
 
-    !if (.not. lt_initialised(i)) then
-    if (age(1,i) >= 0.d0 .and. .not. lt_initialised(i)) then
-        !---------------------------
-        ! 1) Temperature modifier
-        !---------------------------
-        ! Initial lt_fT: mean of f_tmp over first lt_mod_mths months
-        lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-        ! Fill fT circular buffer with initial value
-        fT_hist(i, 1:lt_mod_mths) = lt_fT(i)
-        !---------------------------
-        ! 2) Physiological modifier
-        !---------------------------
-        ! Compute approximate f_sw using ASW = asw_max (no water limitation)
-        f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-        ! Compute approximate mean VPD for first lt_mod_mths months
-        vpd_mean = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-        ! Compute approximate f_vpd
-        f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-        ! Combine to f_phys depending on phys_model
-        if (phys_model .eq. int(1)) then
-            f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)  ! restrictive model
-        else if (phys_model .eq. int(2)) then
-            f_phys_tmp = f_sw_tmp * f_vpd_tmp      ! multiplicative model
-        !else
-        !    f_phys_tmp = 1.d0                       ! fallback
-        end if
-        ! Assign initial lt_fPhys
-        lt_fPhys(i) = f_phys_tmp
-        ! Fill fPhys circular buffer with initial value
-        fPhys_hist(i, 1:lt_mod_mths) = lt_fPhys(i)
-        ! Initialize circular buffer pointer
-        hist_ptr(i) = 1
-        ! Mark as initialized
-        lt_initialised(i) = .true.
+    !---------------------------
+    ! 1) Temperature (lt_fT)
+    !---------------------------
+    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
 
+    !---------------------------
+    ! 2) Physiological (lt_fPhys)
+    !   using ASW = asw_max and first lt_mod_mths of VPD
+    !---------------------------
+    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+
+    vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
+
+    if (phys_model .eq. 1) then
+        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+    else
+        f_phys_tmp = f_sw_tmp * f_vpd_tmp
     end if
+
+    lt_fPhys(i) = f_phys_tmp
+    fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
+
+    lt_initialised(i) = .true.
+
+    ! Optional debug
+    ! print *, 'DEBUG init species ', i, ' lt_fT=', lt_fT(i), ' lt_fPhys=', lt_fPhys(i)
 
 end do
 
@@ -476,112 +465,6 @@ end do
                 f_phys(:) = f_vpd(:) * f_sw(:) * f_age(ii,:)
 
             end if
-
-
-
-
-
-
-
-
-
-
-
-
-
-!-----------------------------
-! Initialize long-term modifiers for newly planted cohorts
-!-----------------------------
-do i = 1, n_sp
-
-    ! Only process cohorts not yet initialized
-    if (.not. lt_initialised(i) .and. age(i) >= 0.d0) then
-
-        ! Determine look-back window
-        ! t_current: current month index of simulation
-        ! age(i) in months since planting
-        t_plant = t_current - int(age(i)) + 1  ! month when cohort was planted
-
-        lookback_start = max(1, t_plant - lt_mod_mths)
-        lookback_end   = t_plant - 1
-        n_back         = lookback_end - lookback_start + 1
-
-        n_post = lt_mod_mths - max(0, n_back)
-        if (n_post < 0) n_post = 0
-
-        !---------------------------
-        ! 1) Temperature modifier lt_fT
-        !---------------------------
-        if (n_back > 0) then
-            lt_fT(i) = sum(f_tmp(lookback_start:lookback_end, i))
-        else
-            lt_fT(i) = 0.d0
-        end if
-        if (n_post > 0) then
-            lt_fT(i) = lt_fT(i) + sum(f_tmp(t_plant:t_plant+n_post-1, i))
-        end if
-        lt_fT(i) = lt_fT(i) / real(lt_mod_mths, kind=8)
-
-        ! Fill circular buffer
-        fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-
-        !---------------------------
-        ! 2) Physiological modifier lt_fPhys
-        !---------------------------
-        ! Pre-planting: use ASW before planting (or zero if undefined)
-        if (n_back > 0) then
-            f_sw_pre  = 1.d0 / (1.d0 + ((1.d0 - ASW(lookback_start:lookback_end)) / SWconst(i)) ** SWpower(i))
-            f_vpd_pre = exp(-CoeffCond(i) * VPD(lookback_start:lookback_end))
-        else
-            f_sw_pre  = 0.d0
-            f_vpd_pre = 0.d0
-        end if
-
-        ! Post-planting: use ASW = asw_max (no limitation)
-        if (n_post > 0) then
-            f_sw_post  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-            f_vpd_post = exp(-CoeffCond(i) * VPD(t_plant:t_plant+n_post-1))
-        else
-            f_sw_post  = 0.d0
-            f_vpd_post = 0.d0
-        end if
-
-        ! Combine vectors
-        ! Fortran requires arrays to have known size; use temporary array
-        allocate(f_phys_total(lt_mod_mths))
-        f_phys_total(1:n_back) = 0.d0
-        f_phys_total(n_back+1:lt_mod_mths) = 0.d0
-
-        if (phys_model .eq. 1) then
-            ! restrictive: min(f_sw, f_vpd)
-            if (n_back > 0) f_phys_total(1:n_back) = min(f_sw_pre, f_vpd_pre)
-            if (n_post > 0) f_phys_total(n_back+1:lt_mod_mths) = min(f_sw_post, f_vpd_post)
-        else if (phys_model .eq. 2) then
-            ! multiplicative: f_sw * f_vpd
-            if (n_back > 0) f_phys_total(1:n_back) = f_sw_pre * f_vpd_pre
-            if (n_post > 0) f_phys_total(n_back+1:lt_mod_mths) = f_sw_post * f_vpd_post
-        else
-            f_phys_total(:) = 1.d0
-        end if
-
-        ! Assign initial lt_fPhys
-        lt_fPhys(i) = sum(f_phys_total) / real(lt_mod_mths, kind=8)
-
-        ! Fill circular buffer
-        fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
-
-        ! Initialize circular buffer pointer
-        hist_ptr(i) = 1
-
-        ! Mark as initialized
-        lt_initialised(i) = .true.
-
-        deallocate(f_phys_total)
-
-    end if
-
-end do
-
 
 
 
