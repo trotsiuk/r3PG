@@ -253,6 +253,9 @@ real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
 ! Long-term modifiers initialization (simplified)
 !-----------------------------
 
+if (.not. allocated(lt_initialised)) allocate(lt_initialised(n_sp))
+lt_initialised(:) = .false.
+
 ! Current long-term modifier values (per species)
 if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
 lt_fT(:) = 0.0d0
@@ -267,6 +270,8 @@ fT_hist(:,:) = 0.0d0
 if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
 fPhys_hist(:,:) = 0.0d0
 
+if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
+hist_ptr(:) = 1
 
 
 
