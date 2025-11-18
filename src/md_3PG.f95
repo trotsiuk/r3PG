@@ -249,21 +249,80 @@ real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
 
 
 
-!-----------------------------
-! Long-term modifiers initialization (simplified)
-!-----------------------------
+!!-----------------------------
+!! Long-term modifiers initialization (simplified)
+!!-----------------------------
+!
+!!if (.not. allocated(lt_initialised)) allocate(lt_initialised(n_sp))
+!!lt_initialised(:) = .false.
+!
+!! Current long-term modifier values (per species)
+!if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
+!lt_fT(:) = 0.0d0
+!
+!if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
+!lt_fPhys(:) = 0.0d0
+!
+!! History arrays (shared month index for all cohorts)
+!if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
+!fT_hist(:,:) = 0.0d0
+!
+!if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
+!fPhys_hist(:,:) = 0.0d0
+!
+!if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
+!hist_ptr(:) = 0
+!
+!
+!
+!
+!!-------------------------------------------------------------
+!! Compute initial long-term modifiers for ALL species
+!!-------------------------------------------------------------
+!do i = 1, n_sp
+!
+!    !---------------------------
+!    ! 1) Temperature (lt_fT)
+!    !---------------------------
+!    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+!    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
+!
+!    !---------------------------
+!    ! 2) Physiological (lt_fPhys)
+!    !   using ASW = asw_max and first lt_mod_mths of VPD
+!    !---------------------------
+!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+!
+!    vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
+!
+!    if (phys_model .eq. 1) then
+!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+!    else
+!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
+!    end if
+!
+!    lt_fPhys(i) = f_phys_tmp
+!    fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
+!
+!    !lt_initialised(i) = .true.
+!
+!    ! Optional debug
+!    ! print *, 'DEBUG init species ', i, ' lt_fT=', lt_fT(i), ' lt_fPhys=', lt_fPhys(i)
+!
+!end do
 
-!if (.not. allocated(lt_initialised)) allocate(lt_initialised(n_sp))
-!lt_initialised(:) = .false.
 
-! Current long-term modifier values (per species)
+
+!-----------------------------
+! Long-term modifiers initialization
+!-----------------------------
 if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
 lt_fT(:) = 0.0d0
 
 if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
 lt_fPhys(:) = 0.0d0
 
-! History arrays (shared month index for all cohorts)
 if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
 fT_hist(:,:) = 0.0d0
 
@@ -271,10 +330,6 @@ if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
 fPhys_hist(:,:) = 0.0d0
 
 if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
-hist_ptr(:) = 1
-
-
-
 
 !-------------------------------------------------------------
 ! Compute initial long-term modifiers for ALL species
@@ -289,10 +344,8 @@ do i = 1, n_sp
 
     !---------------------------
     ! 2) Physiological (lt_fPhys)
-    !   using ASW = asw_max and first lt_mod_mths of VPD
     !---------------------------
     f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-
     vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
     f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
@@ -305,13 +358,11 @@ do i = 1, n_sp
     lt_fPhys(i) = f_phys_tmp
     fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
 
-    !lt_initialised(i) = .true.
-
-    ! Optional debug
-    ! print *, 'DEBUG init species ', i, ' lt_fT=', lt_fT(i), ' lt_fPhys=', lt_fPhys(i)
-
+    !---------------------------
+    ! Initialize circular buffer pointer
+    !---------------------------
+    hist_ptr(i) = lt_mod_mths   ! start at the last element
 end do
-
 
 
 
@@ -474,30 +525,30 @@ end do
 
 
 
-!-------------------------------------------------------------
-! Monthly update of long-term modifiers
-!-------------------------------------------------------------
-do i = 1, n_sp
-
-    ! Skip species not yet planted
-    if (age(month, i) < 0.d0) cycle
-
-    ! Update circular buffer index
-    hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
-
-    !---------------------------
-    ! 1) Temperature (lt_fT)
-    !---------------------------
-    fT_hist(i, hist_ptr(i)) = f_tmp(month, i)
-    lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-
-    !---------------------------
-    ! 2) Physiological (lt_fPhys)
-    !---------------------------
-    fPhys_hist(i, hist_ptr(i)) = f_phys(i)   ! use precomputed f_phys for this month
-    lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-
-end do
+!!-------------------------------------------------------------
+!! Monthly update of long-term modifiers
+!!-------------------------------------------------------------
+!do i = 1, n_sp
+!
+!    ! Skip species not yet planted
+!    if (age(month, i) < 0.d0) cycle
+!
+!    ! Update circular buffer index
+!    hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
+!
+!    !---------------------------
+!    ! 1) Temperature (lt_fT)
+!    !---------------------------
+!    fT_hist(i, hist_ptr(i)) = f_tmp(month, i)
+!    lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+!
+!    !---------------------------
+!    ! 2) Physiological (lt_fPhys)
+!    !---------------------------
+!    fPhys_hist(i, hist_ptr(i)) = f_phys(i)   ! use precomputed f_phys for this month
+!    lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+!
+!end do
 
 
 
