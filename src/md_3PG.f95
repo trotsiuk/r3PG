@@ -281,9 +281,8 @@ lt_initialised(:) = .false.  ! logical flags, already allocated
 ! Loop over all species
 do i = 1, n_sp
 
-      ! Only initialize if the cohort exists at the start
-  if (age(1,i) >= 0.d0 .and. .not. lt_initialised(i)) then
-
+    if (.not. lt_initialised(i)) then
+    !if (age(1,i) >= 0.d0 .and. .not. lt_initialised(i)) then
         !---------------------------
         ! 1) Temperature modifier
         !---------------------------
@@ -291,7 +290,6 @@ do i = 1, n_sp
         lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
         ! Fill fT circular buffer with initial value
         fT_hist(i, 1:lt_mod_mths) = lt_fT(i)
-
         !---------------------------
         ! 2) Physiological modifier
         !---------------------------
@@ -301,7 +299,6 @@ do i = 1, n_sp
         vpd_mean = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
         ! Compute approximate f_vpd
         f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-
         ! Combine to f_phys depending on phys_model
         if (phys_model .eq. int(1)) then
             f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)  ! restrictive model
@@ -310,16 +307,12 @@ do i = 1, n_sp
         !else
         !    f_phys_tmp = 1.d0                       ! fallback
         end if
-
         ! Assign initial lt_fPhys
         lt_fPhys(i) = f_phys_tmp
-
         ! Fill fPhys circular buffer with initial value
         fPhys_hist(i, 1:lt_mod_mths) = lt_fPhys(i)
-
         ! Initialize circular buffer pointer
         hist_ptr(i) = 1
-
         ! Mark as initialized
         lt_initialised(i) = .true.
 
