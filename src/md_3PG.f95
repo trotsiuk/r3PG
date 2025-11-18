@@ -566,17 +566,13 @@ do i = 1, n_sp
     !---------------------------
     ! 1) Temperature (lt_fT)
     !---------------------------
-    ! Store current month's f_tmp in the rolling buffer
     fT_hist(i, hist_ptr(i)) = f_tmp(ii, i)
-    ! Compute rolling mean from buffer
     lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
     !---------------------------
-    ! 2) Physiological (lt_fPhys)
+    ! 2) Physiological (lt_fPhys) — exclude age effect
     !---------------------------
-    ! Store current month's f_phys in the rolling buffer
-    fPhys_hist(i, hist_ptr(i)) = f_phys(i)
-    ! Compute rolling mean from buffer
+    fPhys_hist(i, hist_ptr(i)) = f_phys(i) / f_age(ii, i)
     lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
 end do
