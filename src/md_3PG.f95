@@ -325,6 +325,18 @@ do i = 1, n_sp
         ! Mark as initialized
         lt_initialised(i) = .true.
 
+
+        !---------------------------
+        ! Debug print
+        !---------------------------
+        print *, 'DEBUG: species', i
+        print *, 'lt_fT = ', lt_fT(i)
+        print *, 'lt_fPhys = ', lt_fPhys(i)
+        print *, 'f_sw_tmp = ', f_sw_tmp
+        print *, 'f_vpd_tmp = ', f_vpd_tmp
+        print *, 'vpd_mean = ', vpd_mean
+
+
     end if
 
 end do
