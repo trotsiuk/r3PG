@@ -474,32 +474,27 @@ end do
 
 
 
-! Update long-term modifiers (monthly)
+!-------------------------------------------------------------
+! Monthly update of long-term modifiers
+!-------------------------------------------------------------
 do i = 1, n_sp
 
     ! Skip species not yet planted
-    if (age(month,i) < 0.d0) cycle
+    if (age(month, i) < 0.d0) cycle
+
+    ! Update circular buffer index
+    hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
 
     !---------------------------
     ! 1) Temperature (lt_fT)
     !---------------------------
-    hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
     fT_hist(i, hist_ptr(i)) = f_tmp(month, i)
     lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
     !---------------------------
     ! 2) Physiological (lt_fPhys)
     !---------------------------
-    f_sw_tmp  = 1.d0 / ( 1.d0 + ( ((1.d0 - ASW(i)) / SWconst(i)) ** SWpower(i) ) )
-    f_vpd_tmp = exp(-CoeffCond(i) * vpd_day(month))
-
-    if (phys_model .eq. 1) then
-        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
-    else
-        f_phys_tmp = f_sw_tmp * f_vpd_tmp
-    end if
-
-    fPhys_hist(i, hist_ptr(i)) = f_phys_tmp
+    fPhys_hist(i, hist_ptr(i)) = f_phys(i)   ! use precomputed f_phys for this month
     lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
 end do
