@@ -45,7 +45,7 @@ contains
 !integer(kind=8) :: approx_bytes
 !real(kind=8) :: approx_mb
 ! Temporary variables for long-term modifiers
-real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
+real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp !, vpd_mean, asw_mean !20251114
 
 
 
@@ -311,25 +311,19 @@ if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 do i = 1, n_sp
 
     !---------------------------
-    ! 1) Temperature (lt_fT)  -- leave unchanged
+    ! 1) Temperature (lt_fT)
     !---------------------------
+    ! Mean of first lt_mod_mths months
     lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
     fT_hist(i,1:lt_mod_mths) = lt_fT(i)
 
     !---------------------------
-    ! 2) Physiological (lt_fPhys) excluding month 1
+    ! 2) Physiological (lt_fPhys)
     !---------------------------
-    nm = lt_mod_mths - 1            ! number of months used (2..lt_mod_mths)
+    ! Exclude first month to avoid initial zeros
+    f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - sum(asw_max(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)) / SWconst(i)) ** SWpower(i))
 
-    ! Define means excluding the first month
-    asw_mean = sum(asw_max(2:lt_mod_mths)) / real(nm, kind=8)
-    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(nm, kind=8)
-
-    ! Compute f_sw from mean ASW (same formula as you use in the loop)
-    f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - asw_mean) / SWconst(i)) ** SWpower(i))
-
-    ! Compute f_vpd from mean VPD
-    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
+    f_vpd_tmp = exp(-CoeffCond(i) * (sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)))
 
     if (phys_model .eq. 1) then
         f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
@@ -343,7 +337,7 @@ do i = 1, n_sp
     !---------------------------
     ! Initialize circular buffer pointer
     !---------------------------
-    hist_ptr(i) = lt_mod_mths
+    hist_ptr(i) = lt_mod_mths   ! start at the last element
 end do
 
 
