@@ -45,7 +45,7 @@ contains
 !integer(kind=8) :: approx_bytes
 !real(kind=8) :: approx_mb
 ! Temporary variables for long-term modifiers
-real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp !, vpd_mean, asw_mean !20251114
+real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean, asw_mean !20251114
 
 
 
@@ -318,16 +318,14 @@ do i = 1, n_sp
 
     !---------------------------
     ! 2) Physiological (lt_fPhys)
+    ! Exclude the first month (to avoid initial zeros)
     !---------------------------
-    ! Compute mean ASW and VPD excluding the first month
     asw_mean = sum(asw_max(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
     vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
 
-    ! Compute f_sw_tmp and f_vpd_tmp
     f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_mean) / SWconst(i)) ** SWpower(i))
     f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
-    ! Compute initial lt_fPhys (without f_age)
     if (phys_model .eq. 1) then
         f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
     else
@@ -343,7 +341,6 @@ do i = 1, n_sp
     hist_ptr(i) = lt_mod_mths   ! start at the last element
 
 end do
-
 
 
 
