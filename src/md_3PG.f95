@@ -281,8 +281,8 @@ lt_initialised(:) = .false.  ! logical flags, already allocated
 ! Loop over all species
 do i = 1, n_sp
 
-    if (.not. lt_initialised(i)) then
-    !if (age(1,i) >= 0.d0 .and. .not. lt_initialised(i)) then
+    !if (.not. lt_initialised(i)) then
+    if (age(1,i) >= 0.d0 .and. .not. lt_initialised(i)) then
         !---------------------------
         ! 1) Temperature modifier
         !---------------------------
@@ -479,7 +479,113 @@ end do
 
 
 
-            ! Calculate assimilation before the water ballance is done
+
+
+
+
+
+
+
+
+
+
+!-----------------------------
+! Initialize long-term modifiers for newly planted cohorts
+!-----------------------------
+do i = 1, n_sp
+
+    ! Only process cohorts not yet initialized
+    if (.not. lt_initialised(i) .and. age(i) >= 0.d0) then
+
+        ! Determine look-back window
+        ! t_current: current month index of simulation
+        ! age(i) in months since planting
+        t_plant = t_current - int(age(i)) + 1  ! month when cohort was planted
+
+        lookback_start = max(1, t_plant - lt_mod_mths)
+        lookback_end   = t_plant - 1
+        n_back         = lookback_end - lookback_start + 1
+
+        n_post = lt_mod_mths - max(0, n_back)
+        if (n_post < 0) n_post = 0
+
+        !---------------------------
+        ! 1) Temperature modifier lt_fT
+        !---------------------------
+        if (n_back > 0) then
+            lt_fT(i) = sum(f_tmp(lookback_start:lookback_end, i))
+        else
+            lt_fT(i) = 0.d0
+        end if
+        if (n_post > 0) then
+            lt_fT(i) = lt_fT(i) + sum(f_tmp(t_plant:t_plant+n_post-1, i))
+        end if
+        lt_fT(i) = lt_fT(i) / real(lt_mod_mths, kind=8)
+
+        ! Fill circular buffer
+        fT_hist(i,1:lt_mod_mths) = lt_fT(i)
+
+        !---------------------------
+        ! 2) Physiological modifier lt_fPhys
+        !---------------------------
+        ! Pre-planting: use ASW before planting (or zero if undefined)
+        if (n_back > 0) then
+            f_sw_pre  = 1.d0 / (1.d0 + ((1.d0 - ASW(lookback_start:lookback_end)) / SWconst(i)) ** SWpower(i))
+            f_vpd_pre = exp(-CoeffCond(i) * VPD(lookback_start:lookback_end))
+        else
+            f_sw_pre  = 0.d0
+            f_vpd_pre = 0.d0
+        end if
+
+        ! Post-planting: use ASW = asw_max (no limitation)
+        if (n_post > 0) then
+            f_sw_post  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+            f_vpd_post = exp(-CoeffCond(i) * VPD(t_plant:t_plant+n_post-1))
+        else
+            f_sw_post  = 0.d0
+            f_vpd_post = 0.d0
+        end if
+
+        ! Combine vectors
+        ! Fortran requires arrays to have known size; use temporary array
+        allocate(f_phys_total(lt_mod_mths))
+        f_phys_total(1:n_back) = 0.d0
+        f_phys_total(n_back+1:lt_mod_mths) = 0.d0
+
+        if (phys_model .eq. 1) then
+            ! restrictive: min(f_sw, f_vpd)
+            if (n_back > 0) f_phys_total(1:n_back) = min(f_sw_pre, f_vpd_pre)
+            if (n_post > 0) f_phys_total(n_back+1:lt_mod_mths) = min(f_sw_post, f_vpd_post)
+        else if (phys_model .eq. 2) then
+            ! multiplicative: f_sw * f_vpd
+            if (n_back > 0) f_phys_total(1:n_back) = f_sw_pre * f_vpd_pre
+            if (n_post > 0) f_phys_total(n_back+1:lt_mod_mths) = f_sw_post * f_vpd_post
+        else
+            f_phys_total(:) = 1.d0
+        end if
+
+        ! Assign initial lt_fPhys
+        lt_fPhys(i) = sum(f_phys_total) / real(lt_mod_mths, kind=8)
+
+        ! Fill circular buffer
+        fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
+
+        ! Initialize circular buffer pointer
+        hist_ptr(i) = 1
+
+        ! Mark as initialized
+        lt_initialised(i) = .true.
+
+        deallocate(f_phys_total)
+
+    end if
+
+end do
+
+
+
+
+            ! Calculate assimilation before the water balance is done
             alpha_c(:) = alphaCx(:) * f_nutr(:) * f_tmp(ii,:) * f_frost(ii,:) * f_calpha(ii,:) * f_phys(:)
             where( lai(:) == 0.d0 ) alpha_c(:) = 0.d0
             epsilon(:) = gDM_mol * molPAR_MJ * alpha_c(:)
