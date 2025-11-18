@@ -318,16 +318,16 @@ real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
 ! Long-term modifiers initialization
 !-----------------------------
 if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
-lt_fT(:) = 0.0d0
+lt_fT(:) = 1.0d0
 
 if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
-lt_fPhys(:) = 0.0d0
+lt_fPhys(:) = 1.0d0
 
 if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
-fT_hist(:,:) = 0.0d0
+fT_hist(:,:) = 1.0d0
 
 if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
-fPhys_hist(:,:) = 0.0d0
+fPhys_hist(:,:) = 1.0d0
 
 if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
