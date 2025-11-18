@@ -313,18 +313,21 @@ do i = 1, n_sp
     !---------------------------
     ! 1) Temperature (lt_fT)
     !---------------------------
-    ! Mean of first lt_mod_mths months
     lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
     fT_hist(i,1:lt_mod_mths) = lt_fT(i)
 
     !---------------------------
     ! 2) Physiological (lt_fPhys)
     !---------------------------
-    ! Exclude first month to avoid initial zeros
-    f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - sum(asw_max(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)) / SWconst(i)) ** SWpower(i))
+    ! Compute mean ASW and VPD excluding the first month
+    asw_mean = sum(asw_max(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
+    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
 
-    f_vpd_tmp = exp(-CoeffCond(i) * (sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)))
+    ! Compute f_sw_tmp and f_vpd_tmp
+    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_mean) / SWconst(i)) ** SWpower(i))
+    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
+    ! Compute initial lt_fPhys (without f_age)
     if (phys_model .eq. 1) then
         f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
     else
@@ -338,6 +341,7 @@ do i = 1, n_sp
     ! Initialize circular buffer pointer
     !---------------------------
     hist_ptr(i) = lt_mod_mths   ! start at the last element
+
 end do
 
 
