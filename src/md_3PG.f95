@@ -33,6 +33,8 @@ contains
         real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                          !20241106
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
+integer :: mm !20251114
+
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
 
@@ -328,7 +330,6 @@ if (.not. allocated(hist_ptr))    allocate(hist_ptr(n_sp))
 !-------------------------------------------------------------
 ! Compute initial long-term modifiers for all species
 !-------------------------------------------------------------
-integer :: mm
 
 do i = 1, n_sp
     do mm = 1, lt_mod_mths
