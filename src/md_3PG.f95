@@ -33,7 +33,7 @@ contains
         real(kind=c_double), dimension(88,n_sp), intent(in) :: pars_i                          !20241106
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
-integer :: mm !20251114
+!integer :: mm !20251114
 
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
@@ -255,103 +255,61 @@ real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
 
 
 
-!!-----------------------------
-!! Long-term modifiers initialization
-!!-----------------------------
-!if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
-!lt_fT(:) = 1.0d0
-!
-!if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
-!lt_fPhys(:) = 1.0d0
-!
-!if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
-!fT_hist(:,:) = 1.0d0
-!
-!if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
-!fPhys_hist(:,:) = 1.0d0
-!
-!if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
-!
-!!-------------------------------------------------------------
-!! Compute initial long-term modifiers for ALL species
-!!-------------------------------------------------------------
-!do i = 1, n_sp
-!
-!    !---------------------------
-!    ! 1) Temperature (lt_fT)
-!    !---------------------------
-!    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-!    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-!
-!    !---------------------------
-!    ! 2) Physiological (lt_fPhys)
-!    !---------------------------
-!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-!    vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-!
-!    if (phys_model .eq. 1) then
-!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
-!    else
-!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
-!    end if
-!
-!    lt_fPhys(i) = f_phys_tmp
-!    fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
-!
-!    !---------------------------
-!    ! Initialize circular buffer pointer
-!    !---------------------------
-!    hist_ptr(i) = lt_mod_mths   ! start at the last element
-!end do
-
-
-
-
-
-
 !-----------------------------
 ! Long-term modifiers initialization
 !-----------------------------
-if (.not. allocated(lt_fT))       allocate(lt_fT(n_sp))
+if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
 lt_fT(:) = 1.0d0
 
-if (.not. allocated(lt_fPhys))    allocate(lt_fPhys(n_sp))
+if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
 lt_fPhys(:) = 1.0d0
 
-if (.not. allocated(fT_hist))     allocate(fT_hist(n_sp, lt_mod_mths))
+if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
 fT_hist(:,:) = 1.0d0
 
-if (.not. allocated(fPhys_hist))  allocate(fPhys_hist(n_sp, lt_mod_mths))
+if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
 fPhys_hist(:,:) = 1.0d0
 
-if (.not. allocated(hist_ptr))    allocate(hist_ptr(n_sp))
+if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
 !-------------------------------------------------------------
-! Compute initial long-term modifiers for all species
+! Compute initial long-term modifiers for ALL species
 !-------------------------------------------------------------
-
 do i = 1, n_sp
-    do mm = 1, lt_mod_mths
-        ! Calculate soil water modifier for this species
-        f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-        ! Calculate VPD modifier for this month
-        f_vpd_tmp = exp(-CoeffCond(i) * vpd_day(mm))
 
-        ! Store initial physiological modifier in history buffer
-        if (phys_model .eq. 1) then
-            fPhys_hist(i, mm) = min(f_sw_tmp, f_vpd_tmp)
-        else
-            fPhys_hist(i, mm) = f_sw_tmp * f_vpd_tmp
-        end if
-    end do
+    !---------------------------
+    ! 1) Temperature (lt_fT)
+    !---------------------------
+    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
 
-    ! Compute initial long-term physiological modifier as mean of first lt_mod_mths
-    lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+    !---------------------------
+    ! 2) Physiological (lt_fPhys)
+    !---------------------------
+    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+    vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
+    if (phys_model .eq. 1) then
+        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+    else
+        f_phys_tmp = f_sw_tmp * f_vpd_tmp
+    end if
+
+    lt_fPhys(i) = f_phys_tmp
+    fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
+
+    !---------------------------
     ! Initialize circular buffer pointer
-    hist_ptr(i) = lt_mod_mths
+    !---------------------------
+    hist_ptr(i) = lt_mod_mths   ! start at the last element
 end do
+
+
+
+
+
+
 
 
 
