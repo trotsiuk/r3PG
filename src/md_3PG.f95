@@ -471,6 +471,77 @@ end do
 
 
 
+
+
+
+!-------------------------------------------------------------
+! Update long-term modifiers (monthly)
+!-------------------------------------------------------------
+do i = 1, n_sp
+
+    ! Skip species that do not exist yet
+    !if (age(month, i) < 0.d0) cycle
+
+    !---------------------------
+    ! 1) Update fT_hist and lt_fT
+    !---------------------------
+    ! Advance circular buffer pointer
+    hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
+
+    ! Store current month's f_tmp
+    fT_hist(i, hist_ptr(i)) = f_tmp(month, i)
+
+    ! Compute rolling mean for lt_fT
+    lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+
+    !---------------------------
+    ! 2) Update fPhys_hist and lt_fPhys
+    !---------------------------
+    ! Compute f_phys for current month
+    ! Note: ASW (available soil water) should be already updated for this month
+    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - ASW(i)) / SWconst(i)) ** SWpower(i))
+    f_vpd_tmp = exp(-CoeffCond(i) * VPD_sp(i, month))  ! or vpd_day(month)
+
+    if (phys_model .eq. 1) then
+        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+    else
+        f_phys_tmp = f_sw_tmp * f_vpd_tmp
+    end if
+
+    ! Advance circular buffer pointer for fPhys_hist
+    fPhys_hist(i, hist_ptr(i)) = f_phys_tmp
+
+    ! Compute rolling mean for lt_fPhys
+    lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+
+end do
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             ! Calculate assimilation before the water balance is done
             alpha_c(:) = alphaCx(:) * f_nutr(:) * f_tmp(ii,:) * f_frost(ii,:) * f_calpha(ii,:) * f_phys(:)
             where( lai(:) == 0.d0 ) alpha_c(:) = 0.d0
