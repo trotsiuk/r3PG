@@ -281,14 +281,14 @@ lt_initialised(:) = .false.  ! logical flags, already allocated
 ! Loop over all species
 do i = 1, n_sp
 
-    if (.not. lt_initialised(i)) then
+      ! Only initialize if the cohort exists at the start
+  if (age(1,i) >= 0.d0 .and. .not. lt_initialised(i)) then
 
         !---------------------------
         ! 1) Temperature modifier
         !---------------------------
         ! Initial lt_fT: mean of f_tmp over first lt_mod_mths months
         lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-
         ! Fill fT circular buffer with initial value
         fT_hist(i, 1:lt_mod_mths) = lt_fT(i)
 
@@ -297,10 +297,8 @@ do i = 1, n_sp
         !---------------------------
         ! Compute approximate f_sw using ASW = asw_max (no water limitation)
         f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-
         ! Compute approximate mean VPD for first lt_mod_mths months
         vpd_mean = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-
         ! Compute approximate f_vpd
         f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
@@ -309,8 +307,8 @@ do i = 1, n_sp
             f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)  ! restrictive model
         else if (phys_model .eq. int(2)) then
             f_phys_tmp = f_sw_tmp * f_vpd_tmp      ! multiplicative model
-        else
-            f_phys_tmp = 1.d0                       ! fallback
+        !else
+        !    f_phys_tmp = 1.d0                       ! fallback
         end if
 
         ! Assign initial lt_fPhys
@@ -324,18 +322,6 @@ do i = 1, n_sp
 
         ! Mark as initialized
         lt_initialised(i) = .true.
-
-
-        !---------------------------
-        ! Debug print
-        !---------------------------
-        print *, 'DEBUG: species', i
-        print *, 'lt_fT = ', lt_fT(i)
-        print *, 'lt_fPhys = ', lt_fPhys(i)
-        print *, 'f_sw_tmp = ', f_sw_tmp
-        print *, 'f_vpd_tmp = ', f_vpd_tmp
-        print *, 'vpd_mean = ', vpd_mean
-
 
     end if
 
