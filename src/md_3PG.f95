@@ -328,38 +328,39 @@ if (.not. allocated(hist_ptr))    allocate(hist_ptr(n_sp))
 !-------------------------------------------------------------
 ! Compute initial long-term modifiers for all species
 !-------------------------------------------------------------
+integer :: mm
+
 do i = 1, n_sp
-
-    !---------------------------
-    ! 1) Temperature (lt_fT)
-    !---------------------------
-    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-
-    !---------------------------
-    ! 2) Physiological (lt_fPhys, month-by-month)
-    !---------------------------
-    do m = 1, lt_mod_mths
+    do mm = 1, lt_mod_mths
+        ! Calculate soil water modifier for this species
         f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-        vpd_tmp   = vpd_day(m)
-        f_vpd_tmp = exp(-CoeffCond(i) * vpd_tmp)
+        ! Calculate VPD modifier for this month
+        f_vpd_tmp = exp(-CoeffCond(i) * vpd_day(mm))
 
+        ! Store initial physiological modifier in history buffer
         if (phys_model .eq. 1) then
-            fPhys_hist(i, m) = min(f_sw_tmp, f_vpd_tmp)
+            fPhys_hist(i, mm) = min(f_sw_tmp, f_vpd_tmp)
         else
-            fPhys_hist(i, m) = f_sw_tmp * f_vpd_tmp
+            fPhys_hist(i, mm) = f_sw_tmp * f_vpd_tmp
         end if
     end do
 
-    ! Initial long-term physiological mean
-    lt_fPhys(i) = sum(fPhys_hist(i,1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+    ! Compute initial long-term physiological modifier as mean of first lt_mod_mths
+    lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
-    !---------------------------
     ! Initialize circular buffer pointer
-    !---------------------------
-    hist_ptr(i) = lt_mod_mths   ! start at last element
-
+    hist_ptr(i) = lt_mod_mths
 end do
+
+
+
+
+
+
+
+
+
+
 
 
 
