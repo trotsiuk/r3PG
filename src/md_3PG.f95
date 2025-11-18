@@ -37,11 +37,11 @@ contains
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
 
 
-! Temporary variables for long-term modifiers
-integer :: stat, s_index, m_lt!, m      ! loop variables
-real(kind=8), dimension(n_sp) :: m_tmp
-integer(kind=8) :: approx_bytes
-real(kind=8) :: approx_mb
+!! Temporary variables for long-term modifiers
+!integer :: stat, s_index, m_lt!, m      ! loop variables
+!real(kind=8), dimension(n_sp) :: m_tmp
+!integer(kind=8) :: approx_bytes
+!real(kind=8) :: approx_mb
 ! Temporary variables for long-term modifiers
 real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
 
