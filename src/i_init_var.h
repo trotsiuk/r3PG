@@ -128,9 +128,9 @@ stems_n_total(:) = 0.d0
 basal_area_total(:) = 0.d0
 mort_thinn_total(:) = 0.d0
 dbh_total(:) = 0.d0
-lt_fN_ave(:) = 0.d0
-lt_fT_ave(:) = 0.d0
-lt_fPhys_ave(:) = 0.d0
+lt_fN_ave(:) = 1.d0           !20251114
+lt_fT_ave(:) = 1.d0           !20251114
+lt_fPhys_ave(:) = 1.d0        !20251114
 
 ! Wood Delta ------------------
 Gc_mol(:) = 0.d0
