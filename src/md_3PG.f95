@@ -275,19 +275,60 @@ if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 !-------------------------------------------------------------
 ! Compute initial long-term modifiers for ALL species
 !-------------------------------------------------------------
+!do i = 1, n_sp
+!
+!    !---------------------------
+!    ! 1) Temperature (lt_fT)
+!    !---------------------------
+!    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+!    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
+!
+!    !---------------------------
+!    ! 2) Physiological (lt_fPhys)
+!    !---------------------------
+!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+!    vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
+!
+!    if (phys_model .eq. 1) then
+!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+!    else
+!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
+!    end if
+!
+!    lt_fPhys(i) = f_phys_tmp
+!    fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
+!
+!    !---------------------------
+!    ! Initialize circular buffer pointer
+!    !---------------------------
+!    hist_ptr(i) = lt_mod_mths   ! start at the last element
+!end do
+
+
+
+
 do i = 1, n_sp
 
     !---------------------------
-    ! 1) Temperature (lt_fT)
+    ! 1) Temperature (lt_fT)  -- leave unchanged
     !---------------------------
     lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
     fT_hist(i,1:lt_mod_mths) = lt_fT(i)
 
     !---------------------------
-    ! 2) Physiological (lt_fPhys)
+    ! 2) Physiological (lt_fPhys) excluding month 1
     !---------------------------
-    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-    vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+    nm = lt_mod_mths - 1            ! number of months used (2..lt_mod_mths)
+
+    ! Define means excluding the first month
+    asw_mean = sum(asw_max(2:lt_mod_mths)) / real(nm, kind=8)
+    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(nm, kind=8)
+
+    ! Compute f_sw from mean ASW (same formula as you use in the loop)
+    f_sw_tmp = 1.d0 / (1.d0 + ((1.d0 - asw_mean) / SWconst(i)) ** SWpower(i))
+
+    ! Compute f_vpd from mean VPD
     f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
     if (phys_model .eq. 1) then
@@ -302,13 +343,8 @@ do i = 1, n_sp
     !---------------------------
     ! Initialize circular buffer pointer
     !---------------------------
-    hist_ptr(i) = lt_mod_mths   ! start at the last element
+    hist_ptr(i) = lt_mod_mths
 end do
-
-
-
-
-
 
 
 
