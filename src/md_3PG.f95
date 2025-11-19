@@ -567,35 +567,37 @@ do sp = 1, n_sp
     ! Skip species not yet planted
     if (age(ii, sp) < 0.d0) cycle
 
-    ! Loop over all months in the history
-    do kk = 1, lt_mod_mths
-        ! Compute correct circular buffer index
-        j = mod(hist_ptr(sp) + kk, lt_mod_mths)
-        if (j == 0) j = lt_mod_mths
+    ! Build filenames (one per species)
+    write(filenameT, '(A,I0,A)') 'fT_hist_sp', sp, '.csv'
+    write(filenameP, '(A,I0,A)') 'fPhys_hist_sp', sp, '.csv'
 
-        ! Build filenames (one per species per month)
-        write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', sp, '_month', kk, '.csv'
-        write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', sp, '_month', kk, '.csv'
-
-        ! Write fT_hist
-        open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-        if (ios /= 0) then
-            print *, 'Error opening file: ', trim(filenameT)
-        else
+    ! Open fT_hist file
+    open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+    if (ios /= 0) then
+        print *, 'Error opening file: ', trim(filenameT)
+    else
+        ! Write all months in circular order
+        do kk = 1, lt_mod_mths
+            j = mod(hist_ptr(sp) + kk, lt_mod_mths)
+            if (j == 0) j = lt_mod_mths
             write(301, '(F12.6)') fT_hist(sp, j)
-            close(301)
-        end if
+        end do
+        close(301)
+    end if
 
-        ! Write fPhys_hist
-        open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-        if (ios /= 0) then
-            print *, 'Error opening file: ', trim(filenameP)
-        else
+    ! Open fPhys_hist file
+    open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+    if (ios /= 0) then
+        print *, 'Error opening file: ', trim(filenameP)
+    else
+        do kk = 1, lt_mod_mths
+            j = mod(hist_ptr(sp) + kk, lt_mod_mths)
+            if (j == 0) j = lt_mod_mths
             write(302, '(F12.6)') fPhys_hist(sp, j)
-            close(302)
-        end if
+        end do
+        close(302)
+    end if
 
-    end do
 end do
 
 
