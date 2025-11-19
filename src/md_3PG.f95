@@ -40,7 +40,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this is only for printing the history
 ! Declare these once at the top of your subroutine
-integer :: kk, j, ios
+integer :: kk, j, ios, sp
 character(len=256) :: filenameT, filenameP
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -563,33 +563,39 @@ end do
 !        end if
 
 
-do kk = 1, 125
+do sp = 1, n_sp
+    ! Skip species not yet planted
+    if (age(ii, sp) < 0.d0) cycle
 
-    ! Compute circular buffer index
-    j = mod(hist_ptr(i) + kk, lt_mod_mths)
-    if (j == 0) j = lt_mod_mths
+    ! Loop over all months in the history
+    do kk = 1, lt_mod_mths
+        ! Compute correct circular buffer index
+        j = mod(hist_ptr(sp) + kk, lt_mod_mths)
+        if (j == 0) j = lt_mod_mths
 
-    ! Build filenames
-    write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', kk, '.csv'
-    write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', kk, '.csv'
+        ! Build filenames (one per species per month)
+        write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', sp, '_month', kk, '.csv'
+        write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', sp, '_month', kk, '.csv'
 
-    ! Open files for writing
-    open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-    if (ios /= 0) then
-        print *, 'Error opening file: ', trim(filenameT)
-    else
-        write(301, '(F12.6)') fT_hist(i, j)
-        close(301)
-    end if
+        ! Write fT_hist
+        open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+        if (ios /= 0) then
+            print *, 'Error opening file: ', trim(filenameT)
+        else
+            write(301, '(F12.6)') fT_hist(sp, j)
+            close(301)
+        end if
 
-    open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-    if (ios /= 0) then
-        print *, 'Error opening file: ', trim(filenameP)
-    else
-        write(302, '(F12.6)') fPhys_hist(i, j)
-        close(302)
-    end if
+        ! Write fPhys_hist
+        open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+        if (ios /= 0) then
+            print *, 'Error opening file: ', trim(filenameP)
+        else
+            write(302, '(F12.6)') fPhys_hist(sp, j)
+            close(302)
+        end if
 
+    end do
 end do
 
 
