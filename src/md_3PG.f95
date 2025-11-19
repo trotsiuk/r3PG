@@ -272,77 +272,6 @@ fPhys_hist(:,:) = 1.0d0
 
 if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
-!-------------------------------------------------------------
-! Compute initial long-term modifiers for ALL species
-!-------------------------------------------------------------
-!do i = 1, n_sp
-!
-!    !---------------------------
-!    ! 1) Temperature (lt_fT)
-!    !---------------------------
-!    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-!    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-!
-!    !---------------------------
-!    ! 2) Physiological (lt_fPhys)
-!    !---------------------------
-!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-!    vpd_mean  = sum(vpd_day(1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-!
-!    if (phys_model .eq. 1) then
-!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
-!    else
-!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
-!    end if
-!
-!    lt_fPhys(i) = f_phys_tmp
-!    fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
-!
-!    !---------------------------
-!    ! Initialize circular buffer pointer
-!    !---------------------------
-!    hist_ptr(i) = lt_mod_mths   ! start at the last element
-!end do
-
-
-
-
-!do i = 1, n_sp
-!
-!    !---------------------------
-!    ! 1) Temperature (lt_fT)
-!    !---------------------------
-!    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-!    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-!
-!    !---------------------------
-!    ! 2) Physiological (lt_fPhys)
-!    ! Exclude the first month of VPD (to avoid initial zeros)
-!    !---------------------------
-!    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
-!
-!    ! ASW uses the constant directly
-!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-!
-!    if (phys_model .eq. 1) then
-!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
-!    else
-!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
-!    end if
-!
-!    lt_fPhys(i) = f_phys_tmp
-!    fPhys_hist(i,1:lt_mod_mths) = lt_fPhys(i)
-!
-!    !---------------------------
-!    ! Initialize circular buffer pointer
-!    !---------------------------
-!    hist_ptr(i) = lt_mod_mths   ! start at the last element
-!
-!end do
-
-
 
 do i = 1, n_sp
 
@@ -598,7 +527,32 @@ do i = 1, n_sp
 
 end do
 
+!=============================================================
+! Save fT_hist and fPhys_hist for debugging (first 5 months)
+!=============================================================
+if (ii <= 5) then
+    do i = 1, n_sp
 
+        ! --- File names ---
+        write(filenameT, '(A, I0, A, I0, A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+        write(filenameP, '(A, I0, A, I0, A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
+
+        ! --- Save fT_hist ---
+        open(unit=301, file=filenameT, status='replace')
+        do k = 1, lt_mod_mths
+            write(301, '(F12.6)') fT_hist(i, k)
+        end do
+        close(301)
+
+        ! --- Save fPhys_hist ---
+        open(unit=302, file=filenameP, status='replace')
+        do k = 1, lt_mod_mths
+            write(302, '(F12.6)') fPhys_hist(i, k)
+        end do
+        close(302)
+
+    end do
+end if
 
 
 
