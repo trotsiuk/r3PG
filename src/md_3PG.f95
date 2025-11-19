@@ -539,29 +539,35 @@ end do
 ! ------------------------------
         ! Optional: Save fT_hist and fPhys_hist for first 5 months
         ! ------------------------------
-        if (ii <= 125) then
-            do i = 1, n_sp
-                ! File names
-                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
-                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
+! Optional: Save fT_hist and fPhys_hist for first 5 months
+if (ii <= 125) then
+    do i = 1, n_sp
+        ! File names
+        write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+        write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
 
-                ! Open files for writing
-                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-                if (ios /= 0) stop 'Error opening fT_hist file'
+        ! Open files for writing
+        open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+        if (ios /= 0) stop 'Error opening fT_hist file'
 
-                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-                if (ios /= 0) stop 'Error opening fPhys_hist file'
+        open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+        if (ios /= 0) stop 'Error opening fPhys_hist file'
 
-                ! Write the lt_mod_mths elements of the circular buffer
-                do kk = 1, lt_mod_mths
-                    write(301, '(F12.6)') fT_hist(i, kk)
-                    write(302, '(F12.6)') fPhys_hist(i, kk)
-                end do
+        ! Write the circular buffer in chronological order
+        do kk = 1, lt_mod_mths
+            ! Compute the chronological index
+            ! (hist_ptr(i) is the most recent month)
+            j = mod(hist_ptr(i) + kk, lt_mod_mths)
+            if (j == 0) j = lt_mod_mths
 
-                close(301)
-                close(302)
-            end do
-        end if
+            write(301, '(F12.6)') fT_hist(i, j)
+            write(302, '(F12.6)') fPhys_hist(i, j)
+        end do
+
+        close(301)
+        close(302)
+    end do
+end if
 
 
 
