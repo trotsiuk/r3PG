@@ -130,9 +130,9 @@ prepare_input <- function(
   site = prepare_site(site = site)
 
   # Species
-  if( set_def['mort_model'] == 2 && anyNA(species[, c( "lt_fN","lt_fT","lt_fPhys" )]) ){
-    stop('Long-term modifiers (lt_fN, lt_fT, lt_fPhys) must contain non-NA values.')
-  }
+  #if( set_def['mort_model'] == 2 && anyNA(species[, c( "lt_fN","lt_fT","lt_fPhys" )]) ){            !20251114
+  #  stop('Long-term modifiers (lt_fN, lt_fT, lt_fPhys) must contain non-NA values.')
+  #}
   species = prepare_species(species = species)
 
 
