@@ -83,8 +83,8 @@ run_3PG <- function(
   planted = as.Date(paste(species$planted,"-01",sep=""))
   species$year_p = as.numeric(format(planted,'%Y'))
   species$month_p = as.numeric(format(planted,'%m'))
-  species = species[,c('year_p', 'month_p', 'fertility', 'stems_n', 'biom_stem', 'biom_root', 'biom_foliage', 'lt_fN', 'lt_fT', 'lt_fPhys')]
-  species = as.matrix( species, nrow = n_sp, ncol = 10)
+  species = species[,c('year_p', 'month_p', 'fertility', 'stems_n', 'biom_stem', 'biom_root', 'biom_foliage')] #!20251114
+  species = as.matrix( species, nrow = n_sp, ncol = 7)
 
   # climate
   n_m = dim(climate)[1]

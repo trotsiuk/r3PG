@@ -26,9 +26,9 @@ stems_n_i   = speciesInputs(:,4)
 biom_stem_i = speciesInputs(:,5)
 biom_root_i = speciesInputs(:,6)
 biom_foliage_i = speciesInputs(:,7)
-lt_fN       = speciesInputs(:,8)       !20241106
-lt_fT       = speciesInputs(:,9)       !20241106
-lt_fPhys    = speciesInputs(:,10)      !20241106
+!lt_fN       = speciesInputs(:,8)       !20241106
+!lt_fT       = speciesInputs(:,9)       !20241106
+!lt_fPhys    = speciesInputs(:,10)      !20241106
 
 ! Climate ------------------------------
 tmp_min     = forcingInputs(:,1)
