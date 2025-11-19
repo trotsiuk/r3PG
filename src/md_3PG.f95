@@ -38,6 +38,11 @@ contains
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this is only for printing the history
+! Declare these once at the top of your subroutine
+integer :: k, iosT, iosP
+character(len=256) :: filenameT, filenameP
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !! Temporary variables for long-term modifiers
 !integer :: stat, s_index, m_lt!, m      ! loop variables
@@ -530,29 +535,30 @@ end do
 !-------------------------------------------------------------
 ! Debug: save first 5 months of fT_hist and fPhys_hist
 !-------------------------------------------------------------
-integer :: i, k
-character(len=256) :: filenameT, filenameP
-
 do i = 1, n_sp
-    ! Construct filenames (one per species per month)
+
+    ! Skip species not yet planted
+    if (age(ii, i) < 0.d0) cycle
+
+    ! Construct filenames
     write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
     write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
 
-    ! Open files for writing
-    open(unit=301, file=filenameT, status='replace', action='write', iostat=k)
-    if (k /= 0) then
+    ! Open files
+    open(unit=301, file=filenameT, status='replace', action='write', iostat=iosT)
+    if (iosT /= 0) then
         print *, 'Error opening ', filenameT
         cycle
     end if
 
-    open(unit=302, file=filenameP, status='replace', action='write', iostat=k)
-    if (k /= 0) then
+    open(unit=302, file=filenameP, status='replace', action='write', iostat=iosP)
+    if (iosP /= 0) then
         print *, 'Error opening ', filenameP
         close(301)
         cycle
     end if
 
-    ! Write first 5 months (or fewer if lt_mod_mths < 5)
+    ! Write first 5 months
     do k = 1, min(5, lt_mod_mths)
         write(301, '(F12.6)') fT_hist(i, k)
         write(302, '(F12.6)') fPhys_hist(i, k)
@@ -561,6 +567,7 @@ do i = 1, n_sp
     ! Close files
     close(301)
     close(302)
+
 end do
 
 
