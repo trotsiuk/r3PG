@@ -563,42 +563,33 @@ end do
 !        end if
 
 
-do sp = 1, n_sp
-    ! Skip species not yet planted
-    if (age(ii, sp) < 0.d0) cycle
+if (ii <= 125) then
+    do i = 1, n_sp
+        ! File names
+        write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+        write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
 
-    ! Build filenames (one per species)
-    write(filenameT, '(A,I0,A)') 'fT_hist_sp', sp, '.csv'
-    write(filenameP, '(A,I0,A)') 'fPhys_hist_sp', sp, '.csv'
+        ! Open files for writing
+        open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+        if (ios /= 0) stop 'Error opening fT_hist file'
 
-    ! Open fT_hist file
-    open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-    if (ios /= 0) then
-        print *, 'Error opening file: ', trim(filenameT)
-    else
-        ! Write all months in circular order
+        open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+        if (ios /= 0) stop 'Error opening fPhys_hist file'
+
+        ! Write the lt_mod_mths elements of the circular buffer in correct order
         do kk = 1, lt_mod_mths
-            j = mod(hist_ptr(sp) + kk, lt_mod_mths)
+            ! Circular buffer index: oldest to newest
+            j = mod(hist_ptr(i) + kk, lt_mod_mths)
             if (j == 0) j = lt_mod_mths
-            write(301, '(F12.6)') fT_hist(sp, j)
+
+            write(301, '(F12.6)') fT_hist(i, j)
+            write(302, '(F12.6)') fPhys_hist(i, j)
         end do
+
         close(301)
-    end if
-
-    ! Open fPhys_hist file
-    open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-    if (ios /= 0) then
-        print *, 'Error opening file: ', trim(filenameP)
-    else
-        do kk = 1, lt_mod_mths
-            j = mod(hist_ptr(sp) + kk, lt_mod_mths)
-            if (j == 0) j = lt_mod_mths
-            write(302, '(F12.6)') fPhys_hist(sp, j)
-        end do
         close(302)
-    end if
-
-end do
+    end do
+end if
 
 
 
