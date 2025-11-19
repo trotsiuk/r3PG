@@ -40,7 +40,8 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this is only for printing the history
 ! Declare these once at the top of your subroutine
-integer :: k, iosT, iosP
+integer :: kk        ! loop variable for printing
+integer :: ios       ! iostat variable
 character(len=256) :: filenameT, filenameP
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -535,40 +536,32 @@ end do
 !-------------------------------------------------------------
 ! Debug: save first 5 months of fT_hist and fPhys_hist
 !-------------------------------------------------------------
-do i = 1, n_sp
+! ------------------------------
+        ! Optional: Save fT_hist and fPhys_hist for first 5 months
+        ! ------------------------------
+        if (ii <= 5) then
+            do i = 1, n_sp
+                ! File names
+                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
 
-    ! Skip species not yet planted
-    if (age(ii, i) < 0.d0) cycle
+                ! Open files for writing
+                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+                if (ios /= 0) stop 'Error opening fT_hist file'
 
-    ! Construct filenames
-    write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
-    write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
+                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+                if (ios /= 0) stop 'Error opening fPhys_hist file'
 
-    ! Open files
-    open(unit=301, file=filenameT, status='replace', action='write', iostat=iosT)
-    if (iosT /= 0) then
-        print *, 'Error opening ', filenameT
-        cycle
-    end if
+                ! Write the lt_mod_mths elements of the circular buffer
+                do kk = 1, lt_mod_mths
+                    write(301, '(F12.6)') fT_hist(i, kk)
+                    write(302, '(F12.6)') fPhys_hist(i, kk)
+                end do
 
-    open(unit=302, file=filenameP, status='replace', action='write', iostat=iosP)
-    if (iosP /= 0) then
-        print *, 'Error opening ', filenameP
-        close(301)
-        cycle
-    end if
-
-    ! Write first 5 months
-    do k = 1, min(5, lt_mod_mths)
-        write(301, '(F12.6)') fT_hist(i, k)
-        write(302, '(F12.6)') fPhys_hist(i, k)
-    end do
-
-    ! Close files
-    close(301)
-    close(302)
-
-end do
+                close(301)
+                close(302)
+            end do
+        end if
 
 
 
