@@ -278,32 +278,39 @@ fPhys_hist(:,:) = 1.0d0
 if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
 
-do kk = 1, min(5, lt_mod_mths)
+do i = 1, n_sp
 
-    ! Compute circular buffer index
-    j = mod(hist_ptr(i) + kk, lt_mod_mths)
-    if (j == 0) j = lt_mod_mths
+    !---------------------------
+    ! 1) Temperature (lt_fT)
+    !---------------------------
+    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
 
-    ! Build filenames
-    write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', kk, '.csv'
-    write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', kk, '.csv'
+    !---------------------------
+    ! 2) Physiological (lt_fPhys)
+    ! Exclude the first month of VPD (to avoid initial zeros)
+    !---------------------------
+    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
 
-    ! Open files for writing
-    open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-    if (ios /= 0) then
-        print *, 'Error opening file: ', trim(filenameT)
+    ! ASW uses the constant directly
+    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
+
+    if (phys_model .eq. 1) then
+        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
     else
-        write(301, '(F12.6)') fT_hist(i, j)
-        close(301)
+        f_phys_tmp = f_sw_tmp * f_vpd_tmp
     end if
 
-    open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-    if (ios /= 0) then
-        print *, 'Error opening file: ', trim(filenameP)
-    else
-        write(302, '(F12.6)') fPhys_hist(i, j)
-        close(302)
-    end if
+    lt_fPhys(i) = f_phys_tmp
+
+    ! Ensure the entire row contains the correct long-term modifier
+    fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
+
+    !---------------------------
+    ! Initialize circular buffer pointer
+    !---------------------------
+    hist_ptr(i) = lt_mod_mths   ! start at the last element
 
 end do
 
@@ -556,7 +563,34 @@ end do
 !        end if
 
 
+do kk = 1, 125
 
+    ! Compute circular buffer index
+    j = mod(hist_ptr(i) + kk, lt_mod_mths)
+    if (j == 0) j = lt_mod_mths
+
+    ! Build filenames
+    write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', kk, '.csv'
+    write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', kk, '.csv'
+
+    ! Open files for writing
+    open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+    if (ios /= 0) then
+        print *, 'Error opening file: ', trim(filenameT)
+    else
+        write(301, '(F12.6)') fT_hist(i, j)
+        close(301)
+    end if
+
+    open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+    if (ios /= 0) then
+        print *, 'Error opening file: ', trim(filenameP)
+    else
+        write(302, '(F12.6)') fPhys_hist(i, j)
+        close(302)
+    end if
+
+end do
 
 
 
