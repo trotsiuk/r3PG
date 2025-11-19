@@ -539,7 +539,7 @@ end do
 ! ------------------------------
         ! Optional: Save fT_hist and fPhys_hist for first 5 months
         ! ------------------------------
-        if (ii <= 5) then
+        if (ii <= 125) then
             do i = 1, n_sp
                 ! File names
                 write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
