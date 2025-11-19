@@ -527,32 +527,41 @@ do i = 1, n_sp
 
 end do
 
-!=============================================================
-! Save fT_hist and fPhys_hist for debugging (first 5 months)
-!=============================================================
-if (ii <= 5) then
-    do i = 1, n_sp
+!-------------------------------------------------------------
+! Debug: save first 5 months of fT_hist and fPhys_hist
+!-------------------------------------------------------------
+integer :: i, k
+character(len=256) :: filenameT, filenameP
 
-        ! --- File names ---
-        write(filenameT, '(A, I0, A, I0, A)') 'fT_hist_sp', i, '_month', ii, '.csv'
-        write(filenameP, '(A, I0, A, I0, A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
+do i = 1, n_sp
+    ! Construct filenames (one per species per month)
+    write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+    write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
 
-        ! --- Save fT_hist ---
-        open(unit=301, file=filenameT, status='replace')
-        do k = 1, lt_mod_mths
-            write(301, '(F12.6)') fT_hist(i, k)
-        end do
+    ! Open files for writing
+    open(unit=301, file=filenameT, status='replace', action='write', iostat=k)
+    if (k /= 0) then
+        print *, 'Error opening ', filenameT
+        cycle
+    end if
+
+    open(unit=302, file=filenameP, status='replace', action='write', iostat=k)
+    if (k /= 0) then
+        print *, 'Error opening ', filenameP
         close(301)
+        cycle
+    end if
 
-        ! --- Save fPhys_hist ---
-        open(unit=302, file=filenameP, status='replace')
-        do k = 1, lt_mod_mths
-            write(302, '(F12.6)') fPhys_hist(i, k)
-        end do
-        close(302)
-
+    ! Write first 5 months (or fewer if lt_mod_mths < 5)
+    do k = 1, min(5, lt_mod_mths)
+        write(301, '(F12.6)') fT_hist(i, k)
+        write(302, '(F12.6)') fPhys_hist(i, k)
     end do
-end if
+
+    ! Close files
+    close(301)
+    close(302)
+end do
 
 
 
