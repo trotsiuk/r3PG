@@ -40,8 +40,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this is only for printing the history
 ! Declare these once at the top of your subroutine
-integer :: kk        ! loop variable for printing
-integer :: ios       ! iostat variable
+integer :: kk, j, ios
 character(len=256) :: filenameT, filenameP
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -279,39 +278,32 @@ fPhys_hist(:,:) = 1.0d0
 if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
 
-do i = 1, n_sp
+do kk = 1, min(5, lt_mod_mths)
 
-    !---------------------------
-    ! 1) Temperature (lt_fT)
-    !---------------------------
-    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
+    ! Compute circular buffer index
+    j = mod(hist_ptr(i) + kk, lt_mod_mths)
+    if (j == 0) j = lt_mod_mths
 
-    !---------------------------
-    ! 2) Physiological (lt_fPhys)
-    ! Exclude the first month of VPD (to avoid initial zeros)
-    !---------------------------
-    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
+    ! Build filenames
+    write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', kk, '.csv'
+    write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', kk, '.csv'
 
-    ! ASW uses the constant directly
-    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-
-    if (phys_model .eq. 1) then
-        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+    ! Open files for writing
+    open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+    if (ios /= 0) then
+        print *, 'Error opening file: ', trim(filenameT)
     else
-        f_phys_tmp = f_sw_tmp * f_vpd_tmp
+        write(301, '(F12.6)') fT_hist(i, j)
+        close(301)
     end if
 
-    lt_fPhys(i) = f_phys_tmp
-
-    ! Ensure the entire row contains the correct long-term modifier
-    fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
-
-    !---------------------------
-    ! Initialize circular buffer pointer
-    !---------------------------
-    hist_ptr(i) = lt_mod_mths   ! start at the last element
+    open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+    if (ios /= 0) then
+        print *, 'Error opening file: ', trim(filenameP)
+    else
+        write(302, '(F12.6)') fPhys_hist(i, j)
+        close(302)
+    end if
 
 end do
 
@@ -539,35 +531,29 @@ end do
 ! ------------------------------
         ! Optional: Save fT_hist and fPhys_hist for first 5 months
         ! ------------------------------
-! Optional: Save fT_hist and fPhys_hist for first 5 months
-if (ii <= 125) then
-    do i = 1, n_sp
-        ! File names
-        write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
-        write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
-
-        ! Open files for writing
-        open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-        if (ios /= 0) stop 'Error opening fT_hist file'
-
-        open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-        if (ios /= 0) stop 'Error opening fPhys_hist file'
-
-        ! Write the circular buffer in chronological order
-        do kk = 1, lt_mod_mths
-            ! Compute the chronological index
-            ! (hist_ptr(i) is the most recent month)
-            j = mod(hist_ptr(i) + kk, lt_mod_mths)
-            if (j == 0) j = lt_mod_mths
-
-            write(301, '(F12.6)') fT_hist(i, j)
-            write(302, '(F12.6)') fPhys_hist(i, j)
-        end do
-
-        close(301)
-        close(302)
-    end do
-end if
+!        if (ii <= 125) then
+!            do i = 1, n_sp
+!                ! File names
+!                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+!                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
+!
+!                ! Open files for writing
+!                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+!                if (ios /= 0) stop 'Error opening fT_hist file'
+!
+!                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+!                if (ios /= 0) stop 'Error opening fPhys_hist file'
+!
+!                ! Write the lt_mod_mths elements of the circular buffer
+!                do kk = 1, lt_mod_mths
+!                    write(301, '(F12.6)') fT_hist(i, kk)
+!                    write(302, '(F12.6)') fPhys_hist(i, kk)
+!                end do
+!
+!                close(301)
+!                close(302)
+!            end do
+!        end if
 
 
 
