@@ -41,6 +41,7 @@ output(ii,:,3,8) = lambda_v(:)
 output(ii,:,3,9) = lambda_h(:)
 output(ii,:,3,10) = aero_resist(:)
 output(ii,:,3,11) = vpd_sp(:)
+output(ii,:,3,12) = m_apar(:) !20251114
 
 ! Stocks variables ---------------
 output(ii,:,4,1) = biom_stem(:)

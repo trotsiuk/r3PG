@@ -122,6 +122,8 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: RGcGW          ! The ratio of diffusi
 real(kind=kind(0.0d0)), dimension(n_sp) :: D13CTissueDif  ! d13C difference of modelled tissue and new photosynthate
 real(kind=kind(0.0d0)), dimension(n_sp) :: aFracDiffu     ! Fractionation against 13C in diffusion
 real(kind=kind(0.0d0)), dimension(n_sp) :: bFracRubi      ! Enzymatic fractionation by Rubisco
+real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar         ! Modifier to amplify light benefit to shorter cohorts !20251114
+
 
 ! Wood and stand properties
 real(kind=kind(0.0d0)), dimension(n_sp) :: fracBB0        ! Branch and bark fraction at age 0
