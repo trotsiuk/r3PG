@@ -1955,7 +1955,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar ! modifier to amplify light be
 
 height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
 height_rel_wt(:) = height(:)/height_wtav_LAI
-m_apar(:) = 1.d0 + sum( fi(:) ) * gammaAPAR(i)
+m_apar(:) = 1.d0 + sum( fi(:) ) * gammaAPAR(i) * Exp(-gammaAPAR(i) * (height_rel_wt(:) - 1.d0))
 
 
 
