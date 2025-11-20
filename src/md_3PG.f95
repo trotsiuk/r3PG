@@ -2284,7 +2284,7 @@ end do
 
         else if ( height_model .eq. 2 ) then
 
-            height(:) = 1.3d0 + aH(:) * exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
+            height(:) = Hd(:) + aH(:) * exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
             crown_length(:) = 1.3d0 + aHL(:) * exp(1.d0)**(-nHLB(:)/dbh(:)) + nHLC(:) * competition_total(:) * dbh(:)
         end if
 
