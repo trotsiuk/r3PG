@@ -45,12 +45,7 @@ contains
 !integer :: isp, jj
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! to print out height parameters
-integer :: unit_csv
-open(newunit=unit_csv, file="debug_height_params.csv", status="replace", action="write")
-! Write header
-write(unit_csv, '(A)') "month,i,aH,nHB,nHC"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 !! Temporary variables for long-term modifiers
 !integer :: stat, s_index, m_lt!, m      ! loop variables
@@ -231,19 +226,6 @@ real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean !20251114
         else if ( height_model .eq. 2 ) then
             height(:) = 1.3d0 + aH(:) * Exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
         end if
-
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-do i = 1, n_sp
-    write(unit_csv, '(I4,1X,I4,1X,3(1X,E15.7))') month, i, aH(i), nHB(i), nHC(i)
-end do
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
 
         ! Correct the bias
         do n = 1, b_n
@@ -2159,6 +2141,17 @@ end do
         include 'i_read_param_sub.h'
 
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+    ! Declarations
+    integer :: unit_csv
+    integer :: i
+    logical, save :: header_written = .false.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
         bias_scale(:,:) = 0.d0
 
         ! LAI
@@ -2285,6 +2278,38 @@ end do
             height(:) = 1.3d0 + aH(:) * exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
             crown_length(:) = 1.3d0 + aHL(:) * exp(1.d0)**(-nHLB(:)/dbh(:)) + nHLC(:) * competition_total(:) * dbh(:)
         end if
+
+
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+! --- write CSV file ---
+    ! Open file in append mode; create if it doesn't exist
+    open(newunit=unit_csv, file="sizeDist_output.csv", &
+         status="unknown", position="append", action="write")
+
+    ! Write header only once
+    if (.not. header_written) then
+        write(unit_csv, '(A)') "i,aH,nHB,nHC"
+        header_written = .true.
+    end if
+
+    ! Write array values
+    do i = 1, n_sp
+        write(unit_csv, '(I4, 3(1X, E15.7))') i, aH(i), nHB(i), nHC(i)
+    end do
+
+    close(unit_csv)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
 
         crown_width(:) = ( aK(:) * dbh(:) ** nKB(:) * height(:) ** nKH(:) * competition_total(:) ** nKC(:) * &
             height_rel(:) ** nKrh(:)) * (1.d0 + DrelBiasCrowndiameter(:))
