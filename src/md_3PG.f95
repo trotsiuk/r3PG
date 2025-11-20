@@ -1792,6 +1792,8 @@ end do
 
 real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each cohort, where the weighting is by LAI !20251114
 real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
+real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar ! modifier to amplify light benefit to shorter cohorts
+
 
 
         ! initialization
@@ -1953,6 +1955,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_wt ! height of cohort rela
 
 height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
 height_rel_wt(:) = height(:)/height_wtav_LAI
+m_apar
 
 
 
