@@ -2081,15 +2081,6 @@ end do
     integer :: i
     integer :: unit_csv
     logical, save :: header_written = .false.
-
-    implicit none       ! only one, already present
-
-    ! ------------------------
-    ! Declarations
-    ! ------------------------
-    integer :: i
-    integer :: unit_csv
-    logical, save :: header_written = .false.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
