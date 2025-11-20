@@ -130,6 +130,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: rho0           ! Minimum basic densit
 real(kind=kind(0.0d0)), dimension(n_sp) :: rho1           ! Maximum basic density - for older trees
 real(kind=kind(0.0d0)), dimension(n_sp) :: tRho           ! Age at which rho = (rhoMin+rhoMax)/2
 integer, dimension(n_sp) :: CrownShape          !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
+real(kind=kind(0.0d0)), dimension(n_sp) :: Hd             ! Height at which diameter is measured (m) for background mortality, and allometric equations !20251114
 
 ! Height and Wolume
 real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nHB, nHC
