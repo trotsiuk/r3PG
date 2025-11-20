@@ -38,15 +38,12 @@ contains
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this is only for printing the history
-! Declare these once at the top of your subroutine
-integer :: kk, ios
-character(len=256) :: filenameT, filenameP
-integer :: isp, jj
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this is only for printing the history
+!! Declare these once at the top of your subroutine
+!integer :: kk, ios
+!character(len=256) :: filenameT, filenameP
+!integer :: isp, jj
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -664,35 +661,35 @@ do i = 1, n_sp
 
 end do
 
-!-------------------------------------------------------------
-! Debug: save first 5 months of fT_hist and fPhys_hist
-!-------------------------------------------------------------
-! ------------------------------
-        ! Optional: Save fT_hist and fPhys_hist for first 5 months
-        ! ------------------------------
-        if (ii <= 125) then
-            do i = 1, n_sp
-                ! File names
-                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
-                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
-
-                ! Open files for writing
-                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-                if (ios /= 0) stop 'Error opening fT_hist file'
-
-                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-                if (ios /= 0) stop 'Error opening fPhys_hist file'
-
-                ! Write the lt_mod_mths elements of the circular buffer
-                do kk = 1, lt_mod_mths
-                    write(301, '(F12.6)') fT_hist(i, kk)
-                    write(302, '(F12.6)') fPhys_hist(i, kk)
-                end do
-
-                close(301)
-                close(302)
-            end do
-        end if
+!!-------------------------------------------------------------
+!! Debug: save first 5 months of fT_hist and fPhys_hist
+!!-------------------------------------------------------------
+!! ------------------------------
+!        ! Optional: Save fT_hist and fPhys_hist for first 5 months
+!        ! ------------------------------
+!        if (ii <= 125) then
+!            do i = 1, n_sp
+!                ! File names
+!                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+!                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
+!
+!                ! Open files for writing
+!                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+!                if (ios /= 0) stop 'Error opening fT_hist file'
+!
+!                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+!                if (ios /= 0) stop 'Error opening fPhys_hist file'
+!
+!                ! Write the lt_mod_mths elements of the circular buffer
+!                do kk = 1, lt_mod_mths
+!                    write(301, '(F12.6)') fT_hist(i, kk)
+!                    write(302, '(F12.6)') fPhys_hist(i, kk)
+!                end do
+!
+!                close(301)
+!                close(302)
+!            end do
+!        end if
 
 
 
