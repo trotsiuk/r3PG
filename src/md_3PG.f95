@@ -224,7 +224,9 @@ real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean !20251114
         if( height_model .eq. 1 ) then
             height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
         else if ( height_model .eq. 2 ) then
-            height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
+            height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:) !20251114
+        else if ( height_model .eq. 3 ) then
+            height(:) = 20.d0 !20251114
         end if
 
         ! Correct the bias
@@ -2284,8 +2286,13 @@ end do
 
         else if ( height_model .eq. 2 ) then
 
-            height(:) = Hd(:) + aH(:) * exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:)
-            crown_length(:) = Hd(:) + aHL(:) * exp(1.d0)**(-nHLB(:)/dbh(:)) + nHLC(:) * competition_total(:) * dbh(:)
+            height(:) = Hd(:) + aH(:) * exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:) !20251114
+            crown_length(:) = Hd(:) + aHL(:) * exp(1.d0)**(-nHLB(:)/dbh(:)) + nHLC(:) * competition_total(:) * dbh(:) !20251114
+
+        else if ( height_model .eq. 3 ) then
+            height(:) = 20.d0 !20251114
+            crown_length(:) = 10.d0 !20251114
+
         end if
 
 
