@@ -2075,6 +2075,13 @@ end do
         correct_bias, height_model, pars_s, pars_b, aWs, nWs, pfsPower, pfsConst, &
         dbh, basal_area, height, crown_length, crown_width, pFS, bias_scale)
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+    integer :: i
+    integer :: unit_csv
+    logical, save :: header_written = .false.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
         ! used to correct for bias when calculating mean dbh from mean ws. This bias is caused by Jensen's inequality and is
         ! corrected using the approach described by Duursma and Robinson (2003) FEM 186, 373-380, which uses the CV of the
@@ -2142,12 +2149,7 @@ end do
 
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-    ! Declarations
-    integer :: unit_csv
-    integer :: i
-    logical, save :: header_written = .false.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 
 
@@ -2286,17 +2288,13 @@ end do
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
 ! --- write CSV file ---
-    ! Open file in append mode; create if it doesn't exist
-    open(newunit=unit_csv, file="sizeDist_output.csv", &
-         status="unknown", position="append", action="write")
+    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
 
-    ! Write header only once
     if (.not. header_written) then
         write(unit_csv, '(A)') "i,aH,nHB,nHC"
         header_written = .true.
     end if
 
-    ! Write array values
     do i = 1, n_sp
         write(unit_csv, '(I4, 3(1X, E15.7))') i, aH(i), nHB(i), nHC(i)
     end do
