@@ -2081,6 +2081,15 @@ end do
     integer :: i
     integer :: unit_csv
     logical, save :: header_written = .false.
+
+    implicit none       ! only one, already present
+
+    ! ------------------------
+    ! Declarations
+    ! ------------------------
+    integer :: i
+    integer :: unit_csv
+    logical, save :: header_written = .false.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
@@ -2091,7 +2100,13 @@ end do
         ! The default is to ignore the bias. The alternative is to correct for it by using empirically derived weibull distributions
         ! from the weibull parameters provided by the user. If the weibull distribution does not vary then just provide scale0 and shape0.
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         implicit none
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! input
         integer, intent(in) :: n_sp ! number of species
