@@ -284,63 +284,23 @@ fPhys_hist(:,:) = 1.0d0
 if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!do i = 1, n_sp
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
-!!!!!!!!!!!!!!!!!!!!!!!!    ! 1) Temperature (lt_fT)
-!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
-!!!!!!!!!!!!!!!!!!!!!!!!    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-!!!!!!!!!!!!!!!!!!!!!!!!    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
-!!!!!!!!!!!!!!!!!!!!!!!!    ! 2) Physiological (lt_fPhys)
-!!!!!!!!!!!!!!!!!!!!!!!!    ! Exclude the first month of VPD (to avoid initial zeros)
-!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
-!!!!!!!!!!!!!!!!!!!!!!!!    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!    ! ASW uses the constant directly
-!!!!!!!!!!!!!!!!!!!!!!!!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(isp)) ** SWpower(isp)) !1.d0 - 1.d0 is because ASW = asw_max
-!!!!!!!!!!!!!!!!!!!!!!!!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!    if (phys_model .eq. 1) then
-!!!!!!!!!!!!!!!!!!!!!!!!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
-!!!!!!!!!!!!!!!!!!!!!!!!    else
-!!!!!!!!!!!!!!!!!!!!!!!!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
-!!!!!!!!!!!!!!!!!!!!!!!!    end if
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!    lt_fPhys(i) = f_phys_tmp
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!    ! Ensure the entire row contains the correct long-term modifier
-!!!!!!!!!!!!!!!!!!!!!!!!    fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
-!!!!!!!!!!!!!!!!!!!!!!!!    ! Initialize circular buffer pointer
-!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
-!!!!!!!!!!!!!!!!!!!!!!!!    hist_ptr(i) = lt_mod_mths   ! start at the last element
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!end do
-
-
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-do isp = 1, n_sp
+do i = 1, n_sp
 
     !---------------------------
     ! 1) Temperature (lt_fT)
     !---------------------------
-    lt_fT(isp) = sum(f_tmp(1:lt_mod_mths, isp)) / real(lt_mod_mths, kind=8)
-    fT_hist(isp,1:lt_mod_mths) = lt_fT(isp)
+    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
 
     !---------------------------
     ! 2) Physiological (lt_fPhys)
+    ! Exclude the first month of VPD (to avoid initial zeros)
     !---------------------------
     vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
+
+    ! ASW uses the constant directly
     f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(isp)) ** SWpower(isp)) !1.d0 - 1.d0 is because ASW = asw_max
-    f_vpd_tmp = exp(-CoeffCond(isp) * vpd_mean)
+    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
     if (phys_model .eq. 1) then
         f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
@@ -348,42 +308,82 @@ do isp = 1, n_sp
         f_phys_tmp = f_sw_tmp * f_vpd_tmp
     end if
 
-    lt_fPhys(isp) = f_phys_tmp
+    lt_fPhys(i) = f_phys_tmp
 
-    !---------------------------
-    ! Write debug CSV for this species
-    !---------------------------
-    write(filenameP, '(A,I0,A)') 'debug_fPhys_species_', isp, '.csv'
-    open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
-    if (ios /= 0) stop 'Error opening debug CSV'
-
-    write(400, '(A,F12.6)') 'asw_max=', asw_max
-    write(400, '(A,F12.6)') 'SWconst=', SWconst(isp)
-    write(400, '(A,F12.6)') 'SWpower=', SWpower(isp)
-    write(400, '(A,F12.6)') 'vpd_mean=', vpd_mean
-    write(400, '(A,F12.6)') 'f_sw_tmp=', f_sw_tmp
-    write(400, '(A,F12.6)') 'f_vpd_tmp=', f_vpd_tmp
-    write(400, '(A,F12.6)') 'f_phys_tmp=', f_phys_tmp
-    write(400, '(A,F12.6)') 'lt_fPhys=', lt_fPhys(isp)
-
-    close(400)
-
-    !---------------------------
-    ! Fill entire row of fPhys_hist
-    !---------------------------
-    do jj = 1, lt_mod_mths
-        fPhys_hist(isp,jj) = f_phys_tmp
-    end do
+    ! Ensure the entire row contains the correct long-term modifier
+    fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
 
     !---------------------------
     ! Initialize circular buffer pointer
     !---------------------------
-    hist_ptr(isp) = lt_mod_mths
+    hist_ptr(i) = lt_mod_mths   ! start at the last element
 
 end do
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!do isp = 1, n_sp
+!!!
+!!!    !---------------------------
+!!!    ! 1) Temperature (lt_fT)
+!!!    !---------------------------
+!!!    lt_fT(isp) = sum(f_tmp(1:lt_mod_mths, isp)) / real(lt_mod_mths, kind=8)
+!!!    fT_hist(isp,1:lt_mod_mths) = lt_fT(isp)
+!!!
+!!!    !---------------------------
+!!!    ! 2) Physiological (lt_fPhys)
+!!!    !---------------------------
+!!!    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
+!!!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(isp)) ** SWpower(isp)) !1.d0 - 1.d0 is because ASW = asw_max
+!!!    f_vpd_tmp = exp(-CoeffCond(isp) * vpd_mean)
+!!!
+!!!    if (phys_model .eq. 1) then
+!!!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+!!!    else
+!!!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
+!!!    end if
+!!!
+!!!    lt_fPhys(isp) = f_phys_tmp
+!!!
+!!!    !---------------------------
+!!!    ! Write debug CSV for this species
+!!!    !---------------------------
+!!!    write(filenameP, '(A,I0,A)') 'debug_fPhys_species_', isp, '.csv'
+!!!    open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
+!!!    if (ios /= 0) stop 'Error opening debug CSV'
+!!!
+!!!    write(400, '(A,F12.6)') 'asw_max=', asw_max
+!!!    write(400, '(A,F12.6)') 'SWconst=', SWconst(isp)
+!!!    write(400, '(A,F12.6)') 'SWpower=', SWpower(isp)
+!!!    write(400, '(A,F12.6)') 'vpd_mean=', vpd_mean
+!!!    write(400, '(A,F12.6)') 'f_sw_tmp=', f_sw_tmp
+!!!    write(400, '(A,F12.6)') 'f_vpd_tmp=', f_vpd_tmp
+!!!    write(400, '(A,F12.6)') 'f_phys_tmp=', f_phys_tmp
+!!!    write(400, '(A,F12.6)') 'lt_fPhys=', lt_fPhys(isp)
+!!!
+!!!    close(400)
+!!!
+!!!    !---------------------------
+!!!    ! Fill entire row of fPhys_hist
+!!!    !---------------------------
+!!!    do jj = 1, lt_mod_mths
+!!!        fPhys_hist(isp,jj) = f_phys_tmp
+!!!    end do
+!!!
+!!!    !---------------------------
+!!!    ! Initialize circular buffer pointer
+!!!    !---------------------------
+!!!    hist_ptr(isp) = lt_mod_mths
+!!!
+!!!end do
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -606,29 +606,29 @@ end do
 ! ------------------------------
         ! Optional: Save fT_hist and fPhys_hist for first 5 months
         ! ------------------------------
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        if (ii <= 125) then
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            do i = 1, n_sp
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                ! File names
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                ! Open files for writing
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                if (ios /= 0) stop 'Error opening fT_hist file'
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                if (ios /= 0) stop 'Error opening fPhys_hist file'
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                ! Write the lt_mod_mths elements of the circular buffer
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                do kk = 1, lt_mod_mths
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                    write(301, '(F12.6)') fT_hist(i, kk)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                    write(302, '(F12.6)') fPhys_hist(i, kk)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                end do
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                close(301)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                close(302)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            end do
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        end if
+        if (ii <= 125) then
+            do i = 1, n_sp
+                ! File names
+                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
+                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
+
+                ! Open files for writing
+                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
+                if (ios /= 0) stop 'Error opening fT_hist file'
+
+                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
+                if (ios /= 0) stop 'Error opening fPhys_hist file'
+
+                ! Write the lt_mod_mths elements of the circular buffer
+                do kk = 1, lt_mod_mths
+                    write(301, '(F12.6)') fT_hist(i, kk)
+                    write(302, '(F12.6)') fPhys_hist(i, kk)
+                end do
+
+                close(301)
+                close(302)
+            end do
+        end if
 
 
 
