@@ -1789,7 +1789,7 @@ end do
 
 
 real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each cohort, where the weighting is by LAI !20251114
-
+real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
 
 
         ! initialization
@@ -1949,7 +1949,9 @@ real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each coho
 ! if there is more than 1 cohort, redistribute some of the remaining PAR to the shorter species assuming they are generally in gaps
 ! rather than under horizontally homogeneous canopies of the overstorey species
 
-height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) )
+height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
+height_rel_wt(:) = height(:)/height_wtav_LAI
+
 
 
     end subroutine s_light_3pgmix
