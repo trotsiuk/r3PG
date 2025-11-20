@@ -2077,6 +2077,7 @@ end do
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+    implicit none          ! FIRST statement in the declarations section
     integer :: i
     integer :: unit_csv
     logical, save :: header_written = .false.
