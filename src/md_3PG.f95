@@ -278,41 +278,41 @@ fPhys_hist(:,:) = 1.0d0
 if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
 
-do i = 1, n_sp
-
-    !---------------------------
-    ! 1) Temperature (lt_fT)
-    !---------------------------
-    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-
-    !---------------------------
-    ! 2) Physiological (lt_fPhys)
-    ! Exclude the first month of VPD (to avoid initial zeros)
-    !---------------------------
-    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
-
-    ! ASW uses the constant directly
-    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
-    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-
-    if (phys_model .eq. 1) then
-        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
-    else
-        f_phys_tmp = f_sw_tmp * f_vpd_tmp
-    end if
-
-    lt_fPhys(i) = f_phys_tmp
-
-    ! Ensure the entire row contains the correct long-term modifier
-    fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
-
-    !---------------------------
-    ! Initialize circular buffer pointer
-    !---------------------------
-    hist_ptr(i) = lt_mod_mths   ! start at the last element
-
-end do
+!!!!!!!!!!!!!!!!!!!!!!!!do i = 1, n_sp
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
+!!!!!!!!!!!!!!!!!!!!!!!!    ! 1) Temperature (lt_fT)
+!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
+!!!!!!!!!!!!!!!!!!!!!!!!    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+!!!!!!!!!!!!!!!!!!!!!!!!    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
+!!!!!!!!!!!!!!!!!!!!!!!!    ! 2) Physiological (lt_fPhys)
+!!!!!!!!!!!!!!!!!!!!!!!!    ! Exclude the first month of VPD (to avoid initial zeros)
+!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
+!!!!!!!!!!!!!!!!!!!!!!!!    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!    ! ASW uses the constant directly
+!!!!!!!!!!!!!!!!!!!!!!!!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+!!!!!!!!!!!!!!!!!!!!!!!!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!    if (phys_model .eq. 1) then
+!!!!!!!!!!!!!!!!!!!!!!!!        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+!!!!!!!!!!!!!!!!!!!!!!!!    else
+!!!!!!!!!!!!!!!!!!!!!!!!        f_phys_tmp = f_sw_tmp * f_vpd_tmp
+!!!!!!!!!!!!!!!!!!!!!!!!    end if
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!    lt_fPhys(i) = f_phys_tmp
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!    ! Ensure the entire row contains the correct long-term modifier
+!!!!!!!!!!!!!!!!!!!!!!!!    fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
+!!!!!!!!!!!!!!!!!!!!!!!!    ! Initialize circular buffer pointer
+!!!!!!!!!!!!!!!!!!!!!!!!    !---------------------------
+!!!!!!!!!!!!!!!!!!!!!!!!    hist_ptr(i) = lt_mod_mths   ! start at the last element
+!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!end do
 
 
 
