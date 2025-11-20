@@ -561,7 +561,7 @@ end do
 
                 ! Calculate the absorbed PAR. If this is first month, then it will be only potential
                 call s_light_3pgmix ( n_sp, height(:), crown_length(:), crown_width(:), lai(:), stems_n(:), &
-                    solar_rad(ii), CrownShape(:), k(:), adjSolarZenithAngle(month), daysInMonth(month), &
+                    solar_rad(ii), CrownShape(:), k(:), gammaAPAR(:), adjSolarZenithAngle(month), daysInMonth(month), &
                     apar(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:), lai_sa_ratio(:))
 
                 VPD_sp(:) = vpd_day(ii) * Exp(lai_above(:) * (-Log(2.d0)) / cVPD(:))
