@@ -106,6 +106,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: SLA0           ! Specific leaf area a
 real(kind=kind(0.0d0)), dimension(n_sp) :: SLA1           ! Specific leaf area for mature leaves
 real(kind=kind(0.0d0)), dimension(n_sp) :: tSLA           ! Age at which specific leaf area = (SLA0+SLA1)/2
 real(kind=kind(0.0d0)), dimension(n_sp) :: k              ! Extinction coefficient for absorption of PAR by canopy
+real(kind=kind(0.0d0)), dimension(n_sp) :: gammaAPAR      ! Determines light benefit to shorter cohorts          !20251114
 real(kind=kind(0.0d0)), dimension(n_sp) :: fullCanAge     ! Age at canopy closure
 real(kind=kind(0.0d0)), dimension(n_sp) :: MaxIntcptn     ! Maximum proportion of rainfall evaporated from canopy
 real(kind=kind(0.0d0)), dimension(n_sp) :: LAImaxIntcptn  ! LAI for maximum rainfall interception

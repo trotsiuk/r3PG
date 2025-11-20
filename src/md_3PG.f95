@@ -30,7 +30,7 @@ contains
         real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs           !20251114
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(89,n_sp), intent(in) :: pars_i                          !20241106
+        real(kind=c_double), dimension(90,n_sp), intent(in) :: pars_i                          !20241106
         real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
 
 !integer :: mm !20251114
@@ -234,7 +234,7 @@ real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean !20251114
             competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
             call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                correct_bias, height_model,  pars_i(68:85,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &  !20241106
+                correct_bias, height_model,  pars_i(69:86,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &  !20241106
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
         end do
 
@@ -543,7 +543,7 @@ end do
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(68:85,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &         !20241106
+                        correct_bias, height_model,  pars_i(69:86,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &         !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
                 b_cor = .FALSE.
@@ -933,7 +933,7 @@ end do
                 competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                 call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                    correct_bias, height_model,  pars_i(68:85,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
+                    correct_bias, height_model,  pars_i(69:86,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                     dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
             end do
 
@@ -1037,7 +1037,7 @@ end do
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(68:85,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
+                        correct_bias, height_model,  pars_i(69:86,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -1195,7 +1195,7 @@ end do
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(68:85,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
+                        correct_bias, height_model,  pars_i(69:86,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -1304,7 +1304,7 @@ end do
                     competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
-                        correct_bias, height_model,  pars_i(68:85,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
+                        correct_bias, height_model,  pars_i(69:86,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
@@ -1734,8 +1734,8 @@ end do
 
 
     subroutine s_light_3pgmix ( n_sp, height, crown_length, crown_width, lai, stems_n, solar_rad, &
-        CrownShape, k, solarAngle,days_in_month, &
-        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio)
+        CrownShape, k, gammaAPAR, solarAngle,days_in_month, &
+        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio)               !20251114
 
         ! Subroutine calculate the apar for the mixed species forest
         ! It first allocate each species to a specific layer based on height and crown length
@@ -1756,6 +1756,8 @@ end do
         real(kind=kind(0.0d0)), intent(in) :: solar_rad
         integer, dimension(n_sp), intent(in) :: CrownShape   !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: k
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: gammaAPAR !20251114
+
         real(kind=kind(0.0d0)), intent(in) :: solarAngle
         integer, intent(in) :: days_in_month
 
