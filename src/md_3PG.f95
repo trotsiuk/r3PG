@@ -2096,7 +2096,7 @@ end do
         ! parameters
         integer, intent(in) :: correct_bias ! if the distribution shall be fitted
         integer, intent(in) :: height_model ! which heigh equation
-        real(kind=kind(0.0d0)), dimension(17, n_sp), intent(in) :: pars_s ! parameters for bias
+        real(kind=kind(0.0d0)), dimension(18, n_sp), intent(in) :: pars_s ! parameters for bias
         real(kind=kind(0.0d0)), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: aWs, nWs
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: pfsPower, pfsConst
@@ -2115,6 +2115,7 @@ end do
         real(kind=kind(0.0d0)), dimension(n_sp) :: lai_total
         real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel
 
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Hd !20251114
         real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nHB, nHC
         real(kind=kind(0.0d0)), dimension(n_sp) :: aV, nVB, nVH, nVBH
         real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
