@@ -299,7 +299,7 @@ if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 !!!!!!!!!!!!!!!!!!!!!!!!    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
 !!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!    ! ASW uses the constant directly
-!!!!!!!!!!!!!!!!!!!!!!!!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(i)) ** SWpower(i))
+!!!!!!!!!!!!!!!!!!!!!!!!    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(isp)) ** SWpower(isp)) !1.d0 - 1.d0 is because ASW = asw_max
 !!!!!!!!!!!!!!!!!!!!!!!!    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 !!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!    if (phys_model .eq. 1) then
@@ -339,7 +339,7 @@ do isp = 1, n_sp
     ! 2) Physiological (lt_fPhys)
     !---------------------------
     vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
-    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - asw_max) / SWconst(isp)) ** SWpower(isp))
+    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(isp)) ** SWpower(isp)) !1.d0 - 1.d0 is because ASW = asw_max
     f_vpd_tmp = exp(-CoeffCond(isp) * vpd_mean)
 
     if (phys_model .eq. 1) then
