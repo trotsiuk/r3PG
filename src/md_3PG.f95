@@ -1783,9 +1783,14 @@ end do
         real(kind=kind(0.0d0)), dimension(n_sp) :: kL_l          !sum of k x L for all species within the given layer
         real(kind=kind(0.0d0)), dimension(n_sp) :: lambdaV_l     ! sum of lambda_v per layer
         real(kind=kind(0.0d0)), dimension(n_sp) :: kLSweightedave   !calculates the contribution each species makes to the sum of all kLS products in a given layer (see Equation 6 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-        real(kind=kind(0.0d0)), dimension(n_sp) :: aparl  !The absorbed apar for the given  layer
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aparl  !The absorbed apar for the given layer
         real(kind=kind(0.0d0)) :: RADt ! Total available radiation
         real(kind=kind(0.0d0)), dimension(n_sp) :: LAI_l ! Layer LAI
+
+
+real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each cohort, where the weighting is by LAI !20251114
+
+
 
         ! initialization
         CrownSA(:) = 0.d0
@@ -1939,6 +1944,13 @@ end do
                 lai_above(i) =  lai_above(i) + sum( LAI(:), mask = layer_id(:) == layer_id(i) ) * ( 1.d0-Heightmidcrown_r(i) )
             end if
         end do
+
+
+! if there is more than 1 cohort, redistribute some of the remaining PAR to the shorter species assuming they are generally in gaps
+! rather than under horizontally homogeneous canopies of the overstorey species
+
+height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) )
+
 
     end subroutine s_light_3pgmix
 
