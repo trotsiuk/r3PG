@@ -2077,10 +2077,10 @@ end do
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-    implicit none          ! FIRST statement in the declarations section
-    integer :: i
-    integer :: unit_csv
-    logical, save :: header_written = .false.
+!    implicit none          ! FIRST statement in the declarations section
+!    integer :: i
+!    integer :: unit_csv
+!    logical, save :: header_written = .false.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
@@ -2094,7 +2094,7 @@ end do
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        !implicit none
+        implicit none
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2293,21 +2293,21 @@ end do
 
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-! --- write CSV file ---
-    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
-
-    if (.not. header_written) then
-        write(unit_csv, '(A)') "i,aH,nHB,nHC"
-        header_written = .true.
-    end if
-
-    do i = 1, n_sp
-        write(unit_csv, '(I4, 3(1X, E15.7))') i, aH(i), nHB(i), nHC(i)
-    end do
-
-    close(unit_csv)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+!! --- write CSV file ---
+!    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
+!
+!    if (.not. header_written) then
+!        write(unit_csv, '(A)') "i,aH,nHB,nHC"
+!        header_written = .true.
+!    end if
+!
+!    do i = 1, n_sp
+!        write(unit_csv, '(I4, 3(1X, E15.7))') i, aH(i), nHB(i), nHC(i)
+!    end do
+!
+!    close(unit_csv)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
