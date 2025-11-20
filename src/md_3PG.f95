@@ -358,6 +358,8 @@ do isp = 1, n_sp
     if (ios /= 0) stop 'Error opening debug CSV'
 
     write(400, '(A,F12.6)') 'asw_max=', asw_max
+    write(400, '(A,F12.6)') 'SWconst=', SWconst(isp)
+    write(400, '(A,F12.6)') 'SWpower=', SWpower(isp)
     write(400, '(A,F12.6)') 'vpd_mean=', vpd_mean
     write(400, '(A,F12.6)') 'f_sw_tmp=', f_sw_tmp
     write(400, '(A,F12.6)') 'f_vpd_tmp=', f_vpd_tmp
