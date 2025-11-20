@@ -2159,20 +2159,6 @@ end do
         include 'i_read_param_sub.h'
 
 
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!
-integer :: unit_csv
-open(newunit=unit_csv, file="debug_height_params_sizedist.csv", status="replace", action="write")
-!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
-
-
-
-
         bias_scale(:,:) = 0.d0
 
         ! LAI
