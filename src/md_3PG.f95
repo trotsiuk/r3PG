@@ -1960,14 +1960,32 @@ height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251
 height_rel_wt(:) = height(:)/height_wtav_LAI
 ! modifier to redistribute PAR not absorbed by the canopy
 m_apar(:) = 1.d0 + sum( fi(:) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
-!m_apar(:) = min( m_apar(:), (solar_rad * days_in_month * (1.d0 - 2.71828182845905d0 ** (-k(:)*lai(:))) ) / (fi(:)*solar_rad * days_in_month) ) ! MJ m-2 month-1
 m_apar(:) = min( m_apar(:),  &
      (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
-     / (fi(:)*solar_rad * days_in_month) )
+     / (fi(:)*solar_rad * days_in_month) ) ! MJ m-2 month-1
+! adjust the cohort APAR
+!apar(:) = apar(:) * m_apar(:)
+! ensure the total stand APAR is still less than above canopy PAR
+!apar(:) = apar(:) * (solar_rad * days_in_month)/ sum( apar(:) )
 else
 m_apar(:) = 1.d0
 end if
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+! --- write CSV file ---
+    open(newunit=unit_csv, file="APARmodifier_output.csv", status="unknown", position="append", action="write")
+
+    if (.not. header_written) then
+        write(unit_csv, '(A)') "i,height_wtav_LAI,height_rel_wt,m_apar"
+        header_written = .true.
+    end if
+
+    do i = 1, n_sp
+        write(unit_csv, '(I4, 3(1X, E15.7))') i, height_wtav_LAI, height_rel_wt(i), m_apar(i)
+    end do
+
+    close(unit_csv)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     end subroutine s_light_3pgmix
 
@@ -1975,7 +1993,21 @@ end if
     subroutine s_transpiration_3pgpjs ( n_sp, solar_rad, day_length, VPD_sp, BLcond, conduct_canopy, days_in_month, Qa, Qb, &
             transp_veg)
 
-        implicit none
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+    implicit none          ! FIRST statement in the declarations section
+    integer :: i
+    integer :: unit_csv
+    logical, save :: header_written = .false.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !implicit none
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! input
         integer, intent(in) :: n_sp ! number of species
