@@ -1981,7 +1981,7 @@ m_apar(:) = min( m_apar(:),  &
      (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
      / (max(fi(:), 1d-12)*solar_rad * days_in_month) ) ! MJ m-2 month-1
 ! ensure no cohorts have their APAR reduced
-m_apar(:) = max( 1, m_apar(:))
+m_apar(:) = max( 1.d0, m_apar(:))
 ! only allow cohorts with relative heights < 0.5 to receive additional APAR.
 !where (height_rel_wt(:) < 0.5d0)
 !    m_apar(:) = 1.0d0
