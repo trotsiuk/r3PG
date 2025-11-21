@@ -1315,44 +1315,39 @@ where (stems_n_ha(:) < 1.0d-12)
     stems_n_ha(:) = 1.0d-12
 end where
 
-!! Get the total numbers of the alive trees for the further calculations
-!safe_stems_n = max(sum(stems_n(:)), 1.0d-12)
-!safe_ba_total = max(sum(basal_area(:)), 1.0d-12)
-!safe_dbh_total = sum(dbh(:)*stems_n(:)) / safe_stems_n
-
-stems_n_total = max( sum( stems_n (:) ), 1.0d-12) !!!!!!!!!!!! safe_stems_n
-basal_area_total = max( sum( basal_area (:) ) , 1.0d-12) !!!!!!!!!!! safe_ba_total
-dbh_total = sum( dbh(:) * stems_n(:) ) / stems_n_total    !!!!!!!!!!!!!!safe_dbh_total
+!! Get the total numbers of live trees for the further calculations
+stems_n_total = max( sum( stems_n (:) ), 1.0d-12)
+basal_area_total = max( sum( basal_area (:) ) , 1.0d-12)
+dbh_total = sum( dbh(:) * stems_n(:) ) / stems_n_total
 
 
-
-
-
-! safe weighted averages
+! Calculate the weighted average of the Long-term modifiers when the mort_model = 2 !20241211
 lt_fN_ave = sum(lt_fN(:) * basal_area_prop(:))
 lt_fT_ave = sum(lt_fT(:) * basal_area_prop(:))
 lt_fPhys_ave = sum(lt_fPhys(:) * basal_area_prop(:))
 
-! per-tree max biomass
 biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:))**thinPower(:)
 
-! skip density mortality if any management/stress mortality occurred
-if (sum(stems_loss_manag(:)+stems_loss_stress(:)) < 1.0e-6) then
+! skip density mortality if any management/stress mortality occurred (because dbh_prev(:) and dbh_total_prev will be inappropriate) ! 20250301
+if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
     do i = 1, n_sp
-        if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+        if ( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
 
-            if (mort_model == 1) then
+            if (mort_model .eq. int(1) ) then
                 if (biom_tree_max(i) < biom_tree(i)) then
                     stems_loss_density(i) = f_get_mortality(stems_n_ha(i), biom_stem(i)/basal_area_prop(i), &
                         mS(i), wSx1000(i), thinPower(i)) * basal_area_prop(i)
                 end if
 
-            else if (mort_model == 2) then
+            else if ( mort_model .eq. int(2) ) then
                 ! protect betaN near 1
-                if (abs(1.d0-betaN(i)) < 1.0d-6) then ! this will not protect it exactly because there are several betaN, although they should all the same
+                if (abs(1.d0-betaN(i)) < 1.0d-6) then
                     mort_thinn_total = 0.d0
                 else
-                    if (dbh_total_prev <= 0.d0) dbh_total_prev = dbh_total
+                    if (dbh_total_prev <= 0.d0) then
+                      dbh_total_prev = dbh_total
+                    end if
+
                     mort_thinn_total = ((stems_n_total - (stems_n_total**(1.d0-betaN(i)) + &
                         exp(beta0(i))*(1.d0-betaN(i))/(betaB(i)+1.d0)* &
                         (dbh_total_prev**(betaB(i)+1.d0)*lt_fN_ave**betafN(i)*lt_fT_ave**betafT(i)* &

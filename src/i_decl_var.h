@@ -313,7 +313,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_def
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_def
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_def
 
-real(kind=kind(0.0d0)) :: stems_loss_total      ! Sum of mort_stress, mort_defol, and mort_manag for all cohorts combined !20250301
+!real(kind=kind(0.0d0)) :: stems_loss_total      ! Sum of mort_stress, mort_defol, and mort_manag for all cohorts combined !20250301
 
 ! Defoliation
 integer, dimension(n_sp) :: def_type ! current defoliation type for a given species

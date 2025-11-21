@@ -93,7 +93,7 @@ biom_tree_max(:) = 0.d0
 mort_stress(:) = 0.d0
 mort_thinn(:) = 0.d0
 
-stems_loss_total = 0.d0
+!stems_loss_total = 0.d0
 
 ! Management
 t_n(:) = 1
