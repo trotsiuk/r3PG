@@ -1743,8 +1743,20 @@ end do
 
         ! If LAI is equal to 0, this is an indicator that the species is currently in the dormant period
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+    implicit none          ! FIRST statement in the declarations section
+    integer :: i
+    integer :: unit_csv
+    logical, save :: header_written = .false.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        implicit none
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !implicit none
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! input
         integer, intent(in) :: n_sp ! number of species
@@ -1993,21 +2005,7 @@ end if
     subroutine s_transpiration_3pgpjs ( n_sp, solar_rad, day_length, VPD_sp, BLcond, conduct_canopy, days_in_month, Qa, Qb, &
             transp_veg)
 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-    implicit none          ! FIRST statement in the declarations section
-    integer :: i
-    integer :: unit_csv
-    logical, save :: header_written = .false.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        !implicit none
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        implicit none
 
         ! input
         integer, intent(in) :: n_sp ! number of species
