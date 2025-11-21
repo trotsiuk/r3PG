@@ -1966,15 +1966,21 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar ! modifier to amplify light be
 ! rather than under horizontally homogeneous canopies of the overstorey species
 
 if(n_sp > 1) then
+! avoid fi = 0.0 for shaded cohorts
+where (fi(:) < 1d-12)
+    fi(:) = 1d-12
+end where
 ! average height of all cohorts, weighted by their contribution to LAI
 height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
 ! height of cohort relative to weighted average height
 height_rel_wt(:) = height(:)/height_wtav_LAI
 ! modifier to redistribute PAR not absorbed by the canopy
-m_apar(:) = 1.d0 + sum( fi(:) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
+m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
 m_apar(:) = min( m_apar(:),  &
      (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
-     / (fi(:)*solar_rad * days_in_month) ) ! MJ m-2 month-1
+     / (max(fi(:), 1d-12)*solar_rad * days_in_month) ) ! MJ m-2 month-1
+! ensure no cohorts have their APAR reduced
+
 ! adjust the cohort APAR
 !apar(:) = apar(:) * m_apar(:)
 ! ensure the total stand APAR is still less than above canopy PAR
