@@ -1348,11 +1348,19 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                       dbh_total_prev = dbh_total
                     end if
 
-                    mort_thinn_total = ((stems_n_total - (stems_n_total**(1.d0-betaN(i)) + &
-                        exp(beta0(i))*(1.d0-betaN(i))/(betaB(i)+1.d0)* &
-                        (dbh_total_prev**(betaB(i)+1.d0)*lt_fN_ave**betafN(i)*lt_fT_ave**betafT(i)* &
-                         lt_fPhys_ave**betafPhys(i) - dbh_total**(betaB(i)+1.d0)*lt_fN_ave**betafN(i)* &
-                         lt_fT_ave**betafT(i)*lt_fPhys_ave**betafPhys(i)))))**(1.d0/(1.d0-betaN(i)))
+                    !mort_thinn_total = ((stems_n_total - (stems_n_total**(1.d0-betaN(i)) + &
+                    !    exp(beta0(i))*(1.d0-betaN(i))/(betaB(i)+1.d0)* &
+                    !    (dbh_total_prev**(betaB(i)+1.d0)*lt_fN_ave**betafN(i)*lt_fT_ave**betafT(i)* &
+                    !     lt_fPhys_ave**betafPhys(i) - dbh_total**(betaB(i)+1.d0)*lt_fN_ave**betafN(i)* &
+                    !     lt_fT_ave**betafT(i)*lt_fPhys_ave**betafPhys(i)))))**(1.d0/(1.d0-betaN(i)))
+
+
+                    mort_thinn_total = ( (stems_n_total - ( &
+                        stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
+                        (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
+                        lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
+                        lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
+
                 end if
 
                 ! convert to per-cohort stems loss safely
