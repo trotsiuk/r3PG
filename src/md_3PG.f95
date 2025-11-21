@@ -1953,10 +1953,17 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar ! modifier to amplify light be
 ! if there is more than 1 cohort, redistribute some of the remaining PAR to the shorter species assuming they are generally in gaps
 ! rather than under horizontally homogeneous canopies of the overstorey species
 
+if(n_sp > 1) then
+! average height of all cohorts, weighted by their contribution to LAI
 height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
+! height of cohort relative to weighted average height
 height_rel_wt(:) = height(:)/height_wtav_LAI
+! modifier to redistribute PAR not absorbed by the canopy
 m_apar(:) = 1.d0 + sum( fi(:) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
-
+m_apar(:) = min( m_apar(:), (solar_rad * days_in_month * (1.d0 - 2.71828182845905d0 ** (-k(:)*lai(:))) ) /  ) ! MJ m-2 month-1
+else
+m_apar(:) = 1.d0
+end if
 
 
     end subroutine s_light_3pgmix
