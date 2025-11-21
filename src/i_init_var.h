@@ -124,13 +124,13 @@ biom_foliage_adj_pre_def(:) = 0.d0
 def_recover_t(:) = 0.d0
 age_last_def_event(:) = 0.d0
 
-stems_n_total(:) = 0.d0
-basal_area_total(:) = 0.d0
-mort_thinn_total(:) = 0.d0
-dbh_total(:) = 0.d0
-lt_fN_ave(:) = 1.d0             !20251114
-lt_fT_ave(:) = 1.d0             !20251114
-lt_fPhys_ave(:) = 1.d0          !20251114
+stems_n_total = 0.d0            !20251114
+basal_area_total = 0.d0         !20251114
+mort_thinn_total = 0.d0         !20251114
+dbh_total = 0.d0                !20251114
+lt_fN_ave = 1.d0                !20251114
+lt_fT_ave = 1.d0                !20251114
+lt_fPhys_ave = 1.d0             !20251114
 
 ! Wood Delta ------------------
 Gc_mol(:) = 0.d0
