@@ -174,19 +174,18 @@ real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age     ! Age of each species an
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha for monoculture equivalent
-real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_total            ! total number of trees per ha for the whole stand per active cohort, used when mort_model = 2 !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: mort_thinn_total            ! total number of trees per ha that die when mort_model = 2 !20241106
-
+real(kind=kind(0.0d0)) :: stems_n_total            ! total number of trees per ha for the whole stand per active cohort, used when mort_model = 2 !20241106 !20251114
+real(kind=kind(0.0d0)) :: mort_thinn_total            ! total number of trees per ha that die when mort_model = 2 !20241106
 
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area     ! stand level basal area
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
 real(kind=kind(0.0d0)), dimension(n_sp) :: dbh            ! average tree DBH, cm
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: dbh_total            ! average tree DBH for the whole stand, cm (weighted average by basal_area_prop, and dbh_total = dbh for even-aged monocultures) !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: dbh_total_prev       ! average tree DBH for the whole stand, cm, of previous time step !20241106
+real(kind=kind(0.0d0)) :: dbh_total            ! average tree DBH for the whole stand, cm (weighted average by basal_area_prop, and dbh_total = dbh for even-aged monocultures) !20241106 !20251114
+real(kind=kind(0.0d0)) :: dbh_total_prev       ! average tree DBH for the whole stand, cm, of previous time step !20241106 !20251114
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area_total
+real(kind=kind(0.0d0)) :: basal_area_total                                                                   !20251114
 real(kind=kind(0.0d0)), dimension(n_sp) :: dbh_prev            ! average tree DBH, cm, of the previous time step, used when mort_model = 2 !20241106
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: height         ! average tree height, m
@@ -247,9 +246,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: f_sw
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_nutr
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_phys
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN_ave ! weighted average (by basal area) long-term average lt_fN, used when mort_model = 2 !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fT_ave ! weighted average (by basal area) long-term average lt_fT, used when mort_model = 2 !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fPhys_ave  ! weighted average (by basal area) long-term average lt_fPhys, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)) :: lt_fN_ave     ! weighted average (by basal area) long-term average lt_fN, used when mort_model = 2 !20241106 !20251114
+real(kind=kind(0.0d0)) :: lt_fT_ave     ! weighted average (by basal area) long-term average lt_fT, used when mort_model = 2 !20241106 !20251114
+real(kind=kind(0.0d0)) :: lt_fPhys_ave  ! weighted average (by basal area) long-term average lt_fPhys, used when mort_model = 2 !20241106 !20251114
 
 
 ! Production ---------------------
@@ -290,7 +289,7 @@ real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: gammaF
 
 
 ! Management mortality
-integer, dimension(n_sp) :: t_n, d_n ! currnet thinnign and defoliation number
+integer, dimension(n_sp) :: t_n, d_n ! currnet thinning and defoliation number
 real(kind=kind(0.0d0)) :: manag_remove_prop                              ! proportion to be removed during the management based on the trees (manag_model = 1) or biomass (manag_model = 2) 20250314
 real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed suring hte management.  20250314
 
