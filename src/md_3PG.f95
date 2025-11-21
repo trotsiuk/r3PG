@@ -1344,9 +1344,9 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                 if (abs(1.d0-betaN(i)) < 1.0d-6) then
                     mort_thinn_total = 0.d0
                 else
-                    !if (dbh_total_prev <= 0.d0) then
-                    !  dbh_total_prev = dbh_total
-                    !end if
+                    if (dbh_total_prev <= 0.d0) then
+                      dbh_total_prev = dbh_total
+                    end if
 
                     mort_thinn_total = ((stems_n_total - (stems_n_total**(1.d0-betaN(i)) + &
                         exp(beta0(i))*(1.d0-betaN(i))/(betaB(i)+1.d0)* &
@@ -1356,7 +1356,7 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                 end if
 
                 ! convert to per-cohort stems loss safely
-                stems_loss_density(i) = mort_thinn_total * Pi * dbh_total*dbh_total/40000.d0 / &
+                stems_loss_density(i) = mort_thinn_total * Pi * dbh_total * dbh_total / 40000.d0 / &
                        basal_area_total * basal_area(i) / max(Pi * dbh(i) * dbh(i) / 40000.d0, 1.0d-12)
             end if
 
@@ -1374,14 +1374,13 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                 biom_loss_foliage_density(i) = mF(i) * biom_foliage(i) * stems_loss_density(i) / max(stems_n(i), 1.0d-12)
 
                 stems_n(i) = stems_n(i) - stems_loss_density(i)
-                biom_stem(i) = max(biom_stem(i)-biom_loss_stem_density(i),0.d0)
-                biom_root(i) = max(biom_root(i)-biom_loss_root_density(i),0.d0)
-                biom_foliage(i) = max(biom_foliage(i)-biom_loss_foliage_density(i),0.d0)
+                biom_stem(i) = biom_stem(i) - biom_loss_stem_density(i)
+                biom_root(i) = biom_root(i) - biom_loss_root_density(i)
+                biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
 
                 b_cor = .TRUE.
             end if
 
-            ! zero-out dead cohorts
             if (stems_n(i) <= 0.d0) then
                 biom_foliage(i) = 0.d0
                 biom_root(i) = 0.d0
