@@ -1744,17 +1744,17 @@ end do
 
         ! If LAI is equal to 0, this is an indicator that the species is currently in the dormant period
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-    implicit none          ! FIRST statement in the declarations section
-    !integer :: i
-    integer :: unit_csv
-    logical, save :: header_written = .false.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+!    implicit none          ! FIRST statement in the declarations section
+!    !integer :: i
+!    integer :: unit_csv
+!    logical, save :: header_written = .false.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        !implicit none
+        implicit none
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1982,28 +1982,28 @@ m_apar(:) = min( m_apar(:),  &
 ! ensure no cohorts have their APAR reduced
 
 ! adjust the cohort APAR
-!apar(:) = apar(:) * m_apar(:)
+apar(:) = apar(:) * m_apar(:)
 ! ensure the total stand APAR is still less than above canopy PAR
-!apar(:) = apar(:) * (solar_rad * days_in_month)/ sum( apar(:) )
+apar(:) = apar(:) * (solar_rad * days_in_month)/ sum( apar(:) )
 else
 m_apar(:) = 1.d0
 end if
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-! --- write CSV file ---
-    open(newunit=unit_csv, file="APARmodifier_output.csv", status="unknown", position="append", action="write")
-
-    if (.not. header_written) then
-        write(unit_csv, '(A)') "i,height_wtav_LAI,height_rel_wt,m_apar"
-        header_written = .true.
-    end if
-
-    do i = 1, n_sp
-        write(unit_csv, '(I4, 3(1X, E15.7))') i, height_wtav_LAI, height_rel_wt(i), m_apar(i)
-    end do
-
-    close(unit_csv)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+!! --- write CSV file ---
+!    open(newunit=unit_csv, file="APARmodifier_output.csv", status="unknown", position="append", action="write")
+!
+!    if (.not. header_written) then
+!        write(unit_csv, '(A)') "i,height_wtav_LAI,height_rel_wt,m_apar"
+!        header_written = .true.
+!    end if
+!
+!    do i = 1, n_sp
+!        write(unit_csv, '(I4, 3(1X, E15.7))') i, height_wtav_LAI, height_rel_wt(i), m_apar(i)
+!    end do
+!
+!    close(unit_csv)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     end subroutine s_light_3pgmix
 
