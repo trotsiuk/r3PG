@@ -2426,7 +2426,6 @@ else if (height_model .eq. 3) then
     !) * CVdbhDistribution(:)**2.d0
 
 ! numerical second derivative of Naslund form
-
 DrelBiasheight(:) = 0.5d0 * &
 (( Hd(:) + ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nHB(:) + nHC(:) * (dbh(:) ** aH(:))) ) &
     - 2.0d0 &
@@ -2435,12 +2434,16 @@ DrelBiasheight(:) = 0.5d0 * &
    / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
    * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
 
-
     DrelBiasLCL(:) = 0.d0
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!! fix this
-    DrelBiasCrowndiameter(:) = 0.d0
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    DrelBiasCrowndiameter(:) = 0.5d0 * &
+(( Hd(:) + ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) &
+    - 2.0d0 &
+     * ( Hd(:) + ( dbh(:) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) + &
+    + ( Hd(:) + ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) ) &
+   / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
+   * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
+
 end if
 
 
