@@ -2414,9 +2414,13 @@ else if (height_model .eq. 2) then
 
 else if (height_model .eq. 3) then
     ! Naslund
-    DrelBiasheight(:) = 0.5d0 * (  aH(:) * nHB(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nHB(:) - nHC(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) &
+    DrelBiasheight(:) = 0.5d0 * (  &
+    ( aH(:) * nHB(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nHB(:) - nHC(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) ) / &
+    (
     ( (nHB(:) + nHC(:) * nHC(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
-    ( Hd(:) * (nHB(:) + nHC(:) * nHC(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) ) * CVdbhDistribution(:)**2.d0
+    ( Hd(:) * (nHB(:) + nHC(:) * nHC(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) &
+    )
+    ) * CVdbhDistribution(:)**2.d0
 
     DrelBiasLCL(:) = 0.d0
 
