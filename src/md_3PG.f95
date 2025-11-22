@@ -2399,7 +2399,7 @@ end if
 
 
 
-            if (height_model .eq. 1) then
+            if (height_model .eq. 1) then !20251114
     ! Exponential form of height and LCL equation
             DrelBiasheight(:) = 0.5d0 * (nHB(:) * (nHB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
             DrelBiasLCL(:) = 0.5d0 * (nHLB(:) * (nHLB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
@@ -2417,8 +2417,8 @@ else if (height_model .eq. 3) then
     DrelBiasheight(:) = 0.5d0 * (  &
     ( aH(:) * nHB(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nHB(:) - nHC(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) ) / &
     ( &
-    ( (nHB(:) + nHC(:) * nHC(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
-    ( Hd(:) * (nHB(:) + nHC(:) * nHC(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) &
+    ( (nHB(:) + nHC(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
+    ( Hd(:) * (nHB(:) + nHC(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) &
     ) &
     ) * CVdbhDistribution(:)**2.d0
 
