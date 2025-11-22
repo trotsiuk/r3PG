@@ -2434,7 +2434,7 @@ else if (height_model .eq. 3) then
     DrelBiasLCL(:) = 0.d0
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!! fix this
-    DrelBiasCrowndiameter(:) = 0.5d0 * (nKB(:) * (nKB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+    DrelBiasCrowndiameter(:) = 0.d0
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 end if
 
