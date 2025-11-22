@@ -2289,7 +2289,7 @@ end if
 
         ! parameters
         integer, intent(in) :: correct_bias ! if the distribution shall be fitted
-        integer, intent(in) :: height_model ! which heigh equation
+        integer, intent(in) :: height_model ! which height equation
         real(kind=kind(0.0d0)), dimension(18, n_sp), intent(in) :: pars_s ! parameters for bias !20251114
         real(kind=kind(0.0d0)), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: aWs, nWs
@@ -2390,9 +2390,42 @@ end if
 
             ! calculate the bias
             DrelBiaspFS(:) = 0.5d0 * (pfsPower(:) * (pfsPower(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+
+
+
+
+
+
+
+
+
+            if (height_model .eq. 1) then
+    ! Exponential form of height and LCL equation
             DrelBiasheight(:) = 0.5d0 * (nHB(:) * (nHB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
-            DrelBiasBasArea(:) = 0.5d0 * (2.d0 * (2.d0 - 1.d0)) * CVdbhDistribution(:) ** 2.d0
             DrelBiasLCL(:) = 0.5d0 * (nHLB(:) * (nHLB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+
+else if (height_model .eq. 2) then
+    ! Michajlow form of height and LCL equation
+    DrelBiasheight(:) = 0.5d0 * (  aH(:) * exp(-nHB(:)/Ex(:)) * (nHB(:)**2 - 2.d0*nHB(:)*Ex(:)) / &
+                      ( Ex(:)**2 * (Hd(:) + aH(:)*exp(-nHB(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
+
+    DrelBiasLCL(:) = 0.5d0 * (  aHL(:) * exp(-nHLB(:)/Ex(:)) * (nHLB(:)**2 - 2.d0*nHLB(:)*Ex(:)) / &
+                      ( Ex(:)**2 * (Hd(:) + aHL(:)*exp(-nHLB(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
+
+else if (height_model .eq. 3) then
+    ! Naslund
+    DrelBiasheight(:) = 0.5d0 * (  aH(:) * nHB(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nHB(:) - nHC(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) &
+    ( (nHB(:) + nHC(:) * nHC(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
+    ( Hd(:) * (nHB(:) + nHC(:) * nHC(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) ) * CVdbhDistribution(:)**2.d0
+
+    DrelBiasLCL(:) = 0.d0
+
+end if
+
+
+
+
+            DrelBiasBasArea(:) = 0.5d0 * (2.d0 * (2.d0 - 1.d0)) * CVdbhDistribution(:) ** 2.d0
             DrelBiasCrowndiameter(:) = 0.5d0 * (nKB(:) * (nKB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
 
             ! prevent unrealisticly large bias, by restricting it to within + or - 50%
