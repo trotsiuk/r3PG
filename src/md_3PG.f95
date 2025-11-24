@@ -508,7 +508,7 @@ end do
                 ! If this is first dormant month, then we set WF to 0 and move everything to the dept
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
                     if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
-                        biom_foliage_debt(i)= biom_foliage(i)
+                        biom_foliage_debt(i) = biom_foliage(i)
                         biom_foliage(i) = 0.d0
                         lai(i) =  0.d0
                         b_cor = .TRUE.
@@ -898,7 +898,7 @@ end do
                 else
 
                     ! Leaves are now re-created from carbohydrates and the NPP is
-                    ! distributed amont the compartments
+                    ! distributed among the compartments
                     if( biom_foliage(i) == 0.d0 ) then
                         biom_foliage(i) = biom_foliage_debt(i)
                         biom_foliage_debt(i) = 0.d0
@@ -1070,21 +1070,40 @@ end do
 
                         if( age(ii,i) >= defoliationInputs(d_n(i),1,i) ) then
 
-                            ! Check wether we need to put the defoliation type back to default after first month
+                            ! Check whether we need to put the defoliation type back to default after first month
                             def_type(i) = int( defoliationInputs(d_n(i),2,i))
                             def_recover_t(i) = defoliationInputs(d_n(i),7,i)
 
                             ! Adjust pre-defoliation foliage mass
-                            if( def_type(i) == 1 .or. def_type(i) == 3 ) then
+                            if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),3,i)
-                            else if (def_type(i) == 2 ) then ! copice event
+                            else if (def_type(i) == 2 ) then ! 2 - coppice
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i)
                                 ! coppice_sr_ratio(i) = biom_stem(i) / biom_root(i)
 
-                                !! TODO we need to re-calcualte the f_age after this
-                                age(ii,i)  = 1.d0 / 12.d0
 
-                            else if (def_type(i) == 4) then ! stand replacing
+! for coppice the age and age related variables need to be updated !20251124
+! Previous-month age (age_m)
+age_m(ii,i) = age(ii,i) - 1.d0/12.d0
+if (ii == 1) then
+age_m(ii,i) = age(ii,i)
+end if
+
+! Age-dependent traits
+SLA(ii,i) = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
+fracBB(ii,i) = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
+wood_density(ii,i) = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)
+gammaN(ii,i) = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
+gammaF(ii,i) = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))
+
+! Age modifier f_age
+if (nAge(i) == 0.d0) then
+    f_age(ii,i) = 1.d0
+else
+    f_age(ii,i) = 1.d0 / ( 1.d0 + ( ((age_m(ii,i)/MaxAge(i)) / rAge(i)) ** nAge(i) ) )
+end if
+
+                            else if (def_type(i) == 4) then ! 4 = stand replacing
                                 def_recover_t(i) = 0.d0
                             else
                                 biom_foliage_adj_pre_def(i) = 0.0d0
@@ -1092,6 +1111,8 @@ end do
 
                             age_last_def_event(i) = age(ii, i)
 
+
+                            ! adjust biomass pools due to defoliation
                             if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
                                 ! foliage debt depends on stems that can resprout !20250301
                                 biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) !defol_stem_mass_prop_retained
@@ -1113,6 +1134,11 @@ end do
 
                             biom_stem(i) = biom_stem(i) - biom_loss_stem_def(i)
                             biom_root(i) = biom_root(i) - biom_loss_root_def(i)
+
+
+
+
+
 
                             ! if root biomass declined, there was mortality, so update stems_n
                             if( defoliationInputs(d_n(i),5,i) < 1 ) then
