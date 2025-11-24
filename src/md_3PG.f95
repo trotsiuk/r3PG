@@ -1084,6 +1084,7 @@ end do
 
 
 ! for coppice the age and age related variables need to be updated !20251124
+age(ii,i) = 1.d0 / 12.d0
 ! Previous-month age (age_m)
 age_m(ii,i) = age(ii,i) - 1.d0/12.d0
 if (ii == 1) then
