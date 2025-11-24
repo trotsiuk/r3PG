@@ -54,7 +54,8 @@ contains
 !real(kind=8) :: approx_mb
 ! Temporary variables for long-term modifiers
 real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean !20251114
-
+! Temporary variable for updating age-related variables after coppice events
+real(kind=8) :: tmp_vec(1) !20251124
 
 
         ! Variables, Parameters, Constants
@@ -1090,11 +1091,27 @@ age_m(ii,i) = age(ii,i)
 end if
 
 ! Age-dependent traits
-SLA(ii,i) = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)(1)
-fracBB(ii,i) = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)(1)
-wood_density(ii,i) = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)(1)
-gammaN(ii,i) = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))(1)
-gammaF(ii,i) = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))(1)
+
+! SLA
+tmp_vec = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
+SLA(ii,i) = tmp_vec(1)
+
+! fracBB
+tmp_vec = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
+fracBB(ii,i) = tmp_vec(1)
+
+! wood density
+tmp_vec = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)
+wood_density(ii,i) = tmp_vec(1)
+
+! gammaN
+tmp_vec = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
+gammaN(ii,i) = tmp_vec(1)
+
+! gammaF
+tmp_vec = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))
+gammaF(ii,i) = tmp_vec(1)
+
 
 ! Age modifier f_age
 if (nAge(i) == 0.d0) then
