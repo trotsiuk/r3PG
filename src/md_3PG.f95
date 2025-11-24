@@ -56,6 +56,7 @@ contains
 real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean !20251114
 ! Temporary variable for updating age-related variables after coppice events
 real(kind=8) :: tmp_vec(1) !20251124
+integer(kind=c_int), intent(in) :: jj !20251124
 
 
         ! Variables, Parameters, Constants
