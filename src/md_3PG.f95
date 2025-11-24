@@ -1084,9 +1084,14 @@ end do
 
 
 ! for coppice the age and age related variables need to be updated !20251124
-age(ii,i) = 1.d0 / 12.d0
-! Previous-month age (age_m)
-age_m(ii,i) = age(ii,i) - 1.d0/12.d0
+! Overwrite current and future months for this species
+do jj = ii, n_m
+    age(jj,i)   = 1.d0/12.d0 + (jj - ii) / 12.d0
+    age_m(jj,i) = age(jj,i) - 1.d0/12.d0
+end do
+!age(ii,i) = 1.d0 / 12.d0
+!! Previous-month age (age_m)
+!age_m(ii,i) = age(ii,i) - 1.d0 / 12.d0
 if (ii == 1) then
 age_m(ii,i) = age(ii,i)
 end if
