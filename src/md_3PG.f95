@@ -1090,11 +1090,11 @@ age_m(ii,i) = age(ii,i)
 end if
 
 ! Age-dependent traits
-SLA(ii,i) = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
-fracBB(ii,i) = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
-wood_density(ii,i) = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)
-gammaN(ii,i) = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
-gammaF(ii,i) = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))
+SLA(ii,i) = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)(1)
+fracBB(ii,i) = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)(1)
+wood_density(ii,i) = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)(1)
+gammaN(ii,i) = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))(1)
+gammaF(ii,i) = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))(1)
 
 ! Age modifier f_age
 if (nAge(i) == 0.d0) then
