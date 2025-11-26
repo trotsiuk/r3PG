@@ -1659,10 +1659,9 @@ if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
 
 
 
+
+
 ! --- begin simplified stable density-dependent mortality block -----------------------
-
-! Required local declarations (add these inside the subroutine)
-
 
 ! Pre-mortality copies
 stems_n_pre(:)      = stems_n(:)
@@ -1687,9 +1686,7 @@ stems_n_ha(:) = max(stems_n_ha(:), 1.0d-6)
 ! total live trees and basal area
 stems_n_total  = max(sum(stems_n_pre(:)), 1.0d-6)
 basal_area_total = max(sum(basal_area(:)), 1.0d-6)
-
-! cohort-averaged dbh
-dbh_total = sum( dbh(:) * stems_n_pre(:) ) / stems_n_total
+dbh_total = sum(dbh(:) * stems_n_pre(:)) / stems_n_total
 dbh_total_prev = max(dbh_total_prev, 1.0d-6)
 
 ! weighted long-term modifiers
@@ -1708,11 +1705,9 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
 
             ! --- Mortality model 1 ---
             if (mort_model .eq. 1) then
-
                 if (biom_tree_max(i) < biom_stem_pre(i)) then
-                    stems_loss_density(i) = f_get_mortality( &
-                        stems_n_ha(i), &
-                        biom_stem_pre(i) / basal_area_prop(i), &
+                    stems_loss_density(i) = f_get_mortality(stems_n_ha(i), &
+                        biom_stem_pre(i)/basal_area_prop(i), &
                         mS(i), wSx1000(i), thinPower(i)) * basal_area_prop(i)
                 end if
 
@@ -1720,30 +1715,26 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
             else if (mort_model .eq. 2) then
 
                 ! protect betaN near 1
-                if (abs(1.d0 - betaN(i)) < 1.d-6) then
+                if (abs(1.d0 - betaN(i)) < 1.0d-6) then
                     mort_thinn_total = 0.d0
                 else
                     tmp = stems_n_total - ( &
-                          stems_n_total**(1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i)+1.d0) * &
-                          ( dbh_total_prev**(betaB(i)+1.d0) * lt_fN_ave**betafN(i) * lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i) - &
-                            dbh_total     **(betaB(i)+1.d0) * lt_fN_ave**betafN(i) * lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i) ) )
-
+                          stems_n_total**(1.d0 - betaN(i)) + &
+                          Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i)+1.d0) * &
+                          (dbh_total_prev**(betaB(i)+1.d0) * lt_fN_ave**betafN(i) * &
+                           lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i) - &
+                           dbh_total**(betaB(i)+1.d0) * lt_fN_ave**betafN(i) * &
+                           lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i)) )
                     tmp = max(tmp, 0.d0)
-
-                    ! safe denominator for exponent
                     mort_thinn_total = tmp**(1.d0 / max(1.d0 - betaN(i), 1.0d-6))
                 end if
 
-                ! per-cohort density mortality
-                denom = max(Pi * dbh(i) * dbh(i) / 40000.d0, 1.0d-6)
-
-                stems_loss_density(i) = mort_thinn_total * &
-                    (Pi * dbh_total**2 / 40000.d0) / basal_area_total * &
-                    basal_area(i) / denom
-
+                denom = max(Pi*dbh(i)*dbh(i)/40000.d0, 1.0d-6)
+                stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
+                                        basal_area_total * basal_area(i) / denom
             end if
 
-            ! no negative stems
+            ! ensure no negative stems
             stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
 
             ! --- biomass losses ---
@@ -1766,6 +1757,7 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
 end if
 
 ! --- end simplified block -----------------------
+
 
 
 
