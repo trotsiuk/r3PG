@@ -293,6 +293,13 @@ integer, dimension(n_sp) :: t_n, d_n ! currnet thinning and defoliation number
 real(kind=kind(0.0d0)) :: manag_remove_prop                              ! proportion to be removed during the management based on the trees (manag_model = 1) or biomass (manag_model = 2) 20250314
 real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed suring hte management.  20250314
 
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_pre       !20251124 ! requried to inprove stability of mortality calculations
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem_pre     !20251124
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_root_pre     !20251124
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_pre  !20251124
+real(kind=kind(0.0d0)) :: tmp                                !20251124
+real(kind=kind(0.0d0)) :: denom                              !20251124
+
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_manag      ! 20250314
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_manag      ! 20250314
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_manag      ! 20250314
