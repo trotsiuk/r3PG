@@ -1801,17 +1801,25 @@ biom_loss_foliage_density(:) = 0.d0
 
 ! basal area proportion per cohort, protect tiny values
 basal_area_prop(:) = basal_area(:) / max(sum(basal_area(:)), 1.0d-12)
-basal_area_prop(:) = max(basal_area_prop(:), 1.0d-6)
+where (basal_area_prop(:) < 1.0d-12)
+    basal_area_prop(:) = 1.0d-12
+end where
 
-! stems per ha (pre-mortality), protect tiny values
-stems_n_ha(:) = stems_n_pre(:) / basal_area_prop(:)
-stems_n_ha(:) = max(stems_n_ha(:), 1.0d-6)
+! stems per ha, protect tiny values
+stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
+where (stems_n_ha(:) < 1.0d-12)
+    stems_n_ha(:) = 1.0d-12
+end where
 
 ! total live trees and basal area
-stems_n_total  = max(sum(stems_n_pre(:)), 1.0d-6)
-basal_area_total = max(sum(basal_area(:)), 1.0d-6)
-dbh_total = sum(dbh(:) * stems_n_pre(:)) / stems_n_total
-dbh_total_prev = max(dbh_total_prev, 1.0d-6)
+stems_n_total  = max(sum(stems_n(:)), 1.0d-12)
+basal_area_total = max(sum(basal_area(:)), 1.0d-12)
+dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+
+! initialize dbh_total_prev if needed
+if (dbh_total_prev <= 0.d0) then
+    dbh_total_prev = dbh_total
+end if
 
 ! weighted long-term modifiers
 lt_fN_ave    = sum(lt_fN(:)    * basal_area_prop(:))
@@ -1829,10 +1837,10 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
 
             ! --- Mortality model 1 ---
             if (mort_model .eq. 1) then
-                if (biom_tree_max(i) < biom_stem_pre(i)) then
+                if (biom_tree_max(i) < biom_tree(i)) then
                     stems_loss_density(i) = f_get_mortality(stems_n_ha(i), &
-                        biom_stem_pre(i)/basal_area_prop(i), &
-                        mS(i), wSx1000(i), thinPower(i)) * basal_area_prop(i)
+                        biom_stem(i)/basal_area_prop(i), mS(i), wSx1000(i), thinPower(i)) * &
+                        basal_area_prop(i)
                 end if
 
             ! --- Mortality model 2 ---
@@ -1842,43 +1850,51 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                 if (abs(1.d0 - betaN(i)) < 1.0d-6) then
                     mort_thinn_total = 0.d0
                 else
-                    mort_thinn_total = (stems_n_total - stems_n_total**(1.d0 - betaN(i)) &
-                        - Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i)+1.d0) * &
-                        (dbh_total_prev**(betaB(i)+1.d0) * lt_fN_ave**betafN(i) * &
-                         lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i) - &
-                         dbh_total**(betaB(i)+1.d0) * lt_fN_ave**betafN(i) * &
-                         lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i)) ) &
-                         ** (1.d0 / (1.d0 - betaN(i)))
+                    mort_thinn_total = (stems_n_total - ( &
+                        stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / &
+                        (betaB(i) + 1.d0) * (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
+                        lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * &
+                        lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ) ** &
+                        (1.d0 / (1.d0 - betaN(i)))
                 end if
 
-                denom = max(Pi*dbh(i)*dbh(i)/40000.d0, 1.0d-6)
+                denom = max(Pi*dbh(i)*dbh(i)/40000.d0, 1.0d-12)
                 stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
                                         basal_area_total * basal_area(i) / denom
             end if
 
             ! ensure no negative stems
-            stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
+            if (stems_loss_density(i) < 0.d0) stems_loss_density(i) = 0.d0
 
             ! --- biomass losses ---
             if (stems_loss_density(i) > 0.d0) then
-                denom_stems = max(stems_n_pre(i), 1.0d-6)
-                biom_loss_stem_density(i)    = mS(i) * biom_stem_pre(i)    * stems_loss_density(i) / denom_stems
-                biom_loss_root_density(i)    = mR(i) * biom_root_pre(i)    * stems_loss_density(i) / denom_stems
-                biom_loss_foliage_density(i) = mF(i) * biom_foliage_pre(i) * stems_loss_density(i) / denom_stems
+                denom_stems = max(stems_n(i), 1.0d-12)
+                biom_loss_stem_density(i)    = mS(i) * biom_stem(i)    * stems_loss_density(i) / denom_stems
+                biom_loss_root_density(i)    = mR(i) * biom_root(i)    * stems_loss_density(i) / denom_stems
+                biom_loss_foliage_density(i) = mF(i) * biom_foliage(i) * stems_loss_density(i) / denom_stems
+
+                ! apply losses immediately (inside loop)
+                stems_n(i)      = stems_n(i) - stems_loss_density(i)
+                biom_stem(i)    = biom_stem(i) - biom_loss_stem_density(i)
+                biom_root(i)    = biom_root(i) - biom_loss_root_density(i)
+                biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
+            end if
+
+            ! zero-out cohorts if all stems are gone
+            if (stems_n(i) <= 0.d0) then
+                stems_n(i) = 0.d0
+                biom_stem(i) = 0.d0
+                biom_root(i) = 0.d0
+                biom_foliage(i) = 0.d0
             end if
 
         end if
     end do
 
-    ! --- Apply losses once at the end ---
-    stems_n(:)      = max(stems_n_pre(:) - stems_loss_density(:), 0.d0)
-    biom_stem(:)    = max(biom_stem_pre(:) - biom_loss_stem_density(:), 0.d0)
-    biom_root(:)    = max(biom_root_pre(:) - biom_loss_root_density(:), 0.d0)
-    biom_foliage(:) = max(biom_foliage_pre(:) - biom_loss_foliage_density(:), 0.d0)
-
 end if
 
 ! --- end simplified block -----------------------
+
 
 
 
