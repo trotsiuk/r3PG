@@ -1392,27 +1392,35 @@ end if
 
 
                             ! if root biomass declined, there was mortality, so update stems_n
-                            if( defoliationInputs(d_n(i),5,i) < 1 ) then
-                                ! save the current value of mort_defol(i), before it is changed, so that the losses due to thinning can be calculated below.
-                                !mort_defol(i) = stems_n(i)
+                            if( defoliationInputs(d_n(i),5,i) < 1.d0 ) then
 
-                                ! if smaller trees are killed, then the ratio of stem,
-                                ! to be removed relative to the mean tree in the stand
-                                ! will be < 1. If the proportion of roots retained/ratio is > 1 then the new
-                                ! stems_n will be > pre-disturbance stems_n, which is impossible. Therefore, make sure proportion of roots retained/ratio <= 1.
+                                ! When the sum of proportion of roots retained and Sfraction is <= 1, then all N will be removed even though some biomass remains. So restrict stems_n to be at least 0.
                                 ! note that this is based on stem fraction, not root or foliage fractions, which would be harder to determine as inputs
-                                if(  ( 1.d0 - defoliationInputs(d_n(i),5,i)) / defoliationInputs(d_n(i),6,i) >= 1.d0 ) then ! this would mean post stems_n > pre stems_n
 
-                                    stems_loss_def(i) = 0.d0
-                                    !stems_n(i) = stems_n(i)
-                                    ! this we need to keep, so we don't remove the stems if no mortality
-                                else
-                                    !biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) /  defoliationInputs(d_n(i),6,i)
-                                    stems_loss_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i) &
-                                    /  defoliationInputs(d_n(i),6,i)) !20251124
-                                    !stems_n(i) = stems_n(i) * defol_root_mass_prop_retained / defol_stem
-                                    stems_n(i) = stems_loss_def(i)
-                                end if
+                                ! ---- IMPLIED TREE REMOVAL ----
+
+                                  stems_loss_def(i) = stems_n(i) * ( 1.d0 - defoliationInputs(d_n(i),5,i)) / defoliationInputs(t_n(i),6,i))
+
+                                ! clamp implied tree removal: 0 ≤ stems_loss ≤ stems_n
+                                if ( stems_loss_def(i) < 0.d0 ) stems_loss_def(i) = 0.d0
+                                if ( stems_loss_def(i) > stems_n(i) ) stems_loss_def(i) = stems_n(i)
+
+                                stems_n(i) = stems_n(i) - stems_loss_def(i)
+
+
+                                !if(  ( 1.d0 - defoliationInputs(d_n(i),5,i)) / defoliationInputs(d_n(i),6,i) >= 1.d0 ) then ! this would mean post stems_n > pre stems_n
+                                !
+                                !    stems_loss_def(i) = 0.d0
+                                !    !stems_n(i) = stems_n(i)
+                                !    ! this we need to keep, so we don't remove the stems if no mortality
+                                !else
+                                !    !biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) /  defoliationInputs(d_n(i),6,i)
+                                !    stems_loss_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i) &
+                                !    /  defoliationInputs(d_n(i),6,i)) !20251124
+                                !    !stems_n(i) = stems_n(i) * defol_root_mass_prop_retained / defol_stem
+                                !    stems_n(i) = stems_loss_def(i)
+                                !end if
+
                             end if
 
                             b_cor = .TRUE.
