@@ -1669,6 +1669,8 @@ if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
 
 ! --- begin simplified stable density-dependent mortality block -----------------------
 
+! --- begin simplified stable density-dependent mortality block -----------------------
+
 ! Pre-mortality copies
 stems_n_pre(:)      = stems_n(:)
 biom_stem_pre(:)    = biom_stem(:)
@@ -1690,10 +1692,14 @@ stems_n_ha(:) = stems_n_pre(:) / basal_area_prop(:)
 stems_n_ha(:) = max(stems_n_ha(:), 1.0d-6)
 
 ! total live trees and basal area
-stems_n_total  = max(sum(stems_n_pre(:)), 1.0d-6)
+stems_n_total   = max(sum(stems_n_pre(:)), 1.0d-6)
 basal_area_total = max(sum(basal_area(:)), 1.0d-6)
-dbh_total = sum(dbh(:) * stems_n_pre(:)) / stems_n_total
-dbh_total_prev = max(dbh_total_prev, 1.0d-6)
+dbh_total       = sum(dbh(:) * stems_n_pre(:)) / stems_n_total
+
+! ensure dbh_total_prev has a reasonable initial value
+if (dbh_total_prev <= 0.d0) then
+    dbh_total_prev = dbh_total
+end if
 
 ! weighted long-term modifiers
 lt_fN_ave    = sum(lt_fN(:)    * basal_area_prop(:))
@@ -1763,6 +1769,7 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
 end if
 
 ! --- end simplified block -----------------------
+
 
 
 
