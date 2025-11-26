@@ -293,6 +293,11 @@ if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
 do i = 1, n_sp
 
+
+    ! soil nutrition modifier
+    lt_fN(i) = 1.d0 - (1.d0 - fN0(i)) * (1.d0 - fertility(i)) ** fNn(i)
+    where( fNn(i) == 0.d0 ) lt_fN(i) = 1.d0
+
     !---------------------------
     ! 1) Temperature (lt_fT)
     !---------------------------
@@ -1840,14 +1845,6 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                     if (dbh_total_prev <= 0.d0) then
                         dbh_total_prev = dbh_total
                     end if
-
-                    !mort_thinn_total = ( (stems_n_total - (stems_n_total**(1.d0-betaN(i)) + &
-                    !    Exp(beta0(i))*(1.d0-betaN(i))/(betaB(i)+1.d0) * &
-                    !    (dbh_total_prev**(betaB(i)+1.d0)*lt_fN_ave**betafN(i) * &
-                    !     lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i) - &
-                    !     dbh_total**(betaB(i)+1.d0)*lt_fN_ave**betafN(i) * &
-                    !     lt_fT_ave**betafT(i) * lt_fPhys_ave**betafPhys(i)))))**(1.d0/(1.d0-betaN(i))) )
-
 
                     mort_thinn_total = ( (stems_n_total - ( &
                         stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
