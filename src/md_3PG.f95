@@ -220,6 +220,12 @@ integer :: jj !20251124
           lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
         end where
 
+! for background mortality calculations where mort_model = 2 !20251124
+stems_n_total  = max(sum(stems_n(:)), 1.0d-6)
+basal_area_total = max(sum(basal_area(:)), 1.0d-6)
+dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+
+
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
 
 
