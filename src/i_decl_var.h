@@ -300,8 +300,8 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_pre  !20251124
 real(kind=kind(0.0d0)) :: tmp                                !20251124
 real(kind=kind(0.0d0)) :: denom                              !20251124
 real(kind=kind(0.0d0)) :: denom_stems                        !20251124
-real(kind=kind(0.0d0)) :: dbh_term_prev                      !20251124
-real(kind=kind(0.0d0)) :: dbh_term                           !20251124
+!real(kind=kind(0.0d0)) :: dbh_term_prev                      !20251124
+!real(kind=kind(0.0d0)) :: dbh_term                           !20251124
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_manag      ! 20250314
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_manag      ! 20250314
