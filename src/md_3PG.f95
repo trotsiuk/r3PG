@@ -1076,7 +1076,7 @@ end do
                             def_type(i) = int( defoliationInputs(d_n(i),2,i))
                             def_recover_t(i) = defoliationInputs(d_n(i),7,i)
 
-                            ! Adjust pre-defoliation foliage mass
+                            ! Adjust pre-defoliation foliage mass (i.e. pre-defoliation foliage mass of trees that survived the defoliation event)
                             if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i) ! depends on how many trees died as defined by root mass loss
                             else if (def_type(i) == 2 ) then ! also depends on how many trees died, but age needs to be adjusted as well
@@ -1139,7 +1139,7 @@ end if
                             ! adjust biomass pools due to defoliation
                             if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
                                 ! foliage debt depends on stems that can resprout, and if dormant, needs to come from biom_foliage_debt !20250301
-                                biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) !defol_stem_mass_prop_retained
+                                biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) !defol_stem_mass_prop_retained
                                 biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_def(i) ! same as biom_foliage_debt(i) * defoliationInputs(d_n(i),3,i)
                                 ! if a prune or epicormic event occurred during dormant season, then no foliage could have been removed
                                 if ( def_type(i) == 1 .or. def_type(i) == 3 ) then
@@ -1147,7 +1147,7 @@ end if
                                 end if
                             else
                                 !biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
-                                biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) &
+                                biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) &
                          * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
                                 biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_def(i)
                             end if
