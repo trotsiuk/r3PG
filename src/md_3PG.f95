@@ -296,7 +296,9 @@ do i = 1, n_sp
 
     ! soil nutrition modifier
     lt_fN(i) = 1.d0 - (1.d0 - fN0(i)) * (1.d0 - fertility(i)) ** fNn(i)
-    where( fNn(i) == 0.d0 ) lt_fN(i) = 1.d0
+    if (fNn(i) == 0.d0) then
+    lt_fN(i) = 1.d0
+    end if
 
     !---------------------------
     ! 1) Temperature (lt_fT)
