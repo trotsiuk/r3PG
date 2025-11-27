@@ -616,7 +616,7 @@ do i = 1, n_sp
                                 if ( leafgrow(i) > leaffall(i) ) then
                                   growing_season_length(i) = leaffall(i) - leafgrow(i) + 1
                                 else if ( leafgrow(i) < leaffall(i) ) then
-                                  growing_season_length(i) = 12 - leafgrow(i) + 1 + leaffall(i)
+                                  growing_season_length(i) = 12.d0 - leafgrow(i) + 1 + leaffall(i)
                                 end if
 
                                 if( def_recover_t(i) < 12.d0 ) then
@@ -691,10 +691,10 @@ do i = 1, n_sp
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!the following 2 lines need to be in, but currently cause an error
 !!!!!!!!!!!!!!!!!!!!!
-!!                                biom_foliage(i) = biom_foliage(i) + (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-!!                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
-!!                                biom_stem(i) = biom_stem(i) + (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-!!                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
+                                biom_foliage(i) = biom_foliage(i) + (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
+                                biom_stem(i) = biom_stem(i) + (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
