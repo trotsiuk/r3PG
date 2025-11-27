@@ -331,6 +331,11 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_adj_pre_def !Adjusted pr
 real(kind=kind(0.0d0)), dimension(n_sp) :: def_recover_t !Time neede to recover from the defoliation
 real(kind=kind(0.0d0)), dimension(n_sp) :: age_last_def_event ! Last defoliation event age
 real(kind=kind(0.0d0)), dimension(n_sp) :: def_test_var
+real(kind=kind(0.0d0)), dimension(n_sp) :: prop_carbs !20251124
+real(kind=kind(0.0d0)), dimension(n_sp) :: prop_npp !20251124
+real(kind=kind(0.0d0)), dimension(n_sp) :: growing_season_length !20251124
+
+
 
 ! Water use ----------------------
 real(kind=kind(0.0d0)), dimension(n_sp) :: SWconst         ! soil parameters for soil class

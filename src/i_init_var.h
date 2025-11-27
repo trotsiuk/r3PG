@@ -123,6 +123,10 @@ def_type(:) = 0
 biom_foliage_adj_pre_def(:) = 0.d0
 def_recover_t(:) = 0.d0
 age_last_def_event(:) = 0.d0
+prop_carbs(:) = 0.d0                  !20251124
+prop_npp(:) = 0.d0                    !20251124
+growing_season_length(:) = 0.d0       !20251124
+
 
 stems_n_total = 0.d0            !20251114
 basal_area_total = 0.d0         !20251114
