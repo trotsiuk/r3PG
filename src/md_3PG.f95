@@ -1399,7 +1399,8 @@ end if
 
                                 ! ---- IMPLIED TREE REMOVAL ----
 
-                                  stems_loss_def(i) = stems_n(i) * ( 1.d0 - defoliationInputs(d_n(i),5,i)) / defoliationInputs(t_n(i),6,i))
+                                  stems_loss_def(i) = stems_n(i) * ( 1.d0 - defoliationInputs(d_n(i),5,i)) / &
+                                  defoliationInputs(t_n(i),6,i)
 
                                 ! clamp implied tree removal: 0 ≤ stems_loss ≤ stems_n
                                 if ( stems_loss_def(i) < 0.d0 ) stems_loss_def(i) = 0.d0
