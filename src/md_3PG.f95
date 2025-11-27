@@ -534,22 +534,23 @@ end do
 
             ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
             ! after the last growth using new NPP. ! 20250301
+            do i = 1, n_sp
              if ( def_recover_t(i) > 0.0d0 .and. age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0 ) then ! def_recover_t(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
                      def_recover_t(i) = 0.0d0
              end if
              if( def_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
-             biom_foliage(i) + biom_stem(i) >= adj_pre_def_foliage_mass(i) ) then                                               ! coppice
+             biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i) ) then                                               ! coppice
                      def_recover_t(i) = 0.0d0
              end if
              if( def_type(i) == 1 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
-             biom_foliage(i) >= adj_pre_def_foliage_mass(i) ) then                                                              ! prune
+             biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                                              ! prune
                      def_recover_t(i) = 0.0d0
              end if
              if( def_type(i) == 3 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
-                 biom_foliage(i) >= adj_pre_def_foliage_mass(i) ) then                                                              ! epicormic
+                 biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                                              ! epicormic
                      def_recover_t(i) = 0.0d0
              end if
-
+            end do
             !****** We shall call this only if the any of the above is TRUE
             if ( b_cor .eqv. .TRUE. ) then
                 do n = 1, b_n
