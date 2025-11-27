@@ -558,7 +558,7 @@ end do
 ! Add any biomass coming from stored carbohydrates if still recovering from a defoliation event !20250301
 do i = 1, n_sp
 
-hereherehere
+!hereherehere
 
                 if( def_recover_t(i) > 0.d0 ) then
                    ! if still in within the first year of a defoliation event
@@ -1304,7 +1304,7 @@ end if
                             prop_carbs(:) = defoliationInputs(d_n(i),8,i) !20251124
                             prop_npp(:) = defoliationInputs(d_n(i),9,i) !20251124
 
-hereherehere
+!hereherehere
 
                             ! Adjust pre-defoliation foliage mass (i.e. pre-defoliation foliage mass of trees that survived the defoliation event)
                             if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
