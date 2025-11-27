@@ -1375,8 +1375,8 @@ end if
                                 end if
                             else
                                 !biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
-                                biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) &
-                         * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
+                                biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),5,i) * &
+                                defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
                                 biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_def(i)
                             end if
 
