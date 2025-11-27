@@ -534,23 +534,21 @@ end do
 
             ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
             ! after the last growth using new NPP. ! 20250301
-            ! if ( t_recover(i) > 0 .and. age(ii,i) >= age_last_def_event(i) + t_recover(i)/12.d0 ) then ! t_recover(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
-            !         t_recover(i) = 0.0d0
-            !     end if
-
-
-            !     if( defoliation_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
-            !     biom_foliage(i) + biom_stem(i) >= adj_pre_def_foliage_mass(i) ) then                                               ! coppice
-            !         t_recover(i) = 0.0d0
-            !     end if
-            !     if( defoliation_type(i) == 1 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
-            !     biom_foliage(i) >= adj_pre_def_foliage_mass(i) ) then                                              ! prune
-            !         t_recover(i) = 0.0d0
-            !     end if
-            !     if( defoliation_type(i) == 3 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
-            !     biom_foliage(i) >= adj_pre_def_foliage_mass(i) ) then                               ! epicormic
-            !         t_recover(i) = 0.0d0
-            !     end if
+             if ( def_recover_t(i) > 0.0d0 .and. age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0 ) then ! def_recover_t(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
+                     def_recover_t(i) = 0.0d0
+             end if
+             if( def_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
+             biom_foliage(i) + biom_stem(i) >= adj_pre_def_foliage_mass(i) ) then                                               ! coppice
+                     def_recover_t(i) = 0.0d0
+             end if
+             if( def_type(i) == 1 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
+             biom_foliage(i) >= adj_pre_def_foliage_mass(i) ) then                                                              ! prune
+                     def_recover_t(i) = 0.0d0
+             end if
+             if( def_type(i) == 3 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
+                 biom_foliage(i) >= adj_pre_def_foliage_mass(i) ) then                                                              ! epicormic
+                     def_recover_t(i) = 0.0d0
+             end if
 
             !****** We shall call this only if the any of the above is TRUE
             if ( b_cor .eqv. .TRUE. ) then
@@ -627,32 +625,6 @@ end do
 
 
 
-!!-------------------------------------------------------------
-!! Monthly update of long-term modifiers
-!!-------------------------------------------------------------
-!do i = 1, n_sp
-!
-!    ! Skip species not yet planted
-!    if (age(month, i) < 0.d0) cycle
-!
-!    ! Update circular buffer index
-!    hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
-!
-!    !---------------------------
-!    ! 1) Temperature (lt_fT)
-!    !---------------------------
-!    fT_hist(i, hist_ptr(i)) = f_tmp(month, i)
-!    lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-!
-!    !---------------------------
-!    ! 2) Physiological (lt_fPhys)
-!    !---------------------------
-!    fPhys_hist(i, hist_ptr(i)) = f_phys(i)   ! use precomputed f_phys for this month
-!    lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-!
-!end do
-
-
 
 !-------------------------------------------------------------
 ! Monthly update of long-term modifiers
@@ -708,28 +680,6 @@ end do
 !                close(302)
 !            end do
 !        end if
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -987,165 +937,7 @@ end do
 
                             if( stems_n(i) > managementInputs(t_n(i),2,i) .OR. (manag_model .EQ. 2) ) then !20251114
 
-!                                ! Calculate the proportion of management based on the stems (manag_model = 1, default)
-!                                ! or biomass (manag_model = 2) !20250314
-!                                if ( manag_model .eq. int(1) ) then
-!                                    manag_remove_prop = (stems_n(i) - managementInputs(t_n(i),2,i) ) / stems_n(i)
-!                                else
-!                                    manag_remove_prop = 1.d0 - managementInputs(t_n(i),6,i) !20251114
-!                                end if
-!
-!                                ! for biomass (as opposed to stems_n) recalculate the proportion to be removed for each compartment separately
-!                                ! positions in the vector 1=stem, 2-root, 3 = foliage
-!                                manag_remove_prop_compartment(:) = manag_remove_prop * managementInputs(t_n(i),3:5,i)
-!                                ! i.e. if half stems_n were removed, but it was from above (large trees), then a higher proportion of biomass would have been removed
-!                                ! or if half biomass was removed, but it was from above (large trees), then a lower proportion of trees would have been removed
-!
-!                                ! if the stand is thinned from above, then the ratios (F, R and S) of stem,
-!                                ! foliage and roots to be removed relative to the mean tree in the stand
-!                                ! will be >1. If the product of this ratio and delN is >= 1 then the new
-!                                ! WF, WR or WS will be < 0, which is impossible. Therefore, make sure this is >= 0.
-!                                ! 20250314 it shall be >= 1 (not > 1). Since if this equal 1 all trees will be removed
-!                                ! Therefore we set all the compartments proportion to 1 meaning that everything will be removed
-!
-!                                if( maxval( manag_remove_prop_compartment(:) ) >= 1.d0 ) then
-!                                    manag_remove_prop_compartment(:) = 1.d0
-!                                    manag_remove_prop = 1.d0
-!                                end if
-!
-!
-!! Calculate the losses in management & the stand values after management
-!if ( manag_model .eq. int(1) ) then
-!                                stems_loss_manag(i) = stems_n(i) * manag_remove_prop
-!                                biom_loss_stem_manag(i) = biom_stem(i) * manag_remove_prop_compartment(1)
-!                                biom_loss_root_manag(i) = biom_root(i) * manag_remove_prop_compartment(2)
-!
-!                                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-!                                    biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
-!                                    biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
-!                                else
-!                                    biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
-!                                    biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
-!                                end if
-!
-!else
-!                                stems_loss_manag(i) = stems_n(i) * manag_remove_prop_compartment(1)
-!                                biom_loss_stem_manag(i) = biom_stem(i) * manag_remove_prop
-!                                biom_loss_root_manag(i) = biom_root(i) * manag_remove_prop
-!
-!                                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-!                                    biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop
-!                                    biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
-!                                else
-!                                    biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop
-!                                    biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
-!                                end if
-!
-!end if
-!
-!
-!
-!                                stems_n(i) = stems_n(i) - stems_loss_manag(i)
-!                                biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
-!                                biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
 
-
-
-!!!!!!!!!!!!! --- begin thinning / management block -----------------------------------
-!!!!!!!!!!!!
-!!!!!!!!!!!!! --- CASE 1: N_post provided ---
-!!!!!!!!!!!!if ( manag_model .eq. int(1) ) then
-!!!!!!!!!!!!
-!!!!!!!!!!!!    ! trees removed
-!!!!!!!!!!!!    stems_loss_manag(i) = stems_n(i) - managementInputs(t_n(i),2,i)
-!!!!!!!!!!!!    if ( stems_loss_manag(i) < 0.d0 ) stems_loss_manag(i) = 0.d0
-!!!!!!!!!!!!
-!!!!!!!!!!!!    ! proportion of trees removed
-!!!!!!!!!!!!    manag_remove_prop = stems_loss_manag(i) / stems_n(i)
-!!!!!!!!!!!!    if ( manag_remove_prop > 1.d0 ) manag_remove_prop = 1.d0
-!!!!!!!!!!!!
-!!!!!!!!!!!!    ! compartment-specific removal fractions
-!!!!!!!!!!!!    manag_remove_prop_compartment(1) = manag_remove_prop * managementInputs(t_n(i),3,i)  ! stem
-!!!!!!!!!!!!    manag_remove_prop_compartment(2) = manag_remove_prop * managementInputs(t_n(i),4,i)  ! root
-!!!!!!!!!!!!    manag_remove_prop_compartment(3) = manag_remove_prop * managementInputs(t_n(i),5,i)  ! foliage
-!!!!!!!!!!!!
-!!!!!!!!!!!!    ! clamp to 1
-!!!!!!!!!!!!    if ( maxval(manag_remove_prop_compartment(:)) >= 1.d0 ) then
-!!!!!!!!!!!!        manag_remove_prop_compartment(:) = 1.d0
-!!!!!!!!!!!!        manag_remove_prop = 1.d0
-!!!!!!!!!!!!    end if
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!
-!!!!!!!!!!!!    ! compute biomass losses
-!!!!!!!!!!!!    biom_loss_stem_manag(i)   = biom_stem(i) * manag_remove_prop_compartment(1)
-!!!!!!!!!!!!    biom_loss_root_manag(i)   = biom_root(i) * manag_remove_prop_compartment(2)
-!!!!!!!!!!!!
-!!!!!!!!!!!!    if ( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-!!!!!!!!!!!!        biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
-!!!!!!!!!!!!        biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
-!!!!!!!!!!!!        if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
-!!!!!!!!!!!!    else
-!!!!!!!!!!!!        biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
-!!!!!!!!!!!!        biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
-!!!!!!!!!!!!        if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
-!!!!!!!!!!!!    end if
-!!!!!!!!!!!!
-!!!!!!!!!!!!! --- CASE 2: AGBP_ret provided ---
-!!!!!!!!!!!!else
-!!!!!!!!!!!!
-!!!!!!!!!!!!    manag_remove_prop = 1.d0 - managementInputs(t_n(i),6,i)
-!!!!!!!!!!!!    if ( manag_remove_prop < 0.d0 ) manag_remove_prop = 0.d0
-!!!!!!!!!!!!    if ( manag_remove_prop > 1.d0 ) manag_remove_prop = 1.d0
-!!!!!!!!!!!!
-!!!!!!!!!!!!    ! biomass losses
-!!!!!!!!!!!!    biom_loss_stem_manag(i)   = biom_stem(i) * manag_remove_prop
-!!!!!!!!!!!!    biom_loss_root_manag(i)   = biom_root(i) * manag_remove_prop
-!!!!!!!!!!!!
-!!!!!!!!!!!!    if ( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-!!!!!!!!!!!!        biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop
-!!!!!!!!!!!!        biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
-!!!!!!!!!!!!        if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
-!!!!!!!!!!!!    else
-!!!!!!!!!!!!        biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop
-!!!!!!!!!!!!        biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
-!!!!!!!!!!!!        if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
-!!!!!!!!!!!!    end if
-!!!!!!!!!!!!
-!!!!!!!!!!!!    ! implied trees removed
-!!!!!!!!!!!!    if ( managementInputs(t_n(i),3,i) <= 0.d0 ) then
-!!!!!!!!!!!!        stems_loss_manag(i) = stems_n(i)
-!!!!!!!!!!!!    else
-!!!!!!!!!!!!        stems_loss_manag(i) = stems_n(i) * (manag_remove_prop / managementInputs(t_n(i),3,i))
-!!!!!!!!!!!!        if ( stems_loss_manag(i) > stems_n(i) ) stems_loss_manag(i) = stems_n(i)
-!!!!!!!!!!!!    end if
-!!!!!!!!!!!!
-!!!!!!!!!!!!end if
-!!!!!!!!!!!!
-!!!!!!!!!!!!! --- Apply all reductions at the end ---
-!!!!!!!!!!!!stems_n(i)     = stems_n(i) - stems_loss_manag(i)
-!!!!!!!!!!!!if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
-!!!!!!!!!!!!
-!!!!!!!!!!!!biom_stem(i)   = biom_stem(i) - biom_loss_stem_manag(i)
-!!!!!!!!!!!!if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
-!!!!!!!!!!!!
-!!!!!!!!!!!!biom_root(i)   = biom_root(i) - biom_loss_root_manag(i)
-!!!!!!!!!!!!if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
-!!!!!!!!!!!!
-!!!!!!!!!!!!! biom_foliage(i) and biom_foliage_debt(i) already updated above
-!!!!!!!!!!!!
-!!!!!!!!!!!!! --- end thinning / management block -----------------------------------
-
-
-
-
-! --- CASE 1: N_post provided ---
   if ( manag_model .eq. int(1) ) then
 
 ! trees removed
@@ -1239,7 +1031,7 @@ end if
 
    ! foliage and foliage_debt already clamped earlier
 
-   ! --- end thinning / management block -----------------------------------
+
 
 
                                 b_cor = .TRUE.
