@@ -1041,9 +1041,59 @@ end do
             ! determine biomass increments and losses
             m(:) = m0(:) + (1.d0 - m0(:)) * fertility(:)
 
-            npp_fract_root(:) = pRx(:) * pRn(:) / (pRn(:) + (pRx(:) - pRn(:)) * f_phys * m(:))
-            npp_fract_stem(:) = (1.d0 - npp_fract_root(:)) / (1.d0 + pFS(:))
-            npp_fract_foliage(:) = 1.d0 - npp_fract_root(:) - npp_fract_stem(:)
+            !npp_fract_root(:) = pRx(:) * pRn(:) / (pRn(:) + (pRx(:) - pRn(:)) * f_phys * m(:))
+            !npp_fract_stem(:) = (1.d0 - npp_fract_root(:)) / (1.d0 + pFS(:))
+            !npp_fract_foliage(:) = 1.d0 - npp_fract_root(:) - npp_fract_stem(:)
+
+
+
+
+              ! if still recovering from a defoliation event, modify the partitioning of npp ! 20250301
+              do i = 1, n_sp
+                  if ( def_recover_t(i) > 0.0d0 ) then
+                      if ( def_type(i) == 1 .or. def_type(i) == 3 ) then  ! prune or epicormic, so all NPP to foliage
+
+                          ! first calculate usual values
+                          npp_fract_root(i) = pRx(i) * pRn(i) / (pRn(i) + (pRx(i) - pRn(i)) * f_phys(i) * m(i))
+                          npp_fract_stem(i) = (1.0d0 - npp_fract_root(i)) / (1.0d0 + pFS(i))
+                          npp_fract_foliage(i) = 1.0d0 - npp_fract_root(i) - npp_fract_stem(i)
+
+                          ! secondly calculate new values
+                          npp_fract_root(i) = npp_fract_root(i) * (( npp_fract_root(i) + npp_fract_stem(i))- &
+                          (max(prop_npp,npp_fract_foliage(i)) - npp_fract_foliage(i)))/( npp_fract_root(i) + npp_fract_stem(i))
+                          npp_fract_stem(i) = npp_fract_stem(i) * (( npp_fract_root(i) + npp_fract_stem(i))- &
+                          (max(prop_npp,npp_fract_foliage(i)) - npp_fract_foliage(i)))/( npp_fract_root(i) + npp_fract_stem(i))
+                          npp_fract_foliage(i) = max(prop_npp,npp_fract_foliage(i))
+
+                      end if
+
+                      if ( def_type(i) == 2 ) then  ! coppice, so all NPP to foliage and stems
+
+                          ! first calculate usual values
+                          npp_fract_root(i) = pRx(i) * pRn(i) / (pRn(i) + (pRx(i) - pRn(i)) * f_phys(i) * m(i))
+                          npp_fract_stem(i) = (1.0d0 - npp_fract_root(i)) / (1.0d0 + pFS(i))
+                          npp_fract_foliage(i) = 1.0d0 - npp_fract_root(i) - npp_fract_stem(i)
+
+                          ! secondly calculate new values
+                          npp_fract_foliage(i) = max(prop_npp,(npp_fract_foliage(i) + npp_fract_stem(i))) * &
+                          npp_fract_foliage(i) / (npp_fract_foliage(i) + npp_fract_stem(i))
+
+                          npp_fract_stem(i) = max(prop_npp,(npp_fract_foliage(i) + npp_fract_stem(i))) * &
+                          (1-npp_fract_foliage(i) / (npp_fract_foliage(i) + npp_fract_stem(i)))
+
+                          npp_fract_root(i) = 1.0d0 - npp_fract_foliage(i) - npp_fract_stem(i)
+
+                      end if
+
+                  else  ! Case when def_recover_t(i) <= 0 ! all other cases (no current defoliation)
+                      npp_fract_root(i) = pRx(i) * pRn(i) / (pRn(i) + (pRx(i) - pRn(i)) * f_phys(i) * m(i))
+                      npp_fract_stem(i) = (1.0d0 - npp_fract_root(i)) / (1.0d0 + pFS(i))
+                      npp_fract_foliage(i) = 1.0d0 - npp_fract_root(i) - npp_fract_stem(i)
+                  end if
+              end do
+
+
+
 
 
             do i = 1, n_sp
