@@ -1060,10 +1060,10 @@ end do
 
                           ! secondly calculate new values
                           npp_fract_root(i) = npp_fract_root(i) * (( npp_fract_root(i) + npp_fract_stem(i))- &
-                          (max(prop_npp,npp_fract_foliage(i)) - npp_fract_foliage(i)))/( npp_fract_root(i) + npp_fract_stem(i))
+                          (max(prop_npp(i),npp_fract_foliage(i)) - npp_fract_foliage(i)))/( npp_fract_root(i) + npp_fract_stem(i))
                           npp_fract_stem(i) = npp_fract_stem(i) * (( npp_fract_root(i) + npp_fract_stem(i))- &
-                          (max(prop_npp,npp_fract_foliage(i)) - npp_fract_foliage(i)))/( npp_fract_root(i) + npp_fract_stem(i))
-                          npp_fract_foliage(i) = max(prop_npp,npp_fract_foliage(i))
+                          (max(prop_npp(i),npp_fract_foliage(i)) - npp_fract_foliage(i)))/( npp_fract_root(i) + npp_fract_stem(i))
+                          npp_fract_foliage(i) = max(prop_npp(i),npp_fract_foliage(i))
 
                       end if
 
@@ -1075,10 +1075,10 @@ end do
                           npp_fract_foliage(i) = 1.0d0 - npp_fract_root(i) - npp_fract_stem(i)
 
                           ! secondly calculate new values
-                          npp_fract_foliage(i) = max(prop_npp,(npp_fract_foliage(i) + npp_fract_stem(i))) * &
+                          npp_fract_foliage(i) = max(prop_npp(i),(npp_fract_foliage(i) + npp_fract_stem(i))) * &
                           npp_fract_foliage(i) / (npp_fract_foliage(i) + npp_fract_stem(i))
 
-                          npp_fract_stem(i) = max(prop_npp,(npp_fract_foliage(i) + npp_fract_stem(i))) * &
+                          npp_fract_stem(i) = max(prop_npp(i),(npp_fract_foliage(i) + npp_fract_stem(i))) * &
                           (1-npp_fract_foliage(i) / (npp_fract_foliage(i) + npp_fract_stem(i)))
 
                           npp_fract_root(i) = 1.0d0 - npp_fract_foliage(i) - npp_fract_stem(i)
