@@ -125,9 +125,47 @@ integer :: jj !20251124
         ! Assign the SWconst and SWpower parameters for this soil class
         if ( soil_class > 0.d0 ) then
             ! Standard soil type
-            SWconst(:) = 0.8d0 - 0.10d0 * soil_class
-            SWpower(:) = 11.d0 - 2.d0 * soil_class
-        elseIf ( soil_class < 0.d0 ) then
+            !SWconst(:) = 0.8d0 - 0.10d0 * soil_class
+            !SWpower(:) = 11.d0 - 2.d0 * soil_class
+            if (soil_class == 1) then        ! Clay !20251124
+               SWconst(:) = 0.4d0
+               SWpower(:) = 3.0d0
+            else if (soil_class == 2) then   ! Clay Loam
+               SWconst(:) = 0.5d0
+               SWpower(:) = 5.0d0
+            else if (soil_class == 3) then   ! Loam
+               SWconst(:) = 0.55d0
+               SWpower(:) = 6.0d0
+            else if (soil_class == 4) then   ! Loamy sand
+               SWconst(:) = 0.65d0
+               SWpower(:) = 8.0d0
+            else if (soil_class == 5) then   ! Sand
+               SWconst(:) = 0.7d0
+               SWpower(:) = 9.0d0
+            else if (soil_class == 6) then   ! Sandy clay
+               SWconst(:) = 0.45d0
+               SWpower(:) = 4.0d0
+            else if (soil_class == 7) then   ! Sandy clay loam
+               SWconst(:) = 0.525d0
+               SWpower(:) = 5.5d0
+            else if (soil_class == 8) then   ! Sandy loam
+               SWconst(:) = 0.6d0
+               SWpower(:) = 7.0d0
+            else if (soil_class == 9) then   ! Silt
+               SWconst(:) = 0.625d0
+               SWpower(:) = 7.5d0
+            else if (soil_class == 10) then  ! Silty clay
+               SWconst(:) = 0.425d0
+               SWpower(:) = 3.5d0
+            else if (soil_class == 11) then  ! Silty clay loam
+               SWconst(:) = 0.475d0
+               SWpower(:) = 4.5d0
+            else if (soil_class == 12) then  ! Silty loam
+               SWconst(:) = 0.575d0
+               SWpower(:) = 6.5d0
+            end if
+
+        else if ( soil_class < 0.d0 ) then
             ! Use supplied parameters
             SWconst(:) = SWconst0(:)
             SWpower(:) = SWpower0(:)

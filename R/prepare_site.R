@@ -83,8 +83,8 @@ prepare_site <- function(
   }
 
   # Validate soil class
-  if (!site$soil_class %in% 0:4) {
-    stop("Soil class must be an integer between 0 and 4.")
+  if (!site$soil_class %in% 0:12) {  #20251124
+    stop("Soil class must be an integer between 0 and 12.") #20251124
   }
 
   # Validate soil water values
