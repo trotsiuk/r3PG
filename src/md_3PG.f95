@@ -2672,7 +2672,9 @@ end if
             CVdbhDistribution(:) = Varx(:) ** 0.5d0 / Ex(:)
 
             ! calculate the bias
-            DrelBiaspFS(:) = 0.5d0 * (pfsPower(:) * (pfsPower(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+            !DrelBiaspFS(:) = 0.5d0 * (pfsPower(:) * (pfsPower(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0 !20251124
+            ! this is usually calibrated rather than calculated, and therefore there will be no bias to correct
+            DrelBiaspFS(:) = 0.d0 !20251124
 
 
 
