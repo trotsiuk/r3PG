@@ -84,6 +84,15 @@ prepare_thinning <- function(
       }
     }
 
+    # infer manag_model from inputs                                              #!20260123
+    thinning[, "manag_model"] <- NA_integer_  # initialize the new column
+
+    # set manag_model = 1 for rows where stems_n is supplied                     #!20260123
+    thinning[!is.na(thinning[, "stems_n"]), "manag_model"] <- 1
+
+    # set manag_model = 2 for rows where biom_prop_retained is supplied          #!20260123
+    thinning[!is.na(thinning[, "biom_prop_retained"]), "manag_model"] <- 2
+
 
     thinning <- thinning[thinning$species %in% sp_names, ]
     thinning$species <- sp_id[thinning$species] # Map species names to indices
