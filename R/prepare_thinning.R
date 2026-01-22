@@ -85,7 +85,7 @@ prepare_thinning <- function(
     }
 
     # infer manag_model from inputs                                              #!20260123
-    thinning[, "manag_model"] <- NA_integer_  # initialize the new column
+    thinning[, "manag_model"] <- NA_real_  # initialize the new column
 
     # set manag_model = 1 for rows where stems_n is supplied                     #!20260123
     thinning[!is.na(thinning[, "stems_n"]), "manag_model"] <- 1
