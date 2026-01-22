@@ -514,32 +514,24 @@ end do
 
 ! Set filename
 write(filenameP,'(A)') 'debug_managementInputs_all.csv'
-
-! Open CSV file
 open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
-if (ios /= 0) stop 'Error opening debug CSV for managementInputs'
+if (ios /= 0) stop 'Error opening debug CSV'
 
-!---------------------------
-! Write header
-!---------------------------
-write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained,manag_model'
+! Header
+write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained'
 
-!---------------------------
 ! Loop over species and thinning events
-!---------------------------
 do sp = 1, n_sp
     do t = 1, n_man
-        write(400,'(7G15.6)') managementInputs(t,1,sp),  &
-                               managementInputs(t,2,sp),  &
-                               managementInputs(t,3,sp),  &
-                               managementInputs(t,4,sp),  &
-                               managementInputs(t,5,sp),  &
-                               managementInputs(t,6,sp)!,  &
-                               !managementInputs(t,7,sp)
+        write(400,'(6G15.6)') managementInputs(t,1,sp), &
+                               managementInputs(t,2,sp), &
+                               managementInputs(t,3,sp), &
+                               managementInputs(t,4,sp), &
+                               managementInputs(t,5,sp), &
+                               managementInputs(t,6,sp)
     end do
 end do
 
-! Close file
 close(400)
 
 
@@ -1288,10 +1280,9 @@ end do
                             !managementInputs(t_n(i),2,i)) .OR. (int(managementInputs(t_n(i),7,i)) .EQ. 2) ) then         !20260123
 
 
-if ( (.not. isnan(managementInputs(t_n(i),2,i)) .AND. stems_n(i) > managementInputs(t_n(i),2,i)) .OR. &                  !20260123
-     (.isnan(managementInputs(t_n(i),2,i)) .AND. .not. isnan(managementInputs(t_n(i),6,i))) ) then                       !20260123
-
-
+!20260123
+if ( (.not. isnan(managementInputs(t_n(i),2,i)) .AND. stems_n(i) > managementInputs(t_n(i),2,i)) .OR. &
+     (.isnan(managementInputs(t_n(i),2,i)) .AND. .not. isnan(managementInputs(t_n(i),6,i))) ) then
 
 
   !if ( int(managementInputs(t_n(i),7,i)) .eq. int(1) ) then       !20260123
