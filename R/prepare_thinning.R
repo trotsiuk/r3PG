@@ -62,9 +62,16 @@ prepare_thinning <- function(
     }
 
     # check whether the biom_prop_retained is within a plausible range                                   #!20251114
-    if (any(thinning[ , c("biom_prop_retained")] < 0 | thinning[ , c("biom_prop_retained")] > 1)) {      #!20251114
-      stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                        #!20251114
+    #if (any(thinning[ , c("biom_prop_retained")] < 0 | thinning[ , c("biom_prop_retained")] > 1)) {      #!20251114
+    #  stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                        #!20251114
+    #}
+
+    if (length(thinning[, "biom_prop_retained"]) > 0 && any(!is.na(thinning[, "biom_prop_retained"]))) {     #!20260123
+      if (any(thinning[, "biom_prop_retained"] < 0 | thinning[, "biom_prop_retained"] > 1, na.rm = TRUE)) {  #!20260123
+        stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                          #!20260123
+      }
     }
+
 
     thinning <- thinning[thinning$species %in% sp_names, ]
     thinning$species <- sp_id[thinning$species] # Map species names to indices
