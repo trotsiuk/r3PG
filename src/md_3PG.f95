@@ -575,10 +575,29 @@ end do
             do i = 1, n_sp
              if ( def_recover_t(i) > 0.0d0 .and. age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0 ) then ! def_recover_t(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
                      def_recover_t(i) = 0.0d0
+
+                     ! the recovery has finished, but if there are more roots than coppice_sr_ratio, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
+if( def_type(i) == 2 .and. coppice_sr_ratio(i) > biom_stem(i) / biom_root(i)) then
+
+biom_loss_root_def(i) = biom_root(i) - biom_stem(i)/coppice_sr_ratio(i)
+biom_root(i) = biom_stem(i)/coppice_sr_ratio(i)
+
+end if
+
              end if
              if( def_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
              biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i) ) then                                               ! coppice
                      def_recover_t(i) = 0.0d0
+
+
+                     ! the recovery has finished, but if there are more roots than coppice_sr_ratio, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
+if( coppice_sr_ratio(i) > biom_stem(i) / biom_root(i)) then
+
+biom_loss_root_def(i) = biom_root(i) - biom_stem(i)/coppice_sr_ratio(i)
+biom_root(i) = biom_stem(i)/coppice_sr_ratio(i)
+
+end if
+
              end if
              if( def_type(i) == 1 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
              biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                                              ! prune
