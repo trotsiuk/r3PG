@@ -2367,7 +2367,14 @@ height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251
 height_rel_wt(:) = height(:)/height_wtav_LAI
 ! modifier to redistribute PAR not absorbed by the canopy
 !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
-m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
+!m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
+
+if (height_rel_wt(:) < 1.d0) then
+m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * (Exp(gammaAPAR(:) * (1.d0 - height_rel_wt(:) )) - 1.d0 )
+else
+m_apar(:) = 1.d0
+end if
+
 m_apar(:) = min( m_apar(:),  &
      (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
      / (max(fi(:), 1d-12)*solar_rad * days_in_month) ) ! MJ m-2 month-1
