@@ -2729,10 +2729,10 @@ DrelBiasheight(:) = 0.5d0 * &
     DrelBiasLCL(:) = 0.d0
 
     DrelBiasCrowndiameter(:) = 0.5d0 * &
-(( Hd(:) + ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) &
+(( ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) &
     - 2.0d0 &
-     * ( Hd(:) + ( dbh(:) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) + &
-    + ( Hd(:) + ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) ) &
+     * ( ( dbh(:) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) + &
+    + ( ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) ) &
    / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
    * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
 
@@ -2827,7 +2827,7 @@ end if
             height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nHB(:) + nHC(:) * (dbh(:) ** aH(:))) ) * (1.d0 + DrelBiasheight(:)) !20251114
             crown_length(:) = aHL(:) * height(:) !20251114
 
-            crown_width(:) = ( Hd(:) + (dbh(:) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) * &
+            crown_width(:) = ( (dbh(:) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) * &
                       (1.d0 + DrelBiasCrowndiameter(:)) !20251114
 
         end if
