@@ -27,7 +27,7 @@ contains
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(9), intent(in) :: siteInputs                            !20251114
         real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs                    !20241106 !20251114
-        real(kind=c_double), dimension(n_man,7,n_sp), intent(in) :: managementInputs           !20251114 !20260123
+        real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs           !20251114
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(90,n_sp), intent(in) :: pars_i                          !20241106
@@ -47,9 +47,9 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Declare at the top:
- integer :: t, sp, row, ios
- character(len=256) :: filenameP
- integer :: n_rows
+! integer :: t, sp, row, ios
+! character(len=256) :: filenameP
+! integer :: n_rows
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -512,35 +512,35 @@ end do
 
 
 
-! Set filename
-write(filenameP,'(A)') 'debug_managementInputs_all.csv'
-
-! Open CSV file
-open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
-if (ios /= 0) stop 'Error opening debug CSV for managementInputs'
-
-!---------------------------
-! Write header
-!---------------------------
-write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained,manag_model'
-
-!---------------------------
-! Loop over species and thinning events
-!---------------------------
-do sp = 1, n_sp
-    do t = 1, n_man
-        write(400,'(7G15.6)') managementInputs(t,1,sp),  &
-                               managementInputs(t,2,sp),  &
-                               managementInputs(t,3,sp),  &
-                               managementInputs(t,4,sp),  &
-                               managementInputs(t,5,sp),  &
-                               managementInputs(t,6,sp),  &
-                               managementInputs(t,7,sp)
-    end do
-end do
-
-! Close file
-close(400)
+!! Set filename
+!write(filenameP,'(A)') 'debug_managementInputs_all.csv'
+!
+!! Open CSV file
+!open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
+!if (ios /= 0) stop 'Error opening debug CSV for managementInputs'
+!
+!!---------------------------
+!! Write header
+!!---------------------------
+!write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained,manag_model'
+!
+!!---------------------------
+!! Loop over species and thinning events
+!!---------------------------
+!do sp = 1, n_sp
+!    do t = 1, n_man
+!        write(400,'(7G15.6)') managementInputs(t,1,sp),  &
+!                               managementInputs(t,2,sp),  &
+!                               managementInputs(t,3,sp),  &
+!                               managementInputs(t,4,sp),  &
+!                               managementInputs(t,5,sp),  &
+!                               managementInputs(t,6,sp),  &
+!                               managementInputs(t,7,sp)
+!    end do
+!end do
+!
+!! Close file
+!close(400)
 
 
 
@@ -1284,10 +1284,19 @@ end do
                         if( age(ii,i) >= managementInputs(t_n(i),1,i) ) then
 
                             !if( stems_n(i) > managementInputs(t_n(i),2,i) .OR. (manag_model .EQ. 2) ) then !20251114
-                            if( (int(managementInputs(t_n(i),7,i)) .EQ. 1 .AND. stems_n(i) > &                           !20260123
-                            managementInputs(t_n(i),2,i)) .OR. (int(managementInputs(t_n(i),7,i)) .EQ. 2) ) then         !20260123
+                            !if( (int(managementInputs(t_n(i),7,i)) .EQ. 1 .AND. stems_n(i) > &                           !20260123
+                            !managementInputs(t_n(i),2,i)) .OR. (int(managementInputs(t_n(i),7,i)) .EQ. 2) ) then         !20260123
 
-  if ( int(managementInputs(t_n(i),7,i)) .eq. int(1) ) then       !20260123
+
+if ( (.not. isnan(managementInputs(t_n(i),2,i)) .AND. stems_n(i) > managementInputs(t_n(i),2,i)) .OR. &                  !20260123
+     (.isnan(managementInputs(t_n(i),2,i)) .AND. .not. isnan(managementInputs(t_n(i),6,i))) ) then                       !20260123
+
+
+
+
+  !if ( int(managementInputs(t_n(i),7,i)) .eq. int(1) ) then       !20260123
+  if ( .not. isnan(managementInputs(t_n(i),2,i)) ) then           !20260123
+
 
 ! trees removed
 stems_loss_manag(i) = stems_n(i) - managementInputs(t_n(i),2,i)
