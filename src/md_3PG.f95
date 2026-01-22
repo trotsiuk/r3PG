@@ -27,7 +27,7 @@ contains
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(9), intent(in) :: siteInputs                            !20251114
         real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs                    !20241106 !20251114
-        real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs           !20251114
+        real(kind=c_double), dimension(n_man,7,n_sp), intent(in) :: managementInputs           !20251114 !20260123
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(90,n_sp), intent(in) :: pars_i                          !20241106
