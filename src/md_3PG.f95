@@ -2369,10 +2369,10 @@ height_rel_wt(:) = height(:)/height_wtav_LAI
 !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
 !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
 
-if (height_rel_wt(:) < 1.d0) then
+where (height_rel_wt < 1.d0)
 m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * (Exp(gammaAPAR(:) * (1.d0 - height_rel_wt(:) )) - 1.d0 )
-else
-m_apar(:) = 1.d0
+elsewhere
+m_apar = 1.d0
 end if
 
 m_apar(:) = min( m_apar(:),  &
