@@ -335,7 +335,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: prop_carbs !20251124
 real(kind=kind(0.0d0)), dimension(n_sp) :: prop_npp !20251124
 real(kind=kind(0.0d0)), dimension(n_sp) :: growing_season_length !20251124
 
-
+real(kind=kind(0.0d0)), dimension(n_sp) :: sr_ratio !20251124
 
 ! Water use ----------------------
 real(kind=kind(0.0d0)), dimension(n_sp) :: SWconst         ! soil parameters for soil class
