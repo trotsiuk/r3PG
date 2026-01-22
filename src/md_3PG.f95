@@ -1279,113 +1279,143 @@ end do
                             !if( (int(managementInputs(t_n(i),7,i)) .EQ. 1 .AND. stems_n(i) > &                           !20260123
                             !managementInputs(t_n(i),2,i)) .OR. (int(managementInputs(t_n(i),7,i)) .EQ. 2) ) then         !20260123
 
+                                   !20260123
+                                   !if ( (.not. isnan(managementInputs(t_n(i),2,i)) .AND. stems_n(i) > managementInputs(t_n(i),2,i)) .OR. &
+                                   !     (.isnan(managementInputs(t_n(i),2,i)) .AND. .not. isnan(managementInputs(t_n(i),6,i))) ) then
 
-!20260123
-if ( (.not. isnan(managementInputs(t_n(i),2,i)) .AND. stems_n(i) > managementInputs(t_n(i),2,i)) .OR. &
-     (.isnan(managementInputs(t_n(i),2,i)) .AND. .not. isnan(managementInputs(t_n(i),6,i))) ) then
+                                   ! thinning calculated using stems_n as input
+                                   if ( .not. isnan(managementInputs(t_n(i),2,i)) .AND. stems_n(i) > managementInputs(t_n(i),2,i) ) then !20260123
 
+                                          ! thinning calculated using trees removed
+                                          stems_loss_manag(i) = stems_n(i) - managementInputs(t_n(i),2,i)
+                                          if ( stems_loss_manag(i) < 0.d0 ) stems_loss_manag(i) = 0.d0
 
-  !if ( int(managementInputs(t_n(i),7,i)) .eq. int(1) ) then       !20260123
-  if ( .not. isnan(managementInputs(t_n(i),2,i)) ) then           !20260123
+                                          ! proportion of trees removed
+                                          manag_remove_prop = stems_loss_manag(i) / stems_n(i)
 
+                                          ! clamp 0–1
+                                          if ( manag_remove_prop < 0.d0 ) manag_remove_prop = 0.d0
+                                          if ( manag_remove_prop > 1.d0 ) manag_remove_prop = 1.d0
 
-! trees removed
-stems_loss_manag(i) = stems_n(i) - managementInputs(t_n(i),2,i)
-if ( stems_loss_manag(i) < 0.d0 ) stems_loss_manag(i) = 0.d0
-
-! proportion of trees removed
-manag_remove_prop = stems_loss_manag(i) / stems_n(i)
-
-! clamp 0–1
-if ( manag_remove_prop < 0.d0 ) manag_remove_prop = 0.d0
-if ( manag_remove_prop > 1.d0 ) manag_remove_prop = 1.d0
-
-! compartment-specific removal fractions
-manag_remove_prop_compartment(1) = manag_remove_prop * managementInputs(t_n(i),3,i)  ! stem
-manag_remove_prop_compartment(2) = manag_remove_prop * managementInputs(t_n(i),4,i)  ! root
-manag_remove_prop_compartment(3) = manag_remove_prop * managementInputs(t_n(i),5,i)  ! foliage
+                                          ! compartment-specific removal fractions
+                                          manag_remove_prop_compartment(1) = manag_remove_prop * managementInputs(t_n(i),3,i)  ! stem
+                                          manag_remove_prop_compartment(2) = manag_remove_prop * managementInputs(t_n(i),4,i)  ! root
+                                          manag_remove_prop_compartment(3) = manag_remove_prop * managementInputs(t_n(i),5,i)  ! foliage
 
 
-! clamp compartments to 0–1
-if ( manag_remove_prop_compartment(1) < 0.d0 ) manag_remove_prop_compartment(1) = 0.d0
-if (manag_remove_prop_compartment(1) > 1.d0 ) manag_remove_prop_compartment(1) = 1.d0
-if ( manag_remove_prop_compartment(2) < 0.d0 ) manag_remove_prop_compartment(2) = 0.d0
-if (manag_remove_prop_compartment(2) > 1.d0 ) manag_remove_prop_compartment(2) = 1.d0
-if ( manag_remove_prop_compartment(3) < 0.d0 ) manag_remove_prop_compartment(3) = 0.d0
-if (manag_remove_prop_compartment(3) > 1.d0 ) manag_remove_prop_compartment(3) = 1.d0
+                                          ! clamp compartments to 0–1
+                                          if ( manag_remove_prop_compartment(1) < 0.d0 ) manag_remove_prop_compartment(1) = 0.d0
+                                          if (manag_remove_prop_compartment(1) > 1.d0 ) manag_remove_prop_compartment(1) = 1.d0
+                                          if ( manag_remove_prop_compartment(2) < 0.d0 ) manag_remove_prop_compartment(2) = 0.d0
+                                          if (manag_remove_prop_compartment(2) > 1.d0 ) manag_remove_prop_compartment(2) = 1.d0
+                                          if ( manag_remove_prop_compartment(3) < 0.d0 ) manag_remove_prop_compartment(3) = 0.d0
+                                          if (manag_remove_prop_compartment(3) > 1.d0 ) manag_remove_prop_compartment(3) = 1.d0
 
 
-! --- compute biomass losses ---
-biom_loss_stem_manag(i)   = biom_stem(i)   * manag_remove_prop_compartment(1)
-biom_loss_root_manag(i)   = biom_root(i)   * manag_remove_prop_compartment(2)
+                                          ! --- compute biomass losses ---
+                                          biom_loss_stem_manag(i)   = biom_stem(i)   * manag_remove_prop_compartment(1)
+                                          biom_loss_root_manag(i)   = biom_root(i)   * manag_remove_prop_compartment(2)
 
-if ( f_dormant(month, leafgrow(i), leaffall(i)) ) then
-biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
-biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
-if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
-else
-  biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
-biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
-if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
-end if
-
-
-! --- CASE 2: AGBP_ret provided ---
-  else
-
-! removal proportion = 1 – retained biomass fraction
-manag_remove_prop = 1.d0 - managementInputs(t_n(i),6,i)
-
-! clamp 0–1
-if ( manag_remove_prop < 0.d0 ) manag_remove_prop = 0.d0
-if ( manag_remove_prop > 1.d0 ) manag_remove_prop = 1.d0
-
-! biomass losses
-biom_loss_stem_manag(i)   = biom_stem(i) * manag_remove_prop
-biom_loss_root_manag(i)   = biom_root(i) * manag_remove_prop
-
-if ( f_dormant(month, leafgrow(i), leaffall(i)) ) then
-biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop
-biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
-if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
-else
-  biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop
-biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
-if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
-end if
-
-! ---- IMPLIED TREE REMOVAL ----
-  if ( managementInputs(t_n(i),3,i) <= 0.d0 ) then
-stems_loss_manag(i) = stems_n(i)
-else
-  stems_loss_manag(i) = stems_n(i) * (manag_remove_prop / managementInputs(t_n(i),3,i))
-
-   ! clamp implied tree removal: 0 ≤ stems_loss ≤ stems_n
-   if ( stems_loss_manag(i) < 0.d0 ) stems_loss_manag(i) = 0.d0
-   if ( stems_loss_manag(i) > stems_n(i) ) stems_loss_manag(i) = stems_n(i)
-   end if
-
-end if
+                                                 if ( f_dormant(month, leafgrow(i), leaffall(i)) ) then
+                                                 biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
+                                                 biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
+                                                   if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
+                                                 else
+                                                   biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
+                                                 biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
+                                                   if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
+                                                 end if
 
 
-   ! --- APPLY ALL REDUCTIONS AT END ---
-     stems_n(i) = stems_n(i) - stems_loss_manag(i)
-   if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
+                                                 ! --- APPLY ALL REDUCTIONS AT END ---
+                                                   stems_n(i) = stems_n(i) - stems_loss_manag(i)
+                                                 if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
 
-   biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
-   if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
+                                                 biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
+                                                 if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
 
-   biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
-   if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
+                                                 biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
+                                                 if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
 
-   ! foliage and foliage_debt already clamped earlier
+                                                 ! foliage and foliage_debt already clamped earlier
 
+                                                 b_cor = .TRUE.
+
+
+                                   end if
+
+                                   ! CASE 2: ! thinning calculated using trees proportion of AGB retained
+                                   if ( isnan(managementInputs(t_n(i),2,i)) .AND. .not. isnan(managementInputs(t_n(i),6,i)) ) then
+
+                                          ! removal proportion = 1 – retained biomass fraction
+                                          manag_remove_prop = 1.d0 - managementInputs(t_n(i),6,i)
+
+                                          ! clamp 0–1
+                                          if ( manag_remove_prop < 0.d0 ) manag_remove_prop = 0.d0
+                                          if ( manag_remove_prop > 1.d0 ) manag_remove_prop = 1.d0
+
+                                          ! biomass losses
+                                          biom_loss_stem_manag(i)   = biom_stem(i) * manag_remove_prop
+                                          biom_loss_root_manag(i)   = biom_root(i) * manag_remove_prop
+
+                                          if ( f_dormant(month, leafgrow(i), leaffall(i)) ) then
+                                          biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop
+                                          biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
+                                             if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
+                                          else
+                                            biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop
+                                          biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
+                                             if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
+                                          end if
+
+                                                 ! ---- IMPLIED TREE REMOVAL ----
+                                                 if ( managementInputs(t_n(i),3,i) <= 0.d0 ) then
+                                                    stems_loss_manag(i) = stems_n(i)
+                                                 else
+                                                 stems_loss_manag(i) = stems_n(i) * (manag_remove_prop / managementInputs(t_n(i),3,i))
+
+                                                 ! clamp implied tree removal: 0 ≤ stems_loss ≤ stems_n
+                                                    if ( stems_loss_manag(i) < 0.d0 ) stems_loss_manag(i) = 0.d0
+                                                    if ( stems_loss_manag(i) > stems_n(i) ) stems_loss_manag(i) = stems_n(i)
+                                                 end if
 
 
 
-                                b_cor = .TRUE.
+                                                 ! --- APPLY ALL REDUCTIONS AT END ---
+                                                 stems_n(i) = stems_n(i) - stems_loss_manag(i)
+                                                 if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
 
-                            end if
+                                                 biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
+                                                 if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
+
+                                                 biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
+                                                 if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
+
+                                                 ! foliage and foliage_debt already clamped earlier
+
+                                                 b_cor = .TRUE.
+
+                                   end if
+
+
+                                      !! --- APPLY ALL REDUCTIONS AT END ---
+                                      !  stems_n(i) = stems_n(i) - stems_loss_manag(i)
+                                      !if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
+                                   !
+                                      !biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
+                                      !if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
+                                   !
+                                      !biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
+                                      !if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
+                                   !
+                                      !! foliage and foliage_debt already clamped earlier
+
+
+
+
+                                      !b_cor = .TRUE.
+
+                            !end if
 
                             t_n(i) = t_n(i) + 1
 
