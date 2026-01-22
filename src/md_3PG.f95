@@ -47,9 +47,9 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Declare at the top:
-! integer :: t, sp, row, ios
-! character(len=256) :: filenameP
-! integer :: n_rows
+ integer :: t, sp, row, ios
+ character(len=256) :: filenameP
+ integer :: n_rows
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -512,35 +512,35 @@ end do
 
 
 
-!! Set filename
-!write(filenameP,'(A)') 'debug_managementInputs_all.csv'
-!
-!! Open CSV file
-!open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
-!if (ios /= 0) stop 'Error opening debug CSV for managementInputs'
-!
-!!---------------------------
-!! Write header
-!!---------------------------
-!write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained,manag_model'
-!
-!!---------------------------
-!! Loop over species and thinning events
-!!---------------------------
-!do sp = 1, n_sp
-!    do t = 1, n_man
-!        write(400,'(7G15.6)') managementInputs(t,1,sp),  &
-!                               managementInputs(t,2,sp),  &
-!                               managementInputs(t,3,sp),  &
-!                               managementInputs(t,4,sp),  &
-!                               managementInputs(t,5,sp),  &
-!                               managementInputs(t,6,sp),  &
-!                               managementInputs(t,7,sp)
-!    end do
-!end do
-!
-!! Close file
-!close(400)
+! Set filename
+write(filenameP,'(A)') 'debug_managementInputs_all.csv'
+
+! Open CSV file
+open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
+if (ios /= 0) stop 'Error opening debug CSV for managementInputs'
+
+!---------------------------
+! Write header
+!---------------------------
+write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained,manag_model'
+
+!---------------------------
+! Loop over species and thinning events
+!---------------------------
+do sp = 1, n_sp
+    do t = 1, n_man
+        write(400,'(7G15.6)') managementInputs(t,1,sp),  &
+                               managementInputs(t,2,sp),  &
+                               managementInputs(t,3,sp),  &
+                               managementInputs(t,4,sp),  &
+                               managementInputs(t,5,sp),  &
+                               managementInputs(t,6,sp)!,  &
+                               !managementInputs(t,7,sp)
+    end do
+end do
+
+! Close file
+close(400)
 
 
 
