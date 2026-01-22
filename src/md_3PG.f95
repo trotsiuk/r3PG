@@ -1248,8 +1248,9 @@ end do
 
                         if( age(ii,i) >= managementInputs(t_n(i),1,i) ) then
 
-                            if( stems_n(i) > managementInputs(t_n(i),2,i) .OR. (manag_model .EQ. 2) ) then !20251114
-
+                            !if( stems_n(i) > managementInputs(t_n(i),2,i) .OR. (manag_model .EQ. 2) ) then !20251114
+                            if( (int(managementInputs(t_n(i),7,i)) .EQ. 1 .AND. stems_n(i) > &                           !20260123
+                            managementInputs(t_n(i),2,i)) .OR. (int(managementInputs(t_n(i),7,i)) .EQ. 2) ) then         !20260123
 
   if ( manag_model .eq. int(1) ) then
 
