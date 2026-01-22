@@ -1416,9 +1416,10 @@ end if
                             ! Adjust pre-defoliation foliage mass (i.e. pre-defoliation foliage mass of trees that survived the defoliation event)
                             if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i) ! depends on how many trees died as defined by root mass loss
+                                coppice_sr_ratio(i) = biom_stem(i) / biom_root(i)
                             else if (def_type(i) == 2 ) then ! also depends on how many trees died, but age needs to be adjusted as well
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i)
-                                ! coppice_sr_ratio(i) = biom_stem(i) / biom_root(i)
+                                coppice_sr_ratio(i) = biom_stem(i) / biom_root(i)
 
 
 ! for coppice the age and age related variables need to be updated !20251124
