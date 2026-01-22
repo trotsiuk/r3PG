@@ -2373,7 +2373,7 @@ where (height_rel_wt < 1.d0)
 m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * (Exp(gammaAPAR(:) * (1.d0 - height_rel_wt(:) )) - 1.d0 )
 elsewhere
 m_apar = 1.d0
-end if
+end where
 
 m_apar(:) = min( m_apar(:),  &
      (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
