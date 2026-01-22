@@ -61,6 +61,18 @@ prepare_thinning <- function(
       stop("Thinning values for stem, root, and foliage must be in the range [0, 5].")
     }
 
+    # both supplied → ambiguous
+    if (any(!is.na(thinning[, "stems_n"]) & !is.na(thinning[, "biom_prop_retained"]))) {                                                     #!20260123
+      stop("Thinning input error: both 'stems_n' and 'biom_prop_retained' were supplied in the same thinning event. Please supply only one." #!20260123
+      )
+    }
+
+    # neither supplied → undefined
+    if (any(is.na(thinning[, "stems_n"]) & is.na(thinning[, "biom_prop_retained"]))) {                                                      #!20260123
+      stop("Thinning input error: neither 'stems_n' nor 'biom_prop_retained' was supplied in a thinning event. Please supply exactly one."  #!20260123
+      )
+    }
+
     # check whether the biom_prop_retained is within a plausible range                                   #!20251114
     #if (any(thinning[ , c("biom_prop_retained")] < 0 | thinning[ , c("biom_prop_retained")] > 1)) {      #!20251114
     #  stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                        #!20251114
