@@ -290,8 +290,8 @@ real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: gammaF
 
 ! Management mortality
 integer, dimension(n_sp) :: t_n, d_n ! currnet thinning and defoliation number
-real(kind=kind(0.0d0)) :: manag_remove_prop                              ! proportion to be removed during the management based on the trees (manag_model = 1) or biomass (manag_model = 2) 20250314
-real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed suring hte management.  20250314
+real(kind=kind(0.0d0)) :: manag_remove_prop                              ! proportion to be removed during the management based on the tree density (stems_n) or proportion of biomass retained 20250314
+real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed by thinning.  20250314
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_pre       !20251124 ! requried to inprove stability of mortality calculations
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem_pre     !20251124
@@ -386,11 +386,11 @@ real(kind=kind(0.0d0)), dimension(15, n_sp) :: bias_scale
 
 
 ! Settings ----------------------
-integer :: light_model               ! 1 - 3PGpjs; 2 - 3PGmix 2 - 3PGmix
-integer :: transp_model              !1 - 3PGpjs; 2 - 3PGmix
-integer :: phys_model                !1 - 3PGpjs; 2 - 3PGmix
-integer :: height_model              !1 - linear; 2 - non - linear
-integer :: correct_bias              !0 - no; 1 - 3PGmix
-integer :: calculate_d13c             !0 - no; 1 - 3PGmix
+integer :: light_model               !1 - 3PGpjs; 2 - 3PGmix 2 - 3PGmix
+integer :: transp_model              !1 - 3PGpjs, min of f_vpd and f_sw; 2 - 3PGmix, f_vpd x f_sw
+integer :: phys_model                !1 - 3PGpjs, min of f_vpd and f_sw; 2 - 3PGmix, f_vpd x f_sw
+integer :: height_model              !1 - exponential; 2 - Michajlow; 3 - Näslund
+integer :: correct_bias              !0 - no; 1 - yes
+integer :: calculate_d13c            !0 - no; 1 - yes
 integer :: mort_model                !1 - 3PGpjs; 2 - 3PGmix !20241106
-integer :: manag_model               !1 - 3PGpjs(based on tree number); 2 - 3PGmix !20241106
+!integer :: manag_model              !1 - 3PGpjs(based on tree number); 2 - 3PGmix !20241106
