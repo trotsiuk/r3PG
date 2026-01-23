@@ -275,11 +275,11 @@ dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
 
 
         if( height_model .eq. 1 ) then
-            height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
+            height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)
         else if ( height_model .eq. 2 ) then
-            height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:) !20251114
+            height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total(:) * dbh(:) !20251114
         else if ( height_model .eq. 3 ) then
-            height(:) = Hd(:) + (dbh(:) ** aH(:)) / (nHB(:) + nHC(:) * (dbh(:) ** aH(:))) !20251114
+            height(:) = Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) !20251114
         end if
 
         ! Correct the bias
@@ -2677,10 +2677,10 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel
 
         real(kind=kind(0.0d0)), dimension(n_sp) :: Hd !20251114
-        real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nHB, nHC
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nH1, nH2
         real(kind=kind(0.0d0)), dimension(n_sp) :: aV, nVB, nVH, nVBH
-        real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
-        real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nK1, nK2, nK3, nK4
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHL1, nHL2, nHL3, nHL4
         real(kind=kind(0.0d0)), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC
         real(kind=kind(0.0d0)), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC
         real(kind=kind(0.0d0)), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
@@ -2714,7 +2714,7 @@ end if
         lai_total = sum( lai(:) )
 
         ! Calculate the relative height
-        ! height(:) = aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)
+        ! height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)
         height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
 
 
@@ -2770,46 +2770,46 @@ end if
 
             if (height_model .eq. 1) then !20251114
     ! Exponential form of height and LCL equation
-            DrelBiasheight(:) = 0.5d0 * (nHB(:) * (nHB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
-            DrelBiasLCL(:) = 0.5d0 * (nHLB(:) * (nHLB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
-            DrelBiasCrowndiameter(:) = 0.5d0 * (nKB(:) * (nKB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+            DrelBiasheight(:) = 0.5d0 * (nH1(:) * (nH1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+            DrelBiasLCL(:) = 0.5d0 * (nHL1(:) * (nHL1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+            DrelBiasCrowndiameter(:) = 0.5d0 * (nK1(:) * (nK1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
 
 else if (height_model .eq. 2) then
     ! Michajlow form of height and LCL equation
-    DrelBiasheight(:) = 0.5d0 * (  aH(:) * exp(-nHB(:)/Ex(:)) * (nHB(:)**2 - 2.d0*nHB(:)*Ex(:)) / &
-                      ( Ex(:)**2 * (Hd(:) + aH(:)*exp(-nHB(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
+    DrelBiasheight(:) = 0.5d0 * (  aH(:) * exp(-nH1(:)/Ex(:)) * (nH1(:)**2 - 2.d0*nH1(:)*Ex(:)) / &
+                      ( Ex(:)**2 * (Hd(:) + aH(:)*exp(-nH1(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
 
-    DrelBiasLCL(:) = 0.5d0 * (  aHL(:) * exp(-nHLB(:)/Ex(:)) * (nHLB(:)**2 - 2.d0*nHLB(:)*Ex(:)) / &
-                      ( Ex(:)**2 * (Hd(:) + aHL(:)*exp(-nHLB(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
+    DrelBiasLCL(:) = 0.5d0 * (  aHL(:) * exp(-nHL1(:)/Ex(:)) * (nHL1(:)**2 - 2.d0*nHL1(:)*Ex(:)) / &
+                      ( Ex(:)**2 * (Hd(:) + aHL(:)*exp(-nHL1(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
 
-    DrelBiasCrowndiameter(:) = 0.5d0 * (nKB(:) * (nKB(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0 ! use exponential for for crown diameter when height_model - 1 or 2
+    DrelBiasCrowndiameter(:) = 0.5d0 * (nK1(:) * (nK1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0 ! use exponential for for crown diameter when height_model - 1 or 2
 
 else if (height_model .eq. 3) then
     ! Naslund
     !DrelBiasheight(:) = 0.5d0 * (  &
-    !( aH(:) * nHB(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nHB(:) - nHC(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) ) / &
+    !( aH(:) * nH1(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nH1(:) - nH2(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) ) / &
     !( &
-    !( (nHB(:) + nHC(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
-    !( Hd(:) * (nHB(:) + nHC(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) &
+    !( (nH1(:) + nH2(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
+    !( Hd(:) * (nH1(:) + nH2(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) &
     !) &
     !) * CVdbhDistribution(:)**2.d0
 
 ! numerical second derivative of Naslund form
 DrelBiasheight(:) = 0.5d0 * &
-(( Hd(:) + ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nHB(:) + nHC(:) * (dbh(:) ** aH(:))) ) &
+(( Hd(:) + ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) &
     - 2.0d0 &
-     * ( Hd(:) + ( dbh(:) ** aH(:)) / (nHB(:) + nHC(:) * (dbh(:) ** aH(:))) ) + &
-    + ( Hd(:) + ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nHB(:) + nHC(:) * (dbh(:) ** aH(:))) ) ) &
+     * ( Hd(:) + ( dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) + &
+    + ( Hd(:) + ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) ) &
    / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
    * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
 
     DrelBiasLCL(:) = 0.d0
 
     DrelBiasCrowndiameter(:) = 0.5d0 * &
-(( ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) &
+(( ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) &
     - 2.0d0 &
-     * ( ( dbh(:) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) + &
-    + ( ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) ) &
+     * ( ( dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) + &
+    + ( ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) ) &
    / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
    * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
 
@@ -2882,29 +2882,29 @@ end if
 
         if( height_model .eq. 1 ) then
 
-            height(:) = ( aH(:) * dbh(:) ** nHB(:) * competition_total(:) ** nHC(:)) * (1.d0 + DrelBiasheight(:))
+            height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)) * (1.d0 + DrelBiasheight(:))
 
-            crown_length(:) = ( aHL(:) * dbh(:) ** nHLB(:) * lai_total ** nHLL(:) * competition_total(:) ** nHLC(:) * &
-                height_rel(:) ** nHLrh(:)) * (1.d0 + DrelBiasLCL(:))
+            crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total(:) ** nHL3(:) * &
+                height_rel(:) ** nHL4(:)) * (1.d0 + DrelBiasLCL(:))
 
-            crown_width(:) = ( aK(:) * dbh(:) ** nKB(:) * height(:) ** nKH(:) * competition_total(:) ** nKC(:) * &
-                      height_rel(:) ** nKrh(:)) * (1.d0 + DrelBiasCrowndiameter(:))
+            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total(:) ** nK3(:) * &
+                      height_rel(:) ** nK4(:)) * (1.d0 + DrelBiasCrowndiameter(:))
 
         else if ( height_model .eq. 2 ) then
 
-            height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nHB(:)/dbh(:)) + nHC(:) * competition_total(:) * dbh(:) ) * &
+            height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total(:) * dbh(:) ) * &
                       (1.d0 + DrelBiasheight(:)) !20251114
-            crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHLB(:)/dbh(:)) + nHLC(:) * competition_total(:) * dbh(:) ) * &
+            crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total(:) * dbh(:) ) * &
                       (1.d0 + DrelBiasheight(:)) !20251114
 
-            crown_width(:) = ( aK(:) * dbh(:) ** nKB(:) * height(:) ** nKH(:) * competition_total(:) ** nKC(:) * &
-                    height_rel(:) ** nKrh(:)) * (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
+            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total(:) ** nK3(:) * &
+                    height_rel(:) ** nK4(:)) * (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
 
         else if ( height_model .eq. 3 ) then
-            height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nHB(:) + nHC(:) * (dbh(:) ** aH(:))) ) * (1.d0 + DrelBiasheight(:)) !20251114
+            height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) * (1.d0 + DrelBiasheight(:)) !20251114
             crown_length(:) = aHL(:) * height(:) !20251114
 
-            crown_width(:) = ( (dbh(:) ** aK(:)) / (nKB(:) + nKH(:) * (dbh(:) ** aK(:))) ) * &
+            crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) * &
                       (1.d0 + DrelBiasCrowndiameter(:)) !20251114
 
         end if
@@ -2919,12 +2919,12 @@ end if
 !    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
 !
 !    if (.not. header_written) then
-!        write(unit_csv, '(A)') "i,aH,nHB,nHC"
+!        write(unit_csv, '(A)') "i,aH,nH1,nH2"
 !        header_written = .true.
 !    end if
 !
 !    do i = 1, n_sp
-!        write(unit_csv, '(I4, 3(1X, E15.7))') i, aH(i), nHB(i), nHC(i)
+!        write(unit_csv, '(I4, 3(1X, E15.7))') i, aH(i), nH1(i), nH2(i)
 !    end do
 !
 !    close(unit_csv)

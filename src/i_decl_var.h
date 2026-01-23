@@ -136,10 +136,10 @@ integer, dimension(n_sp) :: CrownShape          !***DF crown shape of a given sp
 
 ! Height and Volume
 real(kind=kind(0.0d0)), dimension(n_sp) :: Hd             ! Height at which diameter is measured (m) for background mortality, and allometric equations !20251114
-real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nHB, nHC
+real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nH1, nH2                  !20260123 was nHB, nHC
 real(kind=kind(0.0d0)), dimension(n_sp) :: aV, nVB, nVH, nVBH
-real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nKB, nKH, nKC, nKrh
-real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHLB, nHLL, nHLC, nHLrh
+real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nK1, nK2, nK3, nK4        !20260123 was nKB, nKH, nKC, nKrh
+real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHL1, nHL2, nHL3, nHL4   !20260123 was nHLB, nHLL, nHLC, nHLrh
 
 ! Delta 13
 real(kind=kind(0.0d0)), dimension(n_sp) :: Qa, Qb
