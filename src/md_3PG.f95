@@ -45,12 +45,12 @@ contains
 !integer :: isp, jj
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! Declare at the top:
- integer :: t, sp, row, ios
- character(len=256) :: filenameP
- integer :: n_rows
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! Declare at the top:
+! integer :: t, sp, row, ios
+! character(len=256) :: filenameP
+! integer :: n_rows
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -512,27 +512,27 @@ end do
 
 
 
-! Set filename
-write(filenameP,'(A)') 'debug_managementInputs_all.csv'
-open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
-if (ios /= 0) stop 'Error opening debug CSV'
-
-! Header
-write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained'
-
-! Loop over species and thinning events
-do sp = 1, n_sp
-    do t = 1, n_man
-        write(400,'(6G15.6)') managementInputs(t,1,sp), &
-                               managementInputs(t,2,sp), &
-                               managementInputs(t,3,sp), &
-                               managementInputs(t,4,sp), &
-                               managementInputs(t,5,sp), &
-                               managementInputs(t,6,sp)
-    end do
-end do
-
-close(400)
+!! Set filename
+!write(filenameP,'(A)') 'debug_managementInputs_all.csv'
+!open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
+!if (ios /= 0) stop 'Error opening debug CSV'
+!
+!! Header
+!write(400,'(A)') 'age,stems_n,stem,root,foliage,biom_prop_retained'
+!
+!! Loop over species and thinning events
+!do sp = 1, n_sp
+!    do t = 1, n_man
+!        write(400,'(6G15.6)') managementInputs(t,1,sp), &
+!                               managementInputs(t,2,sp), &
+!                               managementInputs(t,3,sp), &
+!                               managementInputs(t,4,sp), &
+!                               managementInputs(t,5,sp), &
+!                               managementInputs(t,6,sp)
+!    end do
+!end do
+!
+!close(400)
 
 
 
@@ -2411,6 +2411,12 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
 
         ! ***DF this used to have month in it but this whole sub is run each month so month is now redundant here.
         apar(:) = aparl(:) * lambda_h(:) * lambda_v(:)
+
+
+        ! If total APAR exceeds above-canopy PAR, scale down proportionally (this is possible in extreme cases after multiplying by vertical and horizontal parameters that make the sum of absorbed PAR slightly exceed the incoming radiation)
+        if (sum(apar(:)) > solar_rad * days_in_month) then
+            apar(:) = apar(:) * (solar_rad * days_in_month) / sum(apar(:))
+        end if
 
         ! The proportion of above canopy apar absorbed by each species. This is used for net radiation calculations in the gettranspiration sub
         fi(:) = apar(:) / (solar_rad * days_in_month)
