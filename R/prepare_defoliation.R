@@ -33,8 +33,11 @@ prepare_defoliation <- function(defoliation = NULL,
                      "stem", "t_recover", "prop_carbs", "prop_npp")
 
   if (is.null(defoliation)) {
+
     defoliation <- array(NA_real_, dim = c(1, length(required_cols) - 1, n_sp))  # drop species column
+
   } else {
+
     if (!identical(required_cols, colnames(defoliation))) {
       stop(paste("Column names of defoliation table must be:", paste(required_cols, collapse = ", ")))
     }
@@ -42,6 +45,59 @@ prepare_defoliation <- function(defoliation = NULL,
     if( !any(defoliation$species %in% sp_names) ){
       stop("species and sp_names does not match.")
     }
+
+
+    # pruning (def_type = 1)
+    if (any(
+      defoliation$def_type == 1 &
+      (defoliation$stem_retained != 1 |
+       defoliation$root_retained != 1 |
+       defoliation$foliage_retained >= 1)
+    )) {
+      stop("Defoliation input error (pruning, def_type = 1): ",
+           "stem_retained and root_retained must equal 1, ",
+           "and foliage_retained must be < 1.")
+    }
+
+    # coppice (def_type = 2)
+    if (any(
+      defoliation$def_type == 2 &
+      (defoliation$stem_retained != 0 |
+       defoliation$root_retained <= 0 |
+       defoliation$foliage_retained != 0)
+    )) {
+      stop("Defoliation input error (coppice, def_type = 2): ",
+           "stem_retained must be 0, root_retained must be > 0, ",
+           "and foliage_retained must equal 0.")
+    }
+
+    # epicormic (def_type = 3)
+    if (any(
+      defoliation$def_type == 3 &
+      (defoliation$stem_retained <= 0 |
+       defoliation$root_retained <= 0 |
+       defoliation$stem_retained != defoliation$root_retained |
+       defoliation$foliage_retained >= 1)
+    )) {
+      stop("Defoliation input error (epicormic, def_type = 3): ",
+           "stem_retained must equal root_retained, both > 0, ",
+           "and foliage_retained must be < 1.")
+    }
+
+    # stand replacing (def_type = 4)
+    if (any(
+      defoliation$def_type == 4 &
+      (defoliation$stem_retained != 0 |
+       defoliation$root_retained != 0 |
+       defoliation$foliage_retained != 0)
+    )) {
+      stop("Defoliation input error (stand replacing, def_type = 4): ",
+           "stem_retained, root_retained, and foliage_retained must all equal 0.")
+    }
+
+
+
+
 
     defoliation <- data.frame(defoliation)
     defoliation <- defoliation[defoliation$species %in% sp_names, ]
@@ -60,6 +116,7 @@ prepare_defoliation <- function(defoliation = NULL,
 
     defoliation <- defoliation[order(defoliation$species, defoliation$def_n), ]
     defoliation <- simplify2array(by(defoliation[, 3:11], defoliation[, 1], as.matrix))
+
   }
 
   if (n_sp > 1) {
