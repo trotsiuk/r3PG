@@ -96,7 +96,9 @@ prepare_defoliation <- function(defoliation = NULL,
     }
 
 
-
+    if (any(is.na(defoliation$def_recover_t) | defoliation$def_recover_t < 12)) {
+      stop("Defoliation input error: 'def_recover_t' must be provided and >= 12 months for all defoliation events.")
+    }
 
 
     defoliation <- data.frame(defoliation)
