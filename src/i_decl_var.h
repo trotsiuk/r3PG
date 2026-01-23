@@ -327,9 +327,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_def
 
 ! Defoliation
 integer, dimension(n_sp) :: def_type ! current defoliation type for a given species
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_adj_pre_def !Adjusted pre defoliation foliage mass
-real(kind=kind(0.0d0)), dimension(n_sp) :: def_recover_t !Time neede to recover from the defoliation
-real(kind=kind(0.0d0)), dimension(n_sp) :: age_last_def_event ! Last defoliation event age
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_adj_pre_def ! Adjusted pre defoliation foliage mass
+real(kind=kind(0.0d0)), dimension(n_sp) :: def_recover_t            ! Maximum time to recover from defoliation. After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.
+real(kind=kind(0.0d0)), dimension(n_sp) :: age_last_def_event       ! Last defoliation event age
 real(kind=kind(0.0d0)), dimension(n_sp) :: def_test_var
 real(kind=kind(0.0d0)), dimension(n_sp) :: prop_carbs !20251124
 real(kind=kind(0.0d0)), dimension(n_sp) :: prop_npp !20251124

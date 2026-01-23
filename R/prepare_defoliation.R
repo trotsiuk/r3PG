@@ -10,7 +10,7 @@
 #'   \item \code{foliage_retained}: Proportion of foliage mass retained after defoliation (0 to 1).
 #'   \item \code{root_retained}: Proportion of root mass retained after defoliation (0 to 1).
 #'   \item \code{stem}: Fraction of average tree stem mass of killed trees (numeric, default 1).
-#'   \item \code{t_recover}: Time (months) to recover from defoliation (numeric).
+#'   \item \code{def_recover_t}: Time (months) to recover from defoliation (numeric). After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.
 #'   \item \code{prop_carbs}: Proportion of pre-defoliation carbs used to regenerate foliage (0 to 1).
 #'   \item \code{prop_npp}: Proportion of new photosynthate allocated to foliage (0 to 1).
 #' }
@@ -30,7 +30,7 @@ prepare_defoliation <- function(defoliation = NULL,
   names(sp_id) <- sp_names
 
   required_cols <- c("species", "age", "def_type", "stem_retained", "foliage_retained", "root_retained",
-                     "stem", "t_recover", "prop_carbs", "prop_npp")
+                     "stem", "def_recover_t", "prop_carbs", "prop_npp")
 
   if (is.null(defoliation)) {
 
