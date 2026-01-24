@@ -1328,7 +1328,7 @@ end do
                                             end if
 
 
-                                              ! --- APPLY ALL REDUCTIONS AT END ---
+                                              ! apply reductions
                                               stems_n(i) = stems_n(i) - stems_loss_manag(i)
                                               if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
                                               biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
@@ -1341,7 +1341,7 @@ end do
 
                                    end if
 
-                                   ! CASE 2: ! thinning calculated using trees proportion of AGB retained
+                                   ! thinning calculated using trees proportion of AGB retained
                                    if ( isnan(managementInputs(t_n(i),2,i)) .AND. .not. &
                                    isnan(managementInputs(t_n(i),6,i)) ) then
 
@@ -1723,9 +1723,21 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                 end if
 
                 ! convert to per-cohort stems loss safely
-                stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
-                                        basal_area_total * basal_area(i) / &
-                                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+                !stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
+                !                        basal_area_total * basal_area(i) / &
+                !                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+
+
+                if (n_sp .eq. 1) then
+                    stems_loss_density(i) = mort_thinn_total
+                else
+                    stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
+                                            basal_area_total * basal_area(i) / &
+                                            max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+                end if
+
+
+
             end if
 
             ! ensure non-negative stems
