@@ -263,12 +263,16 @@ integer :: jj !20251124
           dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
           basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
           lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+
         end where
 
 ! for background mortality calculations where mort_model = 2 !20251124
 stems_n_total  = max(sum(stems_n(:)), 1.0d-6)
 basal_area_total = max(sum(basal_area(:)), 1.0d-6)
 dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+dbh_prev(:) = dbh(:)
+dbh_total_prev = dbh_total
+
 
 
         competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
@@ -1727,7 +1731,7 @@ if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
                 !                        basal_area_total * basal_area(i) / &
                 !                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
 
-
+                ! In single-cohort stands the thinning formulation already operates at the stand level, so no further basal-area allocation across cohorts is required.
                 if (n_sp .eq. 1) then
                     stems_loss_density(i) = mort_thinn_total
                 else
