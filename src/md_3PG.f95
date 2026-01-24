@@ -608,10 +608,10 @@ end do
                      def_recover_t(i) = 0.0d0
 
                      ! the recovery has finished, but if there are more roots than sr_ratio, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
-if( def_type(i) == 2 .and. sr_ratio(i) > biom_stem(i) / biom_root(i)) then
+if( def_type(i) == 2 .and. sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
 
-biom_loss_root_def(i) = biom_root(i) - biom_stem(i)/sr_ratio(i)
-biom_root(i) = biom_stem(i)/sr_ratio(i)
+biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i))/sr_ratio(i)
+biom_root(i) = (biom_stem(i) + biom_foliage(i))/sr_ratio(i)
 
 end if
 
@@ -622,10 +622,10 @@ end if
 
 
                      ! the recovery has finished, but if there are more roots than sr_ratio, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
-if( sr_ratio(i) > biom_stem(i) / biom_root(i)) then
+if( sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
 
-biom_loss_root_def(i) = biom_root(i) - biom_stem(i)/sr_ratio(i)
-biom_root(i) = biom_stem(i)/sr_ratio(i)
+biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i))/sr_ratio(i)
+biom_root(i) = (biom_stem(i) + biom_foliage(i))/sr_ratio(i)
 
 end if
 
@@ -1477,10 +1477,10 @@ end do
                             ! Adjust pre-defoliation foliage mass (i.e. pre-defoliation foliage mass of trees that survived the defoliation event)
                             if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i) ! depends on how many trees died as defined by root mass loss
-                                sr_ratio(i) = biom_stem(i) / biom_root(i)
+                                sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
                             else if (def_type(i) == 2 ) then ! also depends on how many trees died, but age needs to be adjusted as well
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i)
-                                sr_ratio(i) = biom_stem(i) / biom_root(i)
+                                sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
 
 
 ! for coppice the age and age related variables need to be updated !20251124
