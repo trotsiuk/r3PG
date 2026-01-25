@@ -45,12 +45,12 @@ contains
 !integer :: isp, jj
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!! Declare at the top:
-! integer :: t, sp, row, ios
-! character(len=256) :: filenameP
-! integer :: n_rows
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Declare at the top:
+ integer :: t, sp, row, ios
+ character(len=256) :: filenameP
+ integer :: n_rows
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -537,6 +537,32 @@ end do
 !end do
 !
 !close(400)
+
+
+! Set filename
+write(filenameP,'(A)') 'debug_managementInputs_all.csv'
+open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
+if (ios /= 0) stop 'Error opening debug CSV'
+
+! Header
+write(400,'(A)') 'age,def_type,stem_retained,foliage_retained,root_retained,stem,def_recover_t,prop_carbs,prop_npp'
+
+! Loop over species and thinning events
+do sp = 1, n_sp
+    do t = 1, n_man
+        write(400,'(6G15.6)') defoliationInputs(t,1,sp), &
+                               defoliationInputs(t,2,sp), &
+                               defoliationInputs(t,3,sp), &
+                               defoliationInputs(t,4,sp), &
+                               defoliationInputs(t,5,sp), &
+                               defoliationInputs(t,6,sp), &
+                               defoliationInputs(t,7,sp), &
+                               defoliationInputs(t,8,sp), &
+                               defoliationInputs(t,9,sp)
+    end do
+end do
+
+close(400)
 
 
 
@@ -1538,7 +1564,7 @@ end if
                             ! adjust biomass pools due to defoliation
                             if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
                                 ! foliage debt depends on stems that can resprout, and if dormant, needs to come from biom_foliage_debt !20250301
-                                biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) !defol_stem_mass_prop_retained
+                                biom_loss_foliage_def(i) = biom_foliage_debt(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) ! depends on how many trees died as defined by root mass loss
                                 biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_def(i) ! same as biom_foliage_debt(i) * defoliationInputs(d_n(i),3,i)
                                 !biom_foliage must be 0 and remains 0
                                 ! if a prune or epicormic event occurred during dormant season, then no foliage could have been removed
@@ -1565,6 +1591,11 @@ end if
 
                             ! if root biomass declined, there was mortality, so update stems_n
                             if( defoliationInputs(d_n(i),5,i) < 1.d0 ) then
+
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxx
+
 
                                 ! When the sum of proportion of roots retained and Sfraction is <= 1, then all N will be removed even though some biomass remains. So restrict stems_n to be at least 0.
                                 ! note that this is based on stem fraction, not root or foliage fractions, which would be harder to determine as inputs
