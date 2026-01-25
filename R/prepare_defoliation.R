@@ -36,17 +36,27 @@ prepare_defoliation <- function(defoliation = NULL,
 
     #defoliation <- array(NA_real_, dim = c(1, length(required_cols) - 1, n_sp))  # drop species column
     defoliation <- array(
-      c(age = NA_real_,
-        def_type = 0,
-        stem_retained = 1,
-        foliage_retained = 1,
-        root_retained = 1,
-        stem = 1,
-        def_recover_t = 0,
-        prop_carbs = 0,
-        prop_npp = 0),
+      rep(
+        c(
+          age = NA_real_,
+          def_type = 0,
+          stem_retained = 1,
+          foliage_retained = 1,
+          root_retained = 1,
+          stem = 1,
+          def_recover_t = 0,
+          prop_carbs = 0,
+          prop_npp = 0
+        ),
+        times = n_sp
+      ),
       dim = c(1, length(required_cols) - 1, n_sp),
-      dimnames = list(def_n = 1, param = required_cols[-1], species = sp_names))
+      dimnames = list(
+        def_n = 1,
+        param = required_cols[-1],
+        species = sp_names
+      )
+    )
 
   } else {
 
