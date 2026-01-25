@@ -1594,7 +1594,7 @@ end if
 
 
 
-xxxxxxxxxxxxxxxxxxxxxxxxx
+
 
 
                                 ! When the sum of proportion of roots retained and Sfraction is <= 1, then all N will be removed even though some biomass remains. So restrict stems_n to be at least 0.
