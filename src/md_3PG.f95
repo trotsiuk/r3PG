@@ -547,7 +547,7 @@ if (ios /= 0) stop 'Error opening debug CSV'
 ! Header
 write(400,'(A)') 'age,def_type,stem_retained,foliage_retained,root_retained,stem,def_recover_t,prop_carbs,prop_npp'
 
-! Loop over species and thinning events
+! Loop over species and defoliation events
 do sp = 1, n_sp
     do t = 1, n_man
         write(400,'(6G15.6)') defoliationInputs(t,1,sp), &
@@ -1472,6 +1472,7 @@ end do
 
                 b_cor = .FALSE.
             end if
+
 
 
             ! Defoliation --------------------------------------------------------------------------
