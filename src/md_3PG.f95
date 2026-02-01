@@ -2731,7 +2731,7 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel
 
         real(kind=kind(0.0d0)), dimension(n_sp) :: Hd !20251114
-        real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nH1, nH2
+        real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nH1, nH2, nH3, nH4
         real(kind=kind(0.0d0)), dimension(n_sp) :: aV, nVB, nVH, nVBH
         real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nK1, nK2, nK3, nK4
         real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHL1, nHL2, nHL3, nHL4
