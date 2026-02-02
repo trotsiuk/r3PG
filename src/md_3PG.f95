@@ -2678,10 +2678,12 @@ end if
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-!    implicit none          ! FIRST statement in the declarations section
-!    integer :: i
-!    integer :: unit_csv
-!    logical, save :: header_written = .false.
+    implicit none          ! FIRST statement in the declarations section
+    integer :: i
+    integer :: unit_csv
+    logical, save :: header_written = .false.
+    real(kind=kind(0.0d0)) :: mean_height, sum_stems
+    real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel2
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
@@ -2695,7 +2697,7 @@ end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        implicit none
+!        implicit none
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2758,7 +2760,16 @@ end if
 
 
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+sum_stems   = sum(stems_n(:))
+mean_height = sum(height(:) * stems_n(:)) / sum_stems
 
+height_rel2(:) = height(:) / mean_height
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -2979,21 +2990,23 @@ end if
 
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-!! --- write CSV file ---
-!    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
-!
-!    if (.not. header_written) then
-!        write(unit_csv, '(A)') "i,aH,nH1,nH2"
-!        header_written = .true.
-!    end if
-!
-!    do i = 1, n_sp
-!        write(unit_csv, '(I4, 3(1X, E15.7))') i, aH(i), nH1(i), nH2(i)
-!    end do
-!
-!    close(unit_csv)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+! --- write CSV file ---
+    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
+
+    if (.not. header_written) then
+        write(unit_csv, '(A)') "i,stems_n,height,height_rel,height_rel2,sum_stems,mean_height"
+        header_written = .true.
+    end if
+
+    do i = 1, n_sp
+            write(unit_csv,'(I4, 6(1X, E15.7))') &
+        i, stems_n(i), height(i), height_rel(i), height_rel2(i), &
+        sum_stems, mean_height
+    end do
+
+    close(unit_csv)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
