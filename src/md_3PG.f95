@@ -3000,7 +3000,7 @@ height_rel2(:) = height(:) / mean_height
     end if
 
     do i = 1, n_sp
-            write(unit_csv,'(I4, 6(1X, E15.7))') &
+            write(unit_csv,'(I4, 6(1X, ES15.7))') &
         i, stems_n(i), height(i), height_rel(i), height_rel2(i), &
         sum_stems, mean_height
     end do
