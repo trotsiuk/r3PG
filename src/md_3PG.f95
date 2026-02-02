@@ -2992,20 +2992,39 @@ height_rel2(:) = height(:) / mean_height
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
 ! --- write CSV file ---
-    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
+!    open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
+!
+!    if (.not. header_written) then
+!        write(unit_csv, '(A)') "i,stems_n,height,height_rel,height_rel2,sum_stems,mean_height"
+!        header_written = .true.
+!    end if
+!
+!    do i = 1, n_sp
+!            write(unit_csv,'(I4, 6(1X, ES15.7))') &
+!        i, stems_n(i), height(i), height_rel(i), height_rel2(i), &
+!        sum_stems, mean_height
+!    end do
+!
+!    close(unit_csv)
 
-    if (.not. header_written) then
-        write(unit_csv, '(A)') "i,stems_n,height,height_rel,height_rel2,sum_stems,mean_height"
-        header_written = .true.
-    end if
 
-    do i = 1, n_sp
-            write(unit_csv,'(I4, 6(1X, ES15.7))') &
-        i, stems_n(i), height(i), height_rel(i), height_rel2(i), &
-        sum_stems, mean_height
-    end do
 
-    close(unit_csv)
+
+
+
+open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
+
+if (.not. header_written) then
+    write(unit_csv,'(A)') "i,bias_scale(1),...,bias_scale(15)"
+    header_written = .true.
+end if
+
+do i = 1, n_sp
+    write(unit_csv,'(I4, 1X, 15E15.7)') i, bias_scale(:,i)
+end do
+
+close(unit_csv)
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
