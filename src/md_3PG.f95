@@ -282,9 +282,22 @@ dbh_total_prev = dbh_total
             height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)
         else if ( height_model .eq. 2 ) then
             height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total(:) * dbh(:) !20251114
+        !else if ( height_model .eq. 3 ) then
+        !    height(:) = Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) !20251114
+        !end if
         else if ( height_model .eq. 3 ) then
-            height(:) = Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) !20251114
+            do i = 1, n_sp
+               if ( nH3(i) < 1.0e-4 .and. nH4(i) < 1.0e-4 ) then
+                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i))) !20251114
+               else
+                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH1(i)*competition_total) + Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  ) !20251114
+               end if
+            end do
         end if
+
+
+
+
 
         ! Correct the bias
         do n = 1, b_n
