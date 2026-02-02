@@ -2785,7 +2785,7 @@ end if
 
         ! Check where all the locations are provided
         dlocation(:) = 1.d0
-        wslocation(:) = 1.d0
+        !wslocation(:) = 1.d0
 
         where( Dlocation0(:)==0.d0 .and. DlocationB(:)==0.d0 .and. Dlocationrh(:)==0.d0 .and. &
             Dlocationt(:)==0.d0 .and. DlocationC (:)==0.d0 ) dlocation(:) = 0.d0
