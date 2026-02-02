@@ -149,9 +149,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: gDM_mol, molPAR_MJ
 real(kind=kind(0.0d0)), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC
 real(kind=kind(0.0d0)), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC
 real(kind=kind(0.0d0)), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
-real(kind=kind(0.0d0)), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
-real(kind=kind(0.0d0)), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
-real(kind=kind(0.0d0)), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocationt, wslocationC
+!real(kind=kind(0.0d0)), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
+!real(kind=kind(0.0d0)), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
+!real(kind=kind(0.0d0)), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocationt, wslocationC
 
 !***************************************
 ! DERIVED VARIABLES

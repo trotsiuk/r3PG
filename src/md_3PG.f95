@@ -31,7 +31,7 @@ contains
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(92,n_sp), intent(in) :: pars_i                          !20241106
-        real(kind=c_double), dimension(30,n_sp), intent(in) :: pars_b
+        real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
 !integer :: mm !20251114
 
@@ -2714,7 +2714,7 @@ end if
         integer, intent(in) :: correct_bias ! if the distribution shall be fitted
         integer, intent(in) :: height_model ! which height equation
         real(kind=kind(0.0d0)), dimension(20, n_sp), intent(in) :: pars_s ! parameters for bias !20251114
-        real(kind=kind(0.0d0)), dimension(30, n_sp), intent(in) :: pars_b ! parameters for bias
+        real(kind=kind(0.0d0)), dimension(15, n_sp), intent(in) :: pars_b ! parameters for bias
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: aWs, nWs
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: pfsPower, pfsConst
 
@@ -2740,19 +2740,19 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC
         real(kind=kind(0.0d0)), dimension(n_sp) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC
         real(kind=kind(0.0d0)), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
-        real(kind=kind(0.0d0)), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
-        real(kind=kind(0.0d0)), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
-        real(kind=kind(0.0d0)), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocationt, wslocationC
+        !real(kind=kind(0.0d0)), dimension(n_sp) :: wsscale0, wsscaleB, wsscalerh, wsscalet, wsscaleC
+        !real(kind=kind(0.0d0)), dimension(n_sp) :: wsshape0, wsshapeB, wsshaperh, wsshapet, wsshapeC
+        !real(kind=kind(0.0d0)), dimension(n_sp) :: wslocation0, wslocationB, wslocationrh, wslocationt, wslocationC
 
         ! Additional variables for calculation distribution
         real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullScale, DWeibullShape, DWeibullLocation
-        real(kind=kind(0.0d0)), dimension(n_sp) :: wsWeibullScale, wsWeibullShape, wsWeibullLocation
-        real(kind=kind(0.0d0)), dimension(n_sp) :: Ex, Varx, CVdbhDistribution, CVwsDistribution
-        real(kind=kind(0.0d0)), dimension(n_sp) :: DrelBiaspFS, DrelBiasheight, DrelBiasBasArea, DrelBiasLCL, DrelBiasCrowndiameter
-        real(kind=kind(0.0d0)), dimension(n_sp) :: wsrelBias
+        !real(kind=kind(0.0d0)), dimension(n_sp) :: wsWeibullScale, wsWeibullShape, wsWeibullLocation
+        !real(kind=kind(0.0d0)), dimension(n_sp) :: Ex, Varx, CVdbhDistribution, CVwsDistribution
+        !real(kind=kind(0.0d0)), dimension(n_sp) :: DrelBiaspFS, DrelBiasheight, DrelBiasBasArea, DrelBiasLCL, DrelBiasCrowndiameter
+        !real(kind=kind(0.0d0)), dimension(n_sp) :: wsrelBias
 
-        real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation, wslocation
-        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma, wsWeibullShape_gamma
+        real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation !, wslocation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma !, wsWeibullShape_gamma
 
         include 'i_read_param_sizeDist.h'
         include 'i_read_param_sub.h'
@@ -2790,8 +2790,8 @@ end if
         where( Dlocation0(:)==0.d0 .and. DlocationB(:)==0.d0 .and. Dlocationrh(:)==0.d0 .and. &
             Dlocationt(:)==0.d0 .and. DlocationC (:)==0.d0 ) dlocation(:) = 0.d0
 
-        where( wslocation0(:)==0.d0 .and. wslocationB(:)==0.d0 .and. wslocationrh(:)==0.d0 .and. &
-            wslocationt(:)==0.d0 .and. wslocationC (:)==0.d0 ) wslocation(:) = 0.d0
+        !where( wslocation0(:)==0.d0 .and. wslocationB(:)==0.d0 .and. wslocationrh(:)==0.d0 .and. &
+        !    wslocationt(:)==0.d0 .and. wslocationC (:)==0.d0 ) wslocation(:) = 0.d0
 
         !if (correct_bias .eq. 1 ) then
 
