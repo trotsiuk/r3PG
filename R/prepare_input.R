@@ -154,9 +154,9 @@ prepare_input <- function(
   parameters = prepare_parameters( parameters = parameters, sp_names = species$species)
 
   # Size distribution
-  if( set_def['correct_bias'] == 1 & is.null(size_dist) ){
-    stop('Please provide size_dist table or change the setting to size_dist = 0')
-  }
+  #if( set_def['correct_bias'] == 1 & is.null(size_dist) ){
+  #  stop('Please provide size_dist table or change the setting to size_dist = 0')
+  #}
   size_dist = prepare_sizeDist( size_dist = size_dist, sp_names = species$species)
 
 
