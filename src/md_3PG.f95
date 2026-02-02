@@ -3012,23 +3012,6 @@ height_rel2(:) = height(:) / mean_height
 
 
 
-open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
-
-if (.not. header_written) then
-    write(unit_csv,'(A)') "i,bias_scale(1),...,bias_scale(15)"
-    header_written = .true.
-end if
-
-do i = 1, n_sp
-    write(unit_csv,'(I4, 1X, 15E15.7)') i, bias_scale(:,i)
-end do
-
-close(unit_csv)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
 
 
 
@@ -3062,6 +3045,26 @@ close(unit_csv)
 !!!!!!        bias_scale(13,:) = DrelBiasLCL(:)
 !!!!!!        bias_scale(14,:) = DrelBiasCrowndiameter(:)
         bias_scale(4,:) = height_rel(:)
+
+
+
+
+
+open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
+
+if (.not. header_written) then
+    write(unit_csv,'(A)') "i,bias_scale(1),...,bias_scale(15)"
+    header_written = .true.
+end if
+
+do i = 1, n_sp
+    write(unit_csv,'(I4, 1X, 15E15.7)') i, bias_scale(:,i)
+end do
+
+close(unit_csv)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 
     end subroutine s_sizeDist_correct
