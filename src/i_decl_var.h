@@ -390,7 +390,7 @@ integer :: light_model               !1 - 3PGpjs; 2 - 3PGmix 2 - 3PGmix
 integer :: transp_model              !1 - 3PGpjs, min of f_vpd and f_sw; 2 - 3PGmix, f_vpd x f_sw
 integer :: phys_model                !1 - 3PGpjs, min of f_vpd and f_sw; 2 - 3PGmix, f_vpd x f_sw
 integer :: height_model              !1 - exponential; 2 - Michajlow; 3 - Näslund
-integer :: correct_bias              !0 - no; 1 - yes
+!integer :: correct_bias              !0 - no; 1 - yes
 integer :: calculate_d13c            !0 - no; 1 - yes
 integer :: mort_model                !1 - 3PGpjs; 2 - 3PGmix !20241106
 !integer :: manag_model              !1 - 3PGpjs(based on tree number); 2 - 3PGmix !20241106
