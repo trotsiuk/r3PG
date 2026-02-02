@@ -2677,14 +2677,14 @@ end if
         dbh, basal_area, height, crown_length, crown_width, pFS, bias_scale)
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-    implicit none          ! FIRST statement in the declarations section
-    integer :: i
-    integer :: unit_csv
-    logical, save :: header_written = .false.
-    real(kind=kind(0.0d0)) :: mean_height, sum_stems
-    real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel2
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
+!    implicit none          ! FIRST statement in the declarations section
+!    integer :: i
+!    integer :: unit_csv
+!    logical, save :: header_written = .false.
+!    real(kind=kind(0.0d0)) :: mean_height, sum_stems
+!    real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel2
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! Diameter distributions are used to correct for bias when calculating pFS from mean dbh, and ws distributions are
         ! used to correct for bias when calculating mean dbh from mean ws. This bias is caused by Jensen's inequality and is
@@ -2697,7 +2697,7 @@ end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!        implicit none
+        implicit none
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2763,10 +2763,10 @@ end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-sum_stems   = sum(stems_n(:))
-mean_height = sum(height(:) * stems_n(:)) / sum_stems
-
-height_rel2(:) = height(:) / mean_height
+!sum_stems   = sum(stems_n(:))
+!mean_height = sum(height(:) * stems_n(:)) / sum_stems
+!
+!height_rel2(:) = height(:) / mean_height
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
