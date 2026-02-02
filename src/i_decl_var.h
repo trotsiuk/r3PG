@@ -382,7 +382,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: D13CTissue
 
 
 ! Weibull -----------------------
-real(kind=kind(0.0d0)), dimension(15, n_sp) :: bias_scale
+real(kind=kind(0.0d0)), dimension(4, n_sp) :: bias_scale
 
 
 ! Settings ----------------------
