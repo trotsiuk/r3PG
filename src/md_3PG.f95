@@ -275,23 +275,23 @@ dbh_total_prev = dbh_total
 
 
 
-        competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+        competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
 
         if( height_model .eq. 1 ) then
-            height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)
+            height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)
         else if ( height_model .eq. 2 ) then
-            height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total(:) * dbh(:) !20251114
+            height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) !20251114
         !else if ( height_model .eq. 3 ) then
         !    height(:) = Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) !20251114
         !end if
         else if ( height_model .eq. 3 ) then
             do i = 1, n_sp
-               if ( nH3(i) < 1.0e-4 .and. nH4(i) < 1.0e-4 ) then
+               if ( nH3(i) < 1.0e-5 .or. nH4(i) < 1.0e-5 ) then
                    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i))) !20251114
                else
-                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total(i)) + &
-                        Exp(nH2(i) + nH4(i)*competition_total(i)) * (dbh(i) ** aH(i))  ) !20251114
+                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &
+                        Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  ) !20251114
                end if
             end do
         end if
@@ -302,9 +302,9 @@ dbh_total_prev = dbh_total
 
         ! Correct the bias
         do n = 1, b_n
-            competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+            competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
-            call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+            call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
                 height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &  !20241106 correct_bias
                 dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
         end do
@@ -887,9 +887,9 @@ end do
             !****** We shall call this only if the any of the above is TRUE
             if ( b_cor .eqv. .TRUE. ) then
                 do n = 1, b_n
-                    competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
                         height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &         !20241106 correct_bias
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
@@ -1280,9 +1280,9 @@ end do
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
             do n = 1, b_n
-                competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+                competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
-                call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+                call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
                     height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
                     dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
             end do
@@ -1470,9 +1470,9 @@ end do
                 lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
                 do n = 1, b_n
-                    competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
                         height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
@@ -1697,9 +1697,9 @@ end if
                 lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
                 do n = 1, b_n
-                    competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
                         height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
@@ -1832,9 +1832,9 @@ end if
                 lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
                 do n = 1, b_n
-                    competition_total(:) = sum( wood_density(ii,:) * basal_area(:) )
+                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total(:), lai(:), &
+                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
                         height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
@@ -2793,7 +2793,7 @@ end if
         lai_total = sum( lai(:) )
 
         ! Calculate the relative height
-        ! height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)
+        ! height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)
         height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
 
 
@@ -2811,16 +2811,16 @@ end if
 
             ! Calculate the DW scale -------------------
             DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * Log(height_rel(:)) + &
-                Dscalet(:) * Log(age(:)) + DscaleC(:) * Log(competition_total(:)))
+                Dscalet(:) * Log(age(:)) + DscaleC(:) * Log(competition_total))
 
             DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
-                Dshapet(:) * Log(age(:)) + DshapeC(:) * Log(competition_total(:)))
+                Dshapet(:) * Log(age(:)) + DshapeC(:) * Log(competition_total))
 
             DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
 
             DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
                     Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(:)) + &
-                    DlocationC(:) * Log(competition_total(:)))
+                    DlocationC(:) * Log(competition_total))
 
             where( dlocation(:) == 0.d0 )
                 DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
@@ -2909,15 +2909,15 @@ end if
 
             !!!!!!!!!!!!!!!! Calculate the biom_stem scale -------------------
             !!!!!!!!!!!!!!!wsWeibullScale(:) = Exp( wsscale0(:) + wsscaleB(:) * Log(dbh(:)) + wsscalerh(:) * Log(height_rel(:)) + &
-            !!!!!!!!!!!!!!!    wsscalet(:) * Log(age(:)) + wsscaleC(:) * Log(competition_total(:)))
+            !!!!!!!!!!!!!!!    wsscalet(:) * Log(age(:)) + wsscaleC(:) * Log(competition_total))
 !!!!!!!!!!!!!!!
             !!!!!!!!!!!!!!!wsWeibullShape(:) = Exp( wsshape0(:) + wsshapeB(:) * Log(dbh(:)) + wsshaperh(:) * Log(height_rel(:)) + &
-            !!!!!!!!!!!!!!!    wsshapet(:) * Log(age(:)) + wsshapeC(:) * Log(competition_total(:)))
+            !!!!!!!!!!!!!!!    wsshapet(:) * Log(age(:)) + wsshapeC(:) * Log(competition_total))
             !!!!!!!!!!!!!!!wsWeibullShape_gamma = f_gamma_dist(1.d0 + 1.d0 / wsWeibullShape(:), n_sp)
 !!!!!!!!!!!!!!!
             !!!!!!!!!!!!!!!wsWeibullLocation(:) = Exp( wslocation0(:) + wslocationB(:) * Log(dbh(:)) + &
             !!!!!!!!!!!!!!!        wslocationrh(:) * Log(height_rel(:)) + wslocationt(:) * Log(age(:)) + &
-            !!!!!!!!!!!!!!!        wslocationC(:) * Log(competition_total(:)))
+            !!!!!!!!!!!!!!!        wslocationC(:) * Log(competition_total))
 !!!!!!!!!!!!!!!
             !!!!!!!!!!!!!!!where( wslocation(:) == 0.d0 )
             !!!!!!!!!!!!!!!    wsWeibullLocation(:) = NINT(biom_tree(:)) / 10.d0 - 1.d0 - wsWeibullScale(:) * wsWeibullShape_gamma(:)
@@ -2972,22 +2972,22 @@ end if
 
         if( height_model .eq. 1 ) then
 
-            height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
+            height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
 
-            crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total(:) ** nHL3(:) * &
+            crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total ** nHL3(:) * &
                 height_rel(:) ** nHL4(:)) !!!!!!!* (1.d0 + DrelBiasLCL(:))
 
-            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total(:) ** nK3(:) * &
+            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
                       height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
 
         else if ( height_model .eq. 2 ) then
 
-            height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total(:) * dbh(:) ) !!!!!!!* &
+            height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) ) !!!!!!!* &
                       !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
-            crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total(:) * dbh(:) ) !!!!!!!* &
+            crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total * dbh(:) ) !!!!!!!* &
                       !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
 
-            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total(:) ** nK3(:) * &
+            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
                     height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
 
         else if ( height_model .eq. 3 ) then

@@ -200,7 +200,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: volume_old
 real(kind=kind(0.0d0)), dimension(n_sp) :: volume_cum
 real(kind=kind(0.0d0)), dimension(n_sp) :: volume_change
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: competition_total
+real(kind=kind(0.0d0)) :: competition_total
 
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: SLA       ! Specific leaf area
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: fracBB    ! Fraction of stem biomass as branch and bark
