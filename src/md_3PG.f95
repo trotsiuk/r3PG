@@ -2782,7 +2782,7 @@ end if
         where( wslocation0(:)==0.d0 .and. wslocationB(:)==0.d0 .and. wslocationrh(:)==0.d0 .and. &
             wslocationt(:)==0.d0 .and. wslocationC (:)==0.d0 ) wslocation(:) = 0.d0
 
-        if (correct_bias .eq. 1 ) then
+        !if (correct_bias .eq. 1 ) then
 
             ! Calculate the DW scale -------------------
             DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * Log(height_rel(:)) + &
@@ -2804,17 +2804,15 @@ end if
             where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
 
 
-            Ex(:) = DWeibullLocation(:) + DWeibullScale(:) * DWeibullShape_gamma(:)
-            !now convert the Ex from weibull scale to actual scale of diameter units in cm
-            Varx(:) = DWeibullScale(:) ** 2.d0 * (f_gamma_dist(1.d0 + 2.d0 / DWeibullShape(:), n_sp) -  DWeibullShape_gamma ** 2.d0)
-            CVdbhDistribution(:) = Varx(:) ** 0.5d0 / Ex(:)
-
-            ! calculate the bias
-            !DrelBiaspFS(:) = 0.5d0 * (pfsPower(:) * (pfsPower(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0 !20251124
-            ! this is usually calibrated rather than calculated, and therefore there will be no bias to correct
-            DrelBiaspFS(:) = 0.d0 !20251124
-
-
+            !!!!!Ex(:) = DWeibullLocation(:) + DWeibullScale(:) * DWeibullShape_gamma(:)
+            !!!!!!now convert the Ex from weibull scale to actual scale of diameter units in cm
+            !!!!!Varx(:) = DWeibullScale(:) ** 2.d0 * (f_gamma_dist(1.d0 + 2.d0 / DWeibullShape(:), n_sp) -  DWeibullShape_gamma ** 2.d0)
+            !!!!!CVdbhDistribution(:) = Varx(:) ** 0.5d0 / Ex(:)
+!!!!!
+            !!!!!! calculate the bias
+            !!!!!!DrelBiaspFS(:) = 0.5d0 * (pfsPower(:) * (pfsPower(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0 !20251124
+            !!!!!! this is usually calibrated rather than calculated, and therefore there will be no bias to correct
+            !!!!!DrelBiaspFS(:) = 0.d0 !20251124
 
 
 
@@ -2822,144 +2820,157 @@ end if
 
 
 
-            if (height_model .eq. 1) then !20251114
-    ! Exponential form of height and LCL equation
-            DrelBiasheight(:) = 0.5d0 * (nH1(:) * (nH1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
-            DrelBiasLCL(:) = 0.5d0 * (nHL1(:) * (nHL1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
-            DrelBiasCrowndiameter(:) = 0.5d0 * (nK1(:) * (nK1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
-
-else if (height_model .eq. 2) then
-    ! Michajlow form of height and LCL equation
-    DrelBiasheight(:) = 0.5d0 * (  aH(:) * exp(-nH1(:)/Ex(:)) * (nH1(:)**2 - 2.d0*nH1(:)*Ex(:)) / &
-                      ( Ex(:)**2 * (Hd(:) + aH(:)*exp(-nH1(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
-
-    DrelBiasLCL(:) = 0.5d0 * (  aHL(:) * exp(-nHL1(:)/Ex(:)) * (nHL1(:)**2 - 2.d0*nHL1(:)*Ex(:)) / &
-                      ( Ex(:)**2 * (Hd(:) + aHL(:)*exp(-nHL1(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
-
-    DrelBiasCrowndiameter(:) = 0.5d0 * (nK1(:) * (nK1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0 ! use exponential for for crown diameter when height_model - 1 or 2
-
-else if (height_model .eq. 3) then
-    ! Naslund
-    !DrelBiasheight(:) = 0.5d0 * (  &
-    !( aH(:) * nH1(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nH1(:) - nH2(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) ) / &
-    !( &
-    !( (nH1(:) + nH2(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
-    !( Hd(:) * (nH1(:) + nH2(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) &
-    !) &
-    !) * CVdbhDistribution(:)**2.d0
-
-! numerical second derivative of Naslund form
-DrelBiasheight(:) = 0.5d0 * &
-(( Hd(:) + ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) &
-    - 2.0d0 &
-     * ( Hd(:) + ( dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) + &
-    + ( Hd(:) + ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) ) &
-   / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
-   * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
-
-    DrelBiasLCL(:) = 0.d0
-
-    DrelBiasCrowndiameter(:) = 0.5d0 * &
-(( ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) &
-    - 2.0d0 &
-     * ( ( dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) + &
-    + ( ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) ) &
-   / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
-   * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
-
-end if
 
 
+!!!!!!!!!!!!            if (height_model .eq. 1) then !20251114
+!!!!!!!!!!!!    ! Exponential form of height and LCL equation
+!!!!!!!!!!!!            DrelBiasheight(:) = 0.5d0 * (nH1(:) * (nH1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+!!!!!!!!!!!!            DrelBiasLCL(:) = 0.5d0 * (nHL1(:) * (nHL1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+!!!!!!!!!!!!            DrelBiasCrowndiameter(:) = 0.5d0 * (nK1(:) * (nK1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+!!!!!!!!!!!!
+!!!!!!!!!!!!else if (height_model .eq. 2) then
+!!!!!!!!!!!!    ! Michajlow form of height and LCL equation
+!!!!!!!!!!!!    DrelBiasheight(:) = 0.5d0 * (  aH(:) * exp(-nH1(:)/Ex(:)) * (nH1(:)**2 - 2.d0*nH1(:)*Ex(:)) / &
+!!!!!!!!!!!!                      ( Ex(:)**2 * (Hd(:) + aH(:)*exp(-nH1(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
+!!!!!!!!!!!!
+!!!!!!!!!!!!    DrelBiasLCL(:) = 0.5d0 * (  aHL(:) * exp(-nHL1(:)/Ex(:)) * (nHL1(:)**2 - 2.d0*nHL1(:)*Ex(:)) / &
+!!!!!!!!!!!!                      ( Ex(:)**2 * (Hd(:) + aHL(:)*exp(-nHL1(:)/Ex(:))) )   ) * CVdbhDistribution(:)**2.d0
+!!!!!!!!!!!!
+!!!!!!!!!!!!    DrelBiasCrowndiameter(:) = 0.5d0 * (nK1(:) * (nK1(:) - 1.d0)) * CVdbhDistribution(:) ** 2.d0 ! use exponential for for crown diameter when height_model - 1 or 2
+!!!!!!!!!!!!
+!!!!!!!!!!!!else if (height_model .eq. 3) then
+!!!!!!!!!!!!    ! Naslund
+!!!!!!!!!!!!    !DrelBiasheight(:) = 0.5d0 * (  &
+!!!!!!!!!!!!    !( aH(:) * nH1(:) * (Ex(:) ** aH(:)) * ( (aH(:)-1)*nH1(:) - nH2(:)*(Ex(:) ** aH(:)) * (aH(:)+1)  ) ) / &
+!!!!!!!!!!!!    !( &
+!!!!!!!!!!!!    !( (nH1(:) + nH2(:)*(Ex(:) ** aH(:)) ) ** 2.d0) * &
+!!!!!!!!!!!!    !( Hd(:) * (nH1(:) + nH2(:)*(Ex(:) ** aH(:)) ) + (Ex(:) ** aH(:)) ) &
+!!!!!!!!!!!!    !) &
+!!!!!!!!!!!!    !) * CVdbhDistribution(:)**2.d0
+!!!!!!!!!!!!
+!!!!!!!!!!!!! numerical second derivative of Naslund form
+!!!!!!!!!!!!DrelBiasheight(:) = 0.5d0 * &
+!!!!!!!!!!!!(( Hd(:) + ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) &
+!!!!!!!!!!!!    - 2.0d0 &
+!!!!!!!!!!!!     * ( Hd(:) + ( dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) + &
+!!!!!!!!!!!!    + ( Hd(:) + ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) ) &
+!!!!!!!!!!!!   / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
+!!!!!!!!!!!!   * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
+!!!!!!!!!!!!
+!!!!!!!!!!!!    DrelBiasLCL(:) = 0.d0
+!!!!!!!!!!!!
+!!!!!!!!!!!!    DrelBiasCrowndiameter(:) = 0.5d0 * &
+!!!!!!!!!!!!(( ( (dbh(:) + max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) &
+!!!!!!!!!!!!    - 2.0d0 &
+!!!!!!!!!!!!     * ( ( dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) + &
+!!!!!!!!!!!!    + ( ( (dbh(:) - max(1.0d-4 * dbh(:), 1.0d-6)) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) ) &
+!!!!!!!!!!!!   / (max(1.0d-4 * dbh(:), 1.0d-6)*max(1.0d-4 * dbh(:), 1.0d-6)) &
+!!!!!!!!!!!!   * (CVdbhDistribution(:) * dbh(:)) ** 2.d0
+!!!!!!!!!!!!
+!!!!!!!!!!!!end if
 
-            DrelBiasBasArea(:) = 0.5d0 * (2.d0 * (2.d0 - 1.d0)) * CVdbhDistribution(:) ** 2.d0
 
 
-            ! prevent unrealisticly large bias, by restricting it to within + or - 50%
-            DrelBiaspFS(:) = p_min_max( DrelBiaspFS(:), -0.5d0, 0.5d0, n_sp)
-            DrelBiasheight(:) = p_min_max( DrelBiasheight(:), -0.5d0, 0.5d0, n_sp)
-            DrelBiasBasArea(:) = p_min_max( DrelBiasBasArea(:), -0.5d0, 0.5d0, n_sp)
-            DrelBiasLCL(:) = p_min_max( DrelBiasLCL(:), -0.5d0, 0.5d0, n_sp)
-            DrelBiasCrowndiameter(:) = p_min_max( DrelBiasCrowndiameter(:), -0.5d0, 0.5d0, n_sp)
+            !!!!!!!!!!!!!!!DrelBiasBasArea(:) = 0.5d0 * (2.d0 * (2.d0 - 1.d0)) * CVdbhDistribution(:) ** 2.d0
+!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!! prevent unrealisticly large bias, by restricting it to within + or - 50%
+            !!!!!!!!!!!!!!!DrelBiaspFS(:) = p_min_max( DrelBiaspFS(:), -0.5d0, 0.5d0, n_sp)
+            !!!!!!!!!!!!!!!DrelBiasheight(:) = p_min_max( DrelBiasheight(:), -0.5d0, 0.5d0, n_sp)
+            !!!!!!!!!!!!!!!DrelBiasBasArea(:) = p_min_max( DrelBiasBasArea(:), -0.5d0, 0.5d0, n_sp)
+            !!!!!!!!!!!!!!!DrelBiasLCL(:) = p_min_max( DrelBiasLCL(:), -0.5d0, 0.5d0, n_sp)
+            !!!!!!!!!!!!!!!DrelBiasCrowndiameter(:) = p_min_max( DrelBiasCrowndiameter(:), -0.5d0, 0.5d0, n_sp)
 
 
-            ! Calculate the biom_stem scale -------------------
-            wsWeibullScale(:) = Exp( wsscale0(:) + wsscaleB(:) * Log(dbh(:)) + wsscalerh(:) * Log(height_rel(:)) + &
-                wsscalet(:) * Log(age(:)) + wsscaleC(:) * Log(competition_total(:)))
+            !!!!!!!!!!!!!!!! Calculate the biom_stem scale -------------------
+            !!!!!!!!!!!!!!!wsWeibullScale(:) = Exp( wsscale0(:) + wsscaleB(:) * Log(dbh(:)) + wsscalerh(:) * Log(height_rel(:)) + &
+            !!!!!!!!!!!!!!!    wsscalet(:) * Log(age(:)) + wsscaleC(:) * Log(competition_total(:)))
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!wsWeibullShape(:) = Exp( wsshape0(:) + wsshapeB(:) * Log(dbh(:)) + wsshaperh(:) * Log(height_rel(:)) + &
+            !!!!!!!!!!!!!!!    wsshapet(:) * Log(age(:)) + wsshapeC(:) * Log(competition_total(:)))
+            !!!!!!!!!!!!!!!wsWeibullShape_gamma = f_gamma_dist(1.d0 + 1.d0 / wsWeibullShape(:), n_sp)
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!wsWeibullLocation(:) = Exp( wslocation0(:) + wslocationB(:) * Log(dbh(:)) + &
+            !!!!!!!!!!!!!!!        wslocationrh(:) * Log(height_rel(:)) + wslocationt(:) * Log(age(:)) + &
+            !!!!!!!!!!!!!!!        wslocationC(:) * Log(competition_total(:)))
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!where( wslocation(:) == 0.d0 )
+            !!!!!!!!!!!!!!!    wsWeibullLocation(:) = NINT(biom_tree(:)) / 10.d0 - 1.d0 - wsWeibullScale(:) * wsWeibullShape_gamma(:)
+            !!!!!!!!!!!!!!!end where
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!where( wsWeibullLocation(:) < 0.01d0 ) wsWeibullLocation(:) = 0.01d0
+!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!Ex(:) = wsWeibullLocation(:) + wsWeibullScale(:) * wsWeibullShape_gamma
+            !!!!!!!!!!!!!!!!now convert the Ex from weibull scale to actual scale of diameter units in cm
+            !!!!!!!!!!!!!!!Varx(:) = wsWeibullScale(:) ** 2.d0 * (f_gamma_dist(1.d0 + 2.d0 / wsWeibullShape(:), n_sp) - &
+            !!!!!!!!!!!!!!!    wsWeibullShape_gamma ** 2.d0)
+            !!!!!!!!!!!!!!!CVwsDistribution(:) = Varx(:) ** 0.5d0 / Ex(:)
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!wsrelBias(:) = 0.5d0 * (1.d0 / nWs(:) * (1.d0 / nWs(:) - 1.d0)) * CVwsDistribution(:) ** 2.d0 !DF the nWS is replaced with 1/nWs because the equation is inverted to predict dbh from ws, instead of ws from dbh
+!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!wsrelBias(:) = p_min_max( wsrelBias(:), -0.5d0, 0.5d0, n_sp)
 
-            wsWeibullShape(:) = Exp( wsshape0(:) + wsshapeB(:) * Log(dbh(:)) + wsshaperh(:) * Log(height_rel(:)) + &
-                wsshapet(:) * Log(age(:)) + wsshapeC(:) * Log(competition_total(:)))
-            wsWeibullShape_gamma = f_gamma_dist(1.d0 + 1.d0 / wsWeibullShape(:), n_sp)
-
-            wsWeibullLocation(:) = Exp( wslocation0(:) + wslocationB(:) * Log(dbh(:)) + &
-                    wslocationrh(:) * Log(height_rel(:)) + wslocationt(:) * Log(age(:)) + &
-                    wslocationC(:) * Log(competition_total(:)))
-
-            where( wslocation(:) == 0.d0 )
-                wsWeibullLocation(:) = NINT(biom_tree(:)) / 10.d0 - 1.d0 - wsWeibullScale(:) * wsWeibullShape_gamma(:)
-            end where
-
-            where( wsWeibullLocation(:) < 0.01d0 ) wsWeibullLocation(:) = 0.01d0
+        !else
+        !!!!!!!!!    DrelBiaspFS(:) = 0.d0
+        !!!!!!!!!    DrelBiasBasArea(:) = 0.d0
+        !!!!!!!!!    DrelBiasheight(:) = 0.d0
+        !!!!!!!!!    DrelBiasLCL(:) = 0.d0
+        !!!!!!!!!    DrelBiasCrowndiameter(:) = 0.d0
+        !!!!!!!!!    wsrelBias(:) = 0.d0
+        !end if
 
 
-            Ex(:) = wsWeibullLocation(:) + wsWeibullScale(:) * wsWeibullShape_gamma
-            !now convert the Ex from weibull scale to actual scale of diameter units in cm
-            Varx(:) = wsWeibullScale(:) ** 2.d0 * (f_gamma_dist(1.d0 + 2.d0 / wsWeibullShape(:), n_sp) - &
-                wsWeibullShape_gamma ** 2.d0)
-            CVwsDistribution(:) = Varx(:) ** 0.5d0 / Ex(:)
 
-            wsrelBias(:) = 0.5d0 * (1.d0 / nWs(:) * (1.d0 / nWs(:) - 1.d0)) * CVwsDistribution(:) ** 2.d0 !DF the nWS is replaced with 1/nWs because the equation is inverted to predict dbh from ws, instead of ws from dbh
 
-            wsrelBias(:) = p_min_max( wsrelBias(:), -0.5d0, 0.5d0, n_sp)
 
-        else
-            DrelBiaspFS(:) = 0.d0
-            DrelBiasBasArea(:) = 0.d0
-            DrelBiasheight(:) = 0.d0
-            DrelBiasLCL(:) = 0.d0
-            DrelBiasCrowndiameter(:) = 0.d0
-            wsrelBias(:) = 0.d0
-        end if
+
+
+
+
+
+
 
         ! Correct for trees that have age 0 or are thinned (e.g. n_trees = 0)
-        where( age(:) .eq. 0.d0 .or. stems_n(:) .eq. 0.d0 )
-            DrelBiaspFS(:) = 0.d0
-            DrelBiasBasArea(:) = 0.d0
-            DrelBiasheight(:) = 0.d0
-            DrelBiasLCL(:) = 0.d0
-            DrelBiasCrowndiameter(:) = 0.d0
-            wsrelBias(:) = 0.d0
-        end where
+        !!!!!!!!!!!!!where( age(:) .eq. 0.d0 .or. stems_n(:) .eq. 0.d0 )
+        !!!!!!!!!!!!!    DrelBiaspFS(:) = 0.d0
+        !!!!!!!!!!!!!    DrelBiasBasArea(:) = 0.d0
+        !!!!!!!!!!!!!    DrelBiasheight(:) = 0.d0
+        !!!!!!!!!!!!!    DrelBiasLCL(:) = 0.d0
+        !!!!!!!!!!!!!    DrelBiasCrowndiameter(:) = 0.d0
+        !!!!!!!!!!!!!    wsrelBias(:) = 0.d0
+        !!!!!!!!!!!!!end where
 
         ! Correct for bias ------------------
-        dbh(:) = (biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:)) * (1.d0 + wsrelBias(:))
-        basal_area(:) = ( dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0) * (1.d0 + DrelBiasBasArea(:))
+        dbh(:) = (biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:)) !!!!!!!* (1.d0 + wsrelBias(:))
+        basal_area(:) = ( dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0) !!!!!!!* (1.d0 + DrelBiasBasArea(:))
 
         if( height_model .eq. 1 ) then
 
-            height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)) * (1.d0 + DrelBiasheight(:))
+            height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total(:) ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
 
             crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total(:) ** nHL3(:) * &
-                height_rel(:) ** nHL4(:)) * (1.d0 + DrelBiasLCL(:))
+                height_rel(:) ** nHL4(:)) !!!!!!!* (1.d0 + DrelBiasLCL(:))
 
             crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total(:) ** nK3(:) * &
-                      height_rel(:) ** nK4(:)) * (1.d0 + DrelBiasCrowndiameter(:))
+                      height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
 
         else if ( height_model .eq. 2 ) then
 
-            height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total(:) * dbh(:) ) * &
-                      (1.d0 + DrelBiasheight(:)) !20251114
-            crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total(:) * dbh(:) ) * &
-                      (1.d0 + DrelBiasheight(:)) !20251114
+            height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total(:) * dbh(:) ) !!!!!!!* &
+                      !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
+            crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total(:) * dbh(:) ) !!!!!!!* &
+                      !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
 
             crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total(:) ** nK3(:) * &
-                    height_rel(:) ** nK4(:)) * (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
+                    height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
 
         else if ( height_model .eq. 3 ) then
-            height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) * (1.d0 + DrelBiasheight(:)) !20251114
+            height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) !!!!!!!* (1.d0 + DrelBiasheight(:)) !20251114
             crown_length(:) = aHL(:) * height(:) !20251114
 
-            crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) * &
-                      (1.d0 + DrelBiasCrowndiameter(:)) !20251114
+            crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) !!!!!!!* &
+                      !!!!!!!(1.d0 + DrelBiasCrowndiameter(:)) !20251114
 
         end if
 
@@ -2994,7 +3005,7 @@ end if
 
 
 
-        pFS(:) = ( pfsConst(:) * dbh(:) ** pfsPower(:)) * (1.d0 + DrelBiaspFS(:))
+        pFS(:) = ( pfsConst(:) * dbh(:) ** pfsPower(:)) !!!!!!!* (1.d0 + DrelBiaspFS(:))
 
 
         ! check that the height and LCL allometric equations have not predicted that height - LCL < 0
@@ -3003,22 +3014,22 @@ end if
             crown_length(:) = height(:)
         end where
 
-        ! output the matrix of biasses
+        ! output the matrix of bias values
         bias_scale(1,:) = DWeibullScale(:)
         bias_scale(2,:) = DWeibullShape(:)
         bias_scale(3,:) = DWeibullLocation(:)
-        bias_scale(4,:) = wsWeibullScale(:)
-        bias_scale(5,:) = wsWeibullShape(:)
-        bias_scale(6,:) = wsWeibullLocation(:)
-        bias_scale(7,:) = CVdbhDistribution(:)
-        bias_scale(8,:) = CVwsDistribution(:)
-        bias_scale(9,:) = wsrelBias(:)
-        bias_scale(10,:) = DrelBiaspFS(:)
-        bias_scale(11,:) = DrelBiasheight(:)
-        bias_scale(12,:) = DrelBiasBasArea(:)
-        bias_scale(13,:) = DrelBiasLCL(:)
-        bias_scale(14,:) = DrelBiasCrowndiameter(:)
-        bias_scale(15,:) = height_rel
+!!!!!!        bias_scale(4,:) = wsWeibullScale(:)
+!!!!!!        bias_scale(5,:) = wsWeibullShape(:)
+!!!!!!        bias_scale(6,:) = wsWeibullLocation(:)
+!!!!!!        bias_scale(7,:) = CVdbhDistribution(:)
+!!!!!!        bias_scale(8,:) = CVwsDistribution(:)
+!!!!!!        bias_scale(9,:) = wsrelBias(:)
+!!!!!!        bias_scale(10,:) = DrelBiaspFS(:)
+!!!!!!        bias_scale(11,:) = DrelBiasheight(:)
+!!!!!!        bias_scale(12,:) = DrelBiasBasArea(:)
+!!!!!!        bias_scale(13,:) = DrelBiasLCL(:)
+!!!!!!        bias_scale(14,:) = DrelBiasCrowndiameter(:)
+        bias_scale(4,:) = height_rel
 
 
     end subroutine s_sizeDist_correct
