@@ -2721,7 +2721,7 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: age
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: stems_n
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: biom_tree
-        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: competition_total
+        real(kind=kind(0.0d0)), intent(in) :: competition_total
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
 
         ! parameters
