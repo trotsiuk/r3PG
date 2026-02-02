@@ -290,7 +290,7 @@ dbh_total_prev = dbh_total
                if ( nH3(i) < 1.0e-4 .and. nH4(i) < 1.0e-4 ) then
                    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i))) !20251114
                else
-                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH1(i)*competition_total(i)) + &
+                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total(i)) + &
                         Exp(nH2(i) + nH4(i)*competition_total(i)) * (dbh(i) ** aH(i))  ) !20251114
                end if
             end do
