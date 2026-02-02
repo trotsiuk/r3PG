@@ -3029,7 +3029,7 @@ end if
 !!!!!!        bias_scale(12,:) = DrelBiasBasArea(:)
 !!!!!!        bias_scale(13,:) = DrelBiasLCL(:)
 !!!!!!        bias_scale(14,:) = DrelBiasCrowndiameter(:)
-        bias_scale(4,:) = height_rel
+        bias_scale(4,:) = height_rel(:)
 
 
     end subroutine s_sizeDist_correct
