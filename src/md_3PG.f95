@@ -3053,12 +3053,12 @@ height_rel2(:) = height(:) / mean_height
 open(newunit=unit_csv, file="sizeDist_output.csv", status="unknown", position="append", action="write")
 
 if (.not. header_written) then
-    write(unit_csv,'(A)') "i,bias_scale(1),...,bias_scale(15)"
+    write(unit_csv,'(A)') "i,height_rel,height_rel2,bias_scale(4)"
     header_written = .true.
 end if
 
 do i = 1, n_sp
-    write(unit_csv,'(I4, 1X, 15E15.7)') i, bias_scale(:,i)
+    write(unit_csv,'(I4, 3(1X, E15.7))') i, height_rel(i), height_rel2(i), bias_scale(4,i)
 end do
 
 close(unit_csv)
