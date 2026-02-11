@@ -3350,12 +3350,25 @@ end if
                   else if ( height_model .eq. 3 ) then
                       do i = 1, n_sp
                           if (.not. is_new(i)) cycle
-                              if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-                                  height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
+                              !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
+                              !    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
+                              !else
+                              !    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &
+                              !         Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  )
+                              !end if
+                              if (nH3(i) < 1.0e-5) then
+                                  if (nH4(i) < 1.0e-5) then
+                                      height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
+                                  else
+                                      height(i) = Hd(i) + (dbh(i) ** aH(i)) / (Exp(nH1(i) + nH3(i)*competition_total) + &
+                                                   Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i)))
+                                  end if
                               else
-                                  height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &
-                                       Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  )
+                                  height(i) = Hd(i) + (dbh(i) ** aH(i)) / (Exp(nH1(i) + nH3(i)*competition_total) + &
+                                               Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i)))
                               end if
+
+
 
                       end do
                   end if
@@ -3383,12 +3396,27 @@ end if
                   else if ( crown_width_model .eq. 3 ) then
                       do i = 1, n_sp
                           if (.not. is_new(i)) cycle
-                              if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-                                  crown_width(i) = (dbh(i) ** aK(i)) / (nK1(i) + nK2(i) * (dbh(i) ** aK(i)))
+                              !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
+                              !    crown_width(i) = (dbh(i) ** aK(i)) / (nK1(i) + nK2(i) * (dbh(i) ** aK(i)))
+                              !else
+                              !    crown_width(i) = (dbh(i) ** aK(i)) / (  Exp(nK1(i) + nK3(i)*competition_total) + &
+                              !         Exp(nK2(i) + nK4(i)*competition_total) * (dbh(i) ** aK(i))  )
+                              !end if
+
+                              if (nK3(i) < 1.0e-5) then
+                                  if (nK4(i) < 1.0e-5) then
+                                      crown_width(i) = (dbh(i) ** aK(i)) / (nK1(i) + nK2(i) * (dbh(i) ** aK(i)))
+                                  else
+                                      crown_width(i) = (dbh(i) ** aK(i)) / (Exp(nK1(i) + nK3(i)*competition_total) + &
+                                                    Exp(nK2(i) + nK4(i)*competition_total) * (dbh(i) ** aK(i)))
+                                  end if
                               else
-                                  crown_width(i) = (dbh(i) ** aK(i)) / (  Exp(nK1(i) + nK3(i)*competition_total) + &
-                                       Exp(nK2(i) + nK4(i)*competition_total) * (dbh(i) ** aK(i))  )
+                                  crown_width(i) = (dbh(i) ** aK(i)) / (Exp(nK1(i) + nK3(i)*competition_total) + &
+                                                Exp(nK2(i) + nK4(i)*competition_total) * (dbh(i) ** aK(i)))
                               end if
+
+
+
 
                       end do
                   end if
@@ -3474,15 +3502,34 @@ end if
                   else if ( height_model .eq. 3 ) then
                       do i = 1, n_sp
                          if (.not. is_new(i)) cycle
-                             if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-                                 height(i) = height(i) + ( aH(i) * nH1(i) * dbh(i) ** (aH(i) - 1) ) / &
-                                              (( nH1(i) + nH2(i) * dbh(i) ** aH(i) ) ** 2) * ( dbh(i) - dbh_prev(i) )
+                             !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
+                             !    height(i) = height(i) + ( aH(i) * nH1(i) * dbh(i) ** (aH(i) - 1) ) / &
+                             !                 (( nH1(i) + nH2(i) * dbh(i) ** aH(i) ) ** 2) * ( dbh(i) - dbh_prev(i) )
+                             !else
+                             !    height(i) = height(i) + ( aH(i) * Exp(nH1(i) + nH3(i) * competition_total) * &
+                             !                 dbh(i) ** (aH(i) - 1) ) / ((Exp(nH1(i) + nH3(i) * competition_total) + &
+                             !                 Exp(nH2(i) + nH4(i) * competition_total) * dbh(i) ** aH(i) ) ** 2) * &
+                             !                 ( dbh(i) - dbh_prev(i) )
+                             !end if
+
+                             if (nH3(i) < 1.0e-5) then
+                                 if (nH4(i) < 1.0e-5) then
+                                     height(i) = height(i) + (aH(i) * nH1(i) * dbh(i) ** (aH(i) - 1)) / &
+                                                  ((nH1(i) + nH2(i) * dbh(i) ** aH(i)) ** 2) * (dbh(i) - dbh_prev(i))
+                                 else
+                                     height(i) = height(i) + (aH(i) * Exp(nH1(i) + nH3(i) * competition_total) * &
+                                                  dbh(i) ** (aH(i) - 1)) / ((Exp(nH1(i) + nH3(i) * competition_total) + &
+                                                  Exp(nH2(i) + nH4(i) * competition_total) * dbh(i) ** aH(i)) ** 2) * &
+                                                  (dbh(i) - dbh_prev(i))
+                                 end if
                              else
-                                 height(i) = height(i) + ( aH(i) * Exp(nH1(i) + nH3(i) * competition_total) * &
-                                              dbh(i) ** (aH(i) - 1) ) / ((Exp(nH1(i) + nH3(i) * competition_total) + &
-                                              Exp(nH2(i) + nH4(i) * competition_total) * dbh(i) ** aH(i) ) ** 2) * &
-                                              ( dbh(i) - dbh_prev(i) )
+                                 height(i) = height(i) + (aH(i) * Exp(nH1(i) + nH3(i) * competition_total) * &
+                                              dbh(i) ** (aH(i) - 1)) / ((Exp(nH1(i) + nH3(i) * competition_total) + &
+                                              Exp(nH2(i) + nH4(i) * competition_total) * dbh(i) ** aH(i)) ** 2) * &
+                                              (dbh(i) - dbh_prev(i))
                              end if
+
+
                       end do
                   end if
 
@@ -3490,12 +3537,22 @@ end if
                   lai_total = sum( lai(:) )
 
                   ! initial live-crown ratio
-                  where (is_new .and. dbh(:) > 0.0d0 .and. aHL(:) > 0.0d0)
-                  !where (aHL(:) > 0.0d0)
-                      crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
-                                       lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
-                                       ( dbh(:) - dbh_prev(:) )
-                      crown_length(:) = crown_ratio(:) * height(:)
+                  !where (is_new .and. dbh(:) > 0.0d0 .and. aHL(:) > 0.0d0)
+                  !    crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
+                  !                     lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
+                  !                     ( dbh(:) - dbh_prev(:) )
+                  !    crown_length(:) = crown_ratio(:) * height(:)
+                  !end where
+
+                  where (is_new)
+                      where (dbh(:) > 0.0d0)
+                          where (aHL(:) > 0.0d0)
+                              crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
+                                               lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
+                                               (dbh(:) - dbh_prev(:))
+                              crown_length(:) = crown_ratio(:) * height(:)
+                          end where
+                      end where
                   end where
 
                   ! initial crown width
@@ -3512,15 +3569,34 @@ end if
                   else if ( crown_width_model .eq. 3 ) then
                       do i = 1, n_sp
                           if (.not. is_new(i)) cycle
-                             if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-                                 crown_width(i) = crown_width(i) + ( aK(i) * nK1(i) * dbh(i) ** (aK(i) - 1) ) / &
-                                              (( nK1(i) + nK2(i) * dbh(i) ** aK(i) ) ** 2) * ( dbh(i) - dbh_prev(i) )
+                             !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
+                             !    crown_width(i) = crown_width(i) + ( aK(i) * nK1(i) * dbh(i) ** (aK(i) - 1) ) / &
+                             !                 (( nK1(i) + nK2(i) * dbh(i) ** aK(i) ) ** 2) * ( dbh(i) - dbh_prev(i) )
+                             !else
+                             !    crown_width(i) = crown_width(i) + ( aK(i) * Exp(nK1(i) + nK3(i) * competition_total) * &
+                             !                 dbh(i) ** (aK(i) - 1) ) / ((Exp(nK1(i) + nK3(i) * competition_total) + &
+                             !                 Exp(nK2(i) + nK4(i) * competition_total) * dbh(i) ** aK(i) ) ** 2) * &
+                             !                 ( dbh(i) - dbh_prev(i) )
+                             !end if
+
+                             if (nK3(i) < 1.0e-5) then
+                                 if (nK4(i) < 1.0e-5) then
+                                     crown_width(i) = crown_width(i) + (aK(i) * nK1(i) * dbh(i) ** (aK(i) - 1)) / &
+                                                      ((nK1(i) + nK2(i) * dbh(i) ** aK(i)) ** 2) * (dbh(i) - dbh_prev(i))
+                                 else
+                                     crown_width(i) = crown_width(i) + (aK(i) * Exp(nK1(i) + nK3(i) * competition_total) * &
+                                                      dbh(i) ** (aK(i) - 1)) / ((Exp(nK1(i) + nK3(i) * competition_total) + &
+                                                      Exp(nK2(i) + nK4(i) * competition_total) * dbh(i) ** aK(i)) ** 2) * &
+                                                      (dbh(i) - dbh_prev(i))
+                                 end if
                              else
-                                 crown_width(i) = crown_width(i) + ( aK(i) * Exp(nK1(i) + nK3(i) * competition_total) * &
-                                              dbh(i) ** (aK(i) - 1) ) / ((Exp(nK1(i) + nK3(i) * competition_total) + &
-                                              Exp(nK2(i) + nK4(i) * competition_total) * dbh(i) ** aK(i) ) ** 2) * &
-                                              ( dbh(i) - dbh_prev(i) )
+                                 crown_width(i) = crown_width(i) + (aK(i) * Exp(nK1(i) + nK3(i) * competition_total) * &
+                                                  dbh(i) ** (aK(i) - 1)) / ((Exp(nK1(i) + nK3(i) * competition_total) + &
+                                                  Exp(nK2(i) + nK4(i) * competition_total) * dbh(i) ** aK(i)) ** 2) * &
+                                                  (dbh(i) - dbh_prev(i))
                              end if
+
+
                       end do
                   end if
         end if
