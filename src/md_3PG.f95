@@ -1697,7 +1697,7 @@ end do
             competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
 
-
+hereherehere
 
 
 
@@ -1733,6 +1733,7 @@ end do
             biom_loss_foliage_manag(:) = 0.d0
 
             thin_cor(:) = .FALSE.
+            thin_defol_stress_cor = .FALSE.
 
             do i = 1, n_sp
 
@@ -1802,8 +1803,9 @@ end do
                                                    if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
                                                    biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
                                                    if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
-                                                   ! foliage and foliage_debt already clamped earlier
+
                                                    b_cor = .TRUE.
+                                                   thin_defol_stress_cor = .TRUE.
                                         end if
 
                                    end if
@@ -1850,8 +1852,10 @@ end do
                                             if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
                                             biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
                                             if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
-                                            ! foliage and foliage_debt already clamped earlier
+
                                             b_cor = .TRUE.
+                                            thin_defol_stress_cor = .TRUE.
+
                                        end if
                                    end if
 
@@ -1867,11 +1871,15 @@ end do
                                       !if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
                                    !
                                       !! foliage and foliage_debt already clamped earlier
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!this is probably now redundant
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     if ( managementInputs(t_n(i),3,i) /= 1.0d0 ) then
                                         thin_cor(i) = .TRUE.
                                     end if
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                                       !b_cor = .TRUE.
 
@@ -2073,6 +2081,7 @@ end if
                                     end if
 
                             b_cor = .TRUE.
+                            thin_defol_stress_cor = .TRUE.
 
                             d_n(i) = d_n(i) + 1
 
@@ -2113,6 +2122,7 @@ end if
                         biom_foliage(i) = biom_foliage(i) -  biom_loss_foliage_stress(i)
 
                         b_cor = .TRUE.
+                        thin_defol_stress_cor = .TRUE.
 
                     end if
                 end if
