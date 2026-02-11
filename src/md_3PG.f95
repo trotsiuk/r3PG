@@ -2147,11 +2147,23 @@ end if
                 b_cor = .FALSE.
             end if
 
-            ! Self-thinning / Density dependent related ------------------
 
-!biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-!dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-!basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+
+
+            ! Update stand structure if there was thinning, defoliation or stress-related mortality
+            if ( thin_defol_stress_cor .eqv. .TRUE. ) then
+
+                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+                basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+
+                thin_defol_stress_cor = .FALSE.
+
+            end if
+
+
+
+            ! Self-thinning / Density dependent related ------------------
 
 ! Initialize losses
 stems_loss_density(:)        = 0.d0
