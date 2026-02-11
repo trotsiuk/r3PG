@@ -1464,28 +1464,28 @@ end do
                                                manag_remove_prop_compartment(3) = manag_remove_prop * managementInputs(t_n(i),5,i)  ! foliage
 
 
-                                               ! clamp compartments to 0–1
-                                               if ( manag_remove_prop_compartment(1) < 0.d0 ) manag_remove_prop_compartment(1) = 0.d0
-                                               if (manag_remove_prop_compartment(1) > 1.d0 ) manag_remove_prop_compartment(1) = 1.d0
-                                               if ( manag_remove_prop_compartment(2) < 0.d0 ) manag_remove_prop_compartment(2) = 0.d0
-                                               if (manag_remove_prop_compartment(2) > 1.d0 ) manag_remove_prop_compartment(2) = 1.d0
-                                               if ( manag_remove_prop_compartment(3) < 0.d0 ) manag_remove_prop_compartment(3) = 0.d0
-                                               if (manag_remove_prop_compartment(3) > 1.d0 ) manag_remove_prop_compartment(3) = 1.d0
+                                          ! clamp compartments to 0–1
+                                          if ( manag_remove_prop_compartment(1) < 0.d0 ) manag_remove_prop_compartment(1) = 0.d0
+                                          if (manag_remove_prop_compartment(1) > 1.d0 ) manag_remove_prop_compartment(1) = 1.d0
+                                          if ( manag_remove_prop_compartment(2) < 0.d0 ) manag_remove_prop_compartment(2) = 0.d0
+                                          if (manag_remove_prop_compartment(2) > 1.d0 ) manag_remove_prop_compartment(2) = 1.d0
+                                          if ( manag_remove_prop_compartment(3) < 0.d0 ) manag_remove_prop_compartment(3) = 0.d0
+                                          if (manag_remove_prop_compartment(3) > 1.d0 ) manag_remove_prop_compartment(3) = 1.d0
 
 
                                                ! --- compute biomass losses ---
                                                biom_loss_stem_manag(i)   = biom_stem(i)   * manag_remove_prop_compartment(1)
                                                biom_loss_root_manag(i)   = biom_root(i)   * manag_remove_prop_compartment(2)
 
-                                                 if ( f_dormant(month, leafgrow(i), leaffall(i)) ) then
-                                                 biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
-                                                 biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
-                                                   if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
-                                                 else
-                                                   biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
-                                                 biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
-                                                   if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
-                                                 end if
+                                               if ( f_dormant(month, leafgrow(i), leaffall(i)) ) then
+                                               biom_loss_foliage_manag(i) = biom_foliage_debt(i) * manag_remove_prop_compartment(3)
+                                               biom_foliage_debt(i) = biom_foliage_debt(i) - biom_loss_foliage_manag(i)
+                                                 if ( biom_foliage_debt(i) < 0.d0 ) biom_foliage_debt(i) = 0.d0
+                                               else
+                                                 biom_loss_foliage_manag(i) = biom_foliage(i) * manag_remove_prop_compartment(3)
+                                               biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_manag(i)
+                                                 if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
+                                               end if
 
 
                                                    ! apply reductions
