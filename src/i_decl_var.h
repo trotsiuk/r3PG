@@ -163,6 +163,13 @@ integer :: month = 1
 integer :: b_n = 2                              ! how many times to iterate for bias correction
 integer :: n = 1                                ! count for bias correction
 logical :: b_cor = .TRUE.                            ! if something has changed and we need to correct bias
+logical :: calculate_states = .TRUE.                      ! calculate height and crown width or length using state equations
+!logical :: use_current = .TRUE.                           ! use current stand conditions when calculating height and crown width or length using state equations (otherwise use stand conditions from previous month)
+!logical :: calculate_distributions = .TRUE.              ! calculate diameter distribution Weibull parameters
+logical, dimension(n_sp) :: is_new                        ! identifies new cohorts when calculating height, crown width and crown length
+logical, dimension(n_sp) :: thin_cor                      ! if there was a thinning event where Sfraction was not 1, the dbh needs to be adjusted
+logical, dimension(n_sp) :: defol_cor                     ! if there was a defoliation event where Sfraction was not 1, the dbh needs to be adjusted
+
 
 ! Climatic variables -------------
 real(kind=kind(0.0d0)), dimension(12) :: adjSolarZenithAngle
@@ -191,8 +198,12 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: dbh_prev            ! average tree DB
 real(kind=kind(0.0d0)), dimension(n_sp) :: height         ! average tree height, m
 real(kind=kind(0.0d0)) :: Height_max
 
+real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel         ! average height of cohort divided by average height of all cohorts
+!real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_prev         ! height_rel of previous time step
+
 real(kind=kind(0.0d0)), dimension(n_sp) :: crown_length   !***DF mean live-crown length (m) of a species
 real(kind=kind(0.0d0)), dimension(n_sp) :: crown_width    ! ***DF mean crown diameter (m)
+real(kind=kind(0.0d0)), dimension(n_sp) :: crown_ratio    ! crown_length / height
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: volume
 real(kind=kind(0.0d0)), dimension(n_sp) :: volume_mai
@@ -209,7 +220,8 @@ real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: wood_density  ! Whole-tree basic
 
 ! Canopy variables ---------------
 real(kind=kind(0.0d0)), dimension(n_sp) :: LAI            ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation)
-real(kind=kind(0.0d0)), dimension(n_sp) :: lai_total      ! total competition of the forest
+!real(kind=kind(0.0d0)), dimension(n_sp) :: lai_total      ! total competition of the forest
+real(kind=kind(0.0d0)) :: lai_total      ! total competition of the forest
 real(kind=kind(0.0d0)), dimension(n_sp) :: LAI_per        ! species specific proportion of lai
 real(kind=kind(0.0d0)), dimension(n_sp) :: lai_above      ! leaf area above the given species
 real(kind=kind(0.0d0)), dimension(n_sp) :: canopy_vol_frac
@@ -228,6 +240,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_tree_max  ! Max. mean tree stem 
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_foliage
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_root
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_stem
+
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_foliage_def  ! increment due to use of non-structural carbohydrates following defoliation
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_stem_def     ! increment due to use of non-structural carbohydrates following defoliation
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage  ! Litter fall
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root
@@ -274,7 +289,8 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_npp    ! Light-use efficiency
 real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_biom_stem !Light-use efficiency based on stem biomass (increment in WS)
 real(kind=kind(0.0d0)), dimension(n_sp) :: GPP
 real(kind=kind(0.0d0)), dimension(n_sp) :: NPP
-real(kind=kind(0.0d0)), dimension(n_sp) :: NPP_f          ! the full NPP before substraction of depth
+!real(kind=kind(0.0d0)), dimension(n_sp) :: NPP_f          ! the full NPP before substraction of depth
+real(kind=kind(0.0d0)), dimension(n_sp) :: NPP_def          ! NPP from upregulation/non-structural carbohydrates forllowing defoliation
 real(kind=kind(0.0d0)), dimension(n_sp) :: gC
 real(kind=kind(0.0d0)), dimension(n_sp) :: conduct_canopy
 real(kind=kind(0.0d0)), dimension(n_sp) :: m
@@ -383,7 +399,9 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: D13CTissue
 
 ! Weibull -----------------------
 real(kind=kind(0.0d0)), dimension(4, n_sp) :: bias_scale
-
+real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullScale
+real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape
+real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullLocation
 
 ! Settings ----------------------
 integer :: light_model               !1 - 3PGpjs; 2 - 3PGmix 2 - 3PGmix
