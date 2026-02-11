@@ -1725,6 +1725,8 @@ end do
             biom_loss_root_manag(:) = 0.d0
             biom_loss_foliage_manag(:) = 0.d0
 
+            thin_cor(:) = .FALSE.
+
             do i = 1, n_sp
 
                 if( t_t(i) > 0 ) then
@@ -1859,7 +1861,9 @@ end do
                                    !
                                       !! foliage and foliage_debt already clamped earlier
 
-
+                                    if ( managementInputs(t_n(i),3,i) /= 1.0d0 ) then
+                                        thin_cor(i) = .TRUE.
+                                    end if
 
 
                                       !b_cor = .TRUE.
@@ -1910,6 +1914,7 @@ end do
             biom_loss_root_def(:) = 0.d0
             biom_loss_foliage_def(:) = 0.d0
             def_type(:) = 0
+            defol_cor(:) = .FALSE.
 
             do i = 1, n_sp
 
@@ -2055,6 +2060,10 @@ end if
                                 !end if
 
                             end if
+
+                                    if ( defoliationInputs(t_n(i),6,i) /= 1.0d0 ) then
+                                        defol_cor(i) = .TRUE.
+                                    end if
 
                             b_cor = .TRUE.
 
