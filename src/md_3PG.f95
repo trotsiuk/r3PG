@@ -1093,9 +1093,8 @@ end do
             end if
 
             ! correct for actual ET
-            GPP = GPP * f_transp_scale
-            NPP = NPP * f_transp_scale
-            NPP_f = NPP
+            GPP(:) = GPP(:) * f_transp_scale
+            NPP(:) = NPP(:) * f_transp_scale
 
 
             if ( transp_total > 0 .and. f_transp_scale < 1 ) then
@@ -1852,8 +1851,8 @@ end if
             dbh_total_prev = dbh_total !20251114
 
             ! Efficiency
-            epsilon_gpp(:) = 100 * gpp(:) / apar(:)
-            epsilon_npp(:) = 100 * npp_f(:) / apar(:)
+            epsilon_gpp(:) = 100 * GPP(:) / apar(:)
+            epsilon_npp(:) = 100 * NPP(:) / apar(:)
             epsilon_biom_stem(:) = 100 * biom_incr_stem(:) / apar(:)
 
             where( apar(:) .eq. 0.d0 )
