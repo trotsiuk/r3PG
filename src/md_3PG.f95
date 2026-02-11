@@ -1030,7 +1030,10 @@ end do
             ! Calculate each specie proportion
             lai_total = sum( lai(:) )
             lai_per(:) = lai(:) / lai_total
-            where( lai_total .eq. 0.d0 ) lai_per(:) = 0.d0
+            !where( lai_total .eq. 0.d0 ) lai_per(:) = 0.d0
+            do i = 1, n_sp
+                if (lai_total == 0.d0) lai_per(i) = 0.d0
+            end do
 
             ! Calculate conductance
             gC(:) = MaxCond(:)
