@@ -4234,7 +4234,7 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: crown_length
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: crown_width
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: pFS
-        real(kind=kind(0.0d0)), dimension(4, n_sp), intent(out) :: bias_scale
+        real(kind=kind(0.0d0)), dimension(4, n_sp) :: bias_scale
 
 
         ! Variables and parameters
