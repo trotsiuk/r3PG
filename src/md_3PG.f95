@@ -4495,7 +4495,7 @@ end if
         end if
 
 
-        where( lai(:) .eq. 0.d0 ) crown_width(:) = 0.d0
+        !where( lai(:) .eq. 0.d0 ) crown_width(:) = 0.d0
 
 
 
@@ -4534,9 +4534,9 @@ end if
 
         ! check that the height and LCL allometric equations have not predicted that height - LCL < 0
         ! and if so reduce LCL so that height - LCL = 0 (assumes height allometry is more reliable than LCL allometry)
-        where ( crown_length(:) > height(:) )
-            crown_length(:) = height(:)
-        end where
+        !where ( crown_length(:) > height(:) )
+        !    crown_length(:) = height(:)
+        !end where
 
         ! output the matrix of bias values
 !        bias_scale(1,:) = DWeibullScale(:)
