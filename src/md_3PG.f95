@@ -292,7 +292,7 @@ dbh_total_prev = dbh_total
                         height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
                     end if
                 end if
-               if( nH3(i) > 1.0e-5 .or. nH4(i) > 1.0e-5)
+               if( nH3(i) > 1.0e-5 .or. nH4(i) > 1.0e-5) then
                    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &
                         Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  ) !20251114
                end if
