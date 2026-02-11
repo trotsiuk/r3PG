@@ -4462,40 +4462,40 @@ end if
         !!!!!!!!!!!!!end where
 
         ! Correct for bias ------------------
-        dbh(:) = (biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:)) !!!!!!!* (1.d0 + wsrelBias(:))
-        basal_area(:) = ( dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0) !!!!!!!* (1.d0 + DrelBiasBasArea(:))
+        !dbh(:) = (biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:)) !!!!!!!* (1.d0 + wsrelBias(:))
+        !basal_area(:) = ( dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0) !!!!!!!* (1.d0 + DrelBiasBasArea(:))
 
-        !if( height_model .eq. 1 ) then
-!
-        !    height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
-!
-        !    crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total ** nHL3(:) * &
-        !        height_rel(:) ** nHL4(:)) !!!!!!!* (1.d0 + DrelBiasLCL(:))
-!
-        !    crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
-        !              height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
-!
-        !else if ( height_model .eq. 2 ) then
-!
-        !    height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) ) !!!!!!!* &
-        !              !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
-        !    crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total * dbh(:) ) !!!!!!!* &
-        !              !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
-!
-        !    crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
-        !            height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
-!
-        !else if ( height_model .eq. 3 ) then
-        !    height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) !!!!!!!* (1.d0 + DrelBiasheight(:)) !20251114
-        !    crown_length(:) = aHL(:) * height(:) !20251114
-!
-        !    crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) !!!!!!!* &
-        !              !!!!!!!(1.d0 + DrelBiasCrowndiameter(:)) !20251114
-!
-        !end if
-!
-!
-        !where( lai(:) .eq. 0.d0 ) crown_width(:) = 0.d0
+        if( height_model .eq. 1 ) then
+
+            height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
+
+            crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total ** nHL3(:) * &
+                height_rel(:) ** nHL4(:)) !!!!!!!* (1.d0 + DrelBiasLCL(:))
+
+            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
+                      height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
+
+        else if ( height_model .eq. 2 ) then
+
+            height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) ) !!!!!!!* &
+                      !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
+            crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total * dbh(:) ) !!!!!!!* &
+                      !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
+
+            crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
+                    height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
+
+        else if ( height_model .eq. 3 ) then
+            height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) !!!!!!!* (1.d0 + DrelBiasheight(:)) !20251114
+            crown_length(:) = aHL(:) * height(:) !20251114
+
+            crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) !!!!!!!* &
+                      !!!!!!!(1.d0 + DrelBiasCrowndiameter(:)) !20251114
+
+        end if
+
+
+        where( lai(:) .eq. 0.d0 ) crown_width(:) = 0.d0
 
 
 
