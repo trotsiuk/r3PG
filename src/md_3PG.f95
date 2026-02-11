@@ -1014,7 +1014,9 @@ end do
             where( lai(:) == 0.d0 ) alpha_c(:) = 0.d0
             epsilon(:) = gDM_mol * molPAR_MJ * alpha_c(:)
             GPP(:) = epsilon(:) * apar(:) / 100        ! tDM/ha (apar is MJ/m^2)
-            NPP(:) = GPP(:) * y(:)                       ! assumes respiratory rate is constant
+            NPP(:) = GPP(:) * y(:) + biom_incr_foliage_def(:) + biom_incr_stem_def(:)    ! assumes respiratory rate is constant
+            ! the biom_incr_foliage_def and biom_incr_stem_def are reallocation of non-structural carbohydrates to NPP and therefore should not be added to GPP, which is C aquisition
+
 
 
 
