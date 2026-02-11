@@ -2002,16 +2002,36 @@ end if
 
         ! This is called if the leafgrow parameter is not 0, and hence the species is Deciduous
         ! This is true if "currentmonth" is part of the dormant season
-        if ( leafgrow > leaffall ) then
-            ! check which hemisphere
-            if  ( month >= leaffall .and. month <= leafgrow ) then ! growing at winter
-                out = .TRUE.
+        !if ( leafgrow > leaffall ) then
+        !    ! check which hemisphere
+        !    if  ( month >= leaffall .and. month <= leafgrow ) then ! growing at winter
+        !        out = .TRUE.
+        !    end if
+        !else if ( leafgrow < leaffall ) then
+        !    if ( month < leafgrow .or. month >= leaffall ) then ! growing at summer
+        !        out = .TRUE.
+        !    end if
+        !end if
+
+        if (leafgrow > leaffall) then
+            ! Check which hemisphere (southern hemisphere)
+            if (month >= leaffall) then
+                if (month <= leafgrow) then
+                    out = .TRUE.
+                end if
             end if
-        else if ( leafgrow < leaffall ) then
-            if ( month < leafgrow .or. month >= leaffall ) then ! growing at summer
+        else if (leafgrow < leaffall) then
+            ! northern hemisphere
+            if (month < leafgrow) then
                 out = .TRUE.
+            else
+                if (month >= leaffall) then
+                    out = .TRUE.
+                end if
             end if
         end if
+
+
 
     end function f_dormant
 
