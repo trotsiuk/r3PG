@@ -4539,9 +4539,9 @@ end if
         end where
 
         ! output the matrix of bias values
-        bias_scale(1,:) = DWeibullScale(:)
-        bias_scale(2,:) = DWeibullShape(:)
-        bias_scale(3,:) = DWeibullLocation(:)
+!        bias_scale(1,:) = DWeibullScale(:)
+!        bias_scale(2,:) = DWeibullShape(:)
+!        bias_scale(3,:) = DWeibullLocation(:)
 !!!!!!        bias_scale(4,:) = wsWeibullScale(:)
 !!!!!!        bias_scale(5,:) = wsWeibullShape(:)
 !!!!!!        bias_scale(6,:) = wsWeibullLocation(:)
@@ -4553,7 +4553,7 @@ end if
 !!!!!!        bias_scale(12,:) = DrelBiasBasArea(:)
 !!!!!!        bias_scale(13,:) = DrelBiasLCL(:)
 !!!!!!        bias_scale(14,:) = DrelBiasCrowndiameter(:)
-        bias_scale(4,:) = height_rel(:)
+!        bias_scale(4,:) = height_rel(:)
 
 
 
