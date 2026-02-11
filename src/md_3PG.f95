@@ -1866,8 +1866,11 @@ end do
                 height(i), crown_width(i), crown_ratio(i), crown_length(i)
         end do
     end if
+   ! ==========================================================
 
-end if   ! <-- closes if( any(age(ii,:) >= 0.d0) )
+
+
+
 
 
 
