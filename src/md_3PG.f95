@@ -1697,7 +1697,7 @@ end do
             competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
 
-hereherehere
+!hereherehere
 
 
 
