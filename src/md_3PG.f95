@@ -1207,19 +1207,26 @@ end do
             !biom_incr_foliage_def(:) = biom_incr_foliage_def(:) * f_transp_scale
             !biom_incr_stem_def(:) = biom_incr_stem_def(:) * f_transp_scale
 
-            if ( transp_total > 0 .and. f_transp_scale < 1 ) then
+
+            if ( transp_total > 0 ) then
+                if(f_transp_scale < 1 ) then
                 ! a different scaler is required for transpiration because all of the scaling needs
                 ! to be done to the transpiration and not to the RainIntcpth, which occurs regardless of the growth
                 transp_veg(:) = (evapo_transp - prcp_interc_total) / transp_total * transp_veg(:)
                 evapotra_soil = (evapo_transp - prcp_interc_total) / transp_total * evapotra_soil
+                end if
             end if
 
 
             ! NEED TO CROSS CHECK THIS PART, DON'T FULLY AGREE WITH IT
-            if ( evapo_transp /= 0.d0 .and. n_sp == 1 ) then
-                ! in case ET is zero! Also, for mixtures it is not possible to calculate WUE based on
-                ! ET because the soil evaporation cannot simply be divided between species.
-                WUE(:) = 100.d0 * NPP(:) / evapo_transp
+            if (evapo_transp /= 0.d0) then
+                if (n_sp == 1) then
+                    ! in case ET is zero! Also, for mixtures it is not possible to calculate WUE based on
+                    ! ET because the soil evaporation cannot simply be divided between species.
+                    WUE(:) = 100.d0 * NPP(:) / evapo_transp
+                else
+                    WUE(:) = 0.d0
+                end if
             else
                 WUE(:) = 0.d0
             end if
