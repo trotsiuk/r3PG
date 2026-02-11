@@ -44,6 +44,9 @@ biom_incr_root(:) = 0.d0
 biom_incr_stem(:) = 0.d0
 biom_foliage_debt(:) = 0.d0
 
+biom_incr_foliage_def(:) = 0.d0
+biom_incr_stem_def(:) = 0.d0
+
 ! Modifiers ---------------
 f_age(:,:) = 0.d0
 f_vpd(:) = 0.d0
@@ -60,7 +63,7 @@ f_transp_scale = 0.d0
 ! Production ---------------
 gpp(:) = 0.d0
 npp(:) = 0.d0
-npp_f(:) = 0.d0
+!npp_f(:) = 0.d0
 apar(:) = 0.d0
 fi(:) = 0.d0
 alpha_c(:) = 0.d0
