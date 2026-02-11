@@ -21,7 +21,7 @@ output(ii,:,2,3) = basal_area(:)
 output(ii,:,2,4) = basal_area_prop(:)
 output(ii,:,2,5) = dbh(:)
 output(ii,:,2,6) = height(:)
-output(ii,:,2,7) = bias_scale(4,:) ! relative height
+output(ii,:,2,7) = height_rel(:) ! relative height
 output(ii,:,2,8) = crown_length(:)
 output(ii,:,2,9) = crown_width(:)
 output(ii,:,2,10) = volume(:)
@@ -55,6 +55,8 @@ output(ii,:,4,8) = biom_loss_root(:)
 output(ii,:,4,9) = biom_incr_foliage(:)
 output(ii,:,4,10) = biom_incr_root(:)
 output(ii,:,4,11) = biom_incr_stem(:)
+output(ii,:,4,12) = biom_incr_foliage_def(:)
+output(ii,:,4,13) = biom_incr_stem_def(:)
 
 ! Modifiers ---------------
 output(ii,:,5,1) = f_age(ii,:)
@@ -72,7 +74,7 @@ output(ii,:,5,12) = f_transp_scale
 
 ! Production ---------------
 output(ii,:,6,1) = gpp(:)
-output(ii,:,6,2) = npp_f(:)
+output(ii,:,6,2) = npp(:)
 output(ii,:,6,3) = apar(:)
 output(ii,:,6,4) = fi(:)
 output(ii,:,6,5) = alpha_c(:)
@@ -122,9 +124,9 @@ output(ii,:,9,4) = D13CTissue(:)
 output(ii,:,9,5) = InterCi(:) * 1000000.d0
 
 ! Weibull ---------------------
-output(ii,:,10,1) = bias_scale(1,:)
-output(ii,:,10,2) = bias_scale(2,:)
-output(ii,:,10,3) = bias_scale(3,:)
+output(ii,:,10,1) = DWeibullScale(1,:)
+output(ii,:,10,2) = DWeibullShape(2,:)
+output(ii,:,10,3) = DWeibullLocation(3,:)
 !!!!!output(ii,:,10,4) = bias_scale(4,:)
 !!!!!output(ii,:,10,5) = bias_scale(5,:)
 !!!!!output(ii,:,10,6) = bias_scale(6,:)
