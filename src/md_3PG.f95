@@ -50,6 +50,7 @@ contains
  integer :: t, sp, row, ios
  character(len=256) :: filenameP
  integer :: n_rows
+ logical, save :: csv_initialized = .false.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -1718,7 +1719,7 @@ end do
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                    if( height_model .eq. 1 ) then
+                  if( height_model .eq. 1 ) then
                       where (is_new)
                            height(:) = height(:) + aH(:) * nH1(:) * (dbh(:) ** (nH1(:) - 1)) * &
                                        ( competition_total ** nH2(:) ) * ( dbh(:) - dbh_prev(:) )
@@ -1832,6 +1833,42 @@ end do
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+    ! ==========================================================
+    ! ================== CSV DEBUG OUTPUT ======================
+    ! ==========================================================
+
+    filenameP = 'debug_height_crown_allometry_all.csv'
+
+    if (.not. csv_initialized) then
+        open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
+        if (ios /= 0) stop 'Error opening debug CSV'
+
+        write(400,'(A)') &
+            'timestep,species,age,dbh,dbh_prev,dbh_inc,height,crown_width,crown_ratio,crown_length'
+
+        csv_initialized = .true.
+    else
+        open(unit=400, file=filenameP, status='old', action='write', &
+             position='append', iostat=ios)
+        if (ios /= 0) stop 'Error appending debug CSV'
+    end if
+
+    do i = 1, n_sp
+        if (.not. is_new(i)) cycle
+
+        write(400,'(I6,1x,I6,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4)') &
+            ii, i, age(ii,i), &
+            dbh(i), dbh_prev(i), (dbh(i) - dbh_prev(i)), &
+            height(i), crown_width(i), crown_ratio(i), crown_length(i)
+    end do
+
+    close(400)
+
+
 
         end if
 
