@@ -292,9 +292,18 @@ dbh_total_prev = dbh_total
                         height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
                     end if
                 end if
-               if( nH3(i) > 1.0e-5 .or. nH4(i) > 1.0e-5) then
-                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &
-                        Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  ) !20251114
+               !if( nH3(i) > 1.0e-5 .or. nH4(i) > 1.0e-5) then
+               !    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &
+               !         Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  ) !20251114
+               !end if
+               if (nH3(i) > 1.0e-5) then
+                   height(i) = Hd(i) + (dbh(i) ** aH(i)) / (Exp(nH1(i) + nH3(i)*competition_total) + &
+                                Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i)))
+               else
+                   if (nH4(i) > 1.0e-5) then
+                       height(i) = Hd(i) + (dbh(i) ** aH(i)) / (Exp(nH1(i) + nH3(i)*competition_total) + &
+                                    Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i)))
+                   end if
                end if
             end do
         end if
@@ -1204,8 +1213,8 @@ end do
             NPP(:) = NPP(:) * f_transp_scale
 
             !! also adjust the defoliation-related components that have already been calculated independently
-            !biom_incr_foliage_def(:) = biom_incr_foliage_def(:) * f_transp_scale
-            !biom_incr_stem_def(:) = biom_incr_stem_def(:) * f_transp_scale
+            biom_incr_foliage_def(:) = biom_incr_foliage_def(:) * f_transp_scale
+            biom_incr_stem_def(:) = biom_incr_stem_def(:) * f_transp_scale
 
 
             if ( transp_total > 0 ) then
@@ -1374,16 +1383,16 @@ end do
                     biom_loss_root(i) = gammaR(i) * biom_root(i)
 
 
-                    ! Calculate biomass increments
-                    biom_incr_foliage(i) = NPP(i) * npp_fract_foliage(i)
-                    biom_incr_root(i) = NPP(i) * npp_fract_root(i)
-                    biom_incr_stem(i) = NPP(i) * npp_fract_stem(i)
+                    ! Calculate biomass increments (remove any non-structural carbohydrate contibutions - biom_incr_foliage_def & biom_incr_stem_def)
+                    biom_incr_foliage(i) = ( NPP(i) - biom_incr_foliage_def(i) - biom_incr_stem_def(i) ) * npp_fract_foliage(i)
+                    biom_incr_root(i) = ( NPP(i) - biom_incr_foliage_def(i) - biom_incr_stem_def(i) ) * npp_fract_root(i)
+                    biom_incr_stem(i) = ( NPP(i) - biom_incr_foliage_def(i) - biom_incr_stem_def(i) ) * npp_fract_stem(i)
 
 
                     ! Calculate end-of-month biomass
-                    biom_foliage(i) = biom_foliage(i) + biom_incr_foliage(i) - biom_loss_foliage(i)
+                    biom_foliage(i) = biom_foliage(i) + biom_incr_foliage(i) - biom_loss_foliage(i) + biom_incr_foliage_def(i)
                     biom_root(i) = biom_root(i) + biom_incr_root(i) - biom_loss_root(i)
-                    biom_stem(i) = biom_stem(i) + biom_incr_stem(i)
+                    biom_stem(i) = biom_stem(i) + biom_incr_stem(i) + biom_incr_stem_def(i)
 
                 end if
 
