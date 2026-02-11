@@ -2587,25 +2587,25 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
         ! volume between the top and bottom of a layer that is filled by crowns in that layer.
         ! We calculate it only for the trees that have LAI and are in that particular year. Thus the tree can be in that
         ! layer, but currently will not have LAI
+        do i = 1, nLayers
+            where ( layer_id(:) == i )
+                Height_max_l(:) = maxval(height(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
+                Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
+            end where
+        end do
+
+
+
         !do i = 1, nLayers
-        !    where ( layer_id(:) == i )
-        !        Height_max_l(:) = maxval(height(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
-        !        Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
+        !    ! Outer mask: select elements belonging to layer i
+        !    where (layer_id(:) == i)
+        !        ! Inner mask: further restrict to elements where lai(:) /= 0
+        !        where (lai(:) /= 0.d0)
+        !            Height_max_l(:) = maxval(height(:), mask=(layer_id(:) == i))
+        !            Heightcrown_min_l(:) = minval(Heightcrown(:), mask=(layer_id(:) == i))
+        !        end where
         !    end where
         !end do
-
-
-
-do i = 1, nLayers
-    ! Outer mask: select elements belonging to layer i
-    where (layer_id(:) == i)
-        ! Inner mask: further restrict to elements where lai(:) /= 0
-        where (lai(:) /= 0.d0)
-            Height_max_l(:) = maxval(height(:), mask=(layer_id(:) == i))
-            Heightcrown_min_l(:) = minval(Heightcrown(:), mask=(layer_id(:) == i))
-        end where
-    end where
-end do
 
 
         ! sum the canopy volume fraction per layer and save it at each species
