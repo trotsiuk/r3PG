@@ -710,7 +710,7 @@ close(400)
 
                       if( def_type(i) == 1 .or. def_type(i) == 3 ) then !prune or epicormic response
 
-                          if( leafgrow(i) == 0 ) then ! evergreen species
+                          if( leafgrow(i) < 1.0d-4 ) then ! evergreen species
 
                             if( def_recover_t(i) < 12.d0 ) then
                             biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / def_recover_t(i)
