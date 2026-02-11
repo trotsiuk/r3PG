@@ -1733,7 +1733,7 @@ end do
             biom_loss_foliage_manag(:) = 0.d0
 
             thin_cor(:) = .FALSE.
-            thin_defol_stress_cor = .FALSE.
+            !thin_defol_mort_cor = .FALSE.
 
             do i = 1, n_sp
 
@@ -1805,7 +1805,7 @@ end do
                                                    if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
 
                                                    b_cor = .TRUE.
-                                                   thin_defol_stress_cor = .TRUE.
+                                                   !thin_defol_mort_cor = .TRUE.
                                         end if
 
                                    end if
@@ -1854,7 +1854,7 @@ end do
                                             if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
 
                                             b_cor = .TRUE.
-                                            thin_defol_stress_cor = .TRUE.
+                                            !thin_defol_mort_cor = .TRUE.
 
                                        end if
                                    end if
@@ -2081,7 +2081,7 @@ end if
                                     end if
 
                             b_cor = .TRUE.
-                            thin_defol_stress_cor = .TRUE.
+                            !thin_defol_mort_cor = .TRUE.
 
                             d_n(i) = d_n(i) + 1
 
@@ -2122,7 +2122,7 @@ end if
                         biom_foliage(i) = biom_foliage(i) -  biom_loss_foliage_stress(i)
 
                         b_cor = .TRUE.
-                        thin_defol_stress_cor = .TRUE.
+                        !thin_defol_mort_cor = .TRUE.
 
                     end if
                 end if
@@ -2151,13 +2151,13 @@ end if
 
 
             ! Update stand structure if there was thinning, defoliation or stress-related mortality
-            if ( thin_defol_stress_cor .eqv. .TRUE. ) then
+            if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
 
                 biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
 
-                thin_defol_stress_cor = .FALSE.
+                !thin_defol_mort_cor = .FALSE.
 
             end if
 
@@ -2196,8 +2196,8 @@ lt_fPhys_ave = sum(lt_fPhys(:) * basal_area_prop(:))
 ! maximum tree biomass per cohort
 biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:))**thinPower(:)
 
-! skip density mortality if any management/stress mortality occurred
-if (sum(stems_loss_manag(:) + stems_loss_stress(:)) < 1.0e-6) then
+! skip density mortality if any thinning/defoliation/stress mortality occurred
+if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6) then
     do i = 1, n_sp
         if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
 
@@ -2298,6 +2298,17 @@ end if
                 b_cor = .FALSE.
             end if
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            ! Update stand structure if there was thinning, defoliation or stress-related mortality
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            if ( thin_defol_mort_cor .eqv. .TRUE. ) then
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                thin_defol_mort_cor = .FALSE.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            end if
 
 
             ! Additional calculations ------------------
