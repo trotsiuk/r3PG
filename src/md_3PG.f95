@@ -606,6 +606,7 @@ close(400)
               biom_stem(:) = biom_stem_i(:)
               biom_foliage(:) = biom_foliage_i(:)
               biom_root(:) = biom_root_i(:)
+              crown_ratio(:) = 1.d0
             end where
 
             if( any(age(ii,:) .eq. 0.d0) ) then
