@@ -790,7 +790,10 @@ close(400)
                           end if
 
 
-                          if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
+                          !if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
+                          if( leafgrow(i) > 1.0d-4 ) then
+
+                             if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
 
 
                                 ! calculate growing season length
@@ -820,6 +823,8 @@ close(400)
                                 end if
 
                                 b_cor = .TRUE.
+
+                             end if
 
                           end if
 
