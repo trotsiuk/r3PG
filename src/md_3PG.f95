@@ -792,6 +792,45 @@ close(400)
 
 
 
+            !xxx888
+            !if( any(age(ii,:) .eq. 0.d0) ) then
+            !  b_cor = .TRUE.
+            !end if
+
+
+
+            ! calculate partitioning parameter
+            do i = 1, n_sp
+                pFS(i) = ( pfsConst(i) * dbh(i) ** pfsPower(i))
+            end do
+
+
+
+            ! Test for dormancy ----------------------------------------------------------------------
+
+            do i = 1, n_sp
+            ! If this is first month after dormancy, get lai because it is required for PAR absorption.
+                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
+                    if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
+                        lai(i) =  biom_foliage_debt(i) * SLA(ii,i) * 0.1d0
+                        b_cor = .TRUE.
+                    end if
+                end if
+
+                ! If this is first dormant month, set WF to 0 and move everything to the biom_foliage_debt
+                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
+                    if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
+                        biom_foliage_debt(i) = biom_foliage(i)
+                        biom_foliage(i) = 0.d0
+                        lai(i) =  0.d0
+                        b_cor = .TRUE.
+                    end if
+                end if
+
+            end do
+
+
+
 
             !xxx888
             ! for new cohorts calculate initial height, crown width and crown length
@@ -911,42 +950,7 @@ close(400)
 
 
 
-            !xxx888
-            !if( any(age(ii,:) .eq. 0.d0) ) then
-            !  b_cor = .TRUE.
-            !end if
 
-
-
-            ! calculate partitioning parameter
-            do i = 1, n_sp
-                pFS(i) = ( pfsConst(i) * dbh(i) ** pfsPower(i))
-            end do
-
-
-
-            ! Test for dormancy ----------------------------------------------------------------------
-
-            do i = 1, n_sp
-            ! If this is first month after dormancy, get lai because it is required for PAR absorption.
-                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
-                    if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-                        lai(i) =  biom_foliage_debt(i) * SLA(ii,i) * 0.1d0
-                        b_cor = .TRUE.
-                    end if
-                end if
-
-                ! If this is first dormant month, set WF to 0 and move everything to the biom_foliage_debt
-                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
-                    if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
-                        biom_foliage_debt(i) = biom_foliage(i)
-                        biom_foliage(i) = 0.d0
-                        lai(i) =  0.d0
-                        b_cor = .TRUE.
-                    end if
-                end if
-
-            end do
 
             ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
             ! after the previous month's using new NPP.
@@ -1683,13 +1687,20 @@ end do
 
             end do
 
-            ! Correct the bias
+            ! Update dbh for volume calculations, and increment the height and crown dimensions to be consistent with the NPP
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
             where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
 
             !xxx888
             dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
             !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+            competition_total = sum( wood_density(ii,:) * basal_area(:) )
+
+
+
+
+
+
             do n = 1, b_n
                 competition_total = sum( wood_density(ii,:) * basal_area(:) )
                 call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
