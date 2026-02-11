@@ -824,8 +824,8 @@ do i = 1, n_sp
 
                 else ! if not responding to defoliation, set the increments to 0
 
-                     biom_incr_foliage_def(i) = 0
-                     biom_incr_stem_def(i) = 0
+                     biom_incr_foliage_def(i) = 0.0d0
+                     biom_incr_stem_def(i) = 0.0d0
 
 
                 end if
