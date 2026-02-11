@@ -721,7 +721,7 @@ do i = 1, n_sp
                           end if
 
 
-                          if( leafgrow(i) > 0 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then ! deciduous species
+                          if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then ! deciduous species
 
 
 
@@ -785,7 +785,7 @@ do i = 1, n_sp
                           end if
 
 
-                          if( leafgrow(i) > 0 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
+                          if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
 
 
                                 ! calculate growing season length
