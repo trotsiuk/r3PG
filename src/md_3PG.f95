@@ -2430,9 +2430,18 @@ end if
 
 
         canopy_cover(:) = 1.d0
-        where (fullCanAge(:) > 0.d0 .and. age(:) < fullCanAge(:) )
-            canopy_cover(:) = (age(:) + 0.01d0) / fullCanAge(:)
+        !where (fullCanAge(:) > 0.d0 .and. age(:) < fullCanAge(:) )
+        !    canopy_cover(:) = (age(:) + 0.01d0) / fullCanAge(:)
+        !end where
+
+
+        where (fullCanAge(:) > 0.d0)
+        ! Further restrict to indices where age < fullCanAge
+            where (age(:) < fullCanAge(:))
+                canopy_cover(:) = (age(:) + 0.01d0) / fullCanAge(:)
+            end where
         end where
+
 
         lightIntcptn = (1.d0 - (Exp(-k * lai / canopy_cover)))
 
@@ -2584,6 +2593,19 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
                 Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
             end where
         end do
+
+
+
+do i = 1, nLayers
+    ! Outer mask: select elements belonging to layer i
+    where (layer_id(:) == i)
+        ! Inner mask: further restrict to elements where lai(:) /= 0
+        where (lai(:) /= 0.d0)
+            Height_max_l(:) = maxval(height(:), mask=(layer_id(:) == i))
+            Heightcrown_min_l(:) = minval(Heightcrown(:), mask=(layer_id(:) == i))
+        end where
+    end where
+end do
 
 
         ! sum the canopy volume fraction per layer and save it at each species
