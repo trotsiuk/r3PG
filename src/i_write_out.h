@@ -124,9 +124,9 @@ output(ii,:,9,4) = D13CTissue(:)
 output(ii,:,9,5) = InterCi(:) * 1000000.d0
 
 ! Weibull ---------------------
-output(ii,:,10,1) = DWeibullScale(1,:)
-output(ii,:,10,2) = DWeibullShape(2,:)
-output(ii,:,10,3) = DWeibullLocation(3,:)
+output(ii,:,10,1) = DWeibullScale(:)
+output(ii,:,10,2) = DWeibullShape(:)
+output(ii,:,10,3) = DWeibullLocation(:)
 !!!!!output(ii,:,10,4) = bias_scale(4,:)
 !!!!!output(ii,:,10,5) = bias_scale(5,:)
 !!!!!output(ii,:,10,6) = bias_scale(6,:)
