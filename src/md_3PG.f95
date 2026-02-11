@@ -2587,23 +2587,10 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
         ! volume between the top and bottom of a layer that is filled by crowns in that layer.
         ! We calculate it only for the trees that have LAI and are in that particular year. Thus the tree can be in that
         ! layer, but currently will not have LAI
-        !do i = 1, nLayers
-        !    where ( layer_id(:) == i )
-        !        Height_max_l(:) = maxval(height(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
-        !        Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
-        !    end where
-        !end do
-
-
-
         do i = 1, nLayers
-            ! Outer mask: select elements belonging to layer i
-            where (layer_id(:) == i)
-                ! Inner mask: further restrict to elements where lai(:) /= 0
-                where (lai(:) /= 0.d0)
-                    Height_max_l(:) = maxval(height(:), mask=(layer_id(:) == i))
-                    Heightcrown_min_l(:) = minval(Heightcrown(:), mask=(layer_id(:) == i))
-                end where
+            where ( layer_id(:) == i )
+                Height_max_l(:) = maxval(height(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
+                Heightcrown_min_l(:) = minval(Heightcrown(:), mask=layer_id(:) .eq. i .and. lai(:) .ne. 0.d0)
             end where
         end do
 
@@ -2701,40 +2688,42 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
 ! if there is more than 1 cohort, redistribute some of the remaining PAR to the shorter species assuming they are generally in gaps
 ! rather than under horizontally homogeneous canopies of the overstorey species
 
-if (n_sp > 1 .AND. sum(gammaAPAR(:)) > 0.0d0) then ! no need to do this for monocultures, or for stands where all gammaAPAR are 0, because there will not be any effect
-! avoid fi = 0.0 for shaded cohorts
-where (fi(:) < 1d-12)
-    fi(:) = 1d-12
-end where
-! average height of all cohorts, weighted by their contribution to LAI
-height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
-! height of cohort relative to weighted average height
-height_rel_wt(:) = height(:)/height_wtav_LAI
-! modifier to redistribute PAR not absorbed by the canopy
-!m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
-!m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
+if (n_sp > 1 ) then
+      if( sum(gammaAPAR(:)) > 0.0d0) then ! no need to do this for monocultures, or for stands where all gammaAPAR are 0, because there will not be any effect
+         ! avoid fi = 0.0 for shaded cohorts
+         where (fi(:) < 1d-12)
+             fi(:) = 1d-12
+         end where
+         ! average height of all cohorts, weighted by their contribution to LAI
+         height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
+         ! height of cohort relative to weighted average height
+         height_rel_wt(:) = height(:)/height_wtav_LAI
+         ! modifier to redistribute PAR not absorbed by the canopy
+         !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
+         !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
 
-where (height_rel_wt < 1.d0)
-m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * (Exp(gammaAPAR(:) * (1.d0 - height_rel_wt(:) )) - 1.d0 )
-elsewhere
-m_apar = 1.d0
-end where
+         where (height_rel_wt < 1.d0)
+         m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * (Exp(gammaAPAR(:) * (1.d0 - height_rel_wt(:) )) - 1.d0 )
+         elsewhere
+         m_apar = 1.d0
+         end where
 
-m_apar(:) = min( m_apar(:),  &
-     (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
-     / (max(fi(:), 1d-12)*solar_rad * days_in_month) ) ! MJ m-2 month-1
-! ensure no cohorts have their APAR reduced
-m_apar(:) = max( 1.d0, m_apar(:))
-! only allow cohorts with relative heights < 0.5 to receive additional APAR.
-!where (height_rel_wt(:) < 0.5d0)
-!    m_apar(:) = 1.0d0
-!end where
-! adjust the cohort APAR
-apar(:) = apar(:) * m_apar(:)
-! ensure the total stand APAR is still less than above canopy PAR
-apar(:) = apar(:) * (solar_rad * days_in_month)/ sum( apar(:) )
+         m_apar(:) = min( m_apar(:),  &
+              (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
+              / (max(fi(:), 1d-12)*solar_rad * days_in_month) ) ! MJ m-2 month-1
+         ! ensure no cohorts have their APAR reduced
+         m_apar(:) = max( 1.d0, m_apar(:))
+         ! only allow cohorts with relative heights < 0.5 to receive additional APAR.
+         !where (height_rel_wt(:) < 0.5d0)
+         !    m_apar(:) = 1.0d0
+         !end where
+         ! adjust the cohort APAR
+         apar(:) = apar(:) * m_apar(:)
+         ! ensure the total stand APAR is still less than above canopy PAR
+         apar(:) = apar(:) * (solar_rad * days_in_month)/ sum( apar(:) )
+      end if
 else
-m_apar(:) = 1.d0
+      m_apar(:) = 1.d0
 end if
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
