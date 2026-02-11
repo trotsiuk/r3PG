@@ -50,8 +50,8 @@ contains
  integer :: t, sp, row, ios
  character(len=256) :: filenameP
  integer :: n_rows
- integer, save :: csv_unit = -1
- logical, save :: csv_open = .false.
+ !integer, save :: csv_unit = -1
+ !logical, save :: csv_open = .false.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -1838,27 +1838,27 @@ end do
 
 
 
-    ! ==========================================================
-    ! CSV DEBUG OUTPUT (R-SAFE)
-    ! ==========================================================
-
-! --- CSV debug output (overwrite file each timestep) ---
-open(newunit=csv_unit, file='debug_height_crown_each.csv', &
-     status='replace', action='write', iostat=ios)
-if (ios /= 0) return
-
-write(csv_unit,'(A)') &
-    'timestep,species,age,dbh,dbh_prev,dbh_inc,height,crown_width,crown_ratio,crown_length'
-
-do i = 1, n_sp
-    if (.not. is_new(i)) cycle
-    write(csv_unit,'(I6,1x,I6,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4)') &
-        ii, i, age(ii,i), dbh(i), dbh_prev(i), (dbh(i)-dbh_prev(i)), &
-        height(i), crown_width(i), crown_ratio(i), crown_length(i)
-end do
-
-close(csv_unit)
-   ! ==========================================================
+!    ! ==========================================================
+!    ! CSV DEBUG OUTPUT (R-SAFE)
+!    ! ==========================================================
+!
+!! --- CSV debug output (overwrite file each timestep) ---
+!open(newunit=csv_unit, file='debug_height_crown_each.csv', &
+!     status='replace', action='write', iostat=ios)
+!if (ios /= 0) return
+!
+!write(csv_unit,'(A)') &
+!    'timestep,species,age,dbh,dbh_prev,dbh_inc,height,crown_width,crown_ratio,crown_length'
+!
+!do i = 1, n_sp
+!    if (.not. is_new(i)) cycle
+!    write(csv_unit,'(I6,1x,I6,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4)') &
+!        ii, i, age(ii,i), dbh(i), dbh_prev(i), (dbh(i)-dbh_prev(i)), &
+!        height(i), crown_width(i), crown_ratio(i), crown_length(i)
+!end do
+!
+!close(csv_unit)
+!   ! ==========================================================
 
 
 
