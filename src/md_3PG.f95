@@ -4292,36 +4292,36 @@ end if
         height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
 
 
-        ! Check where all the locations are provided
-        dlocation(:) = 1.d0
-        !wslocation(:) = 1.d0
-
-        where( Dlocation0(:)==0.d0 .and. DlocationB(:)==0.d0 .and. Dlocationrh(:)==0.d0 .and. &
-            Dlocationt(:)==0.d0 .and. DlocationC (:)==0.d0 ) dlocation(:) = 0.d0
-
-        !where( wslocation0(:)==0.d0 .and. wslocationB(:)==0.d0 .and. wslocationrh(:)==0.d0 .and. &
-        !    wslocationt(:)==0.d0 .and. wslocationC (:)==0.d0 ) wslocation(:) = 0.d0
-
-        !if (correct_bias .eq. 1 ) then
-
-            ! Calculate the DW scale -------------------
-            DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * Log(height_rel(:)) + &
-                Dscalet(:) * Log(age(:)) + DscaleC(:) * Log(competition_total))
-
-            DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
-                Dshapet(:) * Log(age(:)) + DshapeC(:) * Log(competition_total))
-
-            DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
-
-            DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
-                    Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(:)) + &
-                    DlocationC(:) * Log(competition_total))
-
-            where( dlocation(:) == 0.d0 )
-                DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
-            end where
-
-            where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
+!        ! Check where all the locations are provided
+!        dlocation(:) = 1.d0
+!        !wslocation(:) = 1.d0
+!
+!        where( Dlocation0(:)==0.d0 .and. DlocationB(:)==0.d0 .and. Dlocationrh(:)==0.d0 .and. &
+!            Dlocationt(:)==0.d0 .and. DlocationC (:)==0.d0 ) dlocation(:) = 0.d0
+!
+!        !where( wslocation0(:)==0.d0 .and. wslocationB(:)==0.d0 .and. wslocationrh(:)==0.d0 .and. &
+!        !    wslocationt(:)==0.d0 .and. wslocationC (:)==0.d0 ) wslocation(:) = 0.d0
+!
+!        !if (correct_bias .eq. 1 ) then
+!
+!            ! Calculate the DW scale -------------------
+!            DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * Log(height_rel(:)) + &
+!                Dscalet(:) * Log(age(:)) + DscaleC(:) * Log(competition_total))
+!
+!            DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
+!                Dshapet(:) * Log(age(:)) + DshapeC(:) * Log(competition_total))
+!
+!            DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
+!
+!            DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
+!                    Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(:)) + &
+!                    DlocationC(:) * Log(competition_total))
+!
+!            where( dlocation(:) == 0.d0 )
+!                DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
+!            end where
+!
+!            where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
 
 
             !!!!!Ex(:) = DWeibullLocation(:) + DWeibullScale(:) * DWeibullShape_gamma(:)
