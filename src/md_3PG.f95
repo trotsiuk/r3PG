@@ -2301,7 +2301,7 @@ end if
 
 
             ! Update dbh and basal area if there was self-thinning
-            !if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
+            if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
 
                 biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
@@ -2309,7 +2309,7 @@ end if
 
                 !thin_defol_mort_cor = .FALSE.
 
-            !end if
+            end if
 
 
             ! Additional calculations ------------------
