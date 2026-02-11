@@ -54,6 +54,14 @@ contains
 
 
 
+
+        ! required for dbh distributions
+        real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation !, wslocation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma !, wsWeibullShape_gamma
+
+
+
+
 !! Temporary variables for long-term modifiers
 !integer :: stat, s_index, m_lt!, m      ! loop variables
 !real(kind=8), dimension(n_sp) :: m_tmp
@@ -307,6 +315,57 @@ dbh_total_prev = dbh_total
                end if
             end do
         end if
+
+
+
+
+
+
+
+
+
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!! this needs to be removed after adding the height and crown dimension calculations
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+
+       ! dbh distributions
+        dlocation(:) = 1.d0
+        where( Dlocation0(:)==0.d0 .and. &
+                 DlocationB(:)==0.d0 .and. &
+                 Dlocationrh(:)==0.d0 .and. &
+                 Dlocationt(:)==0.d0 .and. &
+                 DlocationC(:)==0.d0 )
+        dlocation(:) = 0.d0
+        end where
+
+        !DWeibullScale(:) = Dscale0(:)
+
+        DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * &
+                   Log(height_rel(:)) + Dscalet(:) * Log(age(ii,:)) + DscaleC(:) * Log(competition_total))
+        DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
+                                  Dshapet(:) * Log(age(ii,:)) + DshapeC(:) * Log(competition_total))
+        DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
+        DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
+                                     Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(ii,:)) + &
+                                     DlocationC(:) * Log(competition_total))
+        where( dlocation(:) == 0.d0 )
+        DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
+        end where
+        where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
+
+
+
+
 
 
 
@@ -1986,6 +2045,53 @@ end if
                 epsilon_npp(:) = 0.d0
                 epsilon_biom_stem(:) = 0.d0
             end where
+
+
+
+
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!! this needs to be removed after adding the height and crown dimension calculations
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!
+
+
+
+            ! dbh distributions
+            dlocation(:) = 1.d0
+            where( Dlocation0(:)==0.d0 .and. &
+                     DlocationB(:)==0.d0 .and. &
+                     Dlocationrh(:)==0.d0 .and. &
+                     Dlocationt(:)==0.d0 .and. &
+                     DlocationC(:)==0.d0 )
+            dlocation(:) = 0.d0
+            end where
+
+            !DWeibullScale(:) = Dscale0(:)
+
+            DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * &
+                       Log(height_rel(:)) + Dscalet(:) * Log(age(ii,:)) + DscaleC(:) * Log(competition_total))
+            DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
+                                      Dshapet(:) * Log(age(ii,:)) + DshapeC(:) * Log(competition_total))
+            DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
+            DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
+                                         Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(ii,:)) + &
+                                         DlocationC(:) * Log(competition_total))
+            where( dlocation(:) == 0.d0 )
+            DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
+            end where
+            where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
+
+
+
 
             ! Save end of the month results
             include 'i_write_out.h'
