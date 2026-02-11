@@ -1093,6 +1093,9 @@ end do
             GPP(:) = GPP(:) * f_transp_scale
             NPP(:) = NPP(:) * f_transp_scale
 
+            !! also adjust the defoliation-related components that have already been calculated independently
+            !biom_incr_foliage_def(:) = biom_incr_foliage_def(:) * f_transp_scale
+            !biom_incr_stem_def(:) = biom_incr_stem_def(:) * f_transp_scale
 
             if ( transp_total > 0 .and. f_transp_scale < 1 ) then
                 ! a different scaler is required for transpiration because all of the scaling needs
