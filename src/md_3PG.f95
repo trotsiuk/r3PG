@@ -1842,30 +1842,22 @@ end do
     ! CSV DEBUG OUTPUT (R-SAFE)
     ! ==========================================================
 
-    if (.not. csv_open) then
-        open(newunit=csv_unit, &
-             file='debug_height_crown_allometry_all.csv', &
-             status='replace', action='write', iostat=ios)
+! --- CSV debug output (overwrite file each timestep) ---
+open(newunit=csv_unit, file='debug_height_crown_each.csv', &
+     status='replace', action='write', iostat=ios)
+if (ios /= 0) return
 
-        if (ios == 0) then
-            write(csv_unit,'(A)') &
-                'timestep,species,age,dbh,dbh_prev,dbh_inc,height,crown_width,crown_ratio,crown_length'
-            csv_open = .true.
-        else
-            return   ! silently fail, never STOP inside R
-        end if
-    end if
+write(csv_unit,'(A)') &
+    'timestep,species,age,dbh,dbh_prev,dbh_inc,height,crown_width,crown_ratio,crown_length'
 
-    if (csv_open) then
-        do i = 1, n_sp
-            if (.not. is_new(i)) cycle
+do i = 1, n_sp
+    if (.not. is_new(i)) cycle
+    write(csv_unit,'(I6,1x,I6,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4)') &
+        ii, i, age(ii,i), dbh(i), dbh_prev(i), (dbh(i)-dbh_prev(i)), &
+        height(i), crown_width(i), crown_ratio(i), crown_length(i)
+end do
 
-            write(csv_unit,'(I6,1x,I6,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4)') &
-                ii, i, age(ii,i), &
-                dbh(i), dbh_prev(i), (dbh(i) - dbh_prev(i)), &
-                height(i), crown_width(i), crown_ratio(i), crown_length(i)
-        end do
-    end if
+close(csv_unit)
    ! ==========================================================
 
 
@@ -4627,10 +4619,10 @@ end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error checking, so remove later
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-if (csv_open) then
-    close(csv_unit)
-    csv_open = .false.
-end if
+!if (csv_open) then
+!    close(csv_unit)
+!    csv_open = .false.
+!end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
