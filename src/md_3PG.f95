@@ -1028,14 +1028,14 @@ end do
 
             ! Water Balance ----------------------------------------------------------------------
             ! Calculate each specie proportion
-            lai_total(:) = sum( lai(:) )
-            lai_per(:) = lai(:) / lai_total(:)
-            where( lai_total(:) .eq. 0.d0 ) lai_per(:) = 0.d0
+            lai_total = sum( lai(:) )
+            lai_per(:) = lai(:) / lai_total
+            where( lai_total .eq. 0.d0 ) lai_per(:) = 0.d0
 
             ! Calculate conductance
             gC(:) = MaxCond(:)
-            where( lai_total(:) <= LAIgcx(:) )
-                gC(:) = MinCond(:) + (MaxCond(:) - MinCond(:)) * lai_total(:) / LAIgcx(:)
+            where( lai_total <= LAIgcx(:) )
+                gC(:) = MinCond(:) + (MaxCond(:) - MinCond(:)) * lai_total / LAIgcx(:)
             end where
 
             conduct_canopy(:) = gC(:) * lai_per(:) * f_phys(:) * f_tmp_gc(ii,:) * f_cg(ii,:)
@@ -1064,7 +1064,7 @@ end do
             ! rainfall interception
             prcp_interc_fract(:) = MaxIntcptn(:)
             where (LAImaxIntcptn(:) > 0.d0)
-                prcp_interc_fract(:) = MaxIntcptn(:) * min(1.d0, lai_total(:) / LAImaxIntcptn(:)) * LAI_per(:)
+                prcp_interc_fract(:) = MaxIntcptn(:) * min(1.d0, lai_total / LAImaxIntcptn(:)) * LAI_per(:)
             end where
 
             prcp_interc(:) = prcp(ii) * prcp_interc_fract(:)
@@ -2743,7 +2743,7 @@ end if
 
 
         ! Variables and parameters
-        real(kind=kind(0.0d0)), dimension(n_sp) :: lai_total
+        real(kind=kind(0.0d0)) :: lai_total
         real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel
 
         real(kind=kind(0.0d0)), dimension(n_sp) :: Hd !20251114
