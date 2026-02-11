@@ -692,7 +692,7 @@ end if
 
 
 
-! Add any biomass coming from stored carbohydrates if still recovering from a defoliation event !20250301
+! Add any biomass coming from stored carbohydrates if still recovering from a defoliation event
 do i = 1, n_sp
 
 
@@ -708,11 +708,11 @@ do i = 1, n_sp
                           if( leafgrow(i) == 0 ) then ! evergreen species
 
                             if( def_recover_t(i) < 12.d0 ) then
-                            biom_foliage(i) = biom_foliage(i) + prop_carbs(i) * biom_foliage_adj_pre_def(i) / def_recover_t(i)
+                            biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / def_recover_t(i)
 
                             else
 
-                            biom_foliage(i) = biom_foliage(i) + prop_carbs(i) * biom_foliage_adj_pre_def(i) / 12.d0
+                            biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / 12.d0
 
                             end if
 
@@ -734,14 +734,14 @@ do i = 1, n_sp
                                 end if
 
                                 if( def_recover_t(i) < 12.d0 ) then
-                                biom_foliage(i) = biom_foliage(i) + prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
+                                biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
                                 (def_recover_t(i) * growing_season_length(i) / 12.d0)
 
                                 else
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!the following 2 lines need to be in, but currently cause an error
 !!!!!!!!!!!!!!!!!!!!!
-                                biom_foliage(i) = biom_foliage(i) + prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
+                                biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
                                 growing_season_length(i)
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
@@ -766,16 +766,16 @@ do i = 1, n_sp
                           if( leafgrow(i) == 0 ) then  ! evergreen species
 
                             if( def_recover_t(i) < 12.d0 ) then
-                            biom_foliage(i) = biom_foliage(i) + (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                            biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
                             biom_foliage_adj_pre_def(i) / def_recover_t(i)
-                            biom_stem(i) = biom_stem(i) + (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                            biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
                             biom_foliage_adj_pre_def(i) / def_recover_t(i)
 
                             else
 
-                            biom_foliage(i) = biom_foliage(i) + (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                            biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
                             biom_foliage_adj_pre_def(i) / 12.d0
-                            biom_stem(i) = biom_stem(i) + (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                            biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
                             biom_foliage_adj_pre_def(i) / 12.d0
 
                             end if
@@ -796,18 +796,18 @@ do i = 1, n_sp
                                 end if
 
                                 if( def_recover_t(i) < 12.d0 ) then
-                                biom_foliage(i) = biom_foliage(i) + (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
                                 biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
-                                biom_stem(i) = biom_stem(i) + (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
                                 biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
 
                                 else
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!the following 2 lines need to be in, but currently cause an error
 !!!!!!!!!!!!!!!!!!!!!
-                                biom_foliage(i) = biom_foliage(i) + (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
                                 biom_foliage_adj_pre_def(i) / growing_season_length(i)
-                                biom_stem(i) = biom_stem(i) + (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
                                 biom_foliage_adj_pre_def(i) / growing_season_length(i)
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
@@ -822,6 +822,12 @@ do i = 1, n_sp
 
                    end if
 
+                else ! if not responding to defoliation, set the increments to 0
+
+                     biom_incr_foliage_def(i) = 0
+                     biom_incr_stem_def(i) = 0
+
+
                 end if
 
 
@@ -832,7 +838,7 @@ do i = 1, n_sp
                     def_recover_t(i) = 0.0d0
                 end if
                 if( def_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
-biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i) ) then                                               ! coppice
+                     biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i) ) then                          ! coppice
                     def_recover_t(i) = 0.0d0
                 end if
                 if( def_type(i) == 1 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
@@ -840,7 +846,7 @@ biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i) ) then            
                     def_recover_t(i) = 0.0d0
                 end if
                 if( def_type(i) == 3 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
-                biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                               ! epicormic
+                biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                              ! epicormic
                     def_recover_t(i) = 0.0d0
                 end if
 
