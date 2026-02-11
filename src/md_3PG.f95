@@ -276,7 +276,7 @@ dbh_total_prev = dbh_total
 
 
         competition_total = sum( wood_density(ii,:) * basal_area(:) )
-
+        crown_ratio(:) = 1.d0
 
         if( height_model .eq. 1 ) then
             height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)
