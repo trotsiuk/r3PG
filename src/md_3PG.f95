@@ -810,10 +810,10 @@ close(400)
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!the following 2 lines need to be in, but currently cause an error
 !!!!!!!!!!!!!!!!!!!!!
-                                !biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-                                !biom_foliage_adj_pre_def(i) / growing_season_length(i)
-                                !biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-                                !biom_foliage_adj_pre_def(i) / growing_season_length(i)
+                                biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
+                                biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
