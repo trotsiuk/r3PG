@@ -287,7 +287,7 @@ dbh_total_prev = dbh_total
         !end if
         else if ( height_model .eq. 3 ) then
             do i = 1, n_sp
-               if ( nH3(i) < 1.0e-5 .or. nH4(i) < 1.0e-5 ) then
+               if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
                    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i))) !20251114
                else
                    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &

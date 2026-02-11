@@ -119,7 +119,7 @@ prepare_input <- function(
   # Settings
   set_def = list(
     light_model = 1, transp_model = 1, phys_model = 1,
-    height_model = 1, calculate_d13c = 0, # correct_bias = 0, =
+    height_model = 1, crown_width_model = 1, calculate_d13c = 0, # correct_bias = 0, =
     mort_model = 1#, manag_model = 1
     )
   set_def[names(settings)] <- settings
