@@ -1702,12 +1702,12 @@ end do
 
 
 
-            do n = 1, b_n
-                competition_total = sum( wood_density(ii,:) * basal_area(:) )
-                call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-                    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-            end do
+            !do n = 1, b_n
+            !    competition_total = sum( wood_density(ii,:) * basal_area(:) )
+            !    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
+            !        height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
+            !        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+            !end do
 
             ! Volume and Volume increment
             ! This is done before thinning and mortality part
@@ -1896,30 +1896,30 @@ end do
 
             end do
 
-            ! Correct the bias
-            if ( b_cor .eqv. .TRUE. ) then
-
-                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
-                lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-
-                do n = 1, b_n
-                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
-
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                        height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-                        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-                end do
-
-                ! Adjust the old wolume after thinning
-                volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
-                where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) * &
-                    (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
-
-                volume_old(:) = volume(:)
-
-                b_cor = .FALSE.
-            end if
+            !! Correct the bias
+            !if ( b_cor .eqv. .TRUE. ) then
+!
+            !    biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            !    where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
+            !    lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+!
+            !    do n = 1, b_n
+            !        competition_total = sum( wood_density(ii,:) * basal_area(:) )
+!
+            !        call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
+            !            height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
+            !            dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+            !    end do
+!
+            !    ! Adjust the old wolume after thinning
+            !    volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
+            !    where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) * &
+            !        (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
+!
+            !    volume_old(:) = volume(:)
+!
+            !    b_cor = .FALSE.
+            !end if
 
 
 
@@ -2281,23 +2281,23 @@ end if
 
 
 
-            ! Correct the bias
-            if ( b_cor .eqv. .TRUE. ) then
-
-                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
-                lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-
-                do n = 1, b_n
-                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
-
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                        height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-                        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-                end do
-
-                b_cor = .FALSE.
-            end if
+            !! Correct the bias
+            !if ( b_cor .eqv. .TRUE. ) then
+!
+            !    biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            !    where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
+            !    lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+!
+            !    do n = 1, b_n
+            !        competition_total = sum( wood_density(ii,:) * basal_area(:) )
+!
+            !        call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
+            !            height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
+            !            dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+            !    end do
+!
+            !    b_cor = .FALSE.
+            !end if
 
 
             ! Update dbh and basal area if there was self-thinning
