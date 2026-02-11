@@ -769,132 +769,133 @@ close(400)
 
                 if( def_recover_t(i) > 0.d0 ) then
                    ! if still in within the first year of a defoliation event
-                   if ( age(ii,i) <= age_last_def_event(i) + 1.d0 .and. age(ii,i) >= &
-                   age_last_def_event(i) + 1.d0/12.d0 ) then
+                   if ( age(ii,i) <= age_last_def_event(i) + 1.d0 ) then
+
+                         if(age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 ) then
 
 
-                      if( def_type(i) == 1 .or. def_type(i) == 3 ) then !prune or epicormic response
+                              if( def_type(i) == 1 .or. def_type(i) == 3 ) then !prune or epicormic response
 
-                          if( leafgrow(i) < 1.0d-4 ) then ! evergreen species
+                                  if( leafgrow(i) < 1.0d-4 ) then ! evergreen species
 
-                            if( def_recover_t(i) < 12.d0 ) then
-                            biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / def_recover_t(i)
+                                    if( def_recover_t(i) < 12.d0 ) then
+                                    biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / def_recover_t(i)
 
-                            else
+                                    else
 
-                            biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / 12.d0
+                                    biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / 12.d0
 
-                            end if
+                                    end if
 
-                            b_cor = .TRUE.
+                                    b_cor = .TRUE.
 
-                          end if
+                                  end if
 
 
-                          !if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then ! deciduous species
-                          if( leafgrow(i) > 1.0d-4 ) then ! deciduous species
+                                  !if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then ! deciduous species
+                                  if( leafgrow(i) > 1.0d-4 ) then ! deciduous species
 
-                              if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
+                                      if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
 
-                                ! calculate growing season length
-                                if ( leafgrow(i) > leaffall(i) ) then
-                                  growing_season_length(i) = leaffall(i) - leafgrow(i) + 1
-                                else if ( leafgrow(i) < leaffall(i) ) then
-                                  growing_season_length(i) = 12.d0 - leafgrow(i) + 1 + leaffall(i)
-                                end if
+                                        ! calculate growing season length
+                                        if ( leafgrow(i) > leaffall(i) ) then
+                                          growing_season_length(i) = leaffall(i) - leafgrow(i) + 1
+                                        else if ( leafgrow(i) < leaffall(i) ) then
+                                          growing_season_length(i) = 12.d0 - leafgrow(i) + 1 + leaffall(i)
+                                        end if
 
-                                if( def_recover_t(i) < 12.d0 ) then
-                                biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
-                                (def_recover_t(i) * growing_season_length(i) / 12.d0)
+                                        if( def_recover_t(i) < 12.d0 ) then
+                                        biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
+                                        (def_recover_t(i) * growing_season_length(i) / 12.d0)
 
-                                else
-!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!the following 2 lines need to be in, but currently cause an error
-!!!!!!!!!!!!!!!!!!!!!
-                                biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
-                                growing_season_length(i)
-!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!
-                                end if
+                                        else
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        !!!!!!!!!the following 2 lines need to be in, but currently cause an error
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
+                                        growing_season_length(i)
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        end if
 
-                                b_cor = .TRUE.
+                                        b_cor = .TRUE.
+
+                                      end if
+
+                                  end if
 
                               end if
 
-                          end if
-
-                      end if
 
 
 
 
 
+                              if( def_type(i) == 2) then !coppice response
 
-                      if( def_type(i) == 2) then !coppice response
+                                  if( leafgrow(i) == 0 ) then  ! evergreen species
 
-                          if( leafgrow(i) == 0 ) then  ! evergreen species
+                                    if( def_recover_t(i) < 12.d0 ) then
+                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
+                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
 
-                            if( def_recover_t(i) < 12.d0 ) then
-                            biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-                            biom_foliage_adj_pre_def(i) / def_recover_t(i)
-                            biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-                            biom_foliage_adj_pre_def(i) / def_recover_t(i)
+                                    else
 
-                            else
+                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / 12.d0
+                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / 12.d0
 
-                            biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-                            biom_foliage_adj_pre_def(i) / 12.d0
-                            biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-                            biom_foliage_adj_pre_def(i) / 12.d0
+                                    end if
 
-                            end if
+                                    b_cor = .TRUE.
 
-                            b_cor = .TRUE.
-
-                          end if
-
-
-                          !if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
-                          if( leafgrow(i) > 1.0d-4 ) then
-
-                             if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
+                                  end if
 
 
-                                ! calculate growing season length
-                                if ( leafgrow(i) > leaffall(i) ) then
-                                  growing_season_length(i) = leaffall(i) - leafgrow(i) + 1
-                                else if ( leafgrow(i) < leaffall(i) ) then
-                                  growing_season_length(i) = 12 - leafgrow(i) + 1 + leaffall(i)
-                                end if
+                                  !if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
+                                  if( leafgrow(i) > 1.0d-4 ) then
 
-                                if( def_recover_t(i) < 12.d0 ) then
-                                biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-                                biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
-                                biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-                                biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
+                                     if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
 
-                                else
-!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!the following 2 lines need to be in, but currently cause an error
-!!!!!!!!!!!!!!!!!!!!!
-                                biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
-                                biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-                                biom_foliage_adj_pre_def(i) / growing_season_length(i)
-!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!
-                                end if
 
-                                b_cor = .TRUE.
+                                        ! calculate growing season length
+                                        if ( leafgrow(i) > leaffall(i) ) then
+                                          growing_season_length(i) = leaffall(i) - leafgrow(i) + 1
+                                        else if ( leafgrow(i) < leaffall(i) ) then
+                                          growing_season_length(i) = 12 - leafgrow(i) + 1 + leaffall(i)
+                                        end if
 
-                             end if
+                                        if( def_recover_t(i) < 12.d0 ) then
+                                        biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                        biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
+                                        biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                        biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
 
-                          end if
+                                        else
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        !!!!!!!!!the following 2 lines need to be in, but currently cause an error
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                        biom_foliage_adj_pre_def(i) / growing_season_length(i)
+                                        biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                        biom_foliage_adj_pre_def(i) / growing_season_length(i)
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        !!!!!!!!!!!!!!!!!!!!!
+                                        end if
 
-                      end if
+                                        b_cor = .TRUE.
 
+                                     end if
+
+                                  end if
+
+                              end if
+                         end if
                    end if
 
                 else ! if not responding to defoliation, set the increments to 0
