@@ -1284,18 +1284,17 @@ close(400)
 
 
 
-
-            !****** We shall call this only if the any of the above is TRUE
-            if ( b_cor .eqv. .TRUE. ) then
-                do n = 1, b_n
-                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
-
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                        height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &         !20241106 correct_bias
-                        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-                end do
-                b_cor = .FALSE.
-            end if
+            !xxx888
+            !!****** We shall call this only if the any of the above is TRUE
+            !if ( b_cor .eqv. .TRUE. ) then
+            !    do n = 1, b_n
+            !        competition_total = sum( wood_density(ii,:) * basal_area(:) )
+            !        call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
+            !            height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &         !20241106 correct_bias
+            !            dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+            !    end do
+            !    b_cor = .FALSE.
+            !end if
 
             !Radiation and assimilation ----------------------------------------------------------------------
             if ( light_model .eq. int(1) ) then
@@ -1692,13 +1691,13 @@ end do
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
             where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
 
-            lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-
+            !xxx888
+            dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+            !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             do n = 1, b_n
                 competition_total = sum( wood_density(ii,:) * basal_area(:) )
-
                 call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
+                    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
                     dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
             end do
 
