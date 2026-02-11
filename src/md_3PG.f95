@@ -614,6 +614,14 @@ close(400)
             end if
 
 
+
+            ! calculate partitioning parameter
+            do i = 1, n_sp
+                pFS(i) = ( pfsConst(i) * dbh(i) ** pfsPower(i))
+            end do
+
+
+
             ! Test for dormancy ----------------------------------------------------------------------
 
             ! If this is first month after dormancy we need to make potential LAI, so the
@@ -687,7 +695,7 @@ end if
 ! Add any biomass coming from stored carbohydrates if still recovering from a defoliation event !20250301
 do i = 1, n_sp
 
-!hereherehere
+
 
                 if( def_recover_t(i) > 0.d0 ) then
                    ! if still in within the first year of a defoliation event
@@ -717,29 +725,6 @@ do i = 1, n_sp
 
 
 
-!if (real(leafgrow(i), kind=8) > 0.0d0) then
-!    test_output = 10
-!else
-!    test_output = -10
-!end if
-
-!if (f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
-!    test_output = 10
-!else
-!    test_output = -10
-!end if
-
-!if (dble(int(leafgrow(i))) > 0.0d0 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then ! this gave 10
-!    test_output = 10
-!else
-!    test_output = -10
-!end if
-
-!leafgrow(i) = 0
-!if (leafgrow(i) < 0) then
-!    test_output = -7
-!end if
-
 
                                 ! calculate growing season length
                                 if ( leafgrow(i) > leaffall(i) ) then
@@ -756,8 +741,8 @@ do i = 1, n_sp
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!the following 2 lines need to be in, but currently cause an error
 !!!!!!!!!!!!!!!!!!!!!
-!                                biom_foliage(i) = biom_foliage(i) + prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
-!                                growing_season_length(i)
+                                biom_foliage(i) = biom_foliage(i) + prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
+                                growing_season_length(i)
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!
@@ -3037,7 +3022,7 @@ end if
 
 
 
-        pFS(:) = ( pfsConst(:) * dbh(:) ** pfsPower(:)) !!!!!!!* (1.d0 + DrelBiaspFS(:))
+        !pFS(:) = ( pfsConst(:) * dbh(:) ** pfsPower(:)) !!!!!!!* (1.d0 + DrelBiaspFS(:))
 
 
         ! check that the height and LCL allometric equations have not predicted that height - LCL < 0
