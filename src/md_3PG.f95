@@ -50,7 +50,8 @@ contains
  integer :: t, sp, row, ios
  character(len=256) :: filenameP
  integer :: n_rows
- logical, save :: csv_initialized = .false.
+ integer, save :: csv_unit = -1
+ logical, save :: csv_open = .false.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -726,30 +727,30 @@ end do
 !close(400)
 
 
-! Set filename
-write(filenameP,'(A)') 'debug_managementInputs_all.csv'
-open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
-if (ios /= 0) stop 'Error opening debug CSV'
-
-! Header
-write(400,'(A)') 'age,def_type,stem_retained,foliage_retained,root_retained,stem,def_recover_t,prop_carbs,prop_npp'
-
-! Loop over species and defoliation events
-do sp = 1, n_sp
-    do t = 1, n_man
-        write(400,'(6G15.6)') defoliationInputs(t,1,sp), &
-                               defoliationInputs(t,2,sp), &
-                               defoliationInputs(t,3,sp), &
-                               defoliationInputs(t,4,sp), &
-                               defoliationInputs(t,5,sp), &
-                               defoliationInputs(t,6,sp), &
-                               defoliationInputs(t,7,sp), &
-                               defoliationInputs(t,8,sp), &
-                               defoliationInputs(t,9,sp)
-    end do
-end do
-
-close(400)
+!! Set filename
+!write(filenameP,'(A)') 'debug_managementInputs_all.csv'
+!open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
+!if (ios /= 0) stop 'Error opening debug CSV'
+!
+!! Header
+!write(400,'(A)') 'age,def_type,stem_retained,foliage_retained,root_retained,stem,def_recover_t,prop_carbs,prop_npp'
+!
+!! Loop over species and defoliation events
+!do sp = 1, n_sp
+!    do t = 1, n_man
+!        write(400,'(6G15.6)') defoliationInputs(t,1,sp), &
+!                               defoliationInputs(t,2,sp), &
+!                               defoliationInputs(t,3,sp), &
+!                               defoliationInputs(t,4,sp), &
+!                               defoliationInputs(t,5,sp), &
+!                               defoliationInputs(t,6,sp), &
+!                               defoliationInputs(t,7,sp), &
+!                               defoliationInputs(t,8,sp), &
+!                               defoliationInputs(t,9,sp)
+!    end do
+!end do
+!
+!close(400)
 
 
 
@@ -1838,35 +1839,35 @@ end do
 
 
     ! ==========================================================
-    ! ================== CSV DEBUG OUTPUT ======================
+    ! CSV DEBUG OUTPUT (R-SAFE)
     ! ==========================================================
 
-    filenameP = 'debug_height_crown_allometry_all.csv'
+    if (.not. csv_open) then
+        open(newunit=csv_unit, &
+             file='debug_height_crown_allometry_all.csv', &
+             status='replace', action='write', iostat=ios)
 
-    if (.not. csv_initialized) then
-        open(unit=400, file=filenameP, status='replace', action='write', iostat=ios)
-        if (ios /= 0) stop 'Error opening debug CSV'
-
-        write(400,'(A)') &
-            'timestep,species,age,dbh,dbh_prev,dbh_inc,height,crown_width,crown_ratio,crown_length'
-
-        csv_initialized = .true.
-    else
-        open(unit=400, file=filenameP, status='old', action='write', &
-             position='append', iostat=ios)
-        if (ios /= 0) stop 'Error appending debug CSV'
+        if (ios == 0) then
+            write(csv_unit,'(A)') &
+                'timestep,species,age,dbh,dbh_prev,dbh_inc,height,crown_width,crown_ratio,crown_length'
+            csv_open = .true.
+        else
+            return   ! silently fail, never STOP inside R
+        end if
     end if
 
-    do i = 1, n_sp
-        if (.not. is_new(i)) cycle
+    if (csv_open) then
+        do i = 1, n_sp
+            if (.not. is_new(i)) cycle
 
-        write(400,'(I6,1x,I6,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4)') &
-            ii, i, age(ii,i), &
-            dbh(i), dbh_prev(i), (dbh(i) - dbh_prev(i)), &
-            height(i), crown_width(i), crown_ratio(i), crown_length(i)
-    end do
+            write(csv_unit,'(I6,1x,I6,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4,1x,F10.4)') &
+                ii, i, age(ii,i), &
+                dbh(i), dbh_prev(i), (dbh(i) - dbh_prev(i)), &
+                height(i), crown_width(i), crown_ratio(i), crown_length(i)
+        end do
+    end if
 
-    close(400)
+end if   ! <-- closes if( any(age(ii,:) >= 0.d0) )
 
 
 
@@ -4610,6 +4611,20 @@ end if
 !close(unit_csv)
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error checking, so remove later
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+if (csv_open) then
+    close(csv_unit)
+    csv_open = .false.
+end if
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
 
 
 
