@@ -2291,19 +2291,61 @@ end if
 
         solarangle(:) = solarzenithangle(:)
 
-        if ( Lat >= 0.d0 .and. Lat <= 23.4d0) Then
-            !the zenith angle only needs to be adjusted if the lat is between about -23.4 and 23.4
-            where( dayOfYear(:) > secondxaxisintercept .or. dayOfYear(:) < firstxaxisintercept )
-                solarangle(:) = -1.d0 * solarzenithangle(:)
-            end where
+        !if ( Lat >= 0.d0 .and. Lat <= 23.4d0) Then
+        !    !the zenith angle only needs to be adjusted if the lat is between about -23.4 and 23.4
+        !    where( dayOfYear(:) > secondxaxisintercept .or. dayOfYear(:) < firstxaxisintercept )
+        !        solarangle(:) = -1.d0 * solarzenithangle(:)
+        !    end where
+        !end if
+!
+        !if (  Lat >= -23.4d0 .and. Lat < 0.d0 ) Then
+        !    !the zenith angle only needs to be adjusted if the lat is between about -23.4 and 23.4
+        !    where( dayOfYear(:) > firstxaxisintercept .and. dayOfYear(:) < secondxaxisintercept )
+        !        solarangle(:) = -1.d0 * solarzenithangle(:)
+        !    end where
+        !end if
+
+
+
+        ! Northern tropics: 0 to 23.4
+        if (Lat >= 0.d0) then
+            if (Lat <= 23.4d0) then
+                ! Adjust solar angle for dayOfYear > secondxaxisintercept
+                where(dayOfYear(:) > secondxaxisintercept)
+                    solarangle(:) = -1.d0 * solarzenithangle(:)
+                end where
+
+                ! Adjust solar angle for dayOfYear < firstxaxisintercept
+                where(dayOfYear(:) < firstxaxisintercept)
+                    solarangle(:) = -1.d0 * solarzenithangle(:)
+                end where
+            end if
         end if
 
-        if (  Lat >= -23.4d0 .and. Lat < 0.d0 ) Then
-            !the zenith angle only needs to be adjusted if the lat is between about -23.4 and 23.4
-            where( dayOfYear(:) > firstxaxisintercept .and. dayOfYear(:) < secondxaxisintercept )
-                solarangle(:) = -1.d0 * solarzenithangle(:)
-            end where
+        ! Southern tropics: -23.4 to 0
+        if (Lat >= -23.4d0) then
+            if (Lat < 0.d0) then
+                ! Adjust solar angle for dayOfYear > firstxaxisintercept AND < secondxaxisintercept
+                where(dayOfYear(:) > firstxaxisintercept)
+                    where(dayOfYear(:) < secondxaxisintercept)
+                        solarangle(:) = -1.d0 * solarzenithangle(:)
+                    end where
+                end where
+            end if
         end if
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     end function f_get_solarangle
 
