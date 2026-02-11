@@ -495,7 +495,7 @@ dbh_total_prev = dbh_total
 
         volume_mai(:) = volume_cum(:) / age(ii,:)
 
-        basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
+        !basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
 
 
@@ -1694,6 +1694,7 @@ end do
             !xxx888
             dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
             !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+            basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
             competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
 
@@ -2299,20 +2300,20 @@ end if
             end if
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            ! Update stand structure if there was thinning, defoliation or stress-related mortality
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            if ( thin_defol_mort_cor .eqv. .TRUE. ) then
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                thin_defol_mort_cor = .FALSE.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            end if
+            ! Update stand structure if there was self-thinning
+            if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
+
+                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+                basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+
+                !thin_defol_mort_cor = .FALSE.
+
+            end if
 
 
             ! Additional calculations ------------------
-            basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
+            !basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
 
             ! Adjust the old volume after thinning, defoliation and mortality
