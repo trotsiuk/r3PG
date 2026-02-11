@@ -271,7 +271,8 @@ integer :: jj !20251124
           dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
           basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
           lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-
+          dbh_prev(:) = dbh(:)
+          crown_ratio(:) = 1.d0
         end where
 
 ! for background mortality calculations where mort_model = 2 !20251124
@@ -926,13 +927,8 @@ close(400)
 
             ! Test for dormancy ----------------------------------------------------------------------
 
-            ! If this is first month after dormancy we need to make potential LAI, so the
-            ! PAR absorbption can be applied, otherwise it will be sero.
-            ! In the end of the month we will re-calculate it based on the actual values
-            ! Also, for any cohort is still recovering from a defoliation event (receiving from stored
-            ! carborhydrates or altered partitioning), add that biomass.
-
             do i = 1, n_sp
+            ! If this is first month after dormancy, get lai because it is required for PAR absorption.
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
                     if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
                         lai(i) =  biom_foliage_debt(i) * SLA(ii,i) * 0.1d0
@@ -940,7 +936,7 @@ close(400)
                     end if
                 end if
 
-                ! If this is first dormant month, then we set WF to 0 and move everything to the dept
+                ! If this is first dormant month, set WF to 0 and move everything to the biom_foliage_debt
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
                     if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
                         biom_foliage_debt(i) = biom_foliage(i)
@@ -953,7 +949,7 @@ close(400)
             end do
 
             ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
-            ! after the last growth using new NPP. ! 20250301
+            ! after the previous month's using new NPP.
             do i = 1, n_sp
 
                    !if ( def_recover_t(i) > 0.0d0 .and. age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0 ) then ! def_recover_t(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
@@ -1061,7 +1057,7 @@ close(400)
 
 
 
-! Add any biomass coming from stored carbohydrates if still recovering from a defoliation event
+! Add any biomass coming from stored non-structural carbohydrates if still recovering from a defoliation event
           do i = 1, n_sp
 
 
