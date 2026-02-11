@@ -4285,7 +4285,7 @@ end if
         bias_scale(:,:) = 0.d0
 
         ! LAI
-        lai_total = sum( lai(:) )
+        !lai_total = sum( lai(:) )
 
         ! Calculate the relative height
         ! height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)
