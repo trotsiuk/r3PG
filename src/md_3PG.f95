@@ -909,23 +909,57 @@ close(400)
 
 
 
-              ! If any cohorts were recovering from a defoliation event, check whether they finished recovering after the last growth using stored carbohydrates. ! 20250301
-                if ( def_recover_t(i) > 0 .and. age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0 ) then ! def_recover_t(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
-                    def_recover_t(i) = 0.0d0
-                end if
-                if( def_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
-                     biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i) ) then                          ! coppice
-                    def_recover_t(i) = 0.0d0
-                end if
-                if( def_type(i) == 1 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
-                biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                              ! prune
-                    def_recover_t(i) = 0.0d0
-                end if
-                if( def_type(i) == 3 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
-                biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                              ! epicormic
-                    def_recover_t(i) = 0.0d0
-                end if
+!              ! If any cohorts were recovering from a defoliation event, check whether they finished recovering after the last growth using stored carbohydrates. ! 20250301
+!                if ( def_recover_t(i) > 0 .and. age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0 ) then ! def_recover_t(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
+!                    def_recover_t(i) = 0.0d0
+!                end if
+!                if( def_type(i) == 2 .and. age(ii,i) > age_last_def_event(i) + 1.d0/12.d0 .and. &
+!                     biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i) ) then                          ! coppice
+!                    def_recover_t(i) = 0.0d0
+!                end if
+!                if( def_type(i) == 1 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
+!                biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                              ! prune
+!                    def_recover_t(i) = 0.0d0
+!                end if
+!                if( def_type(i) == 3 .and. age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 .and. &
+!                biom_foliage(i) >= biom_foliage_adj_pre_def(i) ) then                                              ! epicormic
+!                    def_recover_t(i) = 0.0d0
+!                end if
 
+
+                 ! def_recover_t > 0 and age threshold
+                 if (def_recover_t(i) > 0.0d0) then
+                     if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then
+                         def_recover_t(i) = 0.0d0
+                     end if
+                 end if
+
+                 ! Coppice condition: def_type 2, age threshold, and foliage+stem check
+                 if (def_type(i) == 2) then
+                     if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
+                         if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
+                             def_recover_t(i) = 0.0d0
+                         end if
+                     end if
+                 end if
+
+                 ! Prune condition: def_type 1
+                 if (def_type(i) == 1) then
+                     if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
+                         if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
+                             def_recover_t(i) = 0.0d0
+                         end if
+                     end if
+                 end if
+
+                 ! Epicormic condition: def_type 3
+                 if (def_type(i) == 3) then
+                     if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
+                         if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
+                             def_recover_t(i) = 0.0d0
+                         end if
+                     end if
+                 end if
 
 
 
