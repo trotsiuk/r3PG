@@ -118,6 +118,12 @@ prepare_defoliation <- function(defoliation = NULL,
     }
 
 
+    # check whether the thinning above/below are within plausible range
+    if (any(defoliation$stem < 0.2 | defoliation$stem > 5)) {
+      stop("Defoliation values for stem must be in the range [0.2, 5].")
+    }
+
+
     if (any(is.na(defoliation$def_recover_t) | defoliation$def_recover_t < 2)) {
       stop("Defoliation input error: 'def_recover_t' must be provided and >= 2 months for all defoliation events.")
     }

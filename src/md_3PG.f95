@@ -1482,11 +1482,17 @@ end if
 
 
 
-            ! Update stand structure if there was thinning, defoliation or stress-related mortality
+            ! Update stand structure if there was thinning, defoliation or stress-related mortality that reduced stems_n or stem mass
             if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
                 biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+            ! it is possible, especially for coppicing, that there is no change in stems_n but there is a reduction in stem mass
+            else if ( sum(biom_loss_stem_manag(:) + biom_loss_stem_def(:) + biom_loss_stem_stress(:)) > 1.0e-6 ) then
+                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+                basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+
             end if
 
             ! Update stand structure if there was a coppice event (the above lines many not capture this because coppicing does not always lead to stem loss)

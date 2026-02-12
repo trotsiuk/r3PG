@@ -80,8 +80,8 @@ prepare_thinning <- function(
     thinning <- data.frame( thinning )
 
     # check whether the thinning above/below are within plausible range
-    if (any(thinning[ , c("stem", "root", "foliage")] < 0 | thinning[ , c("stem", "root", "foliage")] > 5)) {
-      stop("Thinning values for stem, root, and foliage must be in the range [0, 5].")
+    if (any(thinning[ , c("stem", "root", "foliage")] < 0.2 | thinning[ , c("stem", "root", "foliage")] > 5)) {
+      stop("Thinning values for stem, root, and foliage must be in the range [0.2, 5].")
     }
 
     # both supplied → ambiguous
