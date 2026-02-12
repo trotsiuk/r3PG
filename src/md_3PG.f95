@@ -486,7 +486,7 @@ end do
                           height_model, crown_width_model, pars_i(69:88,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
-        end if
+            end if
 
 
 
@@ -1162,9 +1162,6 @@ end do
             biom_loss_root_manag(:) = 0.d0
             biom_loss_foliage_manag(:) = 0.d0
 
-            !thin_cor(:) = .FALSE.
-            !thin_defol_mort_cor = .FALSE.
-
             do i = 1, n_sp
 
                 if( t_t(i) > 0 ) then
@@ -1303,6 +1300,7 @@ end do
             biom_loss_foliage_def(:) = 0.d0
             def_type(:) = 0
             !defol_cor(:) = .FALSE.
+            coppice_event(:) = .FALSE.
 
             do i = 1, n_sp
 
@@ -1330,6 +1328,7 @@ end do
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i)
                                 sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
 
+coppice_event(:) = .TRUE.
 
 ! for coppice the age and age related variables need to be updated
 ! Overwrite current and future months for this species
@@ -1483,7 +1482,17 @@ end if
                 dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
 
-                !thin_defol_mort_cor = .FALSE.
+                ! if there was a coppicing event, recalculate the height, crown width and crown volume
+                competition_total = sum( wood_density(ii,:) * basal_area(:) )
+                is_new(:) = coppice_event(:)
+                if ( any(is_new(:)) ) then
+                          calculate_states = .TRUE.
+                          call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
+                              lai(:), height_rel(:), &
+                              height_model, crown_width_model, pars_i(69:88,:), &
+                              dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
+                              calculate_states, is_new(:) )
+                end if
 
             end if
 

@@ -169,6 +169,7 @@ logical :: calculate_states = .TRUE.                      ! calculate height and
 logical, dimension(n_sp) :: is_new                        ! identifies new cohorts when calculating height, crown width and crown length
 !logical, dimension(n_sp) :: thin_cor                      ! if there was a thinning event where Sfraction was not 1, the dbh needs to be adjusted
 !logical, dimension(n_sp) :: defol_cor                     ! if there was a defoliation event where Sfraction was not 1, the dbh needs to be adjusted
+logical, dimension(n_sp) :: coppice_event                  ! record when there was a coppice defoliation event so that height, crown width and crown length can be adjusted
 !logical :: thin_defol_mort_cor = .TRUE.                 ! update dbh and basal_area before self-thinning calculations or the end of the monthly loop only if there was thinning, defoliation or stress-related mortality or self-thinning
 
 
