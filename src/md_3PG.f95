@@ -4045,12 +4045,6 @@ end if
         include 'i_read_param_sub.h'
 
 
-        bias_scale(:,:) = 0.d0
-
-
-        height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
-
-
     end subroutine s_sizeDist_correct
 
 
