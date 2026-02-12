@@ -2192,7 +2192,7 @@ end do
                     !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
                     !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
 
-                   height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
+                   !height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
 
         if( height_model .eq. 1 ) then
 
