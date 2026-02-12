@@ -1488,12 +1488,13 @@ end if
                 dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
             end if
-            ! it is possible, especially for coppicing, that there is no change in stems_n but there is a reduction in stem mass
-            if ( sum(biom_loss_stem_manag(:) + biom_loss_stem_def(:) + biom_loss_stem_stress(:)) > 1.0e-6 ) then
-                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                !dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-                !basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
-            end if
+            ! It is possible, especially for coppicing, that there is no change in stems_n but stem mass is 0
+            ! If there was a coppicing event, the dbh and basal area have already been changed above
+            !if ( sum(biom_loss_stem_manag(:) + biom_loss_stem_def(:) + biom_loss_stem_stress(:)) > 1.0e-6 ) then
+            !    biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+            !    dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+            !    !basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+            !end if
 
             ! Update stand structure if there was a coppice event (the above lines many not capture this because coppicing does not always lead to stem loss)
             ! so that height, crown width and crown length are recalculated
@@ -1502,8 +1503,7 @@ end if
                           !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 !          dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 !          basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
-                !          competition_total = sum( wood_density(ii,:) * basal_area(:) )
-!
+                          competition_total = sum( wood_density(ii,:) * basal_area(:) )
                           calculate_states = .TRUE.
                           call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                               lai(:), height_rel(:), &
