@@ -1484,21 +1484,21 @@ end if
 
             ! Update stand structure if there was a coppice event (the above lines many not capture this because coppicing does not always lead to stem loss)
             ! so that height, crown width and crown length are recalculated
-                is_new(:) = coppice_event(:)
-                if ( any(is_new(:)) ) then
-                          biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                          dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-                          basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
-                          competition_total = sum( wood_density(ii,:) * basal_area(:) )
-
-                          calculate_states = .TRUE.
-                          !call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                          !    lai(:), height_rel(:), &
-                          !    height_model, crown_width_model, pars_i(69:88,:), &
-                          !    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
-                          !    calculate_states, is_new(:) )
-                end if
-                coppice_event(:) = .FALSE.
+                !is_new(:) = coppice_event(:)
+                !if ( any(is_new(:)) ) then
+                !          biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                !          dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+                !          basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+                !          competition_total = sum( wood_density(ii,:) * basal_area(:) )
+!
+                !          calculate_states = .TRUE.
+                !          !call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
+                !          !    lai(:), height_rel(:), &
+                !          !    height_model, crown_width_model, pars_i(69:88,:), &
+                !          !    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
+                !          !    calculate_states, is_new(:) )
+                !end if
+                !coppice_event(:) = .FALSE.
 
 
 
