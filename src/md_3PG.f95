@@ -2181,13 +2181,17 @@ end do
                 !where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
                 !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
-                do n = 1, b_n
+                !do n = 1, b_n
                     !competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
                     call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
                         height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
                         dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-                end do
+
+                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
+                        height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
+                        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+                !end do
 
                 !! Adjust the old wolume after thinning
                 !volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
