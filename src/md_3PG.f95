@@ -1708,8 +1708,10 @@ end do
 
 
         !xxx888
-        is_new(:) = (age(ii,:) >= 0.d0)
-        if( any(age(ii,:) >= 0.d0) ) then
+        !is_new(:) = (age(ii,:) >= 0.d0)
+        !if( any(age(ii,:) >= 0.d0) ) then
+        is_new(:) = (age(ii,:) >= 0.d0) .and. ((dbh(:) - dbh_prev(:)) > 1.0d-5)
+        if( any(is_new(:)) ) then
                   calculate_states = .FALSE.
 
 
@@ -1832,10 +1834,6 @@ end do
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                if(dbh(:) - dbh_prev(:) > 1.0e-5) then
-
-
                   if( height_model .eq. 1 ) then
                       where (is_new)
                            height(:) = height(:) + aH(:) * nH1(:) * (dbh(:) ** (nH1(:) - 1)) * &
@@ -1936,9 +1934,6 @@ end do
                              end if
                       end do
                   end if
-
-
-                end if
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
