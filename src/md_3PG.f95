@@ -815,7 +815,7 @@ end do
                 if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
                     if( f_dormant(month-1, leafgrow(i), leaffall(i)) .eqv. .TRUE. ) then
                         lai(i) =  biom_foliage_debt(i) * SLA(ii,i) * 0.1d0
-                        b_cor = .TRUE.
+                        !b_cor = .TRUE.
                     end if
                 end if
 
@@ -825,7 +825,7 @@ end do
                         biom_foliage_debt(i) = biom_foliage(i)
                         biom_foliage(i) = 0.d0
                         lai(i) =  0.d0
-                        b_cor = .TRUE.
+                        !b_cor = .TRUE.
                     end if
                 end if
 
@@ -1088,7 +1088,7 @@ end do
 
                                     end if
 
-                                    b_cor = .TRUE.
+                                    !b_cor = .TRUE.
 
                                   end if
 
@@ -1120,7 +1120,7 @@ end do
                                         !!!!!!!!!!!!!!!!!!!!!
                                         end if
 
-                                        b_cor = .TRUE.
+                                        !b_cor = .TRUE.
 
                                       end if
 
@@ -1152,7 +1152,7 @@ end do
 
                                     end if
 
-                                    b_cor = .TRUE.
+                                    !b_cor = .TRUE.
 
                                   end if
 
@@ -1189,7 +1189,7 @@ end do
                                         !!!!!!!!!!!!!!!!!!!!!
                                         end if
 
-                                        b_cor = .TRUE.
+                                        !b_cor = .TRUE.
 
                                      end if
 
@@ -2055,7 +2055,7 @@ end do
                                                    biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
                                                    if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
 
-                                                   b_cor = .TRUE.
+                                                   !b_cor = .TRUE.
                                                    !thin_defol_mort_cor = .TRUE.
                                         end if
 
@@ -2104,7 +2104,7 @@ end do
                                             biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
                                             if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
 
-                                            b_cor = .TRUE.
+                                            !b_cor = .TRUE.
                                             !thin_defol_mort_cor = .TRUE.
 
                                        end if
@@ -2369,7 +2369,7 @@ end if
                                         defol_cor(i) = .TRUE.
                                     end if
 
-                            b_cor = .TRUE.
+                            !b_cor = .TRUE.
                             !thin_defol_mort_cor = .TRUE.
 
                             d_n(i) = d_n(i) + 1
@@ -2410,7 +2410,7 @@ end if
                         biom_root(i) = biom_root(i) - biom_loss_root_stress(i)
                         biom_foliage(i) = biom_foliage(i) -  biom_loss_foliage_stress(i)
 
-                        b_cor = .TRUE.
+                        !b_cor = .TRUE.
                         !thin_defol_mort_cor = .TRUE.
 
                     end if
@@ -2552,7 +2552,7 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                 biom_stem(i)    = biom_stem(i) - biom_loss_stem_density(i)
                 biom_root(i)    = biom_root(i) - biom_loss_root_density(i)
                 biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
-                b_cor = .TRUE.
+                !b_cor = .TRUE.
             end if
 
             ! ensure non-negative biomass if cohort dies
