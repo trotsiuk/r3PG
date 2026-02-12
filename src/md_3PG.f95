@@ -1835,12 +1835,12 @@ end do
                   if( height_model .eq. 1 ) then
                       where (is_new)
                            height(:) = height(:) + aH(:) * nH1(:) * (dbh(:) ** (nH1(:) - 1)) * &
-                                       ( competition_total ** nH2(:) ) * ( dbh(:) - dbh_prev(:) )
+                                       ( competition_total ** nH2(:) ) * ( 0.1 )
                       end where
                   else if ( height_model .eq. 2 ) then
                       where (is_new)
                            height(:) = height(:) + ( aH(:) * Exp(-nH1(:)/dbh(:) ) * nH1(:)/(dbh(:)*dbh(:)) + nH2(:) * &
-                                       competition_total) * ( dbh(:) - dbh_prev(:) )
+                                       competition_total) * ( 0.1 )
                       end where
                   else if ( height_model .eq. 3 ) then
                       do i = 1, n_sp
@@ -1878,7 +1878,7 @@ end do
                   !where (is_new .and. dbh(:) > 0.0d0 .and. aHL(:) > 0.0d0)
                   !    crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
                   !                     lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
-                  !                     ( dbh(:) - dbh_prev(:) )
+                  !                     ( 0.1 )
                   !    crown_length(:) = crown_ratio(:) * height(:)
                   !end where
                   where (is_new)
@@ -1886,7 +1886,7 @@ end do
                           where (aHL(:) > 0.0d0)
                               crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
                                                lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
-                                               (dbh(:) - dbh_prev(:))
+                                               (0.1)
                               crown_length(:) = crown_ratio(:) * height(:)
                           end where
                       end where
@@ -1895,12 +1895,12 @@ end do
                   if( crown_width_model .eq. 1 ) then
                       where (is_new)
                           crown_width(:) = crown_width(:) + aK(:) * nK1(:) * (dbh(:) ** (nK1(:) - 1)) * &
-                                      ( competition_total ** nK2(:) ) * ( dbh(:) - dbh_prev(:) )
+                                      ( competition_total ** nK2(:) ) * ( 0.1 )
                       end where
                   else if ( crown_width_model .eq. 2 ) then
                       where (is_new)
                           crown_width(:) = crown_width(:) + ( aK(:) * Exp(-nK1(:)/dbh(:) ) * nK1(:)/(dbh(:)*dbh(:)) + nK2(:) * &
-                                      competition_total) * ( dbh(:) - dbh_prev(:) )
+                                      competition_total) * ( 0.1 )
                       end where
                   else if ( crown_width_model .eq. 3 ) then
                       do i = 1, n_sp
@@ -4217,12 +4217,12 @@ end if
                   if( height_model .eq. 1 ) then
                       where (is_new)
                            height(:) = height(:) + aH(:) * nH1(:) * (dbh(:) ** (nH1(:) - 1)) * &
-                                       ( competition_total ** nH2(:) ) * ( dbh(:) - dbh_prev(:) )
+                                       ( competition_total ** nH2(:) ) * ( 0.1 )
                       end where
                   else if ( height_model .eq. 2 ) then
                       where (is_new)
                            height(:) = height(:) + ( aH(:) * Exp(-nH1(:)/dbh(:) ) * nH1(:)/(dbh(:)*dbh(:)) + nH2(:) * &
-                                       competition_total) * ( dbh(:) - dbh_prev(:) )
+                                       competition_total) * ( 0.1 )
                       end where
                   else if ( height_model .eq. 3 ) then
                       do i = 1, n_sp
@@ -4265,7 +4265,7 @@ end if
                   !where (is_new .and. dbh(:) > 0.0d0 .and. aHL(:) > 0.0d0)
                   !    crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
                   !                     lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
-                  !                     ( dbh(:) - dbh_prev(:) )
+                  !                     ( 0.1 )
                   !    crown_length(:) = crown_ratio(:) * height(:)
                   !end where
 
@@ -4274,7 +4274,7 @@ end if
                           where (aHL(:) > 0.0d0)
                               crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
                                                lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
-                                               (dbh(:) - dbh_prev(:))
+                                               (0.1)
                               crown_length(:) = crown_ratio(:) * height(:)
                           end where
                       end where
@@ -4284,12 +4284,12 @@ end if
                   if( crown_width_model .eq. 1 ) then
                       where (is_new)
                           crown_width(:) = crown_width(:) + aK(:) * nK1(:) * (dbh(:) ** (nK1(:) - 1)) * &
-                                      ( competition_total ** nK2(:) ) * ( dbh(:) - dbh_prev(:) )
+                                      ( competition_total ** nK2(:) ) * ( 0.1 )
                       end where
                   else if ( crown_width_model .eq. 2 ) then
                       where (is_new)
                           crown_width(:) = crown_width(:) + ( aK(:) * Exp(-nK1(:)/dbh(:) ) * nK1(:)/(dbh(:)*dbh(:)) + nK2(:) * &
-                                      competition_total) * ( dbh(:) - dbh_prev(:) )
+                                      competition_total) * ( 0.1 )
                       end where
                   else if ( crown_width_model .eq. 3 ) then
                       do i = 1, n_sp
