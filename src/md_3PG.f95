@@ -2653,18 +2653,18 @@ end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this line is still wrong and should be removed or replaced with stems_loss_density
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
+            !if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
             !if ( any(stems_loss_density(:) > 0.d0) ) then
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-                basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+                !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                !dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+                !basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
 
                 !thin_defol_mort_cor = .FALSE.
 
-            end if
+            !end if
 
 
             ! Additional calculations ------------------
