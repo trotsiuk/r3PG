@@ -2670,6 +2670,8 @@ end if
             ! Additional calculations ------------------
             !basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
+biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
+
             ! lai has not been updated since the growth
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
