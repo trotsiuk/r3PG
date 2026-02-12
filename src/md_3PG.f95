@@ -327,7 +327,7 @@ dbh_total_prev = dbh_total
         if( any(age(ii,:) >= 0.d0) ) then
                   calculate_states = .TRUE.
                   call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                      lai(:), lai_total_prev, height_rel(:), &
+                      lai(:), height_rel(:), &
                       height_model, crown_width_model, pars_i(69:88,:), &
                       dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                       calculate_states, is_new(:) )
@@ -841,7 +841,7 @@ end do
             if( any(age(ii,:) .eq. 0.d0) ) then
                       calculate_states = .TRUE.
                       !call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                      !    lai(:), lai_total_prev, height_rel(:), &
+                      !    lai(:), height_rel(:), &
                       !    height_model, crown_width_model, pars_i(69:88,:), &
                       !    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                       !    calculate_states, is_new(:) )
@@ -1718,7 +1718,7 @@ end do
 
 ! the following is the states version because the increments version might not be working
                   !call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                  !    lai(:), lai_total_prev, height_rel(:), &
+                  !    lai(:), height_rel(:), &
                   !    height_model, crown_width_model, pars_i(69:88,:), &
                   !    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                   !    calculate_states, is_new(:) )
@@ -1826,7 +1826,7 @@ end do
 
 
                   !call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                  !    lai(:), lai_total_prev, height_rel(:), &
+                  !    lai(:), height_rel(:), &
                   !    height_model, crown_width_model, pars_i(69:88,:), &
                   !    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                   !    calculate_states, is_new(:) )
@@ -3606,7 +3606,7 @@ end if
 
 
         subroutine s_height_crown_allometry (n_sp, age, stems_n, competition_total, &
-        lai, lai_total_prev, height_rel, &
+        lai, height_rel, &
         height_model, crown_width_model, pars_s, & ! removed correct_bias
         dbh, dbh_prev, height, crown_length, crown_width, crown_ratio, &
         calculate_states, is_new)
@@ -3620,7 +3620,7 @@ end if
         !real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: biom_tree
         real(kind=kind(0.0d0)), intent(in) :: competition_total
         !real(kind=kind(0.0d0)), intent(in) :: competition_total_prev
-        real(kind=kind(0.0d0)), intent(in) :: lai_total_prev
+        !real(kind=kind(0.0d0)), intent(in) :: lai_total_prev
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
         !real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: height_rel_prev
         logical :: calculate_states
