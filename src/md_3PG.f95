@@ -1490,7 +1490,7 @@ end if
             end if
             ! it is possible, especially for coppicing, that there is no change in stems_n but there is a reduction in stem mass
             if ( sum(biom_loss_stem_manag(:) + biom_loss_stem_def(:) + biom_loss_stem_stress(:)) > 1.0e-6 ) then
-                !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 !dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 !basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
             end if
