@@ -1162,7 +1162,7 @@ end do
             biom_loss_root_manag(:) = 0.d0
             biom_loss_foliage_manag(:) = 0.d0
 
-            thin_cor(:) = .FALSE.
+            !thin_cor(:) = .FALSE.
             !thin_defol_mort_cor = .FALSE.
 
             do i = 1, n_sp
@@ -1172,14 +1172,6 @@ end do
                     if(t_n(i) <= t_t(i)) then
 
                         if( age(ii,i) >= managementInputs(t_n(i),1,i) ) then
-
-                            !if( stems_n(i) > managementInputs(t_n(i),2,i) .OR. (manag_model .EQ. 2) ) then !20251114
-                            !if( (int(managementInputs(t_n(i),7,i)) .EQ. 1 .AND. stems_n(i) > &                           !20260123
-                            !managementInputs(t_n(i),2,i)) .OR. (int(managementInputs(t_n(i),7,i)) .EQ. 2) ) then         !20260123
-
-                                   !20260123
-                                   !if ( (.not. isnan(managementInputs(t_n(i),2,i)) .AND. stems_n(i) > managementInputs(t_n(i),2,i)) .OR. &
-                                   !     (.isnan(managementInputs(t_n(i),2,i)) .AND. .not. isnan(managementInputs(t_n(i),6,i))) ) then
 
                                    ! thinning calculated using stems_n as input
                                    if ( .not. isnan(managementInputs(t_n(i),2,i)) ) then
@@ -1289,32 +1281,6 @@ end do
                                        end if
                                    end if
 
-
-                                      !! --- APPLY ALL REDUCTIONS AT END ---
-                                      !  stems_n(i) = stems_n(i) - stems_loss_manag(i)
-                                      !if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
-                                   !
-                                      !biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
-                                      !if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
-                                   !
-                                      !biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
-                                      !if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
-                                   !
-                                      !! foliage and foliage_debt already clamped earlier
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!this is probably now redundant
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                    if ( managementInputs(t_n(i),3,i) /= 1.0d0 ) then
-                                        thin_cor(i) = .TRUE.
-                                    end if
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                                      !b_cor = .TRUE.
-
-                            !end if
-
                             t_n(i) = t_n(i) + 1
 
                         end if
@@ -1325,68 +1291,7 @@ end do
 
             end do
 
-!            ! Correct the bias
-!            if ( b_cor .eqv. .TRUE. ) then
-!
-!                !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-!                !where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
-!                !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-!
-!                !do n = 1, b_n
-!                    !competition_total = sum( wood_density(ii,:) * basal_area(:) )
-!
-!                    !call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-!                    !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-!                    !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-!
-!                    !call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-!                    !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-!                    !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-!
-!                   !height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
-!
-!        if( height_model .eq. 1 ) then
-!
-!            !height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
-!
-!            !crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total ** nHL3(:) * &
-!            !    height_rel(:) ** nHL4(:)) !!!!!!!* (1.d0 + DrelBiasLCL(:))
-!
-!            !crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
-!            !          height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
-!
-!        else if ( height_model .eq. 2 ) then
-!
-!            !height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) ) !!!!!!!* &
-!                      !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
-!            !crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total * dbh(:) ) !!!!!!!* &
-!            !          !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
-!
-!            !crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
-!            !        height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
-!
-!        else if ( height_model .eq. 3 ) then
-!            !height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) !!!!!!!* (1.d0 + DrelBiasheight(:)) !20251114
-!            !crown_length(:) = aHL(:) * height(:) !20251114
-!
-!            !crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) !!!!!!!* &
-!            !          !!!!!!!(1.d0 + DrelBiasCrowndiameter(:)) !20251114
-!
-!        end if
-!
-!
-!
-!                !end do
-!
-!                !! Adjust the old wolume after thinning
-!                !volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
-!                !where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) * &
-!                !    (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
-!!
-!                !volume_old(:) = volume(:)
-!
-                !b_cor = .FALSE.
-!            end if
+
 
 
 
@@ -1397,7 +1302,7 @@ end do
             biom_loss_root_def(:) = 0.d0
             biom_loss_foliage_def(:) = 0.d0
             def_type(:) = 0
-            defol_cor(:) = .FALSE.
+            !defol_cor(:) = .FALSE.
 
             do i = 1, n_sp
 
@@ -1412,10 +1317,10 @@ end do
                             def_type(i) = int( defoliationInputs(d_n(i),2,i))
                             def_recover_t(i) = defoliationInputs(d_n(i),7,i)
 
-                            prop_carbs(:) = defoliationInputs(d_n(i),8,i) !20251124
-                            prop_npp(:) = defoliationInputs(d_n(i),9,i) !20251124
+                            prop_carbs(:) = defoliationInputs(d_n(i),8,i)
+                            prop_npp(:) = defoliationInputs(d_n(i),9,i)
 
-!hereherehere
+
 
                             ! Adjust pre-defoliation foliage mass (i.e. pre-defoliation foliage mass of trees that survived the defoliation event)
                             if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
@@ -1426,7 +1331,7 @@ end do
                                 sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
 
 
-! for coppice the age and age related variables need to be updated !20251124
+! for coppice the age and age related variables need to be updated
 ! Overwrite current and future months for this species
 do jj = ii, n_m
     age(jj,i)   = 1.d0/12.d0 + (jj - ii) / 12.d0
@@ -1528,25 +1433,11 @@ end if
 
                                 stems_n(i) = stems_n(i) - stems_loss_def(i)
 
-
-                                !if(  ( 1.d0 - defoliationInputs(d_n(i),5,i)) / defoliationInputs(d_n(i),6,i) >= 1.d0 ) then ! this would mean post stems_n > pre stems_n
-                                !
-                                !    stems_loss_def(i) = 0.d0
-                                !    !stems_n(i) = stems_n(i)
-                                !    ! this we need to keep, so we don't remove the stems if no mortality
-                                !else
-                                !    !biom_loss_stem_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i)) /  defoliationInputs(d_n(i),6,i)
-                                !    stems_loss_def(i) = stems_n(i) * (1.d0 - defoliationInputs(d_n(i),5,i) &
-                                !    /  defoliationInputs(d_n(i),6,i)) !20251124
-                                !    !stems_n(i) = stems_n(i) * defol_root_mass_prop_retained / defol_stem
-                                !    stems_n(i) = stems_loss_def(i)
-                                !end if
-
                             end if
 
-                                    if ( defoliationInputs(t_n(i),6,i) /= 1.0d0 ) then
-                                        defol_cor(i) = .TRUE.
-                                    end if
+                                    !if ( defoliationInputs(t_n(i),6,i) /= 1.0d0 ) then
+                                    !    defol_cor(i) = .TRUE.
+                                    !end if
 
                             !b_cor = .TRUE.
                             !thin_defol_mort_cor = .TRUE.
@@ -1595,26 +1486,6 @@ end if
                     end if
                 end if
             end do
-
-
-            !! Correct the bias
-            !if ( b_cor .eqv. .TRUE. ) then
-!
-            !    biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-            !    where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
-            !    lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-!
-            !    do n = 1, b_n
-            !        competition_total = sum( wood_density(ii,:) * basal_area(:) )
-!
-            !        call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-            !            height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-            !            dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-            !    end do
-!
-            !    b_cor = .FALSE.
-            !end if
-
 
 
 
@@ -1696,11 +1567,6 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
 
                 end if
 
-                ! convert to per-cohort stems loss safely
-                !stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
-                !                        basal_area_total * basal_area(i) / &
-                !                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
-
                 ! In single-cohort stands the thinning formulation already operates at the stand level, so no further basal-area allocation across cohorts is required.
                 if (n_sp .eq. 1) then
                     stems_loss_density(i) = mort_thinn_total
@@ -1748,79 +1614,7 @@ end if
 
 
 
-            ! Correct the bias
-            !if ( b_cor .eqv. .TRUE. ) then
-
-                !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                !where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
-                !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
-
-                !do n = 1, b_n
-                    !competition_total = sum( wood_density(ii,:) * basal_area(:) )
-!
-                    !call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                    !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-                    !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-
-                    !height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
-
-        !if( height_model .eq. 1 ) then
-
-            !height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
-
-            !crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total ** nHL3(:) * &
-            !    height_rel(:) ** nHL4(:)) !!!!!!!* (1.d0 + DrelBiasLCL(:))
-
-            !crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
-            !          height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
-
-        !else if ( height_model .eq. 2 ) then
-
-            !height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) ) !!!!!!!* &
-                      !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
-            !crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total * dbh(:) ) !!!!!!!* &
-            !          !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
-
-            !crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
-            !        height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
-
-        !else if ( height_model .eq. 3 ) then
-            !height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) !!!!!!!* (1.d0 + DrelBiasheight(:)) !20251114
-            !crown_length(:) = aHL(:) * height(:) !20251114
-
-            !crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) !!!!!!!* &
-            !          !!!!!!!(1.d0 + DrelBiasCrowndiameter(:)) !20251114
-
-        !end if
-
-
-                !end do
-
-                !b_cor = .FALSE.
-            !end if
-
-
-            ! Update dbh and basal area if there was self-thinning
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this line is still wrong and should be removed or replaced with stems_loss_density
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            !if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
-            !if ( any(stems_loss_density(:) > 0.d0) ) then
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                !dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-                !basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
-
-                !thin_defol_mort_cor = .FALSE.
-
-            !end if
-
-
             ! Additional calculations ------------------
-            !basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
-
 biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this line should be added but causes an error, it is not critical because self-thinning usually doesn't change dbh much
