@@ -2234,7 +2234,7 @@ end do
 !!
 !                !volume_old(:) = volume(:)
 !
-                b_cor = .FALSE.
+                !b_cor = .FALSE.
 !            end if
 
 
@@ -2598,7 +2598,7 @@ end if
 
 
             ! Correct the bias
-            if ( b_cor .eqv. .TRUE. ) then
+            !if ( b_cor .eqv. .TRUE. ) then
 
                 !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 !where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
@@ -2646,7 +2646,7 @@ end if
                 !end do
 
                 !b_cor = .FALSE.
-            end if
+            !end if
 
 
             ! Update dbh and basal area if there was self-thinning
