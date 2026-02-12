@@ -1329,7 +1329,7 @@ end do
                                 sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
 
 coppice_event(i) = .TRUE.
-dbh(i) = 0.d0
+dbh(i) = 0.1d0
 basal_area(i) = 0.d0
 lai(i) =  0.d0
 
