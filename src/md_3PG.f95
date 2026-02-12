@@ -1501,7 +1501,7 @@ end if
                               dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                               calculate_states, is_new(:) )
                 end if
-                coppice_event(:) = .FALSE.
+                !coppice_event(:) = .FALSE.
 
 
 
@@ -1545,8 +1545,11 @@ lt_fPhys_ave = sum(lt_fPhys(:) * basal_area_prop(:))
 ! maximum tree biomass per cohort
 biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:))**thinPower(:)
 
-! skip density mortality if any thinning/defoliation/stress mortality occurred
+! skip density mortality if any thinning/defoliation/stress mortality occurred, and also skip if there was a coppice event because the new dbh will be 0, so it will have declined
 if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6) then
+
+  if (any(coppice_event(:))) then
+
     do i = 1, n_sp
         if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
 
@@ -1620,8 +1623,11 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
 
         end if
     end do
+  end if
 end if
 
+
+coppice_event(:) = .FALSE.
 
 
             ! Additional calculations ------------------
