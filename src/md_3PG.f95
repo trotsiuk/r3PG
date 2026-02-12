@@ -2671,7 +2671,7 @@ end if
             !basal_area_prop(:) = basal_area(:) / sum( basal_area(:) )
 
 biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
-!dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
 
             ! lai has not been updated since the growth
