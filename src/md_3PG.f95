@@ -1328,7 +1328,7 @@ end do
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * defoliationInputs(d_n(i),5,i)
                                 sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
 
-coppice_event(:) = .TRUE.
+coppice_event(i) = .TRUE.
 
 ! for coppice the age and age related variables need to be updated
 ! Overwrite current and future months for this species
@@ -1477,15 +1477,20 @@ end if
 
             ! Update stand structure if there was thinning, defoliation or stress-related mortality
             if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
-
                 biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+            end if
 
-                ! if there was a coppicing event, recalculate the height, crown width and crown volume
-                competition_total = sum( wood_density(ii,:) * basal_area(:) )
+            ! Update stand structure if there was a coppice event (the above lines many not capture this because coppicing does not always lead to stem loss)
+            ! so that height, crown width and crown length are recalculated
                 is_new(:) = coppice_event(:)
                 if ( any(is_new(:)) ) then
+                          biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                          dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+                          basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+                          competition_total = sum( wood_density(ii,:) * basal_area(:) )
+
                           calculate_states = .TRUE.
                           call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                               lai(:), height_rel(:), &
@@ -1494,7 +1499,13 @@ end if
                               calculate_states, is_new(:) )
                 end if
 
-            end if
+
+
+
+
+
+
+
 
 
 
