@@ -2605,11 +2605,11 @@ end if
                 !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
                 do n = 1, b_n
-                    competition_total = sum( wood_density(ii,:) * basal_area(:) )
-
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                        height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-                        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+                    !competition_total = sum( wood_density(ii,:) * basal_area(:) )
+!
+                    !call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
+                    !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
+                    !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
                 end do
 
                 b_cor = .FALSE.
