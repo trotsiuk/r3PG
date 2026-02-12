@@ -2600,9 +2600,9 @@ end if
             ! Correct the bias
             if ( b_cor .eqv. .TRUE. ) then
 
-                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
-                lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
+                !biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                !where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
+                !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
                 do n = 1, b_n
                     competition_total = sum( wood_density(ii,:) * basal_area(:) )
