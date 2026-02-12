@@ -354,6 +354,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: prop_npp !20251124
 real(kind=kind(0.0d0)), dimension(n_sp) :: growing_season_length !20251124
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: sr_ratio !20251124
+real(kind=kind(0.0d0)) :: stem_retained_input, foliage_retained_input, root_retained_input, stem_input ! Defoliation inputs
 
 ! Water use ----------------------
 real(kind=kind(0.0d0)), dimension(n_sp) :: SWconst         ! soil parameters for soil class
