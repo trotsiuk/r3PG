@@ -2604,13 +2604,46 @@ end if
                 !where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
                 !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
 
-                do n = 1, b_n
+                !do n = 1, b_n
                     !competition_total = sum( wood_density(ii,:) * basal_area(:) )
 !
-                    call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                        height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
-                        dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-                end do
+                    !call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
+                    !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &    !20241106 correct_bias
+                    !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
+
+                          height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
+
+                          if( height_model .eq. 1 ) then
+
+                              height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
+
+                              crown_length(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * competition_total ** nHL3(:) * &
+                                  height_rel(:) ** nHL4(:)) !!!!!!!* (1.d0 + DrelBiasLCL(:))
+
+                              crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
+                                        height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
+
+                          else if ( height_model .eq. 2 ) then
+
+                              height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) ) !!!!!!!* &
+                                        !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
+                              crown_length(:) = ( Hd(:) + aHL(:) * exp(1.d0)**(-nHL1(:)/dbh(:)) + nHL3(:) * competition_total * dbh(:) ) !!!!!!!* &
+                                        !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
+
+                              crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
+                                      height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
+
+                          else if ( height_model .eq. 3 ) then
+                              height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) !!!!!!!* (1.d0 + DrelBiasheight(:)) !20251114
+                              crown_length(:) = aHL(:) * height(:) !20251114
+
+                              crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) !!!!!!!* &
+                                        !!!!!!!(1.d0 + DrelBiasCrowndiameter(:)) !20251114
+
+                          end if
+
+
+                !end do
 
                 b_cor = .FALSE.
             end if
