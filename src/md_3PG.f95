@@ -1520,9 +1520,9 @@ biom_loss_root_density(:)    = 0.d0
 biom_loss_foliage_density(:) = 0.d0
 
 ! basal area proportion per cohort
-basal_area_prop(:) = basal_area(:) / max(sum(basal_area(:)), 1.0d-12)
-where (basal_area_prop(:) < 1.0d-12)
-    basal_area_prop(:) = 1.0d-12
+basal_area_prop(:) = basal_area(:) / max(sum(basal_area(:)), 1.0d-4)
+where (basal_area_prop(:) < 1.0d-4)
+    basal_area_prop(:) = 1.0d-4
 end where
 
 ! stems per ha
