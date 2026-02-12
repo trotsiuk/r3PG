@@ -1492,13 +1492,13 @@ end if
                           competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
                           calculate_states = .TRUE.
-                          call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                              lai(:), height_rel(:), &
-                              height_model, crown_width_model, pars_i(69:88,:), &
-                              dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
-                              calculate_states, is_new(:) )
+                          !call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
+                          !    lai(:), height_rel(:), &
+                          !    height_model, crown_width_model, pars_i(69:88,:), &
+                          !    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
+                          !    calculate_states, is_new(:) )
                 end if
-
+                coppice_event(:) = .FALSE.
 
 
 
