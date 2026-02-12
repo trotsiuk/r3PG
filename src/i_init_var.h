@@ -119,6 +119,11 @@ biom_loss_stem_density(:) = 0.d0      ! 20250314
 biom_loss_foliage_density(:) = 0.d0      ! 20250314
 biom_loss_root_density(:) = 0.d0      ! 20250314
 
+! Defoliation
+stems_loss_def(:) = 0.d0 !20250314
+biom_loss_stem_def(:) = 0.d0      ! 20250314
+biom_loss_foliage_def(:) = 0.d0      ! 20250314
+biom_loss_root_def(:) = 0.d0      ! 20250314
 
 ! Defoliation
 d_n(:) = 1
