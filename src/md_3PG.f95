@@ -1486,7 +1486,7 @@ end if
             ! so that height, crown width and crown length are recalculated
                 is_new(:) = coppice_event(:)
                 if ( any(is_new(:)) ) then
-                !          biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                          biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
                 !          dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 !          basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
                 !          competition_total = sum( wood_density(ii,:) * basal_area(:) )
