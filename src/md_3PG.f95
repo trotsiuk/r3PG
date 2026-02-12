@@ -1408,14 +1408,8 @@ end if
 
 
 
-
-
-
                             ! if root biomass declined, there was mortality, so update stems_n
                             if( defoliationInputs(d_n(i),5,i) < 1.d0 ) then
-
-
-
 
 
 
@@ -1434,13 +1428,6 @@ end if
                                 stems_n(i) = stems_n(i) - stems_loss_def(i)
 
                             end if
-
-                                    !if ( defoliationInputs(t_n(i),6,i) /= 1.0d0 ) then
-                                    !    defol_cor(i) = .TRUE.
-                                    !end if
-
-                            !b_cor = .TRUE.
-                            !thin_defol_mort_cor = .TRUE.
 
                             d_n(i) = d_n(i) + 1
 
