@@ -2613,7 +2613,7 @@ end if
 
                     !height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
 
-        if( height_model .eq. 1 ) then
+        !if( height_model .eq. 1 ) then
 
             !height(:) = ( aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)) !!!!!!!* (1.d0 + DrelBiasheight(:))
 
@@ -2623,7 +2623,7 @@ end if
             !crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
             !          height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))
 
-        else if ( height_model .eq. 2 ) then
+        !else if ( height_model .eq. 2 ) then
 
             !height(:) = ( Hd(:) + aH(:) * exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:) ) !!!!!!!* &
                       !!!!!!!(1.d0 + DrelBiasheight(:)) !20251114
@@ -2633,19 +2633,19 @@ end if
             !crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * competition_total ** nK3(:) * &
             !        height_rel(:) ** nK4(:)) !!!!!!!* (1.d0 + DrelBiasCrowndiameter(:))                                        ! for crown diameter use exponential form for height_model = 1 or 2
 
-        else if ( height_model .eq. 3 ) then
+        !else if ( height_model .eq. 3 ) then
             !height(:) = ( Hd(:) + (dbh(:) ** aH(:)) / (nH1(:) + nH2(:) * (dbh(:) ** aH(:))) ) !!!!!!!* (1.d0 + DrelBiasheight(:)) !20251114
             !crown_length(:) = aHL(:) * height(:) !20251114
 
             !crown_width(:) = ( (dbh(:) ** aK(:)) / (nK1(:) + nK2(:) * (dbh(:) ** aK(:))) ) !!!!!!!* &
             !          !!!!!!!(1.d0 + DrelBiasCrowndiameter(:)) !20251114
 
-        end if
+        !end if
 
 
                 !end do
 
-                b_cor = .FALSE.
+                !b_cor = .FALSE.
             end if
 
 
