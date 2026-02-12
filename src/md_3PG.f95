@@ -1329,6 +1329,9 @@ end do
                                 sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
 
 coppice_event(i) = .TRUE.
+dbh(i) = 0.d0
+basal_area(i) = 0.d0
+lai(i) =  0.d0
 
 ! for coppice the age and age related variables need to be updated
 ! Overwrite current and future months for this species
