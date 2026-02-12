@@ -1315,8 +1315,8 @@ end do
                             def_type(i) = int( defoliationInputs(d_n(i),2,i))
                             def_recover_t(i) = defoliationInputs(d_n(i),7,i)
 
-                            prop_carbs(:) = defoliationInputs(d_n(i),8,i)
-                            prop_npp(:) = defoliationInputs(d_n(i),9,i)
+                            prop_carbs(i) = defoliationInputs(d_n(i),8,i)
+                            prop_npp(i) = defoliationInputs(d_n(i),9,i)
 
 
 
