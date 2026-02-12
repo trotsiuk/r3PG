@@ -493,18 +493,6 @@ end do
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
             ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
             ! after the previous month's using new NPP.
             do i = 1, n_sp
@@ -851,35 +839,6 @@ do i = 1, n_sp
 
 end do
 
-!!-------------------------------------------------------------
-!! Debug: save first 5 months of fT_hist and fPhys_hist
-!!-------------------------------------------------------------
-!! ------------------------------
-!        ! Optional: Save fT_hist and fPhys_hist for first 5 months
-!        ! ------------------------------
-!        if (ii <= 125) then
-!            do i = 1, n_sp
-!                ! File names
-!                write(filenameT, '(A,I0,A,I0,A)') 'fT_hist_sp', i, '_month', ii, '.csv'
-!                write(filenameP, '(A,I0,A,I0,A)') 'fPhys_hist_sp', i, '_month', ii, '.csv'
-!
-!                ! Open files for writing
-!                open(unit=301, file=filenameT, status='replace', action='write', iostat=ios)
-!                if (ios /= 0) stop 'Error opening fT_hist file'
-!
-!                open(unit=302, file=filenameP, status='replace', action='write', iostat=ios)
-!                if (ios /= 0) stop 'Error opening fPhys_hist file'
-!
-!                ! Write the lt_mod_mths elements of the circular buffer
-!                do kk = 1, lt_mod_mths
-!                    write(301, '(F12.6)') fT_hist(i, kk)
-!                    write(302, '(F12.6)') fPhys_hist(i, kk)
-!                end do
-!
-!                close(301)
-!                close(302)
-!            end do
-!        end if
 
 
 
@@ -1049,13 +1008,6 @@ end do
             ! determine biomass increments and losses
             m(:) = m0(:) + (1.d0 - m0(:)) * fertility(:)
 
-            !npp_fract_root(:) = pRx(:) * pRn(:) / (pRn(:) + (pRx(:) - pRn(:)) * f_phys * m(:))
-            !npp_fract_stem(:) = (1.d0 - npp_fract_root(:)) / (1.d0 + pFS(:))
-            !npp_fract_foliage(:) = 1.d0 - npp_fract_root(:) - npp_fract_stem(:)
-
-
-
-
               ! if still recovering from a defoliation event, modify the partitioning of npp ! 20250301
               do i = 1, n_sp
                   if ( def_recover_t(i) > 0.0d0 ) then
@@ -1164,264 +1116,27 @@ end do
             competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
 
-!hereherehere
 
 
 
 
 
 
-        !xxx888
-        !is_new(:) = (age(ii,:) >= 0.d0)
-        !if( any(age(ii,:) >= 0.d0) ) then
+        ! add increments to height, crown width and crown length
         is_new(:) = (age(ii,:) >= 0.d0) .and. ((dbh(:) - dbh_prev(:)) > 1.0d-5)
         if( any(is_new(:)) ) then
                   calculate_states = .FALSE.
-
-
-
-! the following is the states version because the increments version might not be working
                   call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                       lai(:), height_rel(:), &
                       height_model, crown_width_model, pars_i(69:88,:), &
                       dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                       calculate_states, is_new(:) )
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!                  if( height_model .eq. 1 ) then
-!                       where (is_new)
-!                           height(:) = aH(:) * dbh(:) ** nH1(:) * competition_total ** nH2(:)
-!                       end where
-!                  else if ( height_model .eq. 2 ) then
-!                       where (is_new)
-!                           height(:) = Hd(:) + aH(:) * Exp(1.d0)**(-nH1(:)/dbh(:)) + nH2(:) * competition_total * dbh(:)
-!                       end where
-!                  else if ( height_model .eq. 3 ) then
-!                      do i = 1, n_sp
-!                          if (.not. is_new(i)) cycle
-!                              !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-!                              !    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
-!                              !else
-!                              !    height(i) = Hd(i) + (dbh(i) ** aH(i)) / (  Exp(nH1(i) + nH3(i)*competition_total) + &
-!                              !         Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i))  )
-!                              !end if
-!                              if (nH3(i) < 1.0e-5) then
-!                                  if (nH4(i) < 1.0e-5) then
-!                                      height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
-!                                  else
-!                                      height(i) = Hd(i) + (dbh(i) ** aH(i)) / (Exp(nH1(i) + nH3(i)*competition_total) + &
-!                                                   Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i)))
-!                                  end if
-!                              else
-!                                  height(i) = Hd(i) + (dbh(i) ** aH(i)) / (Exp(nH1(i) + nH3(i)*competition_total) + &
-!                                               Exp(nH2(i) + nH4(i)*competition_total) * (dbh(i) ** aH(i)))
-!                              end if
-!
-!
-!
-!                      end do
-!                  end if
-!
-!                  height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
-!                  lai_total = sum( lai(:) )
-!
-!                  ! initial live-crown ratio
-!                  where (is_new)
-!                       crown_ratio(:) = ( aHL(:) * dbh(:) ** nHL1(:) * lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * &
-!                           competition_total ** nHL4(:))
-!                       crown_length(:) = crown_ratio(:) * height(:)
-!                  end where
-!
-!                  ! initial crown width
-!                  if( crown_width_model .eq. 1 ) then
-!                      where (is_new)
-!                          crown_width(:) = ( aK(:) * dbh(:) ** nK1(:) * height(:) ** nK2(:) * height_rel(:) ** nK3(:) * &
-!                                    competition_total ** nK4(:))
-!                      end where
-!                  else if ( crown_width_model .eq. 2 ) then
-!                      where (is_new)
-!                          crown_width(:) = aK(:) * Exp(1.d0)**(-nK1(:)/dbh(:)) + nK2(:) * competition_total * dbh(:)
-!                      end where
-!                  else if ( crown_width_model .eq. 3 ) then
-!                      do i = 1, n_sp
-!                          if (.not. is_new(i)) cycle
-!                              !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-!                              !    crown_width(i) = (dbh(i) ** aK(i)) / (nK1(i) + nK2(i) * (dbh(i) ** aK(i)))
-!                              !else
-!                              !    crown_width(i) = (dbh(i) ** aK(i)) / (  Exp(nK1(i) + nK3(i)*competition_total) + &
-!                              !         Exp(nK2(i) + nK4(i)*competition_total) * (dbh(i) ** aK(i))  )
-!                              !end if
-!
-!                              if (nK3(i) < 1.0e-5) then
-!                                  if (nK4(i) < 1.0e-5) then
-!                                      crown_width(i) = (dbh(i) ** aK(i)) / (nK1(i) + nK2(i) * (dbh(i) ** aK(i)))
-!                                  else
-!                                      crown_width(i) = (dbh(i) ** aK(i)) / (Exp(nK1(i) + nK3(i)*competition_total) + &
-!                                                    Exp(nK2(i) + nK4(i)*competition_total) * (dbh(i) ** aK(i)))
-!                                  end if
-!                              else
-!                                  crown_width(i) = (dbh(i) ** aK(i)) / (Exp(nK1(i) + nK3(i)*competition_total) + &
-!                                                Exp(nK2(i) + nK4(i)*competition_total) * (dbh(i) ** aK(i)))
-!                              end if
-!
-!
-!
-!
-!                      end do
-!                  end if
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  !call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                  !    lai(:), height_rel(:), &
-                  !    height_model, crown_width_model, pars_i(69:88,:), &
-                  !    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
-                  !    calculate_states, is_new(:) )
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!                  if( height_model .eq. 1 ) then
-!                      where (is_new)
-!                           height(:) = height(:) + aH(:) * nH1(:) * (dbh(:) ** (nH1(:) - 1)) * &
-!                                       ( competition_total ** nH2(:) ) * ( dbh(:) - dbh_prev(:) )
-!                      end where
-!                  else if ( height_model .eq. 2 ) then
-!                      where (is_new)
-!                           height(:) = height(:) + ( aH(:) * Exp(-nH1(:)/dbh(:) ) * nH1(:)/(dbh(:)*dbh(:)) + nH2(:) * &
-!                                       competition_total) * ( dbh(:) - dbh_prev(:) )
-!                      end where
-!                  else if ( height_model .eq. 3 ) then
-!                      do i = 1, n_sp
-!                         if (.not. is_new(i)) cycle
-!                             !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-!                             !    height(i) = height(i) + ( aH(i) * nH1(i) * dbh(i) ** (aH(i) - 1) ) / &
-!                             !                 (( nH1(i) + nH2(i) * dbh(i) ** aH(i) ) ** 2) * ( dbh(i) - dbh_prev(i) )
-!                             !else
-!                             !    height(i) = height(i) + ( aH(i) * Exp(nH1(i) + nH3(i) * competition_total) * &
-!                             !                 dbh(i) ** (aH(i) - 1) ) / ((Exp(nH1(i) + nH3(i) * competition_total) + &
-!                             !                 Exp(nH2(i) + nH4(i) * competition_total) * dbh(i) ** aH(i) ) ** 2) * &
-!                             !                 ( dbh(i) - dbh_prev(i) )
-!                             !end if
-!                             if (nH3(i) < 1.0e-5) then
-!                                 if (nH4(i) < 1.0e-5) then
-!                                     height(i) = height(i) + (aH(i) * nH1(i) * dbh(i) ** (aH(i) - 1)) / &
-!                                                  ((nH1(i) + nH2(i) * dbh(i) ** aH(i)) ** 2) * (dbh(i) - dbh_prev(i))
-!                                 else
-!                                     height(i) = height(i) + (aH(i) * Exp(nH1(i) + nH3(i) * competition_total) * &
-!                                                  dbh(i) ** (aH(i) - 1)) / ((Exp(nH1(i) + nH3(i) * competition_total) + &
-!                                                  Exp(nH2(i) + nH4(i) * competition_total) * dbh(i) ** aH(i)) ** 2) * &
-!                                                  (dbh(i) - dbh_prev(i))
-!                                 end if
-!                             else
-!                                 height(i) = height(i) + (aH(i) * Exp(nH1(i) + nH3(i) * competition_total) * &
-!                                              dbh(i) ** (aH(i) - 1)) / ((Exp(nH1(i) + nH3(i) * competition_total) + &
-!                                              Exp(nH2(i) + nH4(i) * competition_total) * dbh(i) ** aH(i)) ** 2) * &
-!                                              (dbh(i) - dbh_prev(i))
-!                             end if
-!                      end do
-!                  end if
-!                  height_rel(:) = height(:) / ( sum( height(:) * stems_n(:) ) / sum( stems_n(:) ) )
-!                  lai_total = sum( lai(:) )
-!                  ! initial live-crown ratio
-!                  !where (is_new .and. dbh(:) > 0.0d0 .and. aHL(:) > 0.0d0)
-!                  !    crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
-!                  !                     lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
-!                  !                     ( dbh(:) - dbh_prev(:) )
-!                  !    crown_length(:) = crown_ratio(:) * height(:)
-!                  !end where
-!                  where (is_new)
-!                      where (dbh(:) > 0.0d0)
-!                          where (aHL(:) > 0.0d0)
-!                              crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
-!                                               lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
-!                                               (dbh(:) - dbh_prev(:))
-!                              crown_length(:) = crown_ratio(:) * height(:)
-!                          end where
-!                      end where
-!                  end where
-!                  ! initial crown width
-!                  if( crown_width_model .eq. 1 ) then
-!                      where (is_new)
-!                          crown_width(:) = crown_width(:) + aK(:) * nK1(:) * (dbh(:) ** (nK1(:) - 1)) * &
-!                                      ( competition_total ** nK2(:) ) * ( dbh(:) - dbh_prev(:) )
-!                      end where
-!                  else if ( crown_width_model .eq. 2 ) then
-!                      where (is_new)
-!                          crown_width(:) = crown_width(:) + ( aK(:) * Exp(-nK1(:)/dbh(:) ) * nK1(:)/(dbh(:)*dbh(:)) + nK2(:) * &
-!                                      competition_total) * ( dbh(:) - dbh_prev(:) )
-!                      end where
-!                  else if ( crown_width_model .eq. 3 ) then
-!                      do i = 1, n_sp
-!                          if (.not. is_new(i)) cycle
-!                             !if ( nH3(i) < 1.0e-5 .and. nH4(i) < 1.0e-5 ) then
-!                             !    crown_width(i) = crown_width(i) + ( aK(i) * nK1(i) * dbh(i) ** (aK(i) - 1) ) / &
-!                             !                 (( nK1(i) + nK2(i) * dbh(i) ** aK(i) ) ** 2) * ( dbh(i) - dbh_prev(i) )
-!                             !else
-!                             !    crown_width(i) = crown_width(i) + ( aK(i) * Exp(nK1(i) + nK3(i) * competition_total) * &
-!                             !                 dbh(i) ** (aK(i) - 1) ) / ((Exp(nK1(i) + nK3(i) * competition_total) + &
-!                             !                 Exp(nK2(i) + nK4(i) * competition_total) * dbh(i) ** aK(i) ) ** 2) * &
-!                             !                 ( dbh(i) - dbh_prev(i) )
-!                             !end if
-!                             if (nK3(i) < 1.0e-5) then
-!                                 if (nK4(i) < 1.0e-5) then
-!                                     crown_width(i) = crown_width(i) + (aK(i) * nK1(i) * dbh(i) ** (aK(i) - 1)) / &
-!                                                      ((nK1(i) + nK2(i) * dbh(i) ** aK(i)) ** 2) * (dbh(i) - dbh_prev(i))
-!                                 else
-!                                     crown_width(i) = crown_width(i) + (aK(i) * Exp(nK1(i) + nK3(i) * competition_total) * &
-!                                                      dbh(i) ** (aK(i) - 1)) / ((Exp(nK1(i) + nK3(i) * competition_total) + &
-!                                                      Exp(nK2(i) + nK4(i) * competition_total) * dbh(i) ** aK(i)) ** 2) * &
-!                                                      (dbh(i) - dbh_prev(i))
-!                                 end if
-!                             else
-!                                 crown_width(i) = crown_width(i) + (aK(i) * Exp(nK1(i) + nK3(i) * competition_total) * &
-!                                                  dbh(i) ** (aK(i) - 1)) / ((Exp(nK1(i) + nK3(i) * competition_total) + &
-!                                                  Exp(nK2(i) + nK4(i) * competition_total) * dbh(i) ** aK(i)) ** 2) * &
-!                                                  (dbh(i) - dbh_prev(i))
-!                             end if
-!                      end do
-!                  end if
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         end if
 
 
 
 
 
-
-
-
-            !do n = 1, b_n
-                !competition_total = sum( wood_density(ii,:) * basal_area(:) )
-                !call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-                !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-
-                !call s_sizeDist_correct(n_sp, age(ii,:), stems_n(:), biom_tree(:), competition_total, lai(:), &
-                !    height_model,  pars_i(69:88,:), pars_b, aWs(:), nWs(:), pfsPower(:), pfsConst(:), &
-                !    dbh(:), basal_area(:), height(:), crown_length(:), crown_width(:), pFS(:), bias_scale(:,:) )
-            !end do
 
             ! Volume and Volume increment
             ! This is done before thinning and mortality part
