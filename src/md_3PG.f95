@@ -21,7 +21,7 @@ contains
         integer(kind=c_int), intent(in) :: n_m
         integer(kind=c_int), intent(in) :: n_sp
         integer(kind=c_int), intent(in) :: n_man, n_def ! number of management and defoliation interventions
-        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t, d_t! number of management and defoliation interventions
+        integer(kind=c_int), dimension(n_sp), intent(in) :: t_t, d_t! counter of management and defoliation interventions
         integer(kind=c_int), dimension(8), intent(in) :: settings    ! settings to indicate which equations to use
 
         ! Initial, forcing, parameters
@@ -80,7 +80,6 @@ contains
         fCg0(:) = fCg700(:) / (2.d0 * fCg700(:) - 1.d0)
 
         ! Generate the sequence of months
-        ! we need it to calculate the frost days and limit it
         month = month_i
         do i = 1, n_m
             month_vector(i) = month
@@ -121,9 +120,7 @@ contains
         ! SOIL WATER --------
         ! Assign the SWconst and SWpower parameters for this soil class
         if ( soil_class > 0.d0 ) then
-            ! Standard soil type
-            !SWconst(:) = 0.8d0 - 0.10d0 * soil_class
-            !SWpower(:) = 11.d0 - 2.d0 * soil_class
+            ! Standard soil types
             if (soil_class == 1) then        ! Clay !20251124
                SWconst(:) = 0.4d0
                SWpower(:) = 3.0d0
@@ -221,8 +218,6 @@ contains
                 f_age(:,i) = 1.d0 / (1.d0 + ( (age_m(:,i) / MaxAge(i) ) / rAge(i)) ** nAge(i))
             end if
 
-            !age(:,i) = age(:,i) + 1.d0 ! that how the VBA works
-
         end do
 
 
@@ -237,7 +232,7 @@ contains
           biom_root(:) = biom_root_i(:)
         end where
 
-        ! Check if this is the dormant period or previous/following period is dormant
+        ! Check if this is the dormant period or whether the previous or following month was/is dormant
         ! to allocate foliage if needed, etc.
         do i = 1, n_sp
             ! if this is a dormant month
@@ -257,12 +252,12 @@ contains
           crown_ratio(:) = 1.d0
         end where
 
-! for background mortality calculations where mort_model = 2 !20251124
-stems_n_total  = max(sum(stems_n(:)), 1.0d-6)
-basal_area_total = max(sum(basal_area(:)), 1.0d-6)
-dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
-dbh_prev(:) = dbh(:)
-dbh_total_prev = dbh_total
+        ! for background mortality calculations where mort_model = 2
+        stems_n_total  = max(sum(stems_n(:)), 1.0d-6)
+        basal_area_total = max(sum(basal_area(:)), 1.0d-6)
+        dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+        dbh_prev(:) = dbh(:)
+        dbh_total_prev = dbh_total
 
 
         ! update height, crown diameter and crown length
@@ -304,89 +299,58 @@ dbh_total_prev = dbh_total
         where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
 
 
-
-
-
-
-        !Height_max = maxval( height(:), mask=lai(:)>0.d0 )
-
         ! Volume and Volume increment
         volume(:) = biom_stem(:) * (1.d0 - fracBB(ii,:)) / wood_density(ii,:)
         where( aV(:) > 0 ) volume(:) = aV(:) * dbh(:) ** nVB(:) * height(:) ** nVH(:) * &
                 (dbh(:) * dbh(:) * height(:)) ** nVBH(:) * stems_n(:)
-
         volume_cum(:) = volume(:)
         volume_old(:) = volume(:)
-
         volume_mai(:) = volume_cum(:) / age(ii,:)
 
 
 
 
+        ! Long-term modifiers initialization
+        if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
+        lt_fT(:) = 1.0d0
+        if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
+        lt_fPhys(:) = 1.0d0
+        if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
+        fT_hist(:,:) = 1.0d0
+        if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
+        fPhys_hist(:,:) = 1.0d0
+        if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
 
+        do i = 1, n_sp
+            ! soil nutrition modifier
+            lt_fN(i) = 1.d0 - (1.d0 - fN0(i)) * (1.d0 - fertility(i)) ** fNn(i)
+            if (fNn(i) == 0.d0) then
+            lt_fN(i) = 1.d0
+            end if
+            ! Temperature (lt_fT)
+            lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+            fT_hist(i,1:lt_mod_mths) = lt_fT(i)
+            ! PhysMod (lt_fPhys)
+            ! Exclude the first month of VPD (to avoid initial zeros)
+            vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
+            ! ASW uses the constant directly
+            f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(i)) ** SWpower(i)) !1.d0 - 1.d0 is because ASW = asw_max
+            f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
 
-!-----------------------------
-! Long-term modifiers initialization
-!-----------------------------
-if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
-lt_fT(:) = 1.0d0
+            if (phys_model .eq. 1) then
+                f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
+            else
+                f_phys_tmp = f_sw_tmp * f_vpd_tmp
+            end if
 
-if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
-lt_fPhys(:) = 1.0d0
+            lt_fPhys(i) = f_phys_tmp
 
-if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
-fT_hist(:,:) = 1.0d0
+            ! Ensure the entire row contains the correct long-term modifier
+            fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
 
-if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
-fPhys_hist(:,:) = 1.0d0
-
-if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
-
-
-do i = 1, n_sp
-
-
-    ! soil nutrition modifier
-    lt_fN(i) = 1.d0 - (1.d0 - fN0(i)) * (1.d0 - fertility(i)) ** fNn(i)
-    if (fNn(i) == 0.d0) then
-    lt_fN(i) = 1.d0
-    end if
-
-    !---------------------------
-    ! 1) Temperature (lt_fT)
-    !---------------------------
-    lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
-    fT_hist(i,1:lt_mod_mths) = lt_fT(i)
-
-    !---------------------------
-    ! 2) Physiological (lt_fPhys)
-    ! Exclude the first month of VPD (to avoid initial zeros)
-    !---------------------------
-    vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
-
-    ! ASW uses the constant directly
-    f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(i)) ** SWpower(i)) !1.d0 - 1.d0 is because ASW = asw_max
-    f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
-
-    if (phys_model .eq. 1) then
-        f_phys_tmp = min(f_sw_tmp, f_vpd_tmp)
-    else
-        f_phys_tmp = f_sw_tmp * f_vpd_tmp
-    end if
-
-    lt_fPhys(i) = f_phys_tmp
-
-    ! Ensure the entire row contains the correct long-term modifier
-    fPhys_hist(i,1:lt_mod_mths) = f_phys_tmp
-
-    !---------------------------
-    ! Initialize circular buffer pointer
-    !---------------------------
-    hist_ptr(i) = lt_mod_mths   ! start at the last element
-
-end do
-
-
+            ! Initialize circular buffer pointer
+            hist_ptr(i) = lt_mod_mths   ! start at the last element
+        end do
 
 
 
@@ -426,13 +390,10 @@ end do
             end where
 
 
-
-
             ! calculate partitioning parameter
             do i = 1, n_sp
                 pFS(i) = ( pfsConst(i) * dbh(i) ** pfsPower(i))
             end do
-
 
 
             ! Test for dormancy ----------------------------------------------------------------------
@@ -483,12 +444,12 @@ end do
             ! after the previous month's using new NPP.
             do i = 1, n_sp
 
-                   if (def_recover_t(i) > 0.0d0) then
-                       if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then ! def_recover_t(i) > 0 (not 0.0d0) indicates that there has been a defoliation event
+                   if (def_recover_t(i) > 0.0d0) then ! indicates that there has been a defoliation event
+                       if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then
                            def_recover_t(i) = 0.0d0
 
-                           ! Adjust roots if def_type is 2 and sr_ratio indicates excess roots
-                           ! The recovery has finished, but if there are more roots than sr_ratio, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
+                           ! Adjust roots if def_type is 2 (coppice) and sr_ratio indicates excess roots
+                           ! The recovery has finished, but if there are more roots than sr_ratio suggests, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
                            if (def_type(i) == 2) then
                                if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
                                    biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
@@ -505,7 +466,7 @@ end do
                                def_recover_t(i) = 0.0d0
 
                                ! Adjust roots based on sr_ratio
-                               ! The recovery has finished, but if there are more roots than sr_ratio, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
+                               ! The recovery has finished, but if there are more roots than sr_ratio suggests, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
                                if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
                                    biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
                                    biom_root(i) = (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
@@ -538,12 +499,8 @@ end do
 
 
 
-
-
-! Add any biomass coming from stored non-structural carbohydrates if still recovering from a defoliation event
+          ! Add any biomass coming from stored non-structural carbohydrates if still recovering from a defoliation event
           do i = 1, n_sp
-
-
 
                 if( def_recover_t(i) > 0.d0 ) then
                    ! if still in within the first year of a defoliation event
@@ -551,26 +508,18 @@ end do
 
                          if(age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 ) then
 
-
                               if( def_type(i) == 1 .or. def_type(i) == 3 ) then !prune or epicormic response
 
                                   if( leafgrow(i) < 1.0d-4 ) then ! evergreen species
 
                                     if( def_recover_t(i) < 12.d0 ) then
                                     biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / def_recover_t(i)
-
                                     else
-
                                     biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / 12.d0
-
                                     end if
-
-                                    !b_cor = .TRUE.
 
                                   end if
 
-
-                                  !if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then ! deciduous species
                                   if( leafgrow(i) > 1.0d-4 ) then ! deciduous species
 
                                       if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then
@@ -585,19 +534,10 @@ end do
                                         if( def_recover_t(i) < 12.d0 ) then
                                         biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
                                         (def_recover_t(i) * growing_season_length(i) / 12.d0)
-
                                         else
-                                        !!!!!!!!!!!!!!!!!!!!!
-                                        !!!!!!!!!the following 2 lines need to be in, but currently cause an error
-                                        !!!!!!!!!!!!!!!!!!!!!
                                         biom_incr_foliage_def(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / &
                                         growing_season_length(i)
-                                        !!!!!!!!!!!!!!!!!!!!!
-                                        !!!!!!!!!!!!!!!!!!!!!
-                                        !!!!!!!!!!!!!!!!!!!!!
                                         end if
-
-                                        !b_cor = .TRUE.
 
                                       end if
 
@@ -607,13 +547,8 @@ end do
 
 
 
-
-
-
                               if( def_type(i) == 2) then !coppice response
-
                                   if( leafgrow(i) == 0 ) then  ! evergreen species
-
                                     if( def_recover_t(i) < 12.d0 ) then
                                     biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
                                     biom_foliage_adj_pre_def(i) / def_recover_t(i)
@@ -628,17 +563,11 @@ end do
                                     biom_foliage_adj_pre_def(i) / 12.d0
 
                                     end if
-
-                                    !b_cor = .TRUE.
-
                                   end if
 
 
-                                  !if( leafgrow(i) > 1.0d-4 .and. f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
-                                  if( leafgrow(i) > 1.0d-4 ) then
-
-                                     if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous species
-
+                                  if( leafgrow(i) > 1.0d-4 ) then ! deciduous species
+                                     if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous, but not the dormant season
 
                                         ! calculate growing season length
                                         if ( leafgrow(i) > leaffall(i) ) then
@@ -652,26 +581,14 @@ end do
                                         biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
                                         biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
                                         biom_foliage_adj_pre_def(i) / (def_recover_t(i) * growing_season_length(i) / 12.d0)
-
                                         else
-                                        !!!!!!!!!!!!!!!!!!!!!
-                                        !!!!!!!!!the following 2 lines need to be in, but currently cause an error
-                                        !!!!!!!!!!!!!!!!!!!!!
                                         biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
                                         biom_foliage_adj_pre_def(i) / growing_season_length(i)
                                         biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
                                         biom_foliage_adj_pre_def(i) / growing_season_length(i)
-                                        !!!!!!!!!!!!!!!!!!!!!
-                                        !!!!!!!!!!!!!!!!!!!!!
-                                        !!!!!!!!!!!!!!!!!!!!!
                                         end if
-
-                                        !b_cor = .TRUE.
-
                                      end if
-
                                   end if
-
                               end if
                          end if
                    end if
@@ -680,7 +597,6 @@ end do
 
                      biom_incr_foliage_def(i) = 0.0d0
                      biom_incr_stem_def(i) = 0.0d0
-
 
                 end if
 
@@ -720,13 +636,7 @@ end do
                      end if
                  end if
 
-
-
-
           end do
-
-
-
 
 
 
@@ -756,8 +666,7 @@ end do
             end if
 
 
-            ! Determine the various environmental modifiers which were not calculated before
-            ! calculate VPD modifier
+            ! Determine the various environmental modifiers which were not already calculated
             ! Get within-canopy climatic conditions this is exponential function
             Height_max = maxval( height(:), mask=lai(:)>0.d0 )
 
@@ -800,30 +709,23 @@ end do
 
 
 
-!-------------------------------------------------------------
-! Monthly update of long-term modifiers
-!-------------------------------------------------------------
-do i = 1, n_sp
 
-    ! Skip species not yet planted
-    if (age(ii, i) < 0.d0) cycle
+            ! Monthly update of long-term modifiers
+            do i = 1, n_sp
+                ! Skip species not yet planted
+                if (age(ii, i) < 0.d0) cycle
+                ! Update circular buffer index
+                hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
 
-    ! Update circular buffer index
-    hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
+                ! Temperature (lt_fT)
+                fT_hist(i, hist_ptr(i)) = f_tmp(ii, i)
+                lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
-    !---------------------------
-    ! 1) Temperature (lt_fT)
-    !---------------------------
-    fT_hist(i, hist_ptr(i)) = f_tmp(ii, i)
-    lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
+                ! PhysMod (lt_fPhys) — exclude age effect
+                fPhys_hist(i, hist_ptr(i)) = f_phys(i) / f_age(ii, i)
+                lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
 
-    !---------------------------
-    ! 2) Physiological (lt_fPhys) — exclude age effect
-    !---------------------------
-    fPhys_hist(i, hist_ptr(i)) = f_phys(i) / f_age(ii, i)
-    lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-
-end do
+            end do
 
 
 
@@ -843,7 +745,6 @@ end do
             ! Calculate each specie proportion
             lai_total = sum( lai(:) )
             lai_per(:) = lai(:) / lai_total
-            !where( lai_total .eq. 0.d0 ) lai_per(:) = 0.d0
             do i = 1, n_sp
                 if (lai_total == 0.d0) lai_per(i) = 0.d0
             end do
@@ -902,7 +803,7 @@ end do
 
             if ( ( transp_total + prcp_interc_total ) == 0 ) then
                 !this might be close to 0 if the only existing species is dormant during this month
-                ! (it will include the soil evaporation if Apply3PGpjswaterbalance = no)
+                ! (it will include the soil evaporation if transp_model = 2)
                 f_transp_scale = 1.
             else
                 f_transp_scale = evapo_transp / (transp_total + prcp_interc_total)  !scales NPP and GPP
@@ -912,7 +813,7 @@ end do
             GPP(:) = GPP(:) * f_transp_scale
             NPP(:) = NPP(:) * f_transp_scale
 
-            !! also adjust the defoliation-related components that have already been calculated independently
+            ! Adjust the defoliation-related components that have already been calculated
             biom_incr_foliage_def(:) = biom_incr_foliage_def(:) * f_transp_scale
             biom_incr_stem_def(:) = biom_incr_stem_def(:) * f_transp_scale
 
@@ -991,20 +892,20 @@ end do
 
 
             ! Biomass increment and loss module ----------------------------------------------
-            ! determine biomass increments and losses
+            ! Determine biomass increments and losses
             m(:) = m0(:) + (1.d0 - m0(:)) * fertility(:)
 
-              ! if still recovering from a defoliation event, modify the partitioning of npp ! 20250301
+              ! If still recovering from a defoliation event, modify the partitioning of npp
               do i = 1, n_sp
                   if ( def_recover_t(i) > 0.0d0 ) then
                       if ( def_type(i) == 1 .or. def_type(i) == 3 ) then  ! prune or epicormic, so all NPP to foliage
 
-                          ! first calculate usual values
+                          ! First, calculate usual values
                           npp_fract_root(i) = pRx(i) * pRn(i) / (pRn(i) + (pRx(i) - pRn(i)) * f_phys(i) * m(i))
                           npp_fract_stem(i) = (1.0d0 - npp_fract_root(i)) / (1.0d0 + pFS(i))
                           npp_fract_foliage(i) = 1.0d0 - npp_fract_root(i) - npp_fract_stem(i)
 
-                          ! secondly calculate new values
+                          ! Second, calculate new values
                           npp_fract_root(i) = npp_fract_root(i) * (( npp_fract_root(i) + npp_fract_stem(i))- &
                           (max(prop_npp(i),npp_fract_foliage(i)) - npp_fract_foliage(i)))/( npp_fract_root(i) + npp_fract_stem(i))
                           npp_fract_stem(i) = npp_fract_stem(i) * (( npp_fract_root(i) + npp_fract_stem(i))- &
@@ -1015,12 +916,12 @@ end do
 
                       if ( def_type(i) == 2 ) then  ! coppice, so all NPP to foliage and stems
 
-                          ! first calculate usual values
+                          ! First, calculate usual values
                           npp_fract_root(i) = pRx(i) * pRn(i) / (pRn(i) + (pRx(i) - pRn(i)) * f_phys(i) * m(i))
                           npp_fract_stem(i) = (1.0d0 - npp_fract_root(i)) / (1.0d0 + pFS(i))
                           npp_fract_foliage(i) = 1.0d0 - npp_fract_root(i) - npp_fract_stem(i)
 
-                          ! secondly calculate new values
+                          ! Second, calculate new values
                           npp_fract_foliage(i) = max(prop_npp(i),(npp_fract_foliage(i) + npp_fract_stem(i))) * &
                           npp_fract_foliage(i) / (npp_fract_foliage(i) + npp_fract_stem(i))
 
@@ -1095,30 +996,22 @@ end do
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
             where( stems_n(:) .eq. 0.d0 ) biom_tree(:) = 0.d0
 
-            !xxx888
             dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-            !lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
             basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
             competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
 
 
-
-
-
-
-
-        ! add increments to height, crown width and crown length
-        is_new(:) = (age(ii,:) >= 0.d0) .and. ((dbh(:) - dbh_prev(:)) > 1.0d-5)
-        if( any(is_new(:)) ) then
-                  calculate_states = .FALSE.
-                  call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                      lai(:), height_rel(:), &
-                      height_model, crown_width_model, pars_i(69:88,:), &
-                      dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
-                      calculate_states, is_new(:) )
-        end if
-
+            ! add increments to height, crown width and crown length
+            is_new(:) = (age(ii,:) >= 0.d0) .and. ((dbh(:) - dbh_prev(:)) > 1.0d-5)
+            if( any(is_new(:)) ) then
+                      calculate_states = .FALSE.
+                      call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
+                          lai(:), height_rel(:), &
+                          height_model, crown_width_model, pars_i(69:88,:), &
+                          dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
+                          calculate_states, is_new(:) )
+            end if
 
 
 
@@ -1133,16 +1026,14 @@ end do
             volume_change(:) = volume(:) - volume_old(:)
             where( lai(:) .eq. 0.d0 ) volume_change(:) = 0.d0
             where( volume_change(:) .le. 0.d0 ) volume_change(:) = 0.d0
-
             volume_cum(:) = volume_cum(:) + volume_change(:)
             volume_old(:) = volume(:)
-
             volume_mai(:) = volume_cum(:) / age(ii,:)
 
 
 
             ! Management -------------------------------------------------------------------------
-            !reset mortality value !20250301
+            !reset mortality value
             stems_loss_manag(:) = 0.d0
             biom_loss_stem_manag(:) = 0.d0
             biom_loss_root_manag(:) = 0.d0
@@ -1176,7 +1067,6 @@ end do
                                                manag_remove_prop_compartment(2) = manag_remove_prop * managementInputs(t_n(i),4,i)  ! root
                                                manag_remove_prop_compartment(3) = manag_remove_prop * managementInputs(t_n(i),5,i)  ! foliage
 
-
                                           ! clamp compartments to 0–1
                                           if ( manag_remove_prop_compartment(1) < 0.d0 ) manag_remove_prop_compartment(1) = 0.d0
                                           if (manag_remove_prop_compartment(1) > 1.d0 ) manag_remove_prop_compartment(1) = 1.d0
@@ -1185,8 +1075,7 @@ end do
                                           if ( manag_remove_prop_compartment(3) < 0.d0 ) manag_remove_prop_compartment(3) = 0.d0
                                           if (manag_remove_prop_compartment(3) > 1.d0 ) manag_remove_prop_compartment(3) = 1.d0
 
-
-                                               ! --- compute biomass losses ---
+                                               ! calculate biomass losses
                                                biom_loss_stem_manag(i)   = biom_stem(i)   * manag_remove_prop_compartment(1)
                                                biom_loss_root_manag(i)   = biom_root(i)   * manag_remove_prop_compartment(2)
 
@@ -1200,7 +1089,6 @@ end do
                                                  if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
                                                end if
 
-
                                                    ! apply reductions
                                                    stems_n(i) = stems_n(i) - stems_loss_manag(i)
                                                    if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
@@ -1208,9 +1096,6 @@ end do
                                                    if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
                                                    biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
                                                    if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
-
-                                                   !b_cor = .TRUE.
-                                                   !thin_defol_mort_cor = .TRUE.
                                         end if
 
                                    end if
@@ -1240,7 +1125,7 @@ end do
                                              if ( biom_foliage(i) < 0.d0 ) biom_foliage(i) = 0.d0
                                           end if
 
-                                            ! ---- IMPLIED TREE REMOVAL ----
+                                            ! prevent negative values
                                             if ( managementInputs(t_n(i),3,i) <= 0.d0 ) then
                                                stems_loss_manag(i) = stems_n(i)
                                             else
@@ -1250,17 +1135,13 @@ end do
                                                if ( stems_loss_manag(i) > stems_n(i) ) stems_loss_manag(i) = stems_n(i)
                                             end if
 
-                                            ! --- APPLY ALL REDUCTIONS AT END ---
+                                            ! adjust stems_n and biomass
                                             stems_n(i) = stems_n(i) - stems_loss_manag(i)
                                             if ( stems_n(i) < 0.d0 ) stems_n(i) = 0.d0
                                             biom_stem(i) = biom_stem(i) - biom_loss_stem_manag(i)
                                             if ( biom_stem(i) < 0.d0 ) biom_stem(i) = 0.d0
                                             biom_root(i) = biom_root(i) - biom_loss_root_manag(i)
                                             if ( biom_root(i) < 0.d0 ) biom_root(i) = 0.d0
-
-                                            !b_cor = .TRUE.
-                                            !thin_defol_mort_cor = .TRUE.
-
                                        end if
                                    end if
 
@@ -1285,11 +1166,9 @@ end do
             biom_loss_root_def(:) = 0.d0
             biom_loss_foliage_def(:) = 0.d0
             def_type(:) = 0
-            !defol_cor(:) = .FALSE.
             coppice_event(:) = .FALSE.
 
             do i = 1, n_sp
-
 
                 if( d_t(i) > 0 ) then
 
@@ -1314,57 +1193,55 @@ end do
                             if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * root_retained_input ! depends on how many trees died as defined by root mass loss
                                 sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
+
                             else if (def_type(i) == 2 ) then ! also depends on how many trees died, but age needs to be adjusted as well
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * root_retained_input
                                 sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
+                                coppice_event(i) = .TRUE.
+                                dbh(i) = 0.1d0
+                                basal_area(i) = 0.d0
+                                lai(i) =  0.d0
 
-coppice_event(i) = .TRUE.
-dbh(i) = 0.1d0
-basal_area(i) = 0.d0
-lai(i) =  0.d0
+                                ! for coppice the age and age related variables need to be updated
+                                ! Overwrite current and future months for this species
+                                do jj = ii, n_m
+                                    age(jj,i)   = 1.d0/12.d0 + (jj - ii) / 12.d0
+                                    age_m(jj,i) = age(jj,i) - 1.d0/12.d0
+                                end do
 
-! for coppice the age and age related variables need to be updated
-! Overwrite current and future months for this species
-do jj = ii, n_m
-    age(jj,i)   = 1.d0/12.d0 + (jj - ii) / 12.d0
-    age_m(jj,i) = age(jj,i) - 1.d0/12.d0
-end do
-!age(ii,i) = 1.d0 / 12.d0
-!! Previous-month age (age_m)
-!age_m(ii,i) = age(ii,i) - 1.d0 / 12.d0
-if (ii == 1) then
-age_m(ii,i) = age(ii,i)
-end if
+                                if (ii == 1) then
+                                age_m(ii,i) = age(ii,i)
+                                end if
 
-! Age-dependent traits
+                                ! Age-dependent traits
 
-! SLA
-tmp_vec = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
-SLA(ii,i) = tmp_vec(1)
+                                ! SLA
+                                tmp_vec = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
+                                SLA(ii,i) = tmp_vec(1)
 
-! fracBB
-tmp_vec = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
-fracBB(ii,i) = tmp_vec(1)
+                                ! fracBB
+                                tmp_vec = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
+                                fracBB(ii,i) = tmp_vec(1)
 
-! wood density
-tmp_vec = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)
-wood_density(ii,i) = tmp_vec(1)
+                                ! wood density
+                                tmp_vec = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)
+                                wood_density(ii,i) = tmp_vec(1)
 
-! gammaN
-tmp_vec = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
-gammaN(ii,i) = tmp_vec(1)
+                                ! gammaN
+                                tmp_vec = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
+                                gammaN(ii,i) = tmp_vec(1)
 
-! gammaF
-tmp_vec = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))
-gammaF(ii,i) = tmp_vec(1)
+                                ! gammaF
+                                tmp_vec = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))
+                                gammaF(ii,i) = tmp_vec(1)
 
 
-! Age modifier f_age
-if (nAge(i) == 0.d0) then
-    f_age(ii,i) = 1.d0
-else
-    f_age(ii,i) = 1.d0 / ( 1.d0 + ( ((age_m(ii,i)/MaxAge(i)) / rAge(i)) ** nAge(i) ) )
-end if
+                                ! Age modifier f_age
+                                if (nAge(i) == 0.d0) then
+                                    f_age(ii,i) = 1.d0
+                                else
+                                    f_age(ii,i) = 1.d0 / ( 1.d0 + ( ((age_m(ii,i)/MaxAge(i)) / rAge(i)) ** nAge(i) ) )
+                                end if
 
                             else if (def_type(i) == 4) then ! 4 = stand replacing
                                 def_recover_t(i) = 0.d0
@@ -1373,7 +1250,6 @@ end if
                             end if
 
                             age_last_def_event(i) = age(ii, i)
-
 
                             ! adjust biomass pools due to defoliation
                             if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .TRUE.) then
@@ -1386,7 +1262,6 @@ end if
                                     def_recover_t(i) = 0.d0
                                 end if
                             else
-                                !biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - defoliationInputs(d_n(i),3,i)) * (1.d0 - defoliationInputs(d_n(i),4,i)) !defol_stem_mass_prop_retained
                                 biom_loss_foliage_def(i) = biom_foliage(i) * (1.d0 - root_retained_input * &
                                 foliage_retained_input) !defol_stem_mass_prop_retained
                                 biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_def(i)
@@ -1403,13 +1278,10 @@ end if
                             ! if root biomass declined, there was mortality, so update stems_n
                             if( root_retained_input < 1.d0 ) then
 
-
-
                                 ! When the sum of proportion of roots retained and Sfraction is <= 1, then all N will be removed even though some biomass remains. So restrict stems_n to be at least 0.
                                 ! note that this is based on stem fraction, not root or foliage fractions, which would be harder to determine as inputs
 
-                                ! ---- IMPLIED TREE REMOVAL ----
-
+                                ! calculate reduction in tree density
                                   stems_loss_def(i) = stems_n(i) * ( 1.d0 - root_retained_input) / &
                                   stem_input
 
@@ -1436,7 +1308,7 @@ end if
             ! Mortality --------------------------------------------------------------------------
 
             ! Stress related ------------------
-            !reset mortality value !20250301
+            !reset mortality value
             stems_loss_stress(:) = 0.d0
             biom_loss_stem_stress(:) = 0.d0
             biom_loss_root_stress(:) = 0.d0
@@ -1458,10 +1330,6 @@ end if
                         biom_stem(i) = biom_stem(i) - biom_loss_stem_stress(i)
                         biom_root(i) = biom_root(i) - biom_loss_root_stress(i)
                         biom_foliage(i) = biom_foliage(i) -  biom_loss_foliage_stress(i)
-
-                        !b_cor = .TRUE.
-                        !thin_defol_mort_cor = .TRUE.
-
                     end if
                 end if
             end do
@@ -1474,10 +1342,8 @@ end if
                 dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
                 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
             end if
-            ! If there was a coppicing event, there may be no change in stems_n, but stem mass is reduced to 0. In this case, the dbh and basal area have already been changed above.
 
-
-            ! If there was a coppice event, update the height, crown width and crown length
+            ! If there was a coppice event, update the height, crown width and crown length (dbh and basal area will already have been updated above)
                 is_new(:) = coppice_event(:)
                 if ( any(is_new(:)) ) then
                           competition_total = sum( wood_density(ii,:) * basal_area(:) )
@@ -1499,144 +1365,141 @@ end if
 
             ! Self-thinning / Density dependent related ------------------
 
-! Initialize losses
-stems_loss_density(:)        = 0.d0
-biom_loss_stem_density(:)    = 0.d0
-biom_loss_root_density(:)    = 0.d0
-biom_loss_foliage_density(:) = 0.d0
+            ! Initialize losses
+            stems_loss_density(:)        = 0.d0
+            biom_loss_stem_density(:)    = 0.d0
+            biom_loss_root_density(:)    = 0.d0
+            biom_loss_foliage_density(:) = 0.d0
 
-! basal area proportion per cohort
-basal_area_prop(:) = basal_area(:) / max(sum(basal_area(:)), 1.0d-4)
-where (basal_area_prop(:) < 1.0d-4)
-    basal_area_prop(:) = 1.0d-4
-end where
+            ! basal area proportion per cohort
+            basal_area_prop(:) = basal_area(:) / max(sum(basal_area(:)), 1.0d-4)
+            where (basal_area_prop(:) < 1.0d-4)
+                basal_area_prop(:) = 1.0d-4
+            end where
 
-! stems per ha
-stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
-where (stems_n_ha(:) < 1.0d-12)
-    stems_n_ha(:) = 1.0d-12
-end where
+            ! stems per ha
+            stems_n_ha(:) = stems_n(:) / basal_area_prop(:)
+            where (stems_n_ha(:) < 1.0d-12)
+                stems_n_ha(:) = 1.0d-12
+            end where
 
-! total live trees, basal area, dbh
-stems_n_total  = max(sum(stems_n(:)), 1.0d-12)
-basal_area_total = max(sum(basal_area(:)), 1.0d-12)
-dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+            ! total live trees, basal area, dbh
+            stems_n_total  = max(sum(stems_n(:)), 1.0d-12)
+            basal_area_total = max(sum(basal_area(:)), 1.0d-12)
+            dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
 
-! weighted long-term modifiers
-lt_fN_ave    = sum(lt_fN(:)    * basal_area_prop(:))
-lt_fT_ave    = sum(lt_fT(:)    * basal_area_prop(:))
-lt_fPhys_ave = sum(lt_fPhys(:) * basal_area_prop(:))
+            ! weighted long-term modifiers
+            lt_fN_ave    = sum(lt_fN(:)    * basal_area_prop(:))
+            lt_fT_ave    = sum(lt_fT(:)    * basal_area_prop(:))
+            lt_fPhys_ave = sum(lt_fPhys(:) * basal_area_prop(:))
 
-! maximum tree biomass per cohort
-biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:))**thinPower(:)
+            ! maximum tree biomass per cohort
+            biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:))**thinPower(:)
 
-! skip density mortality if any thinning/defoliation/stress mortality occurred, and also skip if there was a coppice event because the new dbh will be 0, so it will have declined
-if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6) then
-     if (.not. any(coppice_event(:))) then
-          !if (dbh_total_prev > 0.d0) then
-               do i = 1, n_sp
-                   if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-                       ! --- Mortality model 1 ---
-                       if (mort_model .eq. 1) then
-                           if (biom_tree_max(i) < biom_tree(i)) then
-                               stems_loss_density(i) = f_get_mortality(stems_n_ha(i), &
-                                   biom_stem(i)/basal_area_prop(i), mS(i), wSx1000(i), thinPower(i)) * &
-                                   basal_area_prop(i)
-                           end if
-                       ! --- Mortality model 2 ---
-                       else if (mort_model .eq. 2) then
-                           ! protect betaN near 1
-                           if (abs(1.d0-betaN(i)) < 1.0d-6) then
-                               mort_thinn_total = 0.d0
-                           else
-                               !if (dbh_total_prev <= 0.d0) then
-                               !    dbh_total_prev = dbh_total
-                               !end if
-                               !mort_thinn_total = ( (stems_n_total - ( &
-                               !    stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
-                               !    (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
-                               !    lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
-                               !    lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
+            ! skip density mortality if any thinning/defoliation/stress mortality occurred, and also skip if there was a coppice event because the new dbh will be 0, so it will have declined
+            if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6) then
+                 if (.not. any(coppice_event(:))) then
+                      !if (dbh_total_prev > 0.d0) then
+                           do i = 1, n_sp
+                               if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+                                   ! --- Mortality model 1 ---
+                                   if (mort_model .eq. 1) then
+                                       if (biom_tree_max(i) < biom_tree(i)) then
+                                           stems_loss_density(i) = f_get_mortality(stems_n_ha(i), &
+                                               biom_stem(i)/basal_area_prop(i), mS(i), wSx1000(i), thinPower(i)) * &
+                                               basal_area_prop(i)
+                                       end if
+                                   ! --- Mortality model 2 ---
+                                   else if (mort_model .eq. 2) then
+                                       ! protect betaN near 1
+                                       if (abs(1.d0-betaN(i)) < 1.0d-6) then
+                                           mort_thinn_total = 0.d0
+                                       else
 
-                        ! ---- NUMERICALLY STABLE FORMULATION ----
+                                           !mort_thinn_total = ( (stems_n_total - ( &
+                                           !    stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
+                                           !    (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
+                                           !    lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
+                                           !    lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
 
-                        pp = betaB(i) + 1.d0
+                                    ! numerically more stable calculation than that above for "mort_thinn_total"
 
-                        dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
-                        dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
+                                    pp = betaB(i) + 1.d0
 
-                        modifiers = lt_fN_ave ** betafN(i) * &
-                                    lt_fT_ave ** betafT(i) * &
-                                    lt_fPhys_ave ** betafPhys(i)
+                                    dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
+                                    dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
 
-                        delta_term = dbh_prev_safe ** pp * &
-                                     (1.d0 - dbh_ratio ** pp)
+                                    modifiers = lt_fN_ave ** betafN(i) * &
+                                                lt_fT_ave ** betafT(i) * &
+                                                lt_fPhys_ave ** betafPhys(i)
 
-                        inner = stems_n_total ** (1.d0 - betaN(i)) + &
-                                Exp(beta0(i)) * (1.d0 - betaN(i)) / pp * &
-                                delta_term * modifiers
+                                    delta_term = dbh_prev_safe ** pp * &
+                                                 (1.d0 - dbh_ratio ** pp)
 
-                        inner = max(inner, 0.d0)
+                                    inner = stems_n_total ** (1.d0 - betaN(i)) + &
+                                            Exp(beta0(i)) * (1.d0 - betaN(i)) / pp * &
+                                            delta_term * modifiers
 
-                        mort_thinn_total = stems_n_total - &
-                                           inner ** (1.d0 / (1.d0 - betaN(i)))
+                                    inner = max(inner, 0.d0)
 
-                        if (abs(mort_thinn_total) < 1.0d-10) mort_thinn_total = 0.d0
+                                    mort_thinn_total = stems_n_total - &
+                                                       inner ** (1.d0 / (1.d0 - betaN(i)))
 
+                                    if (abs(mort_thinn_total) < 1.0d-10) mort_thinn_total = 0.d0
 
-                           end if
-                           ! In single-cohort stands the thinning formulation already operates at the stand level, so no further basal-area allocation across cohorts is required.
-                           if (n_sp .eq. 1) then
-                               stems_loss_density(i) = mort_thinn_total
-                           else
-                               stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
-                                                       basal_area_total * basal_area(i) / &
-                                                       max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
-                           end if
-                       end if
-                       ! ensure non-negative stems
-                       if (stems_loss_density(i) < 0.d0) stems_loss_density(i) = 0.d0
-                       ! biomass losses
-                       if (stems_loss_density(i) > 0.d0) then
-                           biom_loss_stem_density(i)    = mS(i) * biom_stem(i)    * stems_loss_density(i) / &
-                                                          max(stems_n(i), 1.0d-12)
-                           biom_loss_root_density(i)    = mR(i) * biom_root(i)    * stems_loss_density(i) / &
-                                                          max(stems_n(i), 1.0d-12)
-                           biom_loss_foliage_density(i) = mF(i) * biom_foliage(i) * stems_loss_density(i) / &
-                                                          max(stems_n(i), 1.0d-12)
-                           ! update live values immediately
-                           stems_n(i)      = stems_n(i) - stems_loss_density(i)
-                           biom_stem(i)    = biom_stem(i) - biom_loss_stem_density(i)
-                           biom_root(i)    = biom_root(i) - biom_loss_root_density(i)
-                           biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
-                           !b_cor = .TRUE.
-                       end if
-                       ! ensure non-negative biomass if cohort dies
-                       if (stems_n(i) <= 0.d0) then
-                           stems_n(i) = 0.d0
-                           biom_stem(i) = 0.d0
-                           biom_root(i) = 0.d0
-                           biom_foliage(i) = 0.d0
-                       end if
-                   end if
-               end do
-         !end if
-     end if
-end if
+                                       end if
+                                       ! In single-cohort stands the thinning formulation already operates at the stand level, so no further basal-area allocation across cohorts is required.
+                                       if (n_sp .eq. 1) then
+                                           stems_loss_density(i) = mort_thinn_total
+                                       else
+                                           stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
+                                                                   basal_area_total * basal_area(i) / &
+                                                                   max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+                                       end if
+                                   end if
+                                   ! ensure non-negative stems
+                                   if (stems_loss_density(i) < 0.d0) stems_loss_density(i) = 0.d0
+                                   ! biomass losses
+                                   if (stems_loss_density(i) > 0.d0) then
+                                       biom_loss_stem_density(i)    = mS(i) * biom_stem(i)    * stems_loss_density(i) / &
+                                                                      max(stems_n(i), 1.0d-12)
+                                       biom_loss_root_density(i)    = mR(i) * biom_root(i)    * stems_loss_density(i) / &
+                                                                      max(stems_n(i), 1.0d-12)
+                                       biom_loss_foliage_density(i) = mF(i) * biom_foliage(i) * stems_loss_density(i) / &
+                                                                      max(stems_n(i), 1.0d-12)
+                                       ! update live values immediately
+                                       stems_n(i)      = stems_n(i) - stems_loss_density(i)
+                                       biom_stem(i)    = biom_stem(i) - biom_loss_stem_density(i)
+                                       biom_root(i)    = biom_root(i) - biom_loss_root_density(i)
+                                       biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
+                                       !b_cor = .TRUE.
+                                   end if
+                                   ! ensure non-negative biomass if cohort dies
+                                   if (stems_n(i) <= 0.d0) then
+                                       stems_n(i) = 0.d0
+                                       biom_stem(i) = 0.d0
+                                       biom_root(i) = 0.d0
+                                       biom_foliage(i) = 0.d0
+                                   end if
+                               end if
+                           end do
+                     !end if
+                 end if
+            end if
 
-coppice_event(:) = .FALSE.
+            coppice_event(:) = .FALSE.
 
 
-            ! Additional calculations ------------------
-biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! this line should be added but causes an error, it is not critical because self-thinning usually doesn't change dbh much
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+                        ! Additional calculations ------------------
+            biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This line should be added but causes an error, it is not critical because self-thinning usually doesn't change dbh much
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            !dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
 
             ! lai has not been updated since the growth
             lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
@@ -1648,9 +1511,9 @@ basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
             volume_old(:) = volume(:)
 
 
-            ! Used when mort_model = 2   !20241106
+            ! Used when mort_model = 2
             dbh_prev(:) = dbh(:)
-            dbh_total_prev = dbh_total !20251114
+            dbh_total_prev = dbh_total
 
             ! Efficiency
             epsilon_gpp(:) = 100 * GPP(:) / apar(:)
@@ -1663,6 +1526,7 @@ basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
                 epsilon_biom_stem(:) = 0.d0
             end where
 
+
             ! dbh distributions
             dlocation(:) = 1.d0
             where( Dlocation0(:)==0.d0 .and. &
@@ -1672,9 +1536,6 @@ basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
                      DlocationC(:)==0.d0 )
             dlocation(:) = 0.d0
             end where
-
-            !DWeibullScale(:) = Dscale0(:)
-
             DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * &
                        Log(height_rel(:)) + Dscalet(:) * Log(age(ii,:)) + DscaleC(:) * Log(competition_total))
             DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
