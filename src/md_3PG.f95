@@ -1565,7 +1565,7 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                            else
                                if (dbh_total_prev <= 0.d0) then
                                    dbh_total_prev = dbh_total
-                               !end if
+                               end if
                                mort_thinn_total = ( (stems_n_total - ( &
                                    stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
                                    (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
