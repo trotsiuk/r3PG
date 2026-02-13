@@ -33,6 +33,15 @@ contains
         real(kind=c_double), dimension(92,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
+
+! Temporary variables for numerically stable mortality calculation
+double precision :: pp
+double precision :: dbh_prev_safe, dbh_ratio
+double precision :: modifiers
+double precision :: delta_term
+double precision :: inner
+
+
 !integer :: mm !20251114
 
         ! Output array
@@ -1571,6 +1580,37 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                                    (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
                                    lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
                                    lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                            end if
                            ! In single-cohort stands the thinning formulation already operates at the stand level, so no further basal-area allocation across cohorts is required.
                            if (n_sp .eq. 1) then
