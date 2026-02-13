@@ -39,7 +39,7 @@ contains
         real(kind=c_double) :: dbh_safe
         real(kind=c_double) :: expo
         real(kind=c_double) :: logN
-        real(kind=c_double) :: weight
+        real(kind=c_double), dimension(n_sp) :: weight
         real(kind=c_double) :: weight_sum
         real(kind=c_double) :: loss_sum
 
