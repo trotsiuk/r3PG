@@ -42,6 +42,7 @@ contains
         real(kind=c_double), dimension(n_sp) :: weight
         real(kind=c_double) :: weight_sum
         real(kind=c_double) :: loss_sum
+        real(kind=c_double) :: scale
 
         ! Temporary for dbh distributions
         real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
