@@ -42,29 +42,6 @@ prepare_thinning <- function(
 
     thinning = array(NA_real_, dim = c(1, 6, n_sp)) #!20251114
 
-    ###########thinning <- array(
-    ###########  rep(
-    ###########    c(
-    ###########      age               = NA_real_,  # no thinning age specified
-    ###########      stems_n           = NA_real_,  # retain all trees (or NA if handled safely)
-    ###########      stem              = 1,         # retain stem fraction
-    ###########      root              = 1,         # retain root fraction
-    ###########      foliage           = 1,         # retain foliage fraction
-    ###########      biom_prop_retained= 1          # retain all biomass
-    ###########    ),
-    ###########    times = n_sp
-    ###########  ),
-    ###########  dim = c(1, 6, n_sp),
-    ###########  dimnames = list(
-    ###########    thin_n = 1,
-    ###########    param  = c("age","stems_n","stem","root","foliage","biom_prop_retained"),
-    ###########    species = sp_names
-    ###########  )
-    ###########)
-
-
-
-
   } else {
 
 
