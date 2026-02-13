@@ -45,6 +45,9 @@ contains
         double precision :: eps_inner
         double precision :: eps_damp
 
+        double precision :: thinIntercept_eff
+        double precision :: N_max
+
         ! required for dbh distributions
         real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
         real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma
@@ -1542,16 +1545,8 @@ if (mort_model .eq. 2) then
     !dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
     !dbh_total = max(dbh_total, 1.0d-6)
 
-
-!                           modifiers = lt_fN_ave    ** betafN(i) * &
-!                                       lt_fT_ave    ** betafT(i) * &
-!                                       lt_fPhys_ave ** betafPhys(i)
-
-
-
     ! parameters identical across cohorts so use i = 1
     i = 1 ! beta1 is now beta0, and beta2 is thinPower
-
 
     ! Apply modifiers to intercept
     !thinIntercept_eff = thinIntercept(i) &
