@@ -1540,7 +1540,7 @@ contains
                            betaN_eff = betaN(i)
                            ! inverse exponent with hard cap (critical for stability)
                            inv_exp = 1.d0 / (1.d0 - betaN_eff)
-                           inv_exp = max(min(inv_exp, 20.d0), -20.d0)
+                           inv_exp = max(min(inv_exp, 50.d0), -50.d0)
                            pp = betaB(i) + 1.d0
                            dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
                            dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
