@@ -33,25 +33,12 @@ contains
         real(kind=c_double), dimension(92,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
-
-        ! Temporary variables for numerically stable self-thinning calculation
-        double precision :: pp
-        double precision :: dbh_prev_safe, dbh_ratio
-        double precision :: modifiers
-        double precision :: delta_term
-        double precision :: inner
-        double precision :: betaN_eff
-        double precision :: inv_exp
-        double precision :: eps_inner
-        double precision :: eps_damp
-
-        double precision :: thinIntercept_eff
-        double precision :: N_max
-
-        ! required for dbh distributions
+        ! Temporary variables for self-thinning calculation
+        real(kind=c_double) :: thinIntercept_eff
+        real(kind=c_double) :: N_max
+        ! Temporary for dbh distributions
         real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
         real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma
-
         ! Temporary variables for long-term modifiers
         real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
         ! Temporary variable for updating age-related variables after coppice events
