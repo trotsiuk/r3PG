@@ -10,34 +10,34 @@
 
 ! Site data ----------------------------
 real(kind=kind(0.0d0)) :: lat                             ! site latitude
-integer :: soil_class                           ! soil parameters for soil class
+integer :: soil_class                                     ! soil parameters for soil class
 real(kind=kind(0.0d0)) :: asw                             ! available soil water
 real(kind=kind(0.0d0)) :: asw_max                         ! maximum available soil water
 real(kind=kind(0.0d0)) :: asw_min                         ! minimum available soil water
-integer :: year_i                               ! initial year when the simulations starts
-integer :: month_i                              ! initial month when the simulation starts
-integer :: altitude                             ! altitude of the site location, m
+integer :: year_i                                         ! initial year when the simulations starts
+integer :: month_i                                        ! initial month when the simulation starts
+integer :: altitude                                       ! altitude of the site location, m
 
 ! Species data -------------------------
-integer, dimension(n_sp) :: year_p              ! year when species was planted
-integer, dimension(n_sp) :: month_p             ! month when species was planted
+integer, dimension(n_sp) :: year_p                        ! year when species was planted
+integer, dimension(n_sp) :: month_p                       ! month when species was planted
 real(kind=kind(0.0d0)), dimension(n_sp) :: fertility      ! initial site fertility rating for a given species
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_i ! initial foliage biomass for a species
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_root_i    ! initial root biomass for a species
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem_i    ! initial stem biomass for a species
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_i      ! initial stand stocking for a species
 
-integer, parameter :: n_sp_max = 200 ! Maximum number of species !20251114
+integer, parameter :: n_sp_max = 200                      ! Maximum number of species
 ! Long-term modifier state variables
-integer :: lt_mod_mths                   ! user-provided length of long-term modifier calculation (months) !20251114
-real(kind=8), allocatable :: lt_fT(:)    ! long-term value of fT modifier for a given species              !20251114
-real(kind=8), allocatable :: lt_fPhys(:) ! long-term value of fPhysmod modifier for a given species        !20251114
+integer :: lt_mod_mths                                    ! user-provided length of long-term modifier calculation (months)
+real(kind=8), allocatable :: lt_fT(:)                     ! long-term value of fT modifier for a given species
+real(kind=8), allocatable :: lt_fPhys(:)                  ! long-term value of fPhysmod modifier for a given species
 ! Rolling-history arrays (for last lt_mod_mths)
-real(kind=8), allocatable :: fT_hist(:,:)    ! fT history
-real(kind=8), allocatable :: fPhys_hist(:,:) ! fPhys history
-integer, allocatable :: hist_ptr(:)          ! circular buffer pointer per cohort
+real(kind=8), allocatable :: fT_hist(:,:)                 ! fT history
+real(kind=8), allocatable :: fPhys_hist(:,:)              ! fPhys history
+integer, allocatable :: hist_ptr(:)                       ! circular buffer pointer per cohort
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN      ! long-term value of fN modifier for a given species         !20241106 !20251114
+real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fN          ! long-term value of fN modifier for a given species
 
 
 ! Climate ------------------------------
@@ -65,8 +65,8 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: gammaF1        ! Coefficients in mont
 real(kind=kind(0.0d0)), dimension(n_sp) :: gammaF0        ! Coefficients in monthly litterfall rate
 real(kind=kind(0.0d0)), dimension(n_sp) :: tgammaF        ! Coefficients in monthly litterfall rate
 real(kind=kind(0.0d0)), dimension(n_sp) :: gammaR         ! Average monthly root turnover rate
-integer, dimension(n_sp) :: leafgrow            ! If deciduous, leaves are produced at end of this month
-integer, dimension(n_sp) :: leaffall            ! If deciduous, leaves all fall at start of this month
+integer, dimension(n_sp) :: leafgrow                      ! If deciduous, leaves are produced at end of this month
+integer, dimension(n_sp) :: leaffall                      ! If deciduous, leaves all fall at start of this month
 
 ! NPP & conductance modifiers
 real(kind=kind(0.0d0)), dimension(n_sp) :: Tmin           ! Minimum temperature for growth
@@ -91,12 +91,12 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: tgammaN        ! Age at which mortali
 real(kind=kind(0.0d0)), dimension(n_sp) :: ngammaN        ! Shape of mortality response
 real(kind=kind(0.0d0)), dimension(n_sp) :: wSx1000        ! Max. stem mass per tree @ 1000 trees/hectare
 real(kind=kind(0.0d0)), dimension(n_sp) :: thinPower      ! Power in self-thinning rule
-real(kind=kind(0.0d0)), dimension(n_sp) :: beta0          ! constant for self-thinning when mort_model = 2       !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: betaB          ! Power for B when mort_model = 2                      !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: betaN          ! Power in tree density when mort_model = 2            !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: betafN         ! Power in fertility modifier when mort_model = 2      !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: betafT         ! Power in temperature modifier when mort_model = 2    !20241106
-real(kind=kind(0.0d0)), dimension(n_sp) :: betafPhys      ! Power in physmod modifier when mort_model = 2        !20241106
+real(kind=kind(0.0d0)), dimension(n_sp) :: beta0          ! constant for self-thinning when mort_model = 2
+real(kind=kind(0.0d0)), dimension(n_sp) :: betaB          ! Power for B when mort_model = 2
+real(kind=kind(0.0d0)), dimension(n_sp) :: betaN          ! Power in tree density when mort_model = 2
+real(kind=kind(0.0d0)), dimension(n_sp) :: betafN         ! Power in fertility modifier when mort_model = 2
+real(kind=kind(0.0d0)), dimension(n_sp) :: betafT         ! Power in temperature modifier when mort_model = 2
+real(kind=kind(0.0d0)), dimension(n_sp) :: betafPhys      ! Power in physmod modifier when mort_model = 2
 real(kind=kind(0.0d0)), dimension(n_sp) :: mF             ! Fraction mean single-tree foliage biomass lost per dead tree
 real(kind=kind(0.0d0)), dimension(n_sp) :: mR             ! Fraction mean single-tree root biomass lost per dead tree
 real(kind=kind(0.0d0)), dimension(n_sp) :: mS             ! Fraction mean single-tree stem biomass lost per dead tree
@@ -106,7 +106,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: SLA0           ! Specific leaf area a
 real(kind=kind(0.0d0)), dimension(n_sp) :: SLA1           ! Specific leaf area for mature leaves
 real(kind=kind(0.0d0)), dimension(n_sp) :: tSLA           ! Age at which specific leaf area = (SLA0+SLA1)/2
 real(kind=kind(0.0d0)), dimension(n_sp) :: k              ! Extinction coefficient for absorption of PAR by canopy
-real(kind=kind(0.0d0)), dimension(n_sp) :: gammaAPAR      ! Determines light benefit to shorter cohorts          !20251114
+real(kind=kind(0.0d0)), dimension(n_sp) :: gammaAPAR      ! Determines light benefit to shorter cohorts
 real(kind=kind(0.0d0)), dimension(n_sp) :: fullCanAge     ! Age at canopy closure
 real(kind=kind(0.0d0)), dimension(n_sp) :: MaxIntcptn     ! Maximum proportion of rainfall evaporated from canopy
 real(kind=kind(0.0d0)), dimension(n_sp) :: LAImaxIntcptn  ! LAI for maximum rainfall interception
@@ -122,7 +122,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: RGcGW          ! The ratio of diffusi
 real(kind=kind(0.0d0)), dimension(n_sp) :: D13CTissueDif  ! d13C difference of modelled tissue and new photosynthate
 real(kind=kind(0.0d0)), dimension(n_sp) :: aFracDiffu     ! Fractionation against 13C in diffusion
 real(kind=kind(0.0d0)), dimension(n_sp) :: bFracRubi      ! Enzymatic fractionation by Rubisco
-real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar         ! Modifier to amplify light benefit to shorter cohorts !20251114
+real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar         ! Modifier to amplify light benefit to shorter cohorts
 
 
 ! Wood and stand properties
@@ -135,11 +135,11 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: tRho           ! Age at which rho = (
 integer, dimension(n_sp) :: CrownShape          !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
 
 ! Height and Volume
-real(kind=kind(0.0d0)), dimension(n_sp) :: Hd             ! Height at which diameter is measured (m) for background mortality, and allometric equations !20251114
-real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nH1, nH2, nH3, nH4        !20260123 was nHB, nHC
+real(kind=kind(0.0d0)), dimension(n_sp) :: Hd             ! Height at which diameter is measured (m) for background mortality, and allometric equations
+real(kind=kind(0.0d0)), dimension(n_sp) :: aH, nH1, nH2, nH3, nH4
 real(kind=kind(0.0d0)), dimension(n_sp) :: aV, nVB, nVH, nVBH
-real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nK1, nK2, nK3, nK4        !20260123 was nKB, nKH, nKC, nKrh
-real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHL1, nHL2, nHL3, nHL4   !20260123 was nHLB, nHLL, nHLC, nHLrh
+real(kind=kind(0.0d0)), dimension(n_sp) :: aK, nK1, nK2, nK3, nK4
+real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHL1, nHL2, nHL3, nHL4
 
 ! Delta 13
 real(kind=kind(0.0d0)), dimension(n_sp) :: Qa, Qb
@@ -157,55 +157,55 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: Dlocation0, DlocationB, Dlocationrh, 
 ! DERIVED VARIABLES
 
 ! Helpers ------------------------------
-integer :: i = 1                                ! indexing for species
-integer :: ii = 1                               ! indexing for month (row of climatic data)
+integer :: i = 1                                          ! indexing for species
+integer :: ii = 1                                         ! indexing for month (row of climatic data)
 integer :: month = 1
-integer :: b_n = 2                              ! how many times to iterate for bias correction
-integer :: n = 1                                ! count for bias correction
-logical :: b_cor = .TRUE.                            ! if something has changed and we need to correct bias
+integer :: b_n = 2                                        ! how many times to iterate for bias correction
+integer :: n = 1                                          ! count for bias correction
+logical :: b_cor = .TRUE.                                 ! if something has changed and we need to correct bias
 logical :: calculate_states = .TRUE.                      ! calculate height and crown width or length using state equations
-!logical :: use_current = .TRUE.                           ! use current stand conditions when calculating height and crown width or length using state equations (otherwise use stand conditions from previous month)
+!logical :: use_current = .TRUE.                          ! use current stand conditions when calculating height and crown width or length using state equations (otherwise use stand conditions from previous month)
 !logical :: calculate_distributions = .TRUE.              ! calculate diameter distribution Weibull parameters
 logical, dimension(n_sp) :: is_new                        ! identifies new cohorts when calculating height, crown width and crown length
-!logical, dimension(n_sp) :: thin_cor                      ! if there was a thinning event where Sfraction was not 1, the dbh needs to be adjusted
-!logical, dimension(n_sp) :: defol_cor                     ! if there was a defoliation event where Sfraction was not 1, the dbh needs to be adjusted
-logical, dimension(n_sp) :: coppice_event                  ! record when there was a coppice defoliation event so that height, crown width and crown length can be adjusted
-!logical :: thin_defol_mort_cor = .TRUE.                 ! update dbh and basal_area before self-thinning calculations or the end of the monthly loop only if there was thinning, defoliation or stress-related mortality or self-thinning
+!logical, dimension(n_sp) :: thin_cor                     ! if there was a thinning event where Sfraction was not 1, the dbh needs to be adjusted
+!logical, dimension(n_sp) :: defol_cor                    ! if there was a defoliation event where Sfraction was not 1, the dbh needs to be adjusted
+logical, dimension(n_sp) :: coppice_event                 ! record when there was a coppice defoliation event so that height, crown width and crown length can be adjusted
+!logical :: thin_defol_mort_cor = .TRUE.                  ! update dbh and basal_area before self-thinning calculations or the end of the monthly loop only if there was thinning, defoliation or stress-related mortality or self-thinning
 
 
 ! Climatic variables -------------
 real(kind=kind(0.0d0)), dimension(12) :: adjSolarZenithAngle
 real(kind=kind(0.0d0)), dimension(12) :: day_length
-integer, dimension(n_m) :: month_vector        ! A vector of month which will be used for the simulation
+integer, dimension(n_m) :: month_vector                   ! A vector of month which will be used for the simulation
 
 ! Stand variables ----------------
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age     ! Age of each species and month
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age_m   ! Age of each species used for calculating modifiers (one month less than s_age)
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age       ! Age of each species and month
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: age_m     ! Age of each species used for calculating modifiers (one month less than s_age)
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_ha     ! potential number of stems per ha for monoculture equivalent
-real(kind=kind(0.0d0)) :: stems_n_total            ! total number of trees per ha for the whole stand per active cohort, used when mort_model = 2 !20241106 !20251114
-real(kind=kind(0.0d0)) :: mort_thinn_total            ! total number of trees per ha that die when mort_model = 2 !20241106
+real(kind=kind(0.0d0)) :: stems_n_total                   ! total number of trees per ha for the whole stand per active cohort, used when mort_model = 2
+real(kind=kind(0.0d0)) :: mort_thinn_total                ! total number of trees per ha that die when mort_model = 2
 
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area     ! stand level basal area
+real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area         ! stand level basal area
 real(kind=kind(0.0d0)), dimension(n_sp) :: basal_area_prop    ! proportion of basal area
-real(kind=kind(0.0d0)), dimension(n_sp) :: dbh            ! average tree DBH, cm
+real(kind=kind(0.0d0)), dimension(n_sp) :: dbh                ! average tree DBH, cm
 
-real(kind=kind(0.0d0)) :: dbh_total            ! average tree DBH for the whole stand, cm (weighted average by basal_area_prop, and dbh_total = dbh for even-aged monocultures) !20241106 !20251114
-real(kind=kind(0.0d0)) :: dbh_total_prev       ! average tree DBH for the whole stand, cm, of previous time step !20241106 !20251114
+real(kind=kind(0.0d0)) :: dbh_total                           ! average tree DBH for the whole stand, cm (weighted average by basal_area_prop, and dbh_total = dbh for even-aged monocultures)
+real(kind=kind(0.0d0)) :: dbh_total_prev                      ! average tree DBH for the whole stand, cm, of previous time step
 
-real(kind=kind(0.0d0)) :: basal_area_total                                                                   !20251114
-real(kind=kind(0.0d0)), dimension(n_sp) :: dbh_prev            ! average tree DBH, cm, of the previous time step, used when mort_model = 2 !20241106
+real(kind=kind(0.0d0)) :: basal_area_total
+real(kind=kind(0.0d0)), dimension(n_sp) :: dbh_prev           ! average tree DBH, cm, of the previous time step, used when mort_model = 2
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: height         ! average tree height, m
+real(kind=kind(0.0d0)), dimension(n_sp) :: height             ! average tree height, m
 real(kind=kind(0.0d0)) :: Height_max
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel         ! average height of cohort divided by average height of all cohorts
-!real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_prev         ! height_rel of previous time step
+!real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_prev   ! height_rel of previous time step
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: crown_length   !***DF mean live-crown length (m) of a species
-real(kind=kind(0.0d0)), dimension(n_sp) :: crown_width    ! ***DF mean crown diameter (m)
-real(kind=kind(0.0d0)), dimension(n_sp) :: crown_ratio    ! crown_length / height
+real(kind=kind(0.0d0)), dimension(n_sp) :: crown_length       ! mean live-crown length (m) of a species
+real(kind=kind(0.0d0)), dimension(n_sp) :: crown_width        ! mean crown diameter (m)
+real(kind=kind(0.0d0)), dimension(n_sp) :: crown_ratio        ! crown_length / height
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: volume
 real(kind=kind(0.0d0)), dimension(n_sp) :: volume_mai
@@ -215,29 +215,29 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: volume_change
 
 real(kind=kind(0.0d0)) :: competition_total
 
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: SLA       ! Specific leaf area
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: fracBB    ! Fraction of stem biomass as branch and bark
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: SLA           ! Specific leaf area
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: fracBB        ! Fraction of stem biomass as branch and bark
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: wood_density  ! Whole-tree basic density
 
 
 ! Canopy variables ---------------
-real(kind=kind(0.0d0)), dimension(n_sp) :: LAI            ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation)
-!real(kind=kind(0.0d0)), dimension(n_sp) :: lai_total      ! total competition of the forest
-real(kind=kind(0.0d0)) :: lai_total      ! total competition of the forest
-real(kind=kind(0.0d0)), dimension(n_sp) :: LAI_per        ! species specific proportion of lai
-real(kind=kind(0.0d0)), dimension(n_sp) :: lai_above      ! leaf area above the given species
+real(kind=kind(0.0d0)), dimension(n_sp) :: LAI                ! Canopy LAI (mean annual LAI if output time step is annual, and final year LAI if step is whole rotation)
+!real(kind=kind(0.0d0)), dimension(n_sp) :: lai_total         ! total competition of the forest
+real(kind=kind(0.0d0)) :: lai_total                           ! total competition of the forest
+real(kind=kind(0.0d0)), dimension(n_sp) :: LAI_per            ! species specific proportion of lai
+real(kind=kind(0.0d0)), dimension(n_sp) :: lai_above          ! leaf area above the given species
 real(kind=kind(0.0d0)), dimension(n_sp) :: canopy_vol_frac
-real(kind=kind(0.0d0)), dimension(n_sp) :: lai_sa_ratio !the ratio of mean tree leaf area (m2) to crownSA (m2)
+real(kind=kind(0.0d0)), dimension(n_sp) :: lai_sa_ratio       ! the ratio of mean tree leaf area (m2) to crownSA (m2)
 integer, dimension(n_sp) :: layer_id
 
 
 ! Stocks variables ---------------
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage   ! Foliage biomass
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage       ! Foliage biomass
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_debt
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_root      ! Root biomass
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem      ! Stem biomass, including branches and bark
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_tree      ! average tree stem mass
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_tree_max  ! Max. mean tree stem mass at current stocking
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_root          ! Root biomass
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem          ! Stem biomass, including branches and bark
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_tree          ! average tree stem mass
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_tree_max      ! Max. mean tree stem mass at current stocking
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_foliage
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_root
@@ -246,122 +246,122 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_stem
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_foliage_def  ! increment due to use of non-structural carbohydrates following defoliation
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_stem_def     ! increment due to use of non-structural carbohydrates following defoliation
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage  ! Litter fall
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage      ! Litter fall
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root
 
 
 ! Modifiers ----------------------
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_age     ! Age related modifier
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_tmp     ! Temperature modifier
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_tmp_gc  ! gc canopy conductance modifier as in Feikema et al 2010 FEM 260,663–678
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_frost   ! Frost modifier
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_calpha  !
-real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_cg      !
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_age             ! Age related modifier
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_tmp             ! Temperature modifier
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_tmp_gc          ! gc canopy conductance modifier as in Feikema et al 2010 FEM 260,663–678
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_frost           ! Frost modifier
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_calpha          !
+real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: f_cg              !
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_vpd
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_sw
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_nutr
 real(kind=kind(0.0d0)), dimension(n_sp) :: f_phys
 
-real(kind=kind(0.0d0)) :: lt_fN_ave     ! weighted average (by basal area) long-term average lt_fN, used when mort_model = 2 !20241106 !20251114
-real(kind=kind(0.0d0)) :: lt_fT_ave     ! weighted average (by basal area) long-term average lt_fT, used when mort_model = 2 !20241106 !20251114
-real(kind=kind(0.0d0)) :: lt_fPhys_ave  ! weighted average (by basal area) long-term average lt_fPhys, used when mort_model = 2 !20241106 !20251114
+real(kind=kind(0.0d0)) :: lt_fN_ave                               ! weighted average (by basal area) long-term average lt_fN, used when mort_model = 2
+real(kind=kind(0.0d0)) :: lt_fT_ave                               ! weighted average (by basal area) long-term average lt_fT, used when mort_model = 2
+real(kind=kind(0.0d0)) :: lt_fPhys_ave                            ! weighted average (by basal area) long-term average lt_fPhys, used when mort_model = 2
 
 
 ! Production ---------------------
-real(kind=kind(0.0d0)), dimension(n_sp) :: pfsConst       ! Derived from pFS2 and PFS20
-real(kind=kind(0.0d0)), dimension(n_sp) :: pfsPower       ! Derived from pFS2 and PFS20
+real(kind=kind(0.0d0)), dimension(n_sp) :: pfsConst               ! Derived from pFS2 and PFS20
+real(kind=kind(0.0d0)), dimension(n_sp) :: pfsPower               ! Derived from pFS2 and PFS20
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: pFS
-real(kind=kind(0.0d0)), dimension(n_sp) :: fi             !***DF the proportion of above canopy PAR absorbed by each species
-real(kind=kind(0.0d0)), dimension(n_sp) :: lambda_h       !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
-real(kind=kind(0.0d0)), dimension(n_sp) :: lambda_v       !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
+real(kind=kind(0.0d0)), dimension(n_sp) :: fi                     ! the proportion of above canopy PAR absorbed by each species
+real(kind=kind(0.0d0)), dimension(n_sp) :: lambda_h               ! Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
+real(kind=kind(0.0d0)), dimension(n_sp) :: lambda_v               ! Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: npp_fract_root
 real(kind=kind(0.0d0)), dimension(n_sp) :: npp_fract_stem
 real(kind=kind(0.0d0)), dimension(n_sp) :: npp_fract_foliage
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: apar            ! RADint
-real(kind=kind(0.0d0)), dimension(n_sp) :: aero_resist    ! # 'DF aerodynamic resistance within the canopy at the height of the given species (s m-1)
-real(kind=kind(0.0d0)), dimension(n_sp) :: VPD_sp         ! # 'DF VPD around the crowns of the given species
-real(kind=kind(0.0d0)), dimension(n_sp) :: alpha_c        ! Canopy quantum efficiency after modifiers
-real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon    ! Light-use efficiency based on GPP
-real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_gpp    ! Light-use efficiency based on GPP
-real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_npp    ! Light-use efficiency based on NPP
-real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_biom_stem !Light-use efficiency based on stem biomass (increment in WS)
+real(kind=kind(0.0d0)), dimension(n_sp) :: apar                   ! RADint
+real(kind=kind(0.0d0)), dimension(n_sp) :: aero_resist            ! aerodynamic resistance within the canopy at the height of the given species (s m-1)
+real(kind=kind(0.0d0)), dimension(n_sp) :: VPD_sp                 ! VPD around the crowns of the given species
+real(kind=kind(0.0d0)), dimension(n_sp) :: alpha_c                ! Canopy quantum efficiency after modifiers
+real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon                ! Light-use efficiency based on GPP
+real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_gpp            ! Light-use efficiency based on GPP
+real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_npp            ! Light-use efficiency based on NPP
+real(kind=kind(0.0d0)), dimension(n_sp) :: epsilon_biom_stem      ! Light-use efficiency based on stem biomass (increment in WS)
 real(kind=kind(0.0d0)), dimension(n_sp) :: GPP
 real(kind=kind(0.0d0)), dimension(n_sp) :: NPP
-!real(kind=kind(0.0d0)), dimension(n_sp) :: NPP_f          ! the full NPP before substraction of depth
-real(kind=kind(0.0d0)), dimension(n_sp) :: NPP_def          ! NPP from upregulation/non-structural carbohydrates forllowing defoliation
+!real(kind=kind(0.0d0)), dimension(n_sp) :: NPP_f                 ! the full NPP before substraction of depth
+real(kind=kind(0.0d0)), dimension(n_sp) :: NPP_def                ! NPP from upregulation/non-structural carbohydrates forllowing defoliation
 real(kind=kind(0.0d0)), dimension(n_sp) :: gC
 real(kind=kind(0.0d0)), dimension(n_sp) :: conduct_canopy
 real(kind=kind(0.0d0)), dimension(n_sp) :: m
 
 
 ! Mortality ----------------------
-real(kind=kind(0.0d0)), dimension(n_sp) :: mort_stress     ! Number of trees that died due to stress-related mortality
-real(kind=kind(0.0d0)), dimension(n_sp) :: mort_thinn      ! Number of trees that died due to density-dependent mortality
+real(kind=kind(0.0d0)), dimension(n_sp) :: mort_stress            ! Number of trees that died due to stress-related mortality
+real(kind=kind(0.0d0)), dimension(n_sp) :: mort_thinn             ! Number of trees that died due to density-dependent mortality
 
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: gammaN
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: gammaF
 
 
 ! Management mortality
-integer, dimension(n_sp) :: t_n, d_n ! currnet thinning and defoliation number
-real(kind=kind(0.0d0)) :: manag_remove_prop                              ! proportion to be removed during the management based on the tree density (stems_n) or proportion of biomass retained 20250314
-real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed by thinning.  20250314
+integer, dimension(n_sp) :: t_n, d_n                                     ! currnet thinning and defoliation number
+real(kind=kind(0.0d0)) :: manag_remove_prop                              ! proportion to be removed during the management based on the tree density (stems_n) or proportion of biomass retained
+real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed by thinning.
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_pre       !20251124 ! requried to inprove stability of mortality calculations
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem_pre     !20251124
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_root_pre     !20251124
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_pre  !20251124
-real(kind=kind(0.0d0)) :: tmp                                !20251124
-real(kind=kind(0.0d0)) :: denom                              !20251124
-real(kind=kind(0.0d0)) :: denom_stems                        !20251124
-!real(kind=kind(0.0d0)) :: dbh_term_prev                      !20251124
-!real(kind=kind(0.0d0)) :: dbh_term                           !20251124
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_pre                   ! requried to inprove stability of mortality calculations
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_stem_pre
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_root_pre
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_pre
+real(kind=kind(0.0d0)) :: tmp
+real(kind=kind(0.0d0)) :: denom
+real(kind=kind(0.0d0)) :: denom_stems
+!real(kind=kind(0.0d0)) :: dbh_term_prev
+!real(kind=kind(0.0d0)) :: dbh_term
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_manag      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_manag      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_manag      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_manag      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_manag
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_manag
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_manag
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_manag
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_stress      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_stress      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_stress      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_stress      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_stress
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_stress
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_stress
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_stress
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_density      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_density      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_density      ! 20250314
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_density      ! 20250314
+real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_density
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_density
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_density
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_density
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_def
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_def
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root_def
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage_def
 
-!real(kind=kind(0.0d0)) :: stems_loss_total      ! Sum of mort_stress, mort_defol, and mort_manag for all cohorts combined !20250301
+!real(kind=kind(0.0d0)) :: stems_loss_total                              ! Sum of mort_stress, mort_defol, and mort_manag for all cohorts combined
 
 ! Defoliation
-integer, dimension(n_sp) :: def_type ! current defoliation type for a given species
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_adj_pre_def ! Adjusted pre defoliation foliage mass
-real(kind=kind(0.0d0)), dimension(n_sp) :: def_recover_t            ! Maximum time to recover from defoliation. After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.
-real(kind=kind(0.0d0)), dimension(n_sp) :: age_last_def_event       ! Last defoliation event age
+integer, dimension(n_sp) :: def_type                                     ! current defoliation type for a given species
+real(kind=kind(0.0d0)), dimension(n_sp) :: biom_foliage_adj_pre_def      ! Adjusted pre defoliation foliage mass
+real(kind=kind(0.0d0)), dimension(n_sp) :: def_recover_t                 ! Maximum time to recover from defoliation. After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.
+real(kind=kind(0.0d0)), dimension(n_sp) :: age_last_def_event            ! Last defoliation event age
 real(kind=kind(0.0d0)), dimension(n_sp) :: def_test_var
-real(kind=kind(0.0d0)), dimension(n_sp) :: prop_carbs !20251124
-real(kind=kind(0.0d0)), dimension(n_sp) :: prop_npp !20251124
-real(kind=kind(0.0d0)), dimension(n_sp) :: growing_season_length !20251124
+real(kind=kind(0.0d0)), dimension(n_sp) :: prop_carbs
+real(kind=kind(0.0d0)), dimension(n_sp) :: prop_npp
+real(kind=kind(0.0d0)), dimension(n_sp) :: growing_season_length
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: sr_ratio !20251124
+real(kind=kind(0.0d0)), dimension(n_sp) :: sr_ratio
 real(kind=kind(0.0d0)) :: stem_retained_input, foliage_retained_input, root_retained_input, stem_input ! Defoliation inputs
 
 ! Water use ----------------------
-real(kind=kind(0.0d0)), dimension(n_sp) :: SWconst         ! soil parameters for soil class
-real(kind=kind(0.0d0)), dimension(n_sp) :: SWpower         ! soil parameters for soil class
+real(kind=kind(0.0d0)), dimension(n_sp) :: SWconst                       ! soil parameters for soil class
+real(kind=kind(0.0d0)), dimension(n_sp) :: SWpower                       ! soil parameters for soil class
 real(kind=kind(0.0d0)) :: Irrig
-real(kind=kind(0.0d0)) :: poolFractn                       ! Determines fraction of excess water that remains on site
-real(kind=kind(0.0d0)) :: water_runoff_polled              ! current stored runoff
+real(kind=kind(0.0d0)) :: poolFractn                                     ! Determines fraction of excess water that remains on site
+real(kind=kind(0.0d0)) :: water_runoff_polled                            ! current stored runoff
 
 real(kind=kind(0.0d0)) :: irrig_supl
 real(kind=kind(0.0d0)) :: prcp_runoff
@@ -371,19 +371,19 @@ real(kind=kind(0.0d0)) :: conduct_soil
 
 
 ! Transpiration
-real(kind=kind(0.0d0)), dimension(n_sp) :: transp_veg       ! Traspiration from the forest
+real(kind=kind(0.0d0)), dimension(n_sp) :: transp_veg                    ! Transpiration from the vegetation
 real(kind=kind(0.0d0)) :: evapotra_soil
 real(kind=kind(0.0d0)) :: transp_total
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: prcp_interc_fract
 real(kind=kind(0.0d0)), dimension(n_sp) :: prcp_interc
-real(kind=kind(0.0d0)) :: prcp_interc_total                 ! total rain interception
+real(kind=kind(0.0d0)) :: prcp_interc_total                              ! total rainfall interception
 
 real(kind=kind(0.0d0)) :: evapo_transp
-real(kind=kind(0.0d0)) :: f_transp_scale                    !***DF scales GPP and NPP down if evapotranspiration is greater than ASW
+real(kind=kind(0.0d0)) :: f_transp_scale                                 ! scales GPP and NPP down if evapotranspiration is greater than ASW
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: WUE
-real(kind=kind(0.0d0)), dimension(n_sp) :: WUE_transp       !***DF
+real(kind=kind(0.0d0)), dimension(n_sp) :: WUE_transp
 
 
 ! Wood Delta --------------------
@@ -412,7 +412,5 @@ integer :: transp_model              !1 - 3PGpjs, min of f_vpd and f_sw; 2 - 3PG
 integer :: phys_model                !1 - 3PGpjs, min of f_vpd and f_sw; 2 - 3PGmix, f_vpd x f_sw
 integer :: height_model              !1 - exponential; 2 - Michajlow; 3 - Näslund
 integer :: crown_width_model         !1 - exponential; 2 - Michajlow; 3 - Näslund
-!integer :: correct_bias             !0 - no; 1 - yes
 integer :: calculate_d13c            !0 - no; 1 - yes
 integer :: mort_model                !1 - 3PGpjs; 2 - 3PGmix !20241106
-!integer :: manag_model              !1 - 3PGpjs(based on tree number); 2 - 3PGmix !20241106

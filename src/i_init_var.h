@@ -101,29 +101,29 @@ mort_thinn(:) = 0.d0
 ! Management
 t_n(:) = 1
 manag_remove_prop = 0.d0
-manag_remove_prop_compartment(:) = 0.d0 ! 20250314
-stems_loss_manag(:) = 0.d0 !20250314
-biom_loss_stem_manag(:) = 0.d0      ! 20250314
-biom_loss_foliage_manag(:) = 0.d0      ! 20250314
-biom_loss_root_manag(:) = 0.d0      ! 20250224
+manag_remove_prop_compartment(:) = 0.d0
+stems_loss_manag(:) = 0.d0
+biom_loss_stem_manag(:) = 0.d0
+biom_loss_foliage_manag(:) = 0.d0
+biom_loss_root_manag(:) = 0.d0
 
 ! Stress related
-stems_loss_stress = 0.d0 !20250314
-biom_loss_stem_stress(:) = 0.d0      ! 20250314
-biom_loss_foliage_stress(:) = 0.d0      ! 20250314
-biom_loss_root_stress(:) = 0.d0      ! 20250314
+stems_loss_stress = 0.d0
+biom_loss_stem_stress(:) = 0.d0
+biom_loss_foliage_stress(:) = 0.d0
+biom_loss_root_stress(:) = 0.d0
 
 ! Density dependent
-stems_loss_density(:) = 0.d0 !20250314
-biom_loss_stem_density(:) = 0.d0      ! 20250314
-biom_loss_foliage_density(:) = 0.d0      ! 20250314
-biom_loss_root_density(:) = 0.d0      ! 20250314
+stems_loss_density(:) = 0.d0
+biom_loss_stem_density(:) = 0.d0
+biom_loss_foliage_density(:) = 0.d0
+biom_loss_root_density(:) = 0.d0
 
 ! Defoliation
-stems_loss_def(:) = 0.d0 !20250314
-biom_loss_stem_def(:) = 0.d0      ! 20250314
-biom_loss_foliage_def(:) = 0.d0      ! 20250314
-biom_loss_root_def(:) = 0.d0      ! 20250314
+stems_loss_def(:) = 0.d0
+biom_loss_stem_def(:) = 0.d0
+biom_loss_foliage_def(:) = 0.d0
+biom_loss_root_def(:) = 0.d0
 
 ! Defoliation
 d_n(:) = 1
@@ -131,18 +131,18 @@ def_type(:) = 0
 biom_foliage_adj_pre_def(:) = 0.d0
 def_recover_t(:) = 0.d0
 age_last_def_event(:) = 0.d0
-prop_carbs(:) = 0.d0                  !20251124
-prop_npp(:) = 0.d0                    !20251124
-growing_season_length(:) = 0.d0       !20251124
+prop_carbs(:) = 0.d0
+prop_npp(:) = 0.d0
+growing_season_length(:) = 0.d0
 
 
-stems_n_total = 0.d0            !20251114
-basal_area_total = 0.d0         !20251114
-mort_thinn_total = 0.d0         !20251114
-dbh_total = 0.d0                !20251114
-lt_fN_ave = 1.d0                !20251114
-lt_fT_ave = 1.d0                !20251114
-lt_fPhys_ave = 1.d0             !20251114
+stems_n_total = 0.d0
+basal_area_total = 0.d0
+mort_thinn_total = 0.d0
+dbh_total = 0.d0
+lt_fN_ave = 1.d0
+lt_fT_ave = 1.d0
+lt_fPhys_ave = 1.d0
 
 ! Wood Delta ------------------
 Gc_mol(:) = 0.d0

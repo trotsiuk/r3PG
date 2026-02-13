@@ -41,7 +41,7 @@ output(ii,:,3,8) = lambda_v(:)
 output(ii,:,3,9) = lambda_h(:)
 output(ii,:,3,10) = aero_resist(:)
 output(ii,:,3,11) = vpd_sp(:)
-output(ii,:,3,12) = m_apar(:) !20251114
+output(ii,:,3,12) = m_apar(:)
 
 ! Stocks variables ---------------
 output(ii,:,4,1) = biom_stem(:)
@@ -105,16 +105,16 @@ output(ii,:,7,13) = water_runoff_polled
 ! Mortality ---------------
 output(ii,:,8,1) = biom_tree_max(:)
 output(ii,:,8,2) = gammaN(ii,:)
-!output(ii,:,8,3) = stems_loss_density(:) ! 20251114
-!output(ii,:,8,4) = stems_loss_stress(:)  ! 20251114
-output(ii,:,8,3) = mort_thinn_total        ! 20241106 !20251114
-output(ii,:,8,4) = lt_fN_ave        ! 20241129 !20251114
-output(ii,:,8,5) = lt_fT_ave        ! 20241129 !20251114
-output(ii,:,8,6) = lt_fPhys_ave     ! 20241129 !20251114
-output(ii,:,8,7) = lt_fT(:)        ! 20251114
-output(ii,:,8,8) = lt_fPhys(:)     ! 20251114
-output(ii,:,8,9) = dbh_total        ! 20241129 !20251114
-output(ii,:,8,10) = stems_n_total     ! 20241129 !20251114
+!output(ii,:,8,3) = stems_loss_density(:)
+!output(ii,:,8,4) = stems_loss_stress(:)
+output(ii,:,8,3) = mort_thinn_total
+output(ii,:,8,4) = lt_fN_ave
+output(ii,:,8,5) = lt_fT_ave
+output(ii,:,8,6) = lt_fPhys_ave
+output(ii,:,8,7) = lt_fT(:)
+output(ii,:,8,8) = lt_fPhys(:)
+output(ii,:,8,9) = dbh_total
+output(ii,:,8,10) = stems_n_total
 
 ! Wood Delta ------------------
 output(ii,:,9,1) = Gc_mol(:)
