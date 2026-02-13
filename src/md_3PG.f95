@@ -1546,83 +1546,69 @@ biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:))**thinPower(:)
 
 ! skip density mortality if any thinning/defoliation/stress mortality occurred, and also skip if there was a coppice event because the new dbh will be 0, so it will have declined
 if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6) then
-
-  if (.not. any(coppice_event(:))) then
-
-    do i = 1, n_sp
-        if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-
-            ! --- Mortality model 1 ---
-            if (mort_model .eq. 1) then
-                if (biom_tree_max(i) < biom_tree(i)) then
-                    stems_loss_density(i) = f_get_mortality(stems_n_ha(i), &
-                        biom_stem(i)/basal_area_prop(i), mS(i), wSx1000(i), thinPower(i)) * &
-                        basal_area_prop(i)
-                end if
-
-            ! --- Mortality model 2 ---
-            else if (mort_model .eq. 2) then
-                ! protect betaN near 1
-                if (abs(1.d0-betaN(i)) < 1.0d-6) then
-                    mort_thinn_total = 0.d0
-                else
-                    if (dbh_total_prev <= 0.d0) then
-                        dbh_total_prev = dbh_total
-                    end if
-
-                    mort_thinn_total = ( (stems_n_total - ( &
-                        stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
-                        (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
-                        lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
-                        lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
-
-
-                end if
-
-                ! In single-cohort stands the thinning formulation already operates at the stand level, so no further basal-area allocation across cohorts is required.
-                if (n_sp .eq. 1) then
-                    stems_loss_density(i) = mort_thinn_total
-                else
-                    stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
-                                            basal_area_total * basal_area(i) / &
-                                            max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
-                end if
-
-
-
-            end if
-
-            ! ensure non-negative stems
-            if (stems_loss_density(i) < 0.d0) stems_loss_density(i) = 0.d0
-
-            ! biomass losses
-            if (stems_loss_density(i) > 0.d0) then
-                biom_loss_stem_density(i)    = mS(i) * biom_stem(i)    * stems_loss_density(i) / &
-                                               max(stems_n(i), 1.0d-12)
-                biom_loss_root_density(i)    = mR(i) * biom_root(i)    * stems_loss_density(i) / &
-                                               max(stems_n(i), 1.0d-12)
-                biom_loss_foliage_density(i) = mF(i) * biom_foliage(i) * stems_loss_density(i) / &
-                                               max(stems_n(i), 1.0d-12)
-
-                ! update live values immediately
-                stems_n(i)      = stems_n(i) - stems_loss_density(i)
-                biom_stem(i)    = biom_stem(i) - biom_loss_stem_density(i)
-                biom_root(i)    = biom_root(i) - biom_loss_root_density(i)
-                biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
-                !b_cor = .TRUE.
-            end if
-
-            ! ensure non-negative biomass if cohort dies
-            if (stems_n(i) <= 0.d0) then
-                stems_n(i) = 0.d0
-                biom_stem(i) = 0.d0
-                biom_root(i) = 0.d0
-                biom_foliage(i) = 0.d0
-            end if
-
-        end if
-    end do
-  end if
+     if (.not. any(coppice_event(:))) then
+          if (dbh_total_prev > 0.d0) then
+               do i = 1, n_sp
+                   if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+                       ! --- Mortality model 1 ---
+                       if (mort_model .eq. 1) then
+                           if (biom_tree_max(i) < biom_tree(i)) then
+                               stems_loss_density(i) = f_get_mortality(stems_n_ha(i), &
+                                   biom_stem(i)/basal_area_prop(i), mS(i), wSx1000(i), thinPower(i)) * &
+                                   basal_area_prop(i)
+                           end if
+                       ! --- Mortality model 2 ---
+                       else if (mort_model .eq. 2) then
+                           ! protect betaN near 1
+                           if (abs(1.d0-betaN(i)) < 1.0d-6) then
+                               mort_thinn_total = 0.d0
+                           else
+                               !if (dbh_total_prev <= 0.d0) then
+                               !    dbh_total_prev = dbh_total
+                               !end if
+                               mort_thinn_total = ( (stems_n_total - ( &
+                                   stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
+                                   (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
+                                   lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
+                                   lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
+                           end if
+                           ! In single-cohort stands the thinning formulation already operates at the stand level, so no further basal-area allocation across cohorts is required.
+                           if (n_sp .eq. 1) then
+                               stems_loss_density(i) = mort_thinn_total
+                           else
+                               stems_loss_density(i) = mort_thinn_total * Pi * dbh_total**2 / 40000.d0 / &
+                                                       basal_area_total * basal_area(i) / &
+                                                       max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+                           end if
+                       end if
+                       ! ensure non-negative stems
+                       if (stems_loss_density(i) < 0.d0) stems_loss_density(i) = 0.d0
+                       ! biomass losses
+                       if (stems_loss_density(i) > 0.d0) then
+                           biom_loss_stem_density(i)    = mS(i) * biom_stem(i)    * stems_loss_density(i) / &
+                                                          max(stems_n(i), 1.0d-12)
+                           biom_loss_root_density(i)    = mR(i) * biom_root(i)    * stems_loss_density(i) / &
+                                                          max(stems_n(i), 1.0d-12)
+                           biom_loss_foliage_density(i) = mF(i) * biom_foliage(i) * stems_loss_density(i) / &
+                                                          max(stems_n(i), 1.0d-12)
+                           ! update live values immediately
+                           stems_n(i)      = stems_n(i) - stems_loss_density(i)
+                           biom_stem(i)    = biom_stem(i) - biom_loss_stem_density(i)
+                           biom_root(i)    = biom_root(i) - biom_loss_root_density(i)
+                           biom_foliage(i) = biom_foliage(i) - biom_loss_foliage_density(i)
+                           !b_cor = .TRUE.
+                       end if
+                       ! ensure non-negative biomass if cohort dies
+                       if (stems_n(i) <= 0.d0) then
+                           stems_n(i) = 0.d0
+                           biom_stem(i) = 0.d0
+                           biom_root(i) = 0.d0
+                           biom_foliage(i) = 0.d0
+                       end if
+                   end if
+               end do
+         end if
+     end if
 end if
 
 
