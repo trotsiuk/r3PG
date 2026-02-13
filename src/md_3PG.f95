@@ -1547,7 +1547,7 @@ biom_tree_max(:) = wSx1000(:) * (1000.d0 / stems_n_ha(:))**thinPower(:)
 ! skip density mortality if any thinning/defoliation/stress mortality occurred, and also skip if there was a coppice event because the new dbh will be 0, so it will have declined
 if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6) then
      if (.not. any(coppice_event(:))) then
-          !if (dbh_total_prev > 0.d0) then
+          if (dbh_total_prev > 0.d0) then
                do i = 1, n_sp
                    if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
                        ! --- Mortality model 1 ---
@@ -1563,9 +1563,9 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                            if (abs(1.d0-betaN(i)) < 1.0d-6) then
                                mort_thinn_total = 0.d0
                            else
-                               if (dbh_total_prev <= 0.d0) then
-                                   dbh_total_prev = dbh_total
-                               end if
+                               !if (dbh_total_prev <= 0.d0) then
+                               !    dbh_total_prev = dbh_total
+                               !end if
                                mort_thinn_total = ( (stems_n_total - ( &
                                    stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
                                    (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
@@ -1607,7 +1607,7 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                        end if
                    end if
                end do
-         !end if
+         end if
      end if
 end if
 
