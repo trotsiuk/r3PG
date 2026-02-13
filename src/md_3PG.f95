@@ -1588,14 +1588,13 @@ contains
         !end if
 
         if (leafgrow > leaffall) then
-            ! Check which hemisphere (southern hemisphere)
-            if (month >= leaffall) then
+            ! Check which hemisphere
+            if (month >= leaffall) then     ! southern hemisphere
                 if (month <= leafgrow) then
                     out = .TRUE.
                 end if
             end if
-        else if (leafgrow < leaffall) then
-            ! northern hemisphere
+        else if (leafgrow < leaffall) then  ! northern hemisphere
             if (month < leafgrow) then
                 out = .TRUE.
             else
@@ -1726,7 +1725,7 @@ contains
         integer :: i
         integer :: n_l
 
-        ! Sort all height and crown heigh
+        ! Sort all height and crown heights
         Height_all = [Heightcrown(:), height(:)] ! put height and crown beginning into vector
         Height_ind = f_orderId(Height_all) ! sort the array
 
@@ -1735,7 +1734,7 @@ contains
         ones(1:n_sp) = 1
         ones = ones(Height_ind)
 
-    !   cumulative sum
+    !   cummulative sum
         ones_sum = 0
         do i = 1, n_sp*2
             if (i == 1) then
@@ -1879,8 +1878,6 @@ contains
         !    end where
         !end if
 
-
-
         ! Northern tropics: 0 to 23.4
         if (Lat >= 0.d0) then
             if (Lat <= 23.4d0) then
@@ -1907,19 +1904,6 @@ contains
                 end where
             end if
         end if
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     end function f_get_solarangle
 
@@ -2027,7 +2011,7 @@ contains
 
     subroutine s_light_3pgmix ( n_sp, height, crown_length, crown_width, lai, stems_n, solar_rad, &
         CrownShape, k, gammaAPAR, solarAngle,days_in_month, &
-        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio, m_apar)               !20251114
+        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio, m_apar)
 
         ! Subroutine calculate the apar for the mixed species forest
         ! It first allocate each species to a specific layer based on height and crown length
@@ -2035,20 +2019,7 @@ contains
 
         ! If LAI is equal to 0, this is an indicator that the species is currently in the dormant period
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-!    implicit none          ! FIRST statement in the declarations section
-!    !integer :: i
-!    integer :: unit_csv
-!    logical, save :: header_written = .false.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! add this back when deleting the above
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         implicit none
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ! input
         integer, intent(in) :: n_sp ! number of species
@@ -2058,9 +2029,9 @@ contains
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: stems_n
         real(kind=kind(0.0d0)), intent(in) :: solar_rad
-        integer, dimension(n_sp), intent(in) :: CrownShape   !***DF crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
+        integer, dimension(n_sp), intent(in) :: CrownShape   ! crown shape of a given species; 1=cone, 2=ellipsoid, 3=half-ellipsoid, 4=rectangular
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: k
-        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: gammaAPAR !20251114
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: gammaAPAR
 
         real(kind=kind(0.0d0)), intent(in) :: solarAngle
         integer, intent(in) :: days_in_month
@@ -2068,7 +2039,7 @@ contains
         ! output
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: apar
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: lai_above !leaf area above the given species
-        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: fi !***DF the proportion of above canopy apar absorbed by each species
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: fi !the proportion of above canopy apar absorbed by each species
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: lambda_v       !Constant to partition light between species and to account for vertical canopy heterogeneity (see Equations 2 and 3 of Forrester et al., 2014, Forest Ecosystems, 1:17)
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: lambda_h         !Constant to account for horizontal canopy heterogeneity such as gaps between trees and the change in zenith angle (and shading) with latitude and season (see Equations 2 and 5 of Forrester et al., 2014, Forest Ecosystems, 1:17)
         real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: canopy_vol_frac !Fraction of canopy space (between lowest crown crown height to tallest height) filled by crowns
@@ -2077,10 +2048,10 @@ contains
 
         ! Additional variables for calculation distribution
         integer :: i
-        real(kind=kind(0.0d0)), dimension(n_sp) :: Heightmidcrown    !mean height of the middle of the crown (height - height to crown base)/2 + height to crown base       !***DF
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Heightmidcrown    !mean height of the middle of the crown (height - height to crown base)/2 + height to crown base
         real(kind=kind(0.0d0)), dimension(n_sp) :: Heightcrown ! height of the crown begining
         real(kind=kind(0.0d0)), dimension(n_sp) :: CrownSA  !mean crown surface area (m2) of a species
-        real(kind=kind(0.0d0)), dimension(n_sp) :: Crownvolume   !***DF the crown volume of a given species
+        real(kind=kind(0.0d0)), dimension(n_sp) :: Crownvolume   !the crown volume of a given species
         integer :: nLayers ! number of layers
         real(kind=kind(0.0d0)), dimension(n_sp) :: Height_max_l
         real(kind=kind(0.0d0)), dimension(n_sp) :: Heightcrown_min_l
@@ -2300,21 +2271,6 @@ else
       m_apar(:) = 1.d0
 end if
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! hereherehere
-!! --- write CSV file ---
-!    open(newunit=unit_csv, file="APARmodifier_output.csv", status="unknown", position="append", action="write")
-!
-!    if (.not. header_written) then
-!        write(unit_csv, '(A)') "i,height_wtav_LAI,height_rel_wt,m_apar"
-!        header_written = .true.
-!    end if
-!
-!    do i = 1, n_sp
-!        write(unit_csv, '(I4, 3(1X, E15.7))') i, height_wtav_LAI, height_rel_wt(i), m_apar(i)
-!    end do
-!
-!    close(unit_csv)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     end subroutine s_light_3pgmix
 
