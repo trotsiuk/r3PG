@@ -1411,15 +1411,15 @@ contains
                            i = 1 ! beta1 is now beta0, and beta2 is thinPower
 
                            ! Apply modifiers to intercept
-                           !thinIntercept_eff = thinIntercept(i) &
-                           !    + thinfN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
-                           !    + thinfT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
-                           !    + thinfPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
+                           thinIntercept_eff = thinIntercept(i) &
+                               + thinfN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
+                               + thinfT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
+                               + thinfPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
 
-                           thinIntercept_eff = beta0(i) &
-                               + betafN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
-                               + betafT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
-                               + betafPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
+                           !thinIntercept_eff = beta0(i) &
+                           !    + betafN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
+                           !    + betafT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
+                           !    + betafPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
 
                            ! Maximum allowable stand density
                            N_max = exp(thinIntercept_eff) * dbh_total ** (nWs(i) / (-thinPower(i)))
