@@ -34,49 +34,26 @@ contains
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
 
-! Temporary variables for numerically stable mortality calculation
-double precision :: pp
-double precision :: dbh_prev_safe, dbh_ratio
-double precision :: modifiers
-double precision :: delta_term
-double precision :: inner
+        ! Temporary variables for numerically stable self-thinning calculation
+        double precision :: pp
+        double precision :: dbh_prev_safe, dbh_ratio
+        double precision :: modifiers
+        double precision :: delta_term
+        double precision :: inner
 
+        ! required for dbh distributions
+        real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
+        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma
 
-!integer :: mm !20251114
+        ! Temporary variables for long-term modifiers
+        real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
+        ! Temporary variable for updating age-related variables after coppice events
+        real(kind=8) :: tmp_vec(1)
+        integer :: jj
+
 
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! Declare at the top:
- integer :: t, sp, row, ios
- character(len=256) :: filenameP
- integer :: n_rows
- !integer, save :: csv_unit = -1
- !logical, save :: csv_open = .false.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
-        ! required for dbh distributions
-        real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation !, wslocation
-        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma !, wsWeibullShape_gamma
-
-
-
-
-!! Temporary variables for long-term modifiers
-!integer :: stat, s_index, m_lt!, m      ! loop variables
-!real(kind=8), dimension(n_sp) :: m_tmp
-!integer(kind=8) :: approx_bytes
-!real(kind=8) :: approx_mb
-! Temporary variables for long-term modifiers
-real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean !20251114
-! Temporary variable for updating age-related variables after coppice events
-real(kind=8) :: tmp_vec(1) !20251124
-integer :: jj !20251124
 
 
         ! Variables, Parameters, Constants
@@ -1581,12 +1558,6 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                                !    lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
                                !    lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
 
-
-
-
-
-
-
                         ! ---- NUMERICALLY STABLE FORMULATION ----
 
                         pp = betaB(i) + 1.d0
@@ -1611,12 +1582,6 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                                            inner ** (1.d0 / (1.d0 - betaN(i)))
 
                         if (abs(mort_thinn_total) < 1.0d-10) mort_thinn_total = 0.d0
-
-
-
-
-
-
 
 
                            end if
