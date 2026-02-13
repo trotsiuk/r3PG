@@ -39,14 +39,6 @@ contains
         real(kind=c_double) :: dbh_safe
         real(kind=c_double) :: expo
         real(kind=c_double) :: logN
-        real(kind=c_double) :: ba_total_safe
-        real(kind=c_double) :: ba_tree_safe
-
-        real(kind=c_double) :: thinIntercept_eff
-        real(kind=c_double) :: N_max
-        real(kind=c_double) :: dbh_safe
-        real(kind=c_double) :: expo
-        real(kind=c_double) :: logN
         real(kind=c_double) :: weight
         real(kind=c_double) :: weight_sum
         real(kind=c_double) :: loss_sum
