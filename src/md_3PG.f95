@@ -39,6 +39,7 @@ contains
         real(kind=c_double) :: dbh_safe
         real(kind=c_double) :: expo
         real(kind=c_double) :: logN
+        real(kind=c_double) :: ba_total_safe
         ! Temporary for dbh distributions
         real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
         real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma
