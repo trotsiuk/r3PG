@@ -36,6 +36,9 @@ contains
         ! Temporary variables for self-thinning calculation
         real(kind=c_double) :: thinIntercept_eff
         real(kind=c_double) :: N_max
+        real(kind=c_double) :: dbh_safe
+        real(kind=c_double) :: expo
+        real(kind=c_double) :: logN
         ! Temporary for dbh distributions
         real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
         real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma
@@ -1403,50 +1406,90 @@ contains
                        end if
 
 
+                       !if (mort_model .eq. 2) then
+!
+                       !    mort_thinn_total = 0.d0
+!
+                       !    ! parameters identical across cohorts so use i = 1
+                       !    i = 1
+                       !    ! Apply modifiers to intercept
+                       !    thinIntercept_eff = thinIntercept(i) &
+                       !        + thinfN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
+                       !        + thinfT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
+                       !        + thinfPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
+!
+                       !    ! Maximum allowable stand density
+                       !    N_max = exp(thinIntercept_eff) * dbh_total ** (nWs(i) / (-thinPower(i)))
+                       !    N_max = max(N_max, 0.d0)
+!
+                       !    ! Stand-level mortality
+                       !    mort_thinn_total = stems_n_total - N_max
+                       !    mort_thinn_total = max(mort_thinn_total, 0.d0)
+                       !    mort_thinn_total = min(mort_thinn_total, stems_n_total)
+!
+                       !    ! Allocate mortality across cohorts
+                       !    if (mort_thinn_total > 0.d0) then
+                       !        do i = 1, n_sp
+                       !            if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+!
+                       !                if (n_sp .eq. 1) then
+                       !                    stems_loss_density(i) = mort_thinn_total
+                       !                else
+                       !                    stems_loss_density(i) = mort_thinn_total * &
+                       !                        Pi * dbh_total**2 / 40000.d0 / &
+                       !                        basal_area_total * basal_area(i) / &
+                       !                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+                       !                end if
+!
+                       !                stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
+                       !                stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
+!
+                       !            end if
+                       !        end do
+                       !    end if
+!
+                       !end if
+
+
                        if (mort_model .eq. 2) then
-
                            mort_thinn_total = 0.d0
-
-                           ! parameters identical across cohorts so use i = 1
-                           i = 1 ! beta1 is now beta0, and beta2 is thinPower
-
-                           ! Apply modifiers to intercept
-                           thinIntercept_eff = thinIntercept(i) &
-                               + thinfN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
-                               + thinfT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
-                               + thinfPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
-
-                           !thinIntercept_eff = beta0(i) &
-                           !    + betafN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
-                           !    + betafT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
-                           !    + betafPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
-
-                           ! Maximum allowable stand density
-                           N_max = exp(thinIntercept_eff) * dbh_total ** (nWs(i) / (-thinPower(i)))
+                           ! parameters identical across cohorts so use jj = 1
+                           jj = 1
+                           ! Apply modifiers to the intercept
+                           thinIntercept_eff = thinIntercept(jj) &
+                               + thinfN(jj)    * log(max(lt_fN_ave,    1.0d-6)) &
+                               + thinfT(jj)    * log(max(lt_fT_ave,    1.0d-6)) &
+                               + thinfPhys(jj) * log(max(lt_fPhys_ave, 1.0d-6))
+                           ! Protect against very small dbh_total
+                           dbh_safe = max(dbh_total, 1.0d-6)
+                           ! Stable computation of N_max (log form)
+                           expo  = -nWs(jj) / thinPower(jj)
+                           logN  = thinIntercept_eff + expo * log(dbh_safe)
+                           N_max = exp(logN)
                            N_max = max(N_max, 0.d0)
-
-                           ! Stand-level mortality
-                           mort_thinn_total = stems_n_total - N_max
-                           mort_thinn_total = max(mort_thinn_total, 0.d0)
+                           ! Stand-level mortality with deadband
+                           if (stems_n_total > N_max * (1.d0 + 1.d-10)) then
+                               mort_thinn_total = stems_n_total - N_max
+                           else
+                               mort_thinn_total = 0.d0
+                           end if
                            mort_thinn_total = min(mort_thinn_total, stems_n_total)
-
                            ! Allocate mortality across cohorts
                            if (mort_thinn_total > 0.d0) then
+                               ! Protect against near-zero basal area
+                               ba_total_safe = max(basal_area_total, 1.0d-10)
                                do i = 1, n_sp
                                    if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-
                                        if (n_sp .eq. 1) then
                                            stems_loss_density(i) = mort_thinn_total
                                        else
+                                           ba_tree_safe = max(Pi * dbh(i)**2 / 40000.d0, 1.0d-10)
                                            stems_loss_density(i) = mort_thinn_total * &
-                                               Pi * dbh_total**2 / 40000.d0 / &
-                                               basal_area_total * basal_area(i) / &
-                                               max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+                                               (Pi * dbh_safe**2 / 40000.d0) / ba_total_safe * &
+                                               basal_area(i) / ba_tree_safe
                                        end if
-
                                        stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
                                        stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
-
                                    end if
                                end do
                            end if
