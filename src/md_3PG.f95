@@ -1575,11 +1575,11 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
                                !if (dbh_total_prev <= 0.d0) then
                                !    dbh_total_prev = dbh_total
                                !end if
-                               mort_thinn_total = ( (stems_n_total - ( &
-                                   stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
-                                   (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
-                                   lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
-                                   lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
+                               !mort_thinn_total = ( (stems_n_total - ( &
+                               !    stems_n_total ** (1.d0 - betaN(i)) + Exp(beta0(i)) * (1.d0 - betaN(i)) / (betaB(i) + 1.d0) * &
+                               !    (dbh_total_prev ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * lt_fT_ave ** betafT(i) * &
+                               !    lt_fPhys_ave ** betafPhys(i) - dbh_total ** (betaB(i) + 1.d0) * lt_fN_ave ** betafN(i) * &
+                               !    lt_fT_ave ** betafT(i) * lt_fPhys_ave ** betafPhys(i))) ** (1.d0 / (1.d0 - betaN(i))) ))
 
 
 
@@ -1587,22 +1587,30 @@ if (sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) < 1.0e-6
 
 
 
+                        ! ---- NUMERICALLY STABLE FORMULATION ----
 
+                        pp = betaB(i) + 1.d0
 
+                        dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
+                        dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
 
+                        modifiers = lt_fN_ave ** betafN(i) * &
+                                    lt_fT_ave ** betafT(i) * &
+                                    lt_fPhys_ave ** betafPhys(i)
 
+                        delta_term = dbh_prev_safe ** pp * &
+                                     (1.d0 - dbh_ratio ** pp)
 
+                        inner = stems_n_total ** (1.d0 - betaN(i)) + &
+                                Exp(beta0(i)) * (1.d0 - betaN(i)) / pp * &
+                                delta_term * modifiers
 
+                        inner = max(inner, 0.d0)
 
+                        mort_thinn_total = stems_n_total - &
+                                           inner ** (1.d0 / (1.d0 - betaN(i)))
 
-
-
-
-
-
-
-
-
+                        if (abs(mort_thinn_total) < 1.0d-10) mort_thinn_total = 0.d0
 
 
 
