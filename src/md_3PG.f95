@@ -30,7 +30,7 @@ contains
         real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(92,n_sp), intent(in) :: pars_i
+        real(kind=c_double), dimension(90,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
         ! Temporary variables for self-thinning calculation
@@ -262,7 +262,7 @@ contains
                   calculate_states = .TRUE.
                   call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                       lai(:), height_rel(:), &
-                      height_model, crown_width_model, pars_i(69:88,:), &
+                      height_model, crown_width_model, pars_i(67:86,:), &
                       dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                       calculate_states, is_new(:) )
         end if
@@ -424,7 +424,7 @@ contains
                       calculate_states = .TRUE.
                       call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
-                          height_model, crown_width_model, pars_i(69:88,:), &
+                          height_model, crown_width_model, pars_i(67:86,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
@@ -1002,7 +1002,7 @@ contains
                       calculate_states = .FALSE.
                       call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
-                          height_model, crown_width_model, pars_i(69:88,:), &
+                          height_model, crown_width_model, pars_i(67:86,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
@@ -1344,7 +1344,7 @@ contains
                           calculate_states = .TRUE.
                           call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                               lai(:), height_rel(:), &
-                              height_model, crown_width_model, pars_i(69:88,:), &
+                              height_model, crown_width_model, pars_i(67:86,:), &
                               dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                               calculate_states, is_new(:) )
                 end if
