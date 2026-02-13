@@ -1560,7 +1560,7 @@ if (mort_model .eq. 2) then
         + betafPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
 
     ! Maximum allowable stand density
-    N_max = exp(thinIntercept_eff) * dbh_total ** (nWs(i) / thinPower(i))
+    N_max = exp(thinIntercept_eff) * dbh_total ** (nWs(i) / -thinPower(i))
     N_max = max(N_max, 0.d0)
 
     ! Stand-level mortality
