@@ -40,6 +40,10 @@ contains
         double precision :: modifiers
         double precision :: delta_term
         double precision :: inner
+        double precision :: betaN_eff
+        double precision :: inv_exp
+        double precision :: eps_inner
+        double precision :: eps_damp
 
         ! required for dbh distributions
         real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
