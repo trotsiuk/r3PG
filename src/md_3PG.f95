@@ -1532,6 +1532,72 @@ contains
                        end if
 
 
+if (mort_model .eq. 2) then
+
+    mort_thinn_total = 0.d0
+
+    ! Stand-level quantities
+    !stems_n_total = max(sum(stems_n(:)), 1.0d-12)
+    !basal_area_total = max(sum(basal_area(:)), 1.0d-12)
+    !dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+    !dbh_total = max(dbh_total, 1.0d-6)
+
+
+!                           modifiers = lt_fN_ave    ** betafN(i) * &
+!                                       lt_fT_ave    ** betafT(i) * &
+!                                       lt_fPhys_ave ** betafPhys(i)
+
+
+
+    ! parameters identical across cohorts so use i = 1
+    i = 1 ! beta1 is now beta0, and beta2 is thinPower
+
+
+    ! Apply modifiers to intercept
+    !thinIntercept_eff = thinIntercept(i) &
+    !    + thinfN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
+    !    + thinfT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
+    !    + thinfPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
+
+    thinIntercept_eff = beta0(i) &
+        + betafN(i)    * log(max(lt_fN_ave,    1.0d-6)) &
+        + betafT(i)    * log(max(lt_fT_ave,    1.0d-6)) &
+        + betafPhys(i) * log(max(lt_fPhys_ave, 1.0d-6))
+
+    ! Maximum allowable stand density
+    N_max = exp(thinIntercept_eff) * dbh_total ** (nWs(i) / thinPower(i))
+    N_max = max(N_max, 0.d0)
+
+    ! Stand-level mortality
+    mort_thinn_total = stems_n_total - N_max
+    mort_thinn_total = max(mort_thinn_total, 0.d0)
+    mort_thinn_total = min(mort_thinn_total, stems_n_total)
+
+    ! Allocate mortality across cohorts
+    if (mort_thinn_total > 0.d0) then
+        do i = 1, n_sp
+            if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+
+                if (n_sp .eq. 1) then
+                    stems_loss_density(i) = mort_thinn_total
+                else
+                    stems_loss_density(i) = mort_thinn_total * &
+                        Pi * dbh_total**2 / 40000.d0 / &
+                        basal_area_total * basal_area(i) / &
+                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+                end if
+
+                stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
+                stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
+
+            end if
+        end do
+    end if
+
+end if
+
+
+
 !                       if (mort_model .eq. 2) then
 !                           mort_thinn_total = 0.d0
 !                           ! parameters identical across cohorts → use i = 1
@@ -1594,62 +1660,62 @@ contains
 !                           end if
 !                       end if
 
-if (mort_model .eq. 2) then
-    mort_thinn_total = 0.d0
-
-    ! Use parameters from the first cohort (assumed identical across cohorts)
-    i = 1
-    betaN_eff = betaN(i)
-    pp = betaB(i) + 1.d0
-    dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
-    dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
-    modifiers = lt_fN_ave    ** betafN(i) * &
-                lt_fT_ave    ** betafT(i) * &
-                lt_fPhys_ave ** betafPhys(i)
-
-    ! delta term
-    delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
-
-    ! inner argument for inversion
-    inner = stems_n_total ** (1.d0 - betaN_eff) + &
-            Exp(beta0(i)) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
-
-    ! allow inner to reach zero, not artificially capped
-    inner = max(inner, 0.d0)
-
-    ! safe inversion using log-exp, with inv_exp capped for stability
-    inv_exp = 1.d0 / (1.d0 - betaN_eff)
-    inv_exp = max(min(inv_exp, 90.d0), -90.d0)
-
-    ! compute mortality at stand level
-    mort_thinn_total = stems_n_total - Exp(inv_exp * Log(inner))
-
-    ! ensure mortality is physically meaningful
-    mort_thinn_total = max(mort_thinn_total, 0.d0)
-    mort_thinn_total = min(mort_thinn_total, stems_n_total)
-
-    ! Allocate stand-level mortality across cohorts
-    if (mort_thinn_total > 0.d0) then
-        do i = 1, n_sp
-            if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-
-                if (n_sp .eq. 1) then
-                    stems_loss_density(i) = mort_thinn_total
-                else
-                    stems_loss_density(i) = mort_thinn_total * &
-                        Pi * dbh_total**2 / 40000.d0 / &
-                        basal_area_total * basal_area(i) / &
-                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
-                end if
-
-                ! enforce cohort-level physical bounds
-                stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
-                stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
-
-            end if
-        end do
-    end if
-end if
+!if (mort_model .eq. 2) then
+!    mort_thinn_total = 0.d0
+!
+!    ! Use parameters from the first cohort (assumed identical across cohorts)
+!    i = 1
+!    betaN_eff = betaN(i)
+!    pp = betaB(i) + 1.d0
+!    dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
+!    dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
+!    modifiers = lt_fN_ave    ** betafN(i) * &
+!                lt_fT_ave    ** betafT(i) * &
+!                lt_fPhys_ave ** betafPhys(i)
+!
+!    ! delta term
+!    delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
+!
+!    ! inner argument for inversion
+!    inner = stems_n_total ** (1.d0 - betaN_eff) + &
+!            Exp(beta0(i)) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
+!
+!    ! allow inner to reach zero, not artificially capped
+!    inner = max(inner, 0.d0)
+!
+!    ! safe inversion using log-exp, with inv_exp capped for stability
+!    inv_exp = 1.d0 / (1.d0 - betaN_eff)
+!    inv_exp = max(min(inv_exp, 90.d0), -90.d0)
+!
+!    ! compute mortality at stand level
+!    mort_thinn_total = stems_n_total - Exp(inv_exp * Log(inner))
+!
+!    ! ensure mortality is physically meaningful
+!    mort_thinn_total = max(mort_thinn_total, 0.d0)
+!    mort_thinn_total = min(mort_thinn_total, stems_n_total)
+!
+!    ! Allocate stand-level mortality across cohorts
+!    if (mort_thinn_total > 0.d0) then
+!        do i = 1, n_sp
+!            if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+!
+!                if (n_sp .eq. 1) then
+!                    stems_loss_density(i) = mort_thinn_total
+!                else
+!                    stems_loss_density(i) = mort_thinn_total * &
+!                        Pi * dbh_total**2 / 40000.d0 / &
+!                        basal_area_total * basal_area(i) / &
+!                        max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+!                end if
+!
+!                ! enforce cohort-level physical bounds
+!                stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
+!                stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
+!
+!            end if
+!        end do
+!    end if
+!end if
 
 
 
