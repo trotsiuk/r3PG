@@ -1475,21 +1475,21 @@ if (mort_model .eq. 3) then
     mort_thinn_total = 0.d0
 
     ! Use parameters from the first cohort (assumed identical across cohorts)
-    ii = 1
-    betaN_eff = betaN(ii)
-    pp = betaB(ii) + 1.d0
+    jj = 1
+    betaN_eff = betaN(jj)
+    pp = betaB(jj) + 1.d0
     dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
     dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
-    modifiers = lt_fN_ave    ** betafN(ii) * &
-                lt_fT_ave    ** betafT(ii) * &
-                lt_fPhys_ave ** betafPhys(ii)
+    modifiers = lt_fN_ave    ** betafN(jj) * &
+                lt_fT_ave    ** betafT(jj) * &
+                lt_fPhys_ave ** betafPhys(jj)
 
     ! delta term
     delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
 
     ! inner argument for inversion
     inner = stems_n_total ** (1.d0 - betaN_eff) + &
-            Exp(beta0(ii)) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
+            Exp(beta0(jj)) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
 
     ! allow inner to reach zero, not artificially capped
     inner = max(inner, 0.d0)
