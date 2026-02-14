@@ -30,7 +30,7 @@ contains
         real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(90,n_sp), intent(in) :: pars_i
+        real(kind=c_double), dimension(96,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
         ! Temporary variables for self-thinning calculation
@@ -43,6 +43,16 @@ contains
         real(kind=c_double) :: weight_sum
         real(kind=c_double) :: loss_sum
         real(kind=c_double) :: scale
+
+        real(kind=c_double) :: pp
+        real(kind=c_double) :: dbh_prev_safe, dbh_ratio
+        real(kind=c_double) :: modifiers
+        real(kind=c_double) :: delta_term
+        real(kind=c_double) :: inner
+        real(kind=c_double) :: betaN_eff
+        real(kind=c_double) :: inv_exp
+
+
 
         ! Temporary for dbh distributions
         real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
@@ -270,7 +280,7 @@ contains
                   calculate_states = .TRUE.
                   call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                       lai(:), height_rel(:), &
-                      height_model, crown_width_model, pars_i(67:86,:), &
+                      height_model, crown_width_model, pars_i(73:92,:), &
                       dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                       calculate_states, is_new(:) )
         end if
@@ -432,7 +442,7 @@ contains
                       calculate_states = .TRUE.
                       call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
-                          height_model, crown_width_model, pars_i(67:86,:), &
+                          height_model, crown_width_model, pars_i(73:92,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
@@ -1010,7 +1020,7 @@ contains
                       calculate_states = .FALSE.
                       call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
-                          height_model, crown_width_model, pars_i(67:86,:), &
+                          height_model, crown_width_model, pars_i(73:92,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
@@ -1352,7 +1362,7 @@ contains
                           calculate_states = .TRUE.
                           call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                               lai(:), height_rel(:), &
-                              height_model, crown_width_model, pars_i(67:86,:), &
+                              height_model, crown_width_model, pars_i(73:92,:), &
                               dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                               calculate_states, is_new(:) )
                 end if
@@ -1396,7 +1406,7 @@ contains
 
                        if (mort_model .eq. 1) then
                            do i = 1, n_sp
-                               if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+                               !if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
                                    if (biom_tree_max(i) < biom_tree(i)) then
                                        stems_loss_density(i) = f_get_mortality( &
                                            stems_n_ha(i), &
@@ -1406,7 +1416,7 @@ contains
                                    end if
                                    if (stems_loss_density(i) < 0.d0) stems_loss_density(i) = 0.d0
                                    stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
-                               end if
+                               !end if
                            end do
                        end if
 
@@ -1456,6 +1466,101 @@ contains
                                end if
                            end if
                        end if
+
+
+
+
+
+if (mort_model .eq. 3) then
+    mort_thinn_total = 0.d0
+
+    ! Use parameters from the first cohort (assumed identical across cohorts)
+    ii = 1
+    betaN_eff = betaN(ii)
+    pp = betaB(ii) + 1.d0
+    dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
+    dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
+    modifiers = lt_fN_ave    ** betafN(ii) * &
+                lt_fT_ave    ** betafT(ii) * &
+                lt_fPhys_ave ** betafPhys(ii)
+
+    ! delta term
+    delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
+
+    ! inner argument for inversion
+    inner = stems_n_total ** (1.d0 - betaN_eff) + &
+            Exp(beta0(ii)) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
+
+    ! allow inner to reach zero, not artificially capped
+    inner = max(inner, 0.d0)
+
+    ! safe inversion using log-exp, with inv_exp capped for stability
+    inv_exp = 1.d0 / (1.d0 - betaN_eff)
+    inv_exp = max(min(inv_exp, 90.d0), -90.d0)
+
+    ! compute mortality at stand level
+    mort_thinn_total = stems_n_total - Exp(inv_exp * Log(inner))
+
+    ! ensure mortality is physically meaningful
+    mort_thinn_total = max(mort_thinn_total, 0.d0)
+    mort_thinn_total = min(mort_thinn_total, stems_n_total)
+
+! Mass-conserving allocation across cohorts
+                           if (mort_thinn_total > 0.d0) then
+                               ! weights proportional to basal area
+                               weight(:) = basal_area(:)
+                               weight_sum = sum(weight(:))
+                               if (weight_sum > 0.d0) then
+                                   do i = 1, n_sp
+                                       stems_loss_density(i) = mort_thinn_total * weight(i) / weight_sum
+                                       stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
+                                   end do
+                               else
+                                   ! fallback: proportional to stem numbers
+                                   do i = 1, n_sp
+                                       stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
+                                   end do
+                               end if
+                               ! Final renormalisation to enforce exact conservation
+                               loss_sum = sum(stems_loss_density(:))
+                               if (loss_sum > 0.d0) then
+                                   scale = mort_thinn_total / loss_sum
+                                   stems_loss_density(:) = stems_loss_density(:) * scale
+                               end if
+                           end if
+
+
+
+    ! Allocate stand-level mortality across cohorts
+    !if (mort_thinn_total > 0.d0) then
+    !    do i = 1, n_sp
+    !        if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
+!
+    !            if (n_sp .eq. 1) then
+    !                stems_loss_density(i) = mort_thinn_total
+    !            else
+    !                stems_loss_density(i) = mort_thinn_total * &
+    !                    Pi * dbh_total**2 / 40000.d0 / &
+    !                    basal_area_total * basal_area(i) / &
+    !                    max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
+    !            end if
+!
+    !            ! enforce cohort-level physical bounds
+    !            stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
+    !            stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
+!
+    !        end if
+    !    end do
+    !end if
+end if
+
+
+
+
+
+
+
+
 
                        ! Apply losses
                        do i = 1, n_sp
