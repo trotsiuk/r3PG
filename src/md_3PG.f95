@@ -462,12 +462,12 @@ contains
 
                            ! Adjust roots if def_type is 2 (coppice) and sr_ratio indicates excess roots
                            ! The recovery has finished, but if there are more roots than sr_ratio suggests, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
-                           if (def_type(i) == 2) then
-                               if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
-                                   biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
-                                   biom_root(i) = (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
-                               end if
-                           end if
+                           !if (def_type(i) == 2) then
+                           !    if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
+                           !        biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
+                           !        biom_root(i) = (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
+                           !    end if
+                           !end if
                        end if
                    end if
 
@@ -479,10 +479,10 @@ contains
 
                                ! Adjust roots based on sr_ratio
                                ! The recovery has finished, but if there are more roots than sr_ratio suggests, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
-                               if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
-                                   biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
-                                   biom_root(i) = (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
-                               end if
+                               !if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
+                               !    biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
+                               !    biom_root(i) = (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
+                               !end if
                            end if
                        end if
                    end if
@@ -754,7 +754,7 @@ contains
 
 
             ! Water Balance ----------------------------------------------------------------------
-            ! Calculate each specie proportion
+            ! Calculate species proportions by lai
             lai_total = sum( lai(:) )
             lai_per(:) = lai(:) / lai_total
             do i = 1, n_sp
@@ -1204,11 +1204,11 @@ contains
                             ! Adjust pre-defoliation foliage mass (i.e. pre-defoliation foliage mass of trees that survived the defoliation event)
                             if( def_type(i) == 1 .or. def_type(i) == 3 ) then ! 1 = pruning, 3 = epicormic
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * root_retained_input ! depends on how many trees died as defined by root mass loss
-                                sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
+                                !sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
 
                             else if (def_type(i) == 2 ) then ! also depends on how many trees died, but age needs to be adjusted as well
                                 biom_foliage_adj_pre_def(i) = biom_foliage(i) * root_retained_input
-                                sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
+                                !sr_ratio(i) = (biom_stem(i) + biom_foliage(i)) / biom_root(i)
                                 coppice_event(i) = .TRUE.
                                 dbh(i) = 0.1d0
                                 basal_area(i) = 0.d0
@@ -2403,8 +2403,6 @@ end if
 
         else
 
-            ! In the norther latitudes the radiation shall not go below there if
-            ! there is a short daylangs
             if ( day_length > 0.d0 ) then
                 netRad = Qa + Qb * (solar_rad * 1.d6 / day_length)
             else

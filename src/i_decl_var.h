@@ -357,7 +357,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: prop_carbs
 real(kind=kind(0.0d0)), dimension(n_sp) :: prop_npp
 real(kind=kind(0.0d0)), dimension(n_sp) :: growing_season_length
 
-real(kind=kind(0.0d0)), dimension(n_sp) :: sr_ratio
+!real(kind=kind(0.0d0)), dimension(n_sp) :: sr_ratio
 real(kind=kind(0.0d0)) :: stem_retained_input, foliage_retained_input, root_retained_input, stem_input ! Defoliation inputs
 
 ! Water use ----------------------
