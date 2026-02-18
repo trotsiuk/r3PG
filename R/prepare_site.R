@@ -5,19 +5,28 @@
 #' \itemize{
 #'   \item \code{latitude}: Site latitude in the WGS84 coordinate system (degrees, range: [-90, 90]).
 #'   \item \code{elevation}: Site elevation (meters above sea level, range: [0, 4000]).
-#'   \item \code{soil_class}: Soil class as per 3PGpjs User Manual Table 2:
+#'   \item \code{soil_class}: Soil class as per 3PG User Manual Table 27:
 #'     \itemize{
-#'       \item 1: Sandy
-#'       \item 2: Sandy loam
-#'       \item 3: Clay loam
-#'       \item 4: Clay
-#'       \item 0: No effect of available soil water on production
+#'       \item 1: Clay
+#'       \item 2: Clay loam
+#'       \item 3: Loam
+#'       \item 4: Loamy sand
+#'       \item 5: Sand
+#'       \item 6: Sandy clay
+#'       \item 7: Sandy clay loam
+#'       \item 8: Sandy loam
+#'       \item 9: Silt
+#'       \item 10: Silty clay
+#'       \item 11: Silty clay loam
+#'       \item 12: Silty loam
+#'       \item 0: Uses cθ and nθ provided in the “parameters” input
 #'     }
 #'   \item \code{asw_i}: Initial available soil water (mm, must be >= 0).
 #'   \item \code{asw_min}: Minimum available soil water (mm, must be >= 0).
 #'   \item \code{asw_max}: Maximum available soil water (mm, must be >= 0).
 #'   \item \code{from}: Start of simulation period (year-month, e.g., "2000-01").
 #'   \item \code{to}: End of simulation period (year-month, e.g., "2009-12"). The simulation includes the entire month of December 2009.
+#'   \item \code{lt_mod_mths}: Number of months considered to be long-term when calculating the long-term average modifier values for density-dependent mortality.
 #' }
 #'
 #' @details This function validates the site table for \code{\link{run_3PG}} and ensures that all required fields are consistent.

@@ -14,12 +14,6 @@
 #'   \item \code{biom_root}: Root biomass (Mg/ha).
 #'   \item \code{biom_foliage}: Initial foliage biomass (Mg/ha). For leafless periods, provide spring foliage biomass.
 #' }
-#' Optional columns (required if `mort_model = 2 or 3`):
-#' \itemize{
-#'   \item \code{lt_fN}: Long-term soil nutrition modifier.
-#'   \item \code{lt_fT}: Long-term temperature modifier.
-#'   \item \code{lt_fPhys}: Long-term vapour pressure deficit and soil modifier.
-#' }
 #'
 #' @details This function is used to validate and prepare the species table for \code{\link{run_3PG}}.
 #'

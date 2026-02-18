@@ -11,7 +11,7 @@
 #'   \item \code{root_retained}: Proportion of root mass retained after defoliation (0 to 1).
 #'   \item \code{stem}: Fraction of average tree stem mass of killed trees (numeric, default 1).
 #'   \item \code{def_recover_t}: Time (months) to recover from defoliation (numeric). After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.
-#'   \item \code{prop_carbs}: Proportion of pre-defoliation carbs used to regenerate foliage (0 to 1).
+#'   \item \code{prop_carbs}: Proportion of pre-defoliation non-structural carbohydrates used to regenerate foliage (0 to 1).
 #'   \item \code{prop_npp}: Proportion of new photosynthate allocated to foliage (0 to 1).
 #' }
 #' @param sp_names A character vector of species or cohort names used in the simulation. Must match \code{species} names in the input.
