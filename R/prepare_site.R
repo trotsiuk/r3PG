@@ -63,9 +63,9 @@ prepare_site <- function(
   }
 
   required_cols <- c("latitude", "elevation", "soil_class", "asw_i", "asw_min", "asw_max", "from", "to")
-  optional_cols <- c( "lt_mod_mths" ) #!20251114
+  optional_cols <- c( "lt_mod_mths", "st_Power", "st_Intercept", "st_fN", "st_fT", "st_fPhys", "beta0", "betaB", "betaN", "betafN", "betafT", "betafPhys")
 
-  #!20251114
+
   #  if (!identical(required_cols, colnames(site))) {
   #    stop(paste(
   #      "The 'site' table must contain the following columns in order:",
@@ -105,8 +105,8 @@ prepare_site <- function(
   }
 
   # Validate soil class
-  if (!site$soil_class %in% 0:12) {  #20251124
-    stop("Soil class must be an integer between 0 and 12.") #20251124
+  if (!site$soil_class %in% 0:12) {
+    stop("Soil class must be an integer between 0 and 12.")
   }
 
   # Validate soil water values
@@ -135,5 +135,5 @@ prepare_site <- function(
   }
 
   # Return validated site table
-  return(site[, c(required_cols,optional_cols), drop = FALSE]) #!20251114
+  return(site[, c(required_cols,optional_cols), drop = FALSE])
 }
