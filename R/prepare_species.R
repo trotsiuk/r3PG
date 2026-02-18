@@ -14,7 +14,7 @@
 #'   \item \code{biom_root}: Root biomass (Mg/ha).
 #'   \item \code{biom_foliage}: Initial foliage biomass (Mg/ha). For leafless periods, provide spring foliage biomass.
 #' }
-#' Optional columns (required if `mort_model = 2`):
+#' Optional columns (required if `mort_model = 2 or 3`):
 #' \itemize{
 #'   \item \code{lt_fN}: Long-term soil nutrition modifier.
 #'   \item \code{lt_fT}: Long-term temperature modifier.

@@ -126,7 +126,7 @@ contains
         end do
 
         ! air pressure
-        air_pressure = 101.3d0 * Exp(-1.d0 * altitude / 8200.d0)
+        air_pressure = 101.3d0 * Exp(-1.d0 * elevation / 8200.d0)
 
 
         ! SOIL WATER --------

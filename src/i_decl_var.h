@@ -16,7 +16,7 @@ real(kind=kind(0.0d0)) :: asw_max                         ! maximum available so
 real(kind=kind(0.0d0)) :: asw_min                         ! minimum available soil water
 integer :: year_i                                         ! initial year when the simulations starts
 integer :: month_i                                        ! initial month when the simulation starts
-integer :: altitude                                       ! altitude of the site location, m
+integer :: elevation                                      ! elevation of the site location, m
 
 ! Species data -------------------------
 integer, dimension(n_sp) :: year_p                        ! year when species was planted

@@ -4,7 +4,7 @@
 #' @param site A data frame containing site-level data. It must contain exactly one row with the following columns:
 #' \itemize{
 #'   \item \code{latitude}: Site latitude in the WGS84 coordinate system (degrees, range: [-90, 90]).
-#'   \item \code{altitude}: Site altitude (meters above sea level, range: [0, 4000]).
+#'   \item \code{elevation}: Site elevation (meters above sea level, range: [0, 4000]).
 #'   \item \code{soil_class}: Soil class as per 3PGpjs User Manual Table 2:
 #'     \itemize{
 #'       \item 1: Sandy
@@ -40,7 +40,7 @@ prepare_site <- function(
     stop("The 'site' table must contain exactly one row.")
   }
 
-  required_cols <- c("latitude", "altitude", "soil_class", "asw_i", "asw_min", "asw_max", "from", "to")
+  required_cols <- c("latitude", "elevation", "soil_class", "asw_i", "asw_min", "asw_max", "from", "to")
   optional_cols <- c( "lt_mod_mths" ) #!20251114
 
   #!20251114
@@ -74,12 +74,12 @@ prepare_site <- function(
     stop("The 'from' date must be earlier than the 'to' date.")
   }
 
-  # Validate latitude and altitude
+  # Validate latitude and elevation
   if (site$latitude < -90 || site$latitude > 90) {
     stop("Latitude must be within the range [-90, 90].")
   }
-  if (site$altitude < 0 || site$altitude > 4000) {
-    stop("Altitude must be within the range [0, 4000].")
+  if (site$elevation < 0 || site$elevation > 4000) {
+    stop("Elevation must be within the range [0, 4000].")
   }
 
   # Validate soil class
