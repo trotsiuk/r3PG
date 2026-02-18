@@ -29,20 +29,6 @@ betafT = siteInputs(19)
 betafPhys = siteInputs(20)
 
 
-
-
-  real(kind=kind(0.0d0)) :: beta0         ! Constant for self-thinning when mort_model = 3
-  real(kind=kind(0.0d0)) :: betaB         ! Power for B when mort_model = 3
-  real(kind=kind(0.0d0)) :: betaN         ! Power in tree density when mort_model = 3
-  real(kind=kind(0.0d0)) :: betafN        ! Power in nutrition modifier when mort_model = 3
-  real(kind=kind(0.0d0)) :: betafT        ! Power in temperature modifier when mort_model = 3
-  real(kind=kind(0.0d0)) :: betafPhys     ! Power in physmod modifier when mort_model = 3
-
-
-
-
-
-
 ! Species data -------------------------
 year_p      = int( speciesInputs(:,1) )
 month_p     = int( speciesInputs(:,2) )

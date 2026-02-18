@@ -1429,6 +1429,7 @@ contains
                                + st_fPhys * log(max(lt_fPhys_ave, 1.0d-6))
                            ! Stand-level self-thinning frontier
                            dbh_safe = max(dbh_total, 1.0d-6)
+                           ! used weighted average nWS
                            expo = -(sum(nWs(:) * basal_area_prop(:))) / st_Power
                            logN = thinIntercept_eff + expo * log(dbh_safe)
                            N_max = exp(logN)
