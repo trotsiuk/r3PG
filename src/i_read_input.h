@@ -16,6 +16,31 @@ asw_max     = siteInputs(6)
 year_i      = int( siteInputs(7) )
 month_i     = int( siteInputs(8) )
 lt_mod_mths = siteInputs(9)
+st_Power = siteInputs(10)
+st_Intercept = siteInputs(11)
+st_fN = siteInputs(12)
+st_fT = siteInputs(13)
+st_fPhys = siteInputs(14)
+beta0 = siteInputs(15)
+betaB = siteInputs(16)
+betaN = siteInputs(17)
+betafN = siteInputs(18)
+betafT = siteInputs(19)
+betafPhys = siteInputs(20)
+
+
+
+
+  real(kind=kind(0.0d0)) :: beta0         ! Constant for self-thinning when mort_model = 3
+  real(kind=kind(0.0d0)) :: betaB         ! Power for B when mort_model = 3
+  real(kind=kind(0.0d0)) :: betaN         ! Power in tree density when mort_model = 3
+  real(kind=kind(0.0d0)) :: betafN        ! Power in nutrition modifier when mort_model = 3
+  real(kind=kind(0.0d0)) :: betafT        ! Power in temperature modifier when mort_model = 3
+  real(kind=kind(0.0d0)) :: betafPhys     ! Power in physmod modifier when mort_model = 3
+
+
+
+
 
 
 ! Species data -------------------------

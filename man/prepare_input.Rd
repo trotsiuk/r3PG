@@ -11,14 +11,22 @@ prepare_input(site, species, climate, thinning = NULL, defoliation = NULL,
 \item{site}{A data frame containing site-level data. It must contain exactly one row with the following columns:
 \itemize{
   \item \code{latitude}: Site latitude in the WGS84 coordinate system (degrees, range: [-90, 90]).
-  \item \code{altitude}: Site altitude (meters above sea level, range: [0, 4000]).
-  \item \code{soil_class}: Soil class as per 3PGpjs User Manual Table 2:
+  \item \code{elevation}: Site elevation (meters above sea level, range: [0, 4000]).
+  \item \code{soil_class}: Soil class as per 3PG User Manual Table 27:
     \itemize{
-      \item 1: Sandy
-      \item 2: Sandy loam
-      \item 3: Clay loam
-      \item 4: Clay
-      \item 0: No effect of available soil water on production
+      \item 1: Clay
+      \item 2: Clay loam
+      \item 3: Loam
+      \item 4: Loamy sand
+      \item 5: Sand
+      \item 6: Sandy clay
+      \item 7: Sandy clay loam
+      \item 8: Sandy loam
+      \item 9: Silt
+      \item 10: Silty clay
+      \item 11: Silty clay loam
+      \item 12: Silty loam
+      \item 0: Uses cθ and nθ provided in the “parameters” input
     }
   \item \code{asw_i}: Initial available soil water (mm, must be >= 0).
   \item \code{asw_min}: Minimum available soil water (mm, must be >= 0).
@@ -65,8 +73,9 @@ Optional columns (required if `mort_model = 2`):
   \item \code{age}: Age (years) at which thinning is performed (numeric).
   \item \code{stems_n}: Number of trees remaining after thinning (numeric).
   \item \code{stem}: Type of thinning (above/below) applied to stems (numeric, default is 1).
-  \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
   \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).
+  \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
+  \item \code{biom_prop_retained}: Proportion of aboveground biomass retained after thinning.
 }}
 
 \item{defoliation}{A data frame containing defoliation information. If no defoliation is required, set to \code{NULL}. The following columns are required:
@@ -77,8 +86,8 @@ Optional columns (required if `mort_model = 2`):
   \item \code{foliage_retained}: Proportion of foliage mass retained after defoliation (0 to 1).
   \item \code{root_retained}: Proportion of root mass retained after defoliation (0 to 1).
   \item \code{stem}: Fraction of average tree stem mass of killed trees (numeric, default 1).
-  \item \code{t_recover}: Time (months) to recover from defoliation (numeric).
-  \item \code{prop_carbs}: Proportion of pre-defoliation carbs used to regenerate foliage (0 to 1).
+  \item \code{def_recover_t}: Time (months) to recover from defoliation (numeric).
+  \item \code{prop_carbs}: Proportion of pre-defoliation non-structural carbohydrates used to regenerate foliage (0 to 1).
   \item \code{prop_npp}: Proportion of new photosynthate allocated to foliage (0 to 1).
 }}
 
@@ -96,13 +105,13 @@ Optional columns (required if `mort_model = 2`):
 
 \item{settings}{A list of model settings. Defaults:
 \itemize{
-  \item \code{light_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
-  \item \code{transp_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
-  \item \code{phys_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
-  \item \code{height_model}: 1 (default: linear), 2: non-linear.
-  \item \code{correct_bias}: 0 (default: no), 1: yes.
+  \item \code{light_model}: 1 3-PGpjs (default), 2: 3-PGmix.
+  \item \code{transp_model}: 1 3-PGpjs (default), 2: 3-PGmix.
+  \item \code{phys_model}: 1 3-PGpjs (default), min of f_vpd and f_sw; '2' - 3-PGmix, f_vpd x f_sw
+  \item \code{height_model}: 1 exponential (default); 2 Michajlow; 3 Näslund
+  \item \code{crown_width_model}: 1 exponential (default); 2 Michajlow; 3 Näslund
   \item \code{calculate_d13c}: 0 (default: no), 1: yes.
-  \item \code{mort_model}: 1 (default: 3-PGpjs), 2: 3-PGmix.
+  \item \code{mort_model}: 1 3-PGpjs (default); 2 self-thinning with modifiers; 3 deltaN and deltaB with modifiers
 }}
 }
 \value{

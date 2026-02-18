@@ -25,7 +25,7 @@ contains
         integer(kind=c_int), dimension(8), intent(in) :: settings    ! settings to indicate which equations to use
 
         ! Initial, forcing, parameters
-        real(kind=c_double), dimension(9), intent(in) :: siteInputs
+        real(kind=c_double), dimension(20), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs
         real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs

@@ -18,6 +18,24 @@ integer :: year_i                                         ! initial year when th
 integer :: month_i                                        ! initial month when the simulation starts
 integer :: elevation                                      ! elevation of the site location, m
 
+real(kind=kind(0.0d0)) :: st_Power      ! Power in self-thinning rule
+real(kind=kind(0.0d0)) :: st_Intercept  ! Intercept for self-thinning rule when mort_model = 2
+real(kind=kind(0.0d0)) :: st_fN         ! Power for self-thinning rule fertility modifier when mort_model = 2
+real(kind=kind(0.0d0)) :: st_fT         ! Power for self-thinning rule temperature modifier when mort_model = 2
+real(kind=kind(0.0d0)) :: st_fPhys      ! Power for self-thinning rule physmod modifier when mort_model = 2
+real(kind=kind(0.0d0)) :: beta0         ! Constant for self-thinning when mort_model = 3
+real(kind=kind(0.0d0)) :: betaB         ! Power for B when mort_model = 3
+real(kind=kind(0.0d0)) :: betaN         ! Power in tree density when mort_model = 3
+real(kind=kind(0.0d0)) :: betafN        ! Power in nutrition modifier when mort_model = 3
+real(kind=kind(0.0d0)) :: betafT        ! Power in temperature modifier when mort_model = 3
+real(kind=kind(0.0d0)) :: betafPhys     ! Power in physmod modifier when mort_model = 3
+
+
+
+
+
+
+
 ! Species data -------------------------
 integer, dimension(n_sp) :: year_p                        ! year when species was planted
 integer, dimension(n_sp) :: month_p                       ! month when species was planted

@@ -27,6 +27,19 @@
 #'   \item \code{from}: Start of simulation period (year-month, e.g., "2000-01").
 #'   \item \code{to}: End of simulation period (year-month, e.g., "2009-12"). The simulation includes the entire month of December 2009.
 #'   \item \code{lt_mod_mths}: Number of months considered to be long-term when calculating the long-term average modifier values for density-dependent mortality.
+#'   \item \code{st_Power}: Power in self-thinning rule when mort_model = 2
+#'   \item \code{st_Intercept}: Intercept for self-thinning rule (mort_model = 2)
+#'   \item \code{st_fN}: Power in fertility modifier when (mort_model = 2)
+#'   \item \code{st_fT}: Power in temperature modifier when (mort_model = 2)
+#'   \item \code{st_fPhys}: Power in physmod modifier when (mort_model = 2)
+#'   \item \code{beta0}: Constant for self-thinning when mort_model = 3
+#'   \item \code{betaB}: Power for B when mort_model = 3
+#'   \item \code{betaN}: Power in tree density when mort_model = 3
+#'   \item \code{betafN}: Power in nutrition modifier when mort_model = 3
+#'   \item \code{betafT}: Power in temperature modifier when mort_model = 3
+#'   \item \code{betafPhys}: Power in physmod modifier when mort_model = 3
+#'
+#'
 #' }
 #'
 #' @details This function validates the site table for \code{\link{run_3PG}} and ensures that all required fields are consistent.
