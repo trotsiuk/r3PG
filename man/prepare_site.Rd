@@ -10,7 +10,7 @@ prepare_site(site)
 \item{site}{A data frame containing site-level data. It must contain exactly one row with the following columns:
 \itemize{
   \item \code{latitude}: Site latitude in the WGS84 coordinate system (degrees, range: [-90, 90]).
-  \item \code{altitude}: Site altitude (meters above sea level, range: [0, 4000]).
+  \item \code{elevation}: Site elevation (meters above sea level, range: [0, 4000]).
   \item \code{soil_class}: Soil class as per 3PGpjs User Manual Table 2:
     \itemize{
       \item 1: Sandy
