@@ -1486,7 +1486,7 @@ if (mort_model .eq. 3) then
 
     ! inner argument for inversion
     inner = stems_n_total ** (1.d0 - betaN_eff) + &
-            Exp(beta0* (1.d0 - betaN_eff) / pp * delta_term * modifiers
+            Exp(beta0) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
 
     ! allow inner to reach zero, not artificially capped
     inner = max(inner, 0.d0)
