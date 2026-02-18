@@ -30,7 +30,7 @@ contains
         real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs
         real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
-        real(kind=c_double), dimension(96,n_sp), intent(in) :: pars_i
+        real(kind=c_double), dimension(86,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
         ! Temporary variables for self-thinning calculation
@@ -280,7 +280,7 @@ contains
                   calculate_states = .TRUE.
                   call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                       lai(:), height_rel(:), &
-                      height_model, crown_width_model, pars_i(73:92,:), &
+                      height_model, crown_width_model, pars_i(63:82,:), &
                       dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                       calculate_states, is_new(:) )
         end if
@@ -442,7 +442,7 @@ contains
                       calculate_states = .TRUE.
                       call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
-                          height_model, crown_width_model, pars_i(73:92,:), &
+                          height_model, crown_width_model, pars_i(63:82,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
@@ -1020,7 +1020,7 @@ contains
                       calculate_states = .FALSE.
                       call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
-                          height_model, crown_width_model, pars_i(73:92,:), &
+                          height_model, crown_width_model, pars_i(63:82,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
@@ -1362,7 +1362,7 @@ contains
                           calculate_states = .TRUE.
                           call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
                               lai(:), height_rel(:), &
-                              height_model, crown_width_model, pars_i(73:92,:), &
+                              height_model, crown_width_model, pars_i(63:82,:), &
                               dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                               calculate_states, is_new(:) )
                 end if
@@ -1422,16 +1422,14 @@ contains
 
                        if (mort_model .eq. 2) then
                            mort_thinn_total = 0.d0
-                           ! parameters identical across cohorts
-                           jj = 1
                            ! Apply modifiers to the intercept
-                           thinIntercept_eff = thinIntercept(jj) &
-                               + thinfN(jj)    * log(max(lt_fN_ave,    1.0d-6)) &
-                               + thinfT(jj)    * log(max(lt_fT_ave,    1.0d-6)) &
-                               + thinfPhys(jj) * log(max(lt_fPhys_ave, 1.0d-6))
+                           thinIntercept_eff = st_Intercept &
+                               + st_fN    * log(max(lt_fN_ave,    1.0d-6)) &
+                               + st_fT    * log(max(lt_fT_ave,    1.0d-6)) &
+                               + st_fPhys * log(max(lt_fPhys_ave, 1.0d-6))
                            ! Stand-level self-thinning frontier
                            dbh_safe = max(dbh_total, 1.0d-6)
-                           expo = -nWs(jj) / thinPower(jj)
+                           expo = -(sum(nWs(:) * basal_area_prop(:))) / st_Power
                            logN = thinIntercept_eff + expo * log(dbh_safe)
                            N_max = exp(logN)
                            N_max = max(N_max, 0.d0)
@@ -1474,22 +1472,20 @@ contains
 if (mort_model .eq. 3) then
     mort_thinn_total = 0.d0
 
-    ! Use parameters from the first cohort (assumed identical across cohorts)
-    jj = 1
-    betaN_eff = betaN(jj)
-    pp = betaB(jj) + 1.d0
+    betaN_eff = betaN
+    pp = betaB + 1.d0
     dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
     dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
-    modifiers = lt_fN_ave    ** betafN(jj) * &
-                lt_fT_ave    ** betafT(jj) * &
-                lt_fPhys_ave ** betafPhys(jj)
+    modifiers = lt_fN_ave    ** betafN * &
+                lt_fT_ave    ** betafT * &
+                lt_fPhys_ave ** betafPhys
 
     ! delta term
     delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
 
     ! inner argument for inversion
     inner = stems_n_total ** (1.d0 - betaN_eff) + &
-            Exp(beta0(jj)) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
+            Exp(beta0* (1.d0 - betaN_eff) / pp * delta_term * modifiers
 
     ! allow inner to reach zero, not artificially capped
     inner = max(inner, 0.d0)
