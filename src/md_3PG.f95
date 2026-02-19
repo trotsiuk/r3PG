@@ -506,13 +506,13 @@ contains
 
           ! Add any biomass coming from stored non-structural carbohydrates if still recovering from a defoliation event
           do i = 1, n_sp
-!
-!                if( def_recover_t(i) > 0.d0 ) then
-!                   ! if still in within the first year of a defoliation event
-!                   if ( age(ii,i) <= age_last_def_event(i) + 1.d0 ) then
-!
-!                         if(age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 ) then
-!
+
+                if( def_recover_t(i) > 0.d0 ) then
+                   ! if still in within the first year of a defoliation event
+                   if ( age(ii,i) <= age_last_def_event(i) + 1.d0 ) then
+
+                         if(age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0 ) then
+
 !                              if( def_type(i) == 1 .or. def_type(i) == 3 ) then !prune or epicormic response
 !
 !                                  if( leafgrow(i) < 1.0d-4 ) then ! evergreen species
@@ -549,28 +549,28 @@ contains
 !                                  end if
 !
 !                              end if
-!
-!
-!
-!                              if( def_type(i) == 2) then !coppice response
-!                                  if( leafgrow(i) == 0 ) then  ! evergreen species
-!                                    if( def_recover_t(i) < 12.d0 ) then
-!                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-!                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
-!                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-!                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
-!
-!                                    else
-!
-!                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-!                                    biom_foliage_adj_pre_def(i) / 12.d0
-!                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-!                                    biom_foliage_adj_pre_def(i) / 12.d0
-!
-!                                    end if
-!                                  end if
-!
-!
+
+
+
+                              if( def_type(i) == 2) then !coppice response
+                                  if( leafgrow(i) == 0 ) then  ! evergreen species
+                                    if( def_recover_t(i) < 12.d0 ) then
+                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
+                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
+
+                                    else
+
+                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / 12.d0
+                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / 12.d0
+
+                                    end if
+                                  end if
+
+
 !                                  if( leafgrow(i) > 1.0d-4 ) then ! deciduous species
 !                                     if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE.) then  ! deciduous, but not the dormant season
 !
@@ -594,35 +594,35 @@ contains
 !                                        end if
 !                                     end if
 !                                  end if
-!                              end if
-!                         end if
-!                   end if
-!
-!                else ! if not responding to defoliation, set the increments to 0
+                              end if
+                         end if
+                   end if
+
+                else ! if not responding to defoliation, set the increments to 0
 
                      biom_incr_foliage_def(i) = 0.0d0
                      biom_incr_stem_def(i) = 0.0d0
 
-!                end if
-!
-!
-!
-!                 ! def_recover_t > 0 and age threshold
-!                 if (def_recover_t(i) > 0.0d0) then
-!                     if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then
+                end if
+
+
+
+                 ! def_recover_t > 0 and age threshold
+                 if (def_recover_t(i) > 0.0d0) then
+                     if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then
                          def_recover_t(i) = 0.0d0
-!                     end if
-!                 end if
-!
-!                 ! Coppice condition: def_type 2, age threshold, and foliage+stem check
-!                 if (def_type(i) == 2) then
-!                     if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
-!                         if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
-!                             def_recover_t(i) = 0.0d0
-!                         end if
-!                     end if
-!                 end if
-!
+                     end if
+                 end if
+
+                 ! Coppice condition: def_type 2, age threshold, and foliage+stem check
+                 if (def_type(i) == 2) then
+                     if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
+                         if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
+                             def_recover_t(i) = 0.0d0
+                         end if
+                     end if
+                 end if
+
 !                 ! Prune condition: def_type 1
 !                 if (def_type(i) == 1) then
 !                     if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
@@ -640,7 +640,7 @@ contains
 !                         end if
 !                     end if
 !                 end if
-!
+
           end do
 
 
