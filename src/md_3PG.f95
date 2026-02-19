@@ -980,8 +980,9 @@ contains
 
                 else
 
-                    ! Leaves are now re-created from carbohydrates and the NPP is
-                    ! distributed among the compartments
+                    ! Leaves are now re-created from non-structural carbohydrates and the NPP is
+                    ! distributed among the compartments (if defoliation event occurred during the
+                    ! dormant period, it will have no influence, and if it occurred when it had foliage, biom_foliage_debt(i) will be zero anyway due to the defoliation)
                     if( biom_foliage(i) == 0.d0 ) then
                         biom_foliage(i) = biom_foliage_debt(i)
                         biom_foliage_debt(i) = 0.d0
@@ -992,16 +993,36 @@ contains
                     biom_loss_root(i) = gammaR(i) * biom_root(i)
 
 
-                    ! Calculate biomass increments (remove any non-structural carbohydrate contibutions - biom_incr_foliage_def & biom_incr_stem_def)
-                    biom_incr_foliage(i) = ( NPP(i) - biom_incr_foliage_def(i) - biom_incr_stem_def(i) ) * npp_fract_foliage(i)
-                    biom_incr_root(i) = ( NPP(i) - biom_incr_foliage_def(i) - biom_incr_stem_def(i) ) * npp_fract_root(i)
-                    biom_incr_stem(i) = ( NPP(i) - biom_incr_foliage_def(i) - biom_incr_stem_def(i) ) * npp_fract_stem(i)
+                    ! =========================================================
+                    ! NEW: effective NPP including NSC contribution
+                    ! =========================================================
+                    NPP_eff = NPP(i)
+                    ! if still in within the first year of a defoliation event
+                    if ( age(ii,i) <= age_last_def_event(i) + 1.d0 ) then
+                          if(age(ii,i) >= age_last_def_event(i) ) then
+                          ! still in the first year since defoliation, so some npp can come from non-structural carbohydrates
+                               if ( def_recover_t(i) > 0.d0 ) then
+                                   if ( prop_carbs(i) > 0.d0 ) then
+                                       NPP_eff = NPP(i) / (1.0d0 - prop_carbs(i))
+                                   end if
+                               end if
+                          end if
+                    end if
+                    ! =========================================================
+
+
+
+                    ! Calculate biomass increments
+                    biom_incr_foliage(i) = NPP_eff * npp_fract_foliage(i)
+                    biom_incr_root(i)    = NPP_eff * npp_fract_root(i)
+                    biom_incr_stem(i)    = NPP_eff * npp_fract_stem(i)
 
 
                     ! Calculate end-of-month biomass
-                    biom_foliage(i) = biom_foliage(i) + biom_incr_foliage(i) - biom_loss_foliage(i) + biom_incr_foliage_def(i)
+                    biom_foliage(i) = biom_foliage(i) + biom_incr_foliage(i) - biom_loss_foliage(i)
                     biom_root(i) = biom_root(i) + biom_incr_root(i) - biom_loss_root(i)
-                    biom_stem(i) = biom_stem(i) + biom_incr_stem(i) + biom_incr_stem_def(i)
+                    biom_stem(i) = biom_stem(i) + biom_incr_stem(i)
+
 
                 end if
 
