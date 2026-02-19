@@ -742,12 +742,6 @@ contains
             GPP(:) = epsilon(:) * apar(:) / 100        ! tDM/ha (apar is MJ/m^2)
             NPP(:) = GPP(:) * y(:)    ! assumes respiratory rate is constant
 
-
-
-
-
-
-
             ! If there was a defoliation event that removed all foliage, then lai will be 0 but there can still be npp produced from non-structural carbohydrates.
             ! Therefore, add this npp if the cohort is not dormant
             do i = 1, n_sp
@@ -764,11 +758,6 @@ contains
                    end if
                 end if
             end do
-
-
-
-
-
 
 
 
@@ -843,11 +832,6 @@ contains
             ! correct for actual ET
             GPP(:) = GPP(:) * f_transp_scale
             NPP(:) = NPP(:) * f_transp_scale
-
-            ! Adjust the defoliation-related components that have already been calculated
-            biom_incr_foliage_def(:) = biom_incr_foliage_def(:) * f_transp_scale
-            biom_incr_stem_def(:) = biom_incr_stem_def(:) * f_transp_scale
-
 
             if ( transp_total > 0 ) then
                 if(f_transp_scale < 1 ) then
