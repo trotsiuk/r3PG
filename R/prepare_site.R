@@ -116,7 +116,7 @@ prepare_site <- function(
 
 
 
-  # Handle optional columns !20251114
+  # Handle optional columns
   if (!all(optional_cols %in% colnames(site))) {
 
     # Add missing optional columns with NA values
@@ -127,9 +127,13 @@ prepare_site <- function(
 
     # Validate optional columns if present
     if (!all(is.na(site[, optional_cols]))) {
-
-      if (any(site[, optional_cols] < 0, na.rm = TRUE)) {
-        stop("Number of months for long-term modifier calculations (lt_mod_mths) must contain non-negative values.")
+      if ("lt_mod_mths" %in% names(site)) {
+        if (any(site$lt_mod_mths < 0, na.rm = TRUE)) {
+          stop(
+            "Number of months for long-term modifier calculations (lt_mod_mths) ",
+            "must contain non-negative values."
+          )
+        }
       }
     }
   }
