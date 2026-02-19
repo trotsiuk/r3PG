@@ -607,13 +607,13 @@ contains
 
 
 
-                 ! def_recover_t > 0 and age threshold
-                 if (def_recover_t(i) > 0.0d0) then
-                     if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then
-                         def_recover_t(i) = 0.0d0
-                     end if
-                 end if
-
+!                 ! def_recover_t > 0 and age threshold
+!                 if (def_recover_t(i) > 0.0d0) then
+!                     if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then
+!                         def_recover_t(i) = 0.0d0
+!                     end if
+!                 end if
+!
 !                 ! Coppice condition: def_type 2, age threshold, and foliage+stem check
 !                 if (def_type(i) == 2) then
 !                     if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
