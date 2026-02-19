@@ -746,10 +746,12 @@ contains
 
 
 
-            ! ---------------------------------------------------------
-            ! NSC-driven NPP when LAI = 0 (complete defoliation case)
-            ! ---------------------------------------------------------
+
+
+            ! If there was a defoliation event that removed all foliage, then lai will be 0 but there can still be npp produced from non-structural carbohydrates.
+            ! Therefore, add this npp if the cohort is not dormant
             do i = 1, n_sp
+                if( f_dormant(month, leafgrow(i), leaffall(i)) .eqv. .FALSE. ) then
                    if ( lai(i) < 1.0d-4 ) then
                        if ( def_recover_t(i) > 0.d0 ) then
                            if ( age(ii,i) >= age_last_def_event(i) ) then
@@ -760,7 +762,13 @@ contains
                            end if
                        end if
                    end if
+                end if
             end do
+
+
+
+
+
 
 
 
