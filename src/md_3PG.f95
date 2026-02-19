@@ -753,7 +753,7 @@ contains
                    if ( lai(i) < 1.0d-4 ) then
                        if ( def_recover_t(i) > 0.d0 ) then
                            if ( age(ii,i) >= age_last_def_event(i) ) then
-                                if ( age(ii,i) <= age_last_def_event(i) + 1.d0 ) )then
+                                if ( age(ii,i) <= age_last_def_event(i) + 1.d0 ) then
                                      ! the NPP reallocated from non-structural carbohydrates should not be added to GPP, which is C aquisition
                                      NPP(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / 12.d0
                                 end if
