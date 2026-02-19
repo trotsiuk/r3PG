@@ -737,12 +737,30 @@ contains
 
             ! Calculate assimilation before the water balance is done
             alpha_c(:) = alphaCx(:) * f_nutr(:) * f_tmp(ii,:) * f_frost(ii,:) * f_calpha(ii,:) * f_phys(:)
-            where( lai(:) == 0.d0 ) alpha_c(:) = 0.d0
+            where( lai(:) < 1.0d-4 ) alpha_c(:) = 0.d0
             epsilon(:) = gDM_mol * molPAR_MJ * alpha_c(:)
             GPP(:) = epsilon(:) * apar(:) / 100        ! tDM/ha (apar is MJ/m^2)
-            NPP(:) = GPP(:) * y(:) + biom_incr_foliage_def(:) + biom_incr_stem_def(:)    ! assumes respiratory rate is constant
-            ! the biom_incr_foliage_def and biom_incr_stem_def are reallocation of non-structural carbohydrates to NPP and therefore should not be added to GPP, which is C aquisition
+            NPP(:) = GPP(:) * y(:)    ! assumes respiratory rate is constant
 
+
+
+
+
+            ! ---------------------------------------------------------
+            ! NSC-driven NPP when LAI = 0 (complete defoliation case)
+            ! ---------------------------------------------------------
+            do i = 1, n_sp
+                   if ( lai(i) < 1.0d-4 ) then
+                       if ( def_recover_t(i) > 0.d0 ) then
+                           if ( age(ii,i) >= age_last_def_event(i) ) then
+                                if ( age(ii,i) <= age_last_def_event(i) + 1.d0 ) )then
+                                     ! the NPP reallocated from non-structural carbohydrates should not be added to GPP, which is C aquisition
+                                     NPP(i) = prop_carbs(i) * biom_foliage_adj_pre_def(i) / 12.d0
+                                end if
+                           end if
+                       end if
+                   end if
+            end do
 
 
 
