@@ -463,30 +463,31 @@ contains
 
             ! Recovery also ends if the cohorts has regrown the equivalent of the pre-defoliation foliage mass (biom_foliage_adj_pre_def)
             ! Coppice condition: def_type 2
-            if (def_type(i) == 2) then
-                if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
-                    if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
-                        def_recover_t(i) = 0.0d0
+            do i = 1, n_sp
+                if (def_type(i) == 2) then
+                    if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
+                        if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
+                            def_recover_t(i) = 0.0d0
+                        end if
                     end if
                 end if
-            end if
-           ! Prune condition: def_type 1
-           if (def_type(i) == 1) then
-               if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
-                   if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
-                       def_recover_t(i) = 0.0d0
-                   end if
-               end if
-           end if
-            ! Epicormic condition: def_type 3
-            if (def_type(i) == 3) then
-                if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
-                    if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
-                        def_recover_t(i) = 0.0d0
+                ! Prune condition: def_type 1
+                if (def_type(i) == 1) then
+                    if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
+                        if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
+                            def_recover_t(i) = 0.0d0
+                        end if
                     end if
                 end if
-            end if
-
+                ! Epicormic condition: def_type 3
+                if (def_type(i) == 3) then
+                    if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
+                        if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
+                            def_recover_t(i) = 0.0d0
+                        end if
+                    end if
+                end if
+            end do
 
 
 
