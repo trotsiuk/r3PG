@@ -55,8 +55,6 @@ output(ii,:,4,8) = biom_loss_root(:)
 output(ii,:,4,9) = biom_incr_foliage(:)
 output(ii,:,4,10) = biom_incr_root(:)
 output(ii,:,4,11) = biom_incr_stem(:)
-output(ii,:,4,12) = biom_incr_foliage_def(:)
-output(ii,:,4,13) = biom_incr_stem_def(:)
 
 ! Modifiers ---------------
 output(ii,:,5,1) = f_age(ii,:)

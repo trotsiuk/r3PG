@@ -250,10 +250,6 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: biom_tree_max      ! Max. mean tree s
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_foliage
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_root
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_stem
-
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_foliage_def  ! increment due to use of non-structural carbohydrates following defoliation
-real(kind=kind(0.0d0)), dimension(n_sp) :: biom_incr_stem_def     ! increment due to use of non-structural carbohydrates following defoliation
-
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_foliage      ! Litter fall
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_root
 
