@@ -1038,7 +1038,7 @@ contains
             biom_loss_stem_def(:) = 0.d0
             biom_loss_root_def(:) = 0.d0
             biom_loss_foliage_def(:) = 0.d0
-            def_type(:) = 0
+            !def_type(:) = 0
             coppice_event(:) = .FALSE.
 
             do i = 1, n_sp
