@@ -59,6 +59,8 @@ contains
         real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma
         ! Temporary variables for long-term modifiers
         real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
+        ! Temporary variable when responding to defoliation
+        real(kind=c_double) :: NPP_eff
         ! Temporary variable for updating age-related variables after coppice events
         real(kind=8) :: tmp_vec(1)
         integer :: jj
@@ -455,11 +457,9 @@ contains
             ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
             ! after the previous month's using new NPP.
             do i = 1, n_sp
-
                    if (def_recover_t(i) > 0.0d0) then ! indicates that there has been a defoliation event
                        if (age(ii,i) >= age_last_def_event(i) + def_recover_t(i)/12.d0) then
                            def_recover_t(i) = 0.0d0
-
                            ! Adjust roots if def_type is 2 (coppice) and sr_ratio indicates excess roots
                            ! The recovery has finished, but if there are more roots than sr_ratio suggests, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
                            !if (def_type(i) == 2) then
@@ -470,43 +470,36 @@ contains
                            !end if
                        end if
                    end if
-
                    ! Coppice condition: def_type 2
-                   if (def_type(i) == 2) then
-                       if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
-                           if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
-                               def_recover_t(i) = 0.0d0
-
-                               ! Adjust roots based on sr_ratio
-                               ! The recovery has finished, but if there are more roots than sr_ratio suggests, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
-                               !if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
-                               !    biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
-                               !    biom_root(i) = (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
-                               !end if
-                           end if
-                       end if
-                   end if
-
+                   !if (def_type(i) == 2) then
+                   !    if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
+                   !        if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
+                   !            def_recover_t(i) = 0.0d0
+                   !            ! Adjust roots based on sr_ratio
+                   !            ! The recovery has finished, but if there are more roots than sr_ratio suggests, remove some of the roots to be consistent with natural root pruning to retain the shoot/root ratio
+                   !            !if (sr_ratio(i) > (biom_stem(i) + biom_foliage(i)) / biom_root(i)) then
+                   !            !    biom_loss_root_def(i) = biom_root(i) - (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
+                   !            !    biom_root(i) = (biom_stem(i) + biom_foliage(i)) / sr_ratio(i)
+                   !            !end if
+                   !        end if
+                   !    end if
+                   !end if
                   ! Prune condition: def_type 1
-                  if (def_type(i) == 1) then
-                      if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
-                          if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
-                              def_recover_t(i) = 0.0d0
-                          end if
-                      end if
-                  end if
-
+                  !if (def_type(i) == 1) then
+                  !    if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
+                  !        if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
+                  !            def_recover_t(i) = 0.0d0
+                  !        end if
+                  !    end if
+                  !end if
                    ! Epicormic condition: def_type 3
-                   if (def_type(i) == 3) then
-                       if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
-                           if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
-                               def_recover_t(i) = 0.0d0
-                           end if
-                       end if
-                   end if
-
-
-
+                   !if (def_type(i) == 3) then
+                   !    if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
+                   !        if (biom_foliage(i) >= biom_foliage_adj_pre_def(i)) then
+                   !            def_recover_t(i) = 0.0d0
+                   !        end if
+                   !    end if
+                   !end if
             end do
 
 
