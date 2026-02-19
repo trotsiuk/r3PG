@@ -555,10 +555,10 @@ contains
                               if( def_type(i) == 2) then !coppice response
                                   if( leafgrow(i) == 0 ) then  ! evergreen species
                                     if( def_recover_t(i) < 12.d0 ) then
-                                    !biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-                                    !biom_foliage_adj_pre_def(i) / def_recover_t(i)
-                                    !biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-                                    !biom_foliage_adj_pre_def(i) / def_recover_t(i)
+                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
+                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                    biom_foliage_adj_pre_def(i) / def_recover_t(i)
 
                                     else
 
