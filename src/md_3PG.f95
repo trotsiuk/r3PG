@@ -562,10 +562,10 @@ contains
 
                                     else
 
-                                    biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
-                                    biom_foliage_adj_pre_def(i) / 12.d0
-                                    biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
-                                    biom_foliage_adj_pre_def(i) / 12.d0
+                                    !biom_incr_foliage_def(i) = (1.d0 - npp_fract_stem(i)) * prop_carbs(i) * &
+                                    !biom_foliage_adj_pre_def(i) / 12.d0
+                                    !biom_incr_stem_def(i) = (1.d0 / (1.d0 + pFS(i))) * prop_carbs(i) * &
+                                    !biom_foliage_adj_pre_def(i) / 12.d0
 
                                     end if
                                   end if
