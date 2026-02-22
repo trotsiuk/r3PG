@@ -465,7 +465,7 @@ contains
             ! Coppice condition: def_type 2
             do i = 1, n_sp
                 if (def_type(i) == 2) then
-                    if (age(ii,i) > age_last_def_event(i) + 1.d0/12.d0) then
+                    if (age(ii,i) >= age_last_def_event(i) + 1.d0/12.d0) then
                         if (biom_foliage(i) + biom_stem(i) >= biom_foliage_adj_pre_def(i)) then
                             def_recover_t(i) = 0.0d0
                         end if
@@ -2423,8 +2423,8 @@ end if
                   else if ( height_model .eq. 3 ) then
                       do i = 1, n_sp
                           if (.not. is_new(i)) cycle
-                              if (nH3(i) < 1.0e-5) then
-                                  if (nH4(i) < 1.0e-5) then
+                              if (abs(nH3(i)) < 1.0e-5) then
+                                  if (abs(nH4(i)) < 1.0e-5) then
                                       height(i) = Hd(i) + (dbh(i) ** aH(i)) / (nH1(i) + nH2(i) * (dbh(i) ** aH(i)))
                                   else
                                       height(i) = Hd(i) + (dbh(i) ** aH(i)) / (Exp(nH1(i) + nH3(i)*competition_total) + &
@@ -2460,8 +2460,8 @@ end if
                   else if ( crown_width_model .eq. 3 ) then
                       do i = 1, n_sp
                           if (.not. is_new(i)) cycle
-                              if (nK3(i) < 1.0e-5) then
-                                  if (nK4(i) < 1.0e-5) then
+                              if (abs(nK3(i)) < 1.0e-5) then
+                                  if (abs(nK4(i)) < 1.0e-5) then
                                       crown_width(i) = (dbh(i) ** aK(i)) / (nK1(i) + nK2(i) * (dbh(i) ** aK(i)))
                                   else
                                       crown_width(i) = (dbh(i) ** aK(i)) / (Exp(nK1(i) + nK3(i)*competition_total) + &
@@ -2492,8 +2492,8 @@ end if
                   else if ( height_model .eq. 3 ) then
                       do i = 1, n_sp
                          if (.not. is_new(i)) cycle
-                             if (nH3(i) < 1.0e-5) then
-                                 if (nH4(i) < 1.0e-5) then
+                             if (abs(nH3(i)) < 1.0e-5) then
+                                 if (abs(nH4(i)) < 1.0e-5) then
                                      height(i) = height(i) + (aH(i) * nH1(i) * dbh(i) ** (aH(i) - 1)) / &
                                                   ((nH1(i) + nH2(i) * dbh(i) ** aH(i)) ** 2) * (dbh(i) - dbh_prev(i))
                                  else
@@ -2516,7 +2516,7 @@ end if
 
                   where (is_new)
                       where (dbh(:) > 0.0d0)
-                          where (aHL(:) > 0.0d0)
+                          where (abs(aHL(:)) > 1.0e-5)
                               crown_ratio(:) = crown_ratio(:) + aHL(:) * nHL1(:) * (dbh(:) ** (nHL1(:) - 1)) * &
                                                lai_total ** nHL2(:) * height_rel(:) ** nHL3(:) * competition_total ** nHL4(:) * &
                                                (dbh(:) - dbh_prev(:))
@@ -2539,8 +2539,8 @@ end if
                   else if ( crown_width_model .eq. 3 ) then
                       do i = 1, n_sp
                           if (.not. is_new(i)) cycle
-                             if (nK3(i) < 1.0e-5) then
-                                 if (nK4(i) < 1.0e-5) then
+                             if (abs(nK3(i)) < 1.0e-5) then
+                                 if (abs(nK4(i)) < 1.0e-5) then
                                      crown_width(i) = crown_width(i) + (aK(i) * nK1(i) * dbh(i) ** (aK(i) - 1)) / &
                                                       ((nK1(i) + nK2(i) * dbh(i) ** aK(i)) ** 2) * (dbh(i) - dbh_prev(i))
                                  else

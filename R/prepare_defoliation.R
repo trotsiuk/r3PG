@@ -107,6 +107,10 @@ prepare_defoliation <- function(defoliation = NULL,
       stop("Defoliation input error: 'def_recover_t' must be provided and >= 2 months for all defoliation events.")
     }
 
+    if (any(defoliation$prop_carbs >= 1)) {
+      stop("Defoliation input error: 'prop_carbs' must be < 1 for all defoliation events.")
+    }
+
 
     defoliation <- data.frame(defoliation)
     defoliation <- defoliation[defoliation$species %in% sp_names, ]
