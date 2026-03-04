@@ -494,7 +494,19 @@ contains
 
 
 
+
+
+
+
             !Radiation and assimilation ----------------------------------------------------------------------
+
+            if (n_sp > 1 ) then ! get height_wtav_LAI, which is used when light_model = 2, and mort_model = 2 or 3
+                ! average height of all cohorts, weighted by their contribution to LAI
+                height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
+                ! height of cohort relative to weighted average height
+                height_rel_wt(:) = height(:)/height_wtav_LAI
+            end if
+
             if ( light_model .eq. int(1) ) then
                 call s_light_3pgpjs ( n_sp, age_m(ii,:), fullCanAge(:), k(:), lai(:), &
                     solar_rad(ii), daysInMonth(month), &
@@ -508,7 +520,7 @@ contains
                 call s_light_3pgmix ( n_sp, height(:), crown_length(:), crown_width(:), lai(:), stems_n(:), &
                     solar_rad(ii), CrownShape(:), k(:), gammaAPAR(:), adjSolarZenithAngle(month), daysInMonth(month), &
                     apar(:), lai_above(:), fi(:), lambda_v(:), lambda_h(:), canopy_vol_frac(:), layer_id(:), &
-                    lai_sa_ratio(:), m_apar(:), height_rel_wt(:))
+                    lai_sa_ratio(:), m_apar(:))
 
                 VPD_sp(:) = vpd_day(ii) * Exp(lai_above(:) * (-Log(2.d0)) / cVPD(:))
             end if
@@ -2011,7 +2023,7 @@ end if
 
     subroutine s_light_3pgmix ( n_sp, height, crown_length, crown_width, lai, stems_n, solar_rad, &
         CrownShape, k, gammaAPAR, solarAngle,days_in_month, &
-        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio, m_apar, height_rel_wt)
+        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio, m_apar)
 
         ! Subroutine calculate the apar for the mixed species forest
         ! It first allocate each species to a specific layer based on height and crown length
@@ -2234,15 +2246,13 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
 ! rather than under horizontally homogeneous canopies of the overstorey species
 
 if (n_sp > 1 ) then
+
       if( sum(gammaAPAR(:)) > 0.0d0) then ! no need to do this for monocultures, or for stands where all gammaAPAR are 0, because there will not be any effect
          ! avoid fi = 0.0 for shaded cohorts
          where (fi(:) < 1d-12)
              fi(:) = 1d-12
          end where
-         ! average height of all cohorts, weighted by their contribution to LAI
-         height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
-         ! height of cohort relative to weighted average height
-         height_rel_wt(:) = height(:)/height_wtav_LAI
+
          ! modifier to redistribute PAR not absorbed by the canopy
          !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
          !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
