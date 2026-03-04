@@ -64,7 +64,8 @@ contains
         ! Temporary variable for updating age-related variables after coppice events
         real(kind=8) :: tmp_vec(1)
         integer :: jj
-
+        ! Temporary variable for calculating height_rel_wt
+        real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each cohort, where the weighting is by LAI !20251114
 
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
@@ -500,7 +501,7 @@ contains
 
             !Radiation and assimilation ----------------------------------------------------------------------
 
-            if (n_sp > 1 ) then ! get height_wtav_LAI, which is used when light_model = 2, and mort_model = 2 or 3
+            if (n_sp > 1 ) then ! get height_rel_wt, which is used when light_model = 2, and mort_model = 2 or 3
                 ! average height of all cohorts, weighted by their contribution to LAI
                 height_wtav_LAI = sum( height(:) * lai(:) ) / sum( max(lai(:), 1.0d-12) ) !20251114
                 ! height of cohort relative to weighted average height
@@ -2077,7 +2078,7 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp) :: LAI_l ! Layer LAI
 
 
-real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each cohort, where the weighting is by LAI !20251114
+
 real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
 real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amplify light benefit to shorter cohorts
 
