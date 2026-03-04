@@ -2079,7 +2079,7 @@ end if
 
 
 
-real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
+!real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
 real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amplify light benefit to shorter cohorts
 
 
