@@ -1322,7 +1322,7 @@ contains
                                do i = 1, n_sp
                                    ! protect against zero or tiny heights
                                    if (height_rel_wt(i) > 1.d-6) then
-                                       weight(i) = basal_area(i) * height_rel_wt(i)**(-4.d0) ! the 2.d0 defines the asymmetry of the weighting
+                                       weight(i) = basal_area(i) * height_rel_wt(i)**(-2.d0) ! the 2.d0 defines the asymmetry of the weighting
                                    else
                                        weight(i) = 0.d0
                                    end if
@@ -1404,7 +1404,7 @@ if (mort_model .eq. 3) then
                                do i = 1, n_sp
                                    ! protect against zero or tiny heights
                                    if (height_rel_wt(i) > 1.d-6) then
-                                       weight(i) = basal_area(i) * height_rel_wt(i)**(-4.d0) ! the 2.d0 defines the asymmetry of the weighting
+                                       weight(i) = basal_area(i) * height_rel_wt(i)**(-2.d0) ! the 2.d0 defines the asymmetry of the weighting
                                    else
                                        weight(i) = 0.d0
                                    end if
