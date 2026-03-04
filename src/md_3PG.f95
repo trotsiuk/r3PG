@@ -1325,7 +1325,7 @@ contains
                                         if (height_rel_wt(i) < 1.d0) then
                                             weight(i) = basal_area(i) * height_rel_wt(i)**(-2.d0) ! the exponent defines the asymmetry of the weighting (also change it below)
                                         else
-                                            weight(i) = basal_area(i) * height_rel_wt(i)**(-0.2d0) ! the exponent defines the asymmetry of the weighting (also change it below)
+                                            weight(i) = basal_area(i) * height_rel_wt(i)**(-0.0d0) ! the exponent defines the asymmetry of the weighting (also change it below)
                                         end if
                                    else
                                        weight(i) = 0.d0
@@ -1411,7 +1411,7 @@ if (mort_model .eq. 3) then
                                         if (height_rel_wt(i) < 1.d0) then
                                             weight(i) = basal_area(i) * height_rel_wt(i)**(-2.d0) ! the exponent defines the asymmetry of the weighting (also change it above)
                                         else
-                                            weight(i) = basal_area(i) * height_rel_wt(i)**(-0.2d0) ! the exponent defines the asymmetry of the weighting (also change it above)
+                                            weight(i) = basal_area(i) * height_rel_wt(i)**(-0.0d0) ! the exponent defines the asymmetry of the weighting (also change it above)
                                         end if
                                    else
                                        weight(i) = 0.d0
