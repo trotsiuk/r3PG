@@ -1322,11 +1322,11 @@ contains
                                do i = 1, n_sp
                                    ! protect against zero or tiny heights
                                    if (height_rel_wt(i) > 1.d-6) then
-                                        if (height_rel_wt(i) > 1.d-6) then
+                                        if (height_rel_wt(i) < 1.d0) then
                                             weight(i) = basal_area(i) * height_rel_wt(i)**(-1.d0) ! the exponent defines the asymmetry of the weighting (also change it below)
-                                        else if (height_rel_wt(i) > 1.d-6) then
+                                        else
                                             weight(i) = basal_area(i) * height_rel_wt(i)**(-0.2d0) ! the exponent defines the asymmetry of the weighting (also change it below)
-                                        end
+                                        end if
                                    else
                                        weight(i) = 0.d0
                                    end if
@@ -1408,11 +1408,11 @@ if (mort_model .eq. 3) then
                                do i = 1, n_sp
                                    ! protect against zero or tiny heights
                                    if (height_rel_wt(i) > 1.d-6) then
-                                        if (height_rel_wt(i) > 1.d-6) then
+                                        if (height_rel_wt(i) < 1.d0) then
                                             weight(i) = basal_area(i) * height_rel_wt(i)**(-1.d0) ! the exponent defines the asymmetry of the weighting (also change it above)
-                                        else if (height_rel_wt(i) > 1.d-6) then
+                                        else
                                             weight(i) = basal_area(i) * height_rel_wt(i)**(-0.2d0) ! the exponent defines the asymmetry of the weighting (also change it above)
-                                        end
+                                        end if
                                    else
                                        weight(i) = 0.d0
                                    end if
