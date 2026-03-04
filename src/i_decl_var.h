@@ -131,6 +131,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: D13CTissueDif  ! d13C difference of m
 real(kind=kind(0.0d0)), dimension(n_sp) :: aFracDiffu     ! Fractionation against 13C in diffusion
 real(kind=kind(0.0d0)), dimension(n_sp) :: bFracRubi      ! Enzymatic fractionation by Rubisco
 real(kind=kind(0.0d0)), dimension(n_sp) :: m_apar         ! Modifier to amplify light benefit to shorter cohorts
+real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_wt  ! Height of cohort relative to the weighted average (by LAI) height of all cohorts
 
 
 ! Wood and stand properties

@@ -1969,7 +1969,7 @@ end if
 
     subroutine s_light_3pgmix ( n_sp, height, crown_length, crown_width, lai, stems_n, solar_rad, &
         CrownShape, k, gammaAPAR, solarAngle,days_in_month, &
-        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio, m_apar)
+        apar, lai_above, fi, lambda_v, lambda_h, canopy_vol_frac, layer_id, lai_sa_ratio, m_apar, height_rel_wt)
 
         ! Subroutine calculate the apar for the mixed species forest
         ! It first allocate each species to a specific layer based on height and crown length
@@ -2024,7 +2024,7 @@ end if
 
 
 real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each cohort, where the weighting is by LAI !20251114
-real(kind=kind(0.0d0)), dimension(n_sp) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
+real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
 real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amplify light benefit to shorter cohorts
 
 

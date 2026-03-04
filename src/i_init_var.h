@@ -140,6 +140,7 @@ dbh_total = 0.d0
 lt_fN_ave = 1.d0
 lt_fT_ave = 1.d0
 lt_fPhys_ave = 1.d0
+height_rel_wt(:) = 1.d0
 
 ! Wood Delta ------------------
 Gc_mol(:) = 0.d0
