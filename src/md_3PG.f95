@@ -1305,8 +1305,15 @@ contains
                            mort_thinn_total = min(mort_thinn_total, stems_n_total)
                            ! Mass-conserving allocation across cohorts
                            if (mort_thinn_total > 0.d0) then
-                               ! weights proportional to basal area
-                               weight(:) = basal_area(:)
+                           ! calculate dominance-weighted allocation
+                               do i = 1, n_sp
+                                   ! protect against zero or tiny heights
+                                   if (height_rel_wt(i) > 1.d-6) then
+                                       weight(i) = basal_area(i) * height_rel_wt(i)**(-1.d0)
+                                   else
+                                       weight(i) = 0.d0
+                                   end if
+                               end do
                                weight_sum = sum(weight(:))
                                if (weight_sum > 0.d0) then
                                    do i = 1, n_sp
@@ -1319,6 +1326,20 @@ contains
                                        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
                                    end do
                                end if
+                               !! weights proportional to basal area
+                               !weight(:) = basal_area(:)
+                               !weight_sum = sum(weight(:))
+                               !if (weight_sum > 0.d0) then
+                               !    do i = 1, n_sp
+                               !        stems_loss_density(i) = mort_thinn_total * weight(i) / weight_sum
+                               !        stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
+                               !    end do
+                               !else
+                               !    ! fallback: proportional to stem numbers
+                               !    do i = 1, n_sp
+                               !        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
+                               !    end do
+                               !end if
                                ! Final renormalisation to enforce exact conservation
                                loss_sum = sum(stems_loss_density(:))
                                if (loss_sum > 0.d0) then
@@ -1367,7 +1388,14 @@ if (mort_model .eq. 3) then
 ! Mass-conserving allocation across cohorts
                            if (mort_thinn_total > 0.d0) then
                                ! weights proportional to basal area
-                               weight(:) = basal_area(:)
+                               do i = 1, n_sp
+                                   ! protect against zero or tiny heights
+                                   if (height_rel_wt(i) > 1.d-6) then
+                                       weight(i) = basal_area(i) * height_rel_wt(i)**(-1.d0)
+                                   else
+                                       weight(i) = 0.d0
+                                   end if
+                               end do
                                weight_sum = sum(weight(:))
                                if (weight_sum > 0.d0) then
                                    do i = 1, n_sp
@@ -1380,12 +1408,26 @@ if (mort_model .eq. 3) then
                                        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
                                    end do
                                end if
-                               ! Final renormalisation to enforce exact conservation
-                               loss_sum = sum(stems_loss_density(:))
-                               if (loss_sum > 0.d0) then
-                                   scale = mort_thinn_total / loss_sum
-                                   stems_loss_density(:) = stems_loss_density(:) * scale
-                               end if
+
+                               !weight(:) = basal_area(:)
+                               !weight_sum = sum(weight(:))
+                               !if (weight_sum > 0.d0) then
+                               !    do i = 1, n_sp
+                               !        stems_loss_density(i) = mort_thinn_total * weight(i) / weight_sum
+                               !        stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
+                               !    end do
+                               !else
+                               !    ! fallback: proportional to stem numbers
+                               !    do i = 1, n_sp
+                               !        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
+                               !    end do
+                               !end if
+                               !! Final renormalisation to enforce exact conservation
+                               !loss_sum = sum(stems_loss_density(:))
+                               !if (loss_sum > 0.d0) then
+                               !    scale = mort_thinn_total / loss_sum
+                               !    stems_loss_density(:) = stems_loss_density(:) * scale
+                               !end if
                            end if
 
 
