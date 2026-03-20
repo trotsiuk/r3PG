@@ -1,7 +1,7 @@
 # Example: Climate data preparation
 # r3PG default data
 
-prepare_input( site = d_site,
-               species = d_species,
-               climate = d_climate,
-               d_thinning)
+prepare_input( site = d_mixture$site,
+               species = d_mixture$species,
+               climate = d_mixture$climate,
+               thinning = d_mixture$thinning)

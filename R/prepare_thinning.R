@@ -45,16 +45,25 @@ prepare_thinning <- function(
 
   } else {
 
+    required_cols <- c("species", "age", "stems_n", "stem", "root", "foliage")
+    optional_cols <- c( "biom_prop_retained")
 
-    if( !identical( c("species","age","stems_n","stem","root","foliage","biom_prop_retained"), colnames(thinning) ) ){                    #!20251114
-      stop("Column names of the thinning table must correspond to: species, age, stems_n, stem, root, foliage, biom_prop_retained")       #!20251114
+    # Check if all compulsory columns are present
+    missing_cols <- setdiff(required_cols, colnames(thinning))
+    if (length(missing_cols) > 0) {
+      stop(paste("The 'thinning' table is missing the following compulsory columns:", paste(missing_cols, collapse = ", ")))
     }
-
 
     if( !any(thinning$species %in% sp_names) ){
       stop("species and sp_names does not match.")
     }
 
+    # Add missing optional columns with NA values
+    if (!all(optional_cols %in% colnames(thinning))) {
+      missing_optional_cols <- setdiff(optional_cols, colnames(thinning))
+      thinning[missing_optional_cols] <- NA_real_
+    } 
+        
     thinning <- data.frame( thinning )
 
     # check whether the thinning above/below are within plausible range
@@ -74,26 +83,11 @@ prepare_thinning <- function(
       )
     }
 
-    # check whether the biom_prop_retained is within a plausible range                                   #!20251114
-    #if (any(thinning[ , c("biom_prop_retained")] < 0 | thinning[ , c("biom_prop_retained")] > 1)) {      #!20251114
-    #  stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                        #!20251114
-    #}
-
     if (length(thinning[, "biom_prop_retained"]) > 0 && any(!is.na(thinning[, "biom_prop_retained"]))) {     #!20260123
       if (any(thinning[, "biom_prop_retained"] < 0 | thinning[, "biom_prop_retained"] > 1, na.rm = TRUE)) {  #!20260123
         stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                          #!20260123
       }
     }
-
-    ## infer manag_model from inputs                                              #!20260123
-    #thinning[, "manag_model"] <- NA_real_  # initialize the new column
-    #
-    ## set manag_model = 1 for rows where stems_n is supplied                     #!20260123
-    #thinning[!is.na(thinning[, "stems_n"]), "manag_model"] <- 1
-    #
-    ## set manag_model = 2 for rows where biom_prop_retained is supplied          #!20260123
-    #thinning[!is.na(thinning[, "biom_prop_retained"]), "manag_model"] <- 2
-
 
     thinning <- thinning[thinning$species %in% sp_names, ]
     thinning$species <- sp_id[thinning$species] # Map species names to indices
@@ -112,7 +106,7 @@ prepare_thinning <- function(
     thinning = thinning[order(thinning$species, thinning$thin_n),]
 
     thinning = simplify2array(by(thinning[,3:8], thinning[,1], as.matrix)) #!20251114
-  }
+      }
 
   if( n_sp > 1 ){
     dimnames(thinning)[[3]] <- sp_names

@@ -33,54 +33,17 @@ contains
         real(kind=c_double), dimension(86,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
 
-        ! Temporary variables for self-thinning calculation
-        real(kind=c_double) :: thinIntercept_eff
-        real(kind=c_double) :: N_max
-        real(kind=c_double) :: dbh_safe
-        real(kind=c_double) :: expo
-        real(kind=c_double) :: logN
-        real(kind=c_double), dimension(n_sp) :: weight
-        real(kind=c_double) :: weight_sum
-        real(kind=c_double) :: loss_sum
-        real(kind=c_double) :: scale
-
-        real(kind=c_double) :: pp
-        real(kind=c_double) :: dbh_prev_safe, dbh_ratio
-        real(kind=c_double) :: modifiers
-        real(kind=c_double) :: delta_term
-        real(kind=c_double) :: inner
-        real(kind=c_double) :: betaN_eff
-        real(kind=c_double) :: inv_exp
-
-
-
-        ! Temporary for dbh distributions
-        real(kind=kind(0.0d0)), dimension(n_sp) :: dlocation
-        real(kind=kind(0.0d0)), dimension(n_sp) :: DWeibullShape_gamma
-        ! Temporary variables for long-term modifiers
-        real(kind=8) :: f_sw_tmp, f_vpd_tmp, f_phys_tmp, vpd_mean
-        ! Temporary variable when responding to defoliation
-        real(kind=c_double) :: NPP_eff
-        ! Temporary variable for updating age-related variables after coppice events
-        real(kind=8) :: tmp_vec(1)
-        integer :: jj
-        ! Temporary variable for calculating height_rel_wt
-        real(kind=kind(0.0d0)) :: height_wtav_LAI ! weighted average height of each cohort, where the weighting is by LAI !20251114
-
         ! Output array
         real(kind=c_double), dimension(n_m,n_sp,11,20), intent(inout) :: output
 
-
         ! Variables, Parameters, Constants
         include 'i_decl_var.h'
-
         include 'i_read_input.h'
         include 'i_read_param.h'
         include 'i_read_param_sizeDist.h'
 
         ! Initialization
         include 'i_init_var.h'
-
 
         !*************************************************************************************
         ! INITIALISATION (Age independent)
@@ -208,7 +171,6 @@ contains
         pfsConst(:) = pFS2(:) / 2.d0 ** pfsPower(:)
 
 
-
         ! INITIALISATION (Age dependent)---------------------
         ! Calculate the species specific modifiers
         do i = 1, n_sp
@@ -281,7 +243,7 @@ contains
         is_new(:) = (age(ii,:) >= 0.d0)
         if( any(age(ii,:) >= 0.d0) ) then
                   calculate_states = .TRUE.
-                  call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
+                  call s_height_crown_allometry (n_sp, stems_n(:), competition_total, &
                       lai(:), height_rel(:), &
                       height_model, crown_width_model, pars_i(63:82,:), &
                       dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
@@ -289,29 +251,12 @@ contains
         end if
 
 
-
-
        ! dbh distributions
-        dlocation(:) = 1.d0
-        where( Dlocation0(:)==0.d0 .and. &
-                 DlocationB(:)==0.d0 .and. &
-                 Dlocationrh(:)==0.d0 .and. &
-                 Dlocationt(:)==0.d0 .and. &
-                 DlocationC(:)==0.d0 )
-        dlocation(:) = 0.d0
-        end where
-        DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * &
-                   Log(height_rel(:)) + Dscalet(:) * Log(age(ii,:)) + DscaleC(:) * Log(competition_total))
-        DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
-                                  Dshapet(:) * Log(age(ii,:)) + DshapeC(:) * Log(competition_total))
-        DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
-        DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
-                                     Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(ii,:)) + &
-                                     DlocationC(:) * Log(competition_total))
-        where( dlocation(:) == 0.d0 )
-        DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
-        end where
-        where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
+        call s_update_weibull_distribution(n_sp, dbh(:), height_rel(:), age(ii,:), competition_total, &
+            Dscale0(:), DscaleB(:), Dscalerh(:), Dscalet(:), DscaleC(:), &
+            Dshape0(:), DshapeB(:), Dshaperh(:), Dshapet(:), DshapeC(:), &
+            Dlocation0(:), DlocationB(:), Dlocationrh(:), Dlocationt(:), DlocationC(:), &
+            dlocation(:), DWeibullScale(:), DWeibullShape(:), DWeibullShape_gamma(:), DWeibullLocation(:))
 
 
         ! Volume and Volume increment
@@ -323,18 +268,16 @@ contains
         volume_mai(:) = volume_cum(:) / age(ii,:)
 
 
-
-
         ! Long-term modifiers initialization
-        if (.not. allocated(lt_fT)) allocate(lt_fT(n_sp))
         lt_fT(:) = 1.0d0
-        if (.not. allocated(lt_fPhys)) allocate(lt_fPhys(n_sp))
         lt_fPhys(:) = 1.0d0
         if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
         fT_hist(:,:) = 1.0d0
         if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
         fPhys_hist(:,:) = 1.0d0
-        if (.not. allocated(hist_ptr)) allocate(hist_ptr(n_sp))
+
+        ! Stand-level mean VPD for long-term initialization (same for all cohorts)
+        vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=kind(0.0d0))
 
         do i = 1, n_sp
             ! soil nutrition modifier
@@ -343,11 +286,9 @@ contains
             lt_fN(i) = 1.d0
             end if
             ! Temperature (lt_fT)
-            lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=8)
+            lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=kind(0.0d0))
             fT_hist(i,1:lt_mod_mths) = lt_fT(i)
             ! PhysMod (lt_fPhys)
-            ! Exclude the first month of VPD (to avoid initial zeros)
-            vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=8)
             ! ASW uses the constant directly
             f_sw_tmp  = 1.d0 / (1.d0 + ((1.d0 - 1.d0) / SWconst(i)) ** SWpower(i)) !1.d0 - 1.d0 is because ASW = asw_max
             f_vpd_tmp = exp(-CoeffCond(i) * vpd_mean)
@@ -368,11 +309,8 @@ contains
         end do
 
 
-
-
         ! INITIALISATION (Write output)---------------------
         include 'i_write_out.h'
-
 
 
         !*************************************************************************************
@@ -434,22 +372,17 @@ contains
             end do
 
 
-
-
-
             ! for new cohorts calculate initial height, crown width and crown length
             competition_total = sum( wood_density(ii,:) * basal_area(:) )
             is_new(:) = (age(ii,:) .eq. 0.d0)
             if( any(age(ii,:) .eq. 0.d0) ) then
                       calculate_states = .TRUE.
-                      call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
+                      call s_height_crown_allometry (n_sp, stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
                           height_model, crown_width_model, pars_i(63:82,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
-
-
 
 
             ! If any cohorts are recovering from a defoliation event, check whether they finished recovering
@@ -489,14 +422,6 @@ contains
                     end if
                 end if
             end do
-
-
-
-
-
-
-
-
 
 
             !Radiation and assimilation ----------------------------------------------------------------------
@@ -565,30 +490,9 @@ contains
             end if
 
 
-
-
-
-
-
-
             ! Monthly update of long-term modifiers
-            do i = 1, n_sp
-                ! Skip species not yet planted
-                if (age(ii, i) < 0.d0) cycle
-                ! Update circular buffer index
-                hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
-
-                ! Temperature (lt_fT)
-                fT_hist(i, hist_ptr(i)) = f_tmp(ii, i)
-                lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-
-                ! PhysMod (lt_fPhys) — exclude age effect
-                fPhys_hist(i, hist_ptr(i)) = f_phys(i) / f_age(ii, i)
-                lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=8)
-
-            end do
-
-
+            call s_update_long_term_modifiers(n_sp, lt_mod_mths, age(ii,:), f_tmp(ii,:), f_phys(:), f_age(ii,:), &
+                hist_ptr(:), fT_hist(:,:), fPhys_hist(:,:), lt_fT(:), lt_fPhys(:))
 
 
             ! Calculate assimilation before the water balance is done
@@ -614,7 +518,6 @@ contains
                    end if
                 end if
             end do
-
 
 
             ! Water Balance ----------------------------------------------------------------------
@@ -810,9 +713,6 @@ contains
               end do
 
 
-
-
-
             do i = 1, n_sp
 
                 !  Dormant period -----------
@@ -888,20 +788,16 @@ contains
             competition_total = sum( wood_density(ii,:) * basal_area(:) )
 
 
-
             ! add increments to height, crown width and crown length
             is_new(:) = (age(ii,:) >= 0.d0) .and. ((dbh(:) - dbh_prev(:)) > 1.0d-5)
             if( any(is_new(:)) ) then
                       calculate_states = .FALSE.
-                      call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
+                      call s_height_crown_allometry (n_sp, stems_n(:), competition_total, &
                           lai(:), height_rel(:), &
                           height_model, crown_width_model, pars_i(63:82,:), &
                           dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
                           calculate_states, is_new(:) )
             end if
-
-
-
 
 
             ! Volume and Volume increment
@@ -916,7 +812,6 @@ contains
             volume_cum(:) = volume_cum(:) + volume_change(:)
             volume_old(:) = volume(:)
             volume_mai(:) = volume_cum(:) / age(ii,:)
-
 
 
             ! Management -------------------------------------------------------------------------
@@ -1043,9 +938,6 @@ contains
             end do
 
 
-
-
-
             ! Defoliation --------------------------------------------------------------------------
             !reset defoliation value
             stems_loss_def(:) = 0.d0
@@ -1097,30 +989,25 @@ contains
                                 end do
 
                                 if (ii == 1) then
-                                age_m(ii,i) = age(ii,i)
+                                    age_m(ii,i) = age(ii,i)
                                 end if
 
                                 ! Age-dependent traits
 
                                 ! SLA
-                                tmp_vec = f_exp(1, age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
-                                SLA(ii,i) = tmp_vec(1)
+                                SLA(ii,i) = f_exp_s(age_m(ii,i), SLA0(i), SLA1(i), tSLA(i), 2.d0)
 
                                 ! fracBB
-                                tmp_vec = f_exp(1, age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
-                                fracBB(ii,i) = tmp_vec(1)
+                                fracBB(ii,i) = f_exp_s(age_m(ii,i), fracBB0(i), fracBB1(i), tBB(i), 1.d0)
 
                                 ! wood density
-                                tmp_vec = f_exp(1, age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)
-                                wood_density(ii,i) = tmp_vec(1)
+                                wood_density(ii,i) = f_exp_s(age_m(ii,i), rho0(i), rho1(i), tRho(i), 1.d0)
 
                                 ! gammaN
-                                tmp_vec = f_exp(1, age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
-                                gammaN(ii,i) = tmp_vec(1)
+                                gammaN(ii,i) = f_exp_s(age(ii,i), gammaN0(i), gammaN1(i), tgammaN(i), ngammaN(i))
 
                                 ! gammaF
-                                tmp_vec = f_exp_foliage(1, age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))
-                                gammaF(ii,i) = tmp_vec(1)
+                                gammaF(ii,i) = f_exp_foliage_s(age_m(ii,i), gammaF1(i), gammaF0(i), tgammaF(i))
 
 
                                 ! Age modifier f_age
@@ -1161,7 +1048,6 @@ contains
                             biom_root(i) = biom_root(i) - biom_loss_root_def(i)
 
 
-
                             ! if root biomass declined, there was mortality, so update stems_n
                             if( root_retained_input < 1.d0 ) then
 
@@ -1189,7 +1075,6 @@ contains
                 end if
 
             end do
-
 
 
             ! Mortality --------------------------------------------------------------------------
@@ -1222,7 +1107,6 @@ contains
             end do
 
 
-
             ! Update stand structure if there was thinning, defoliation or stress-related mortality that reduced stems_n
             if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
                 biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
@@ -1230,20 +1114,18 @@ contains
                 basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
             end if
 
-            ! If there was a coppice event, update the height, crown width and crown length (dbh and basal area will already have been updated above)
-                is_new(:) = coppice_event(:)
-                if ( any(is_new(:)) ) then
-                          competition_total = sum( wood_density(ii,:) * basal_area(:) )
-                          calculate_states = .TRUE.
-                          call s_height_crown_allometry (n_sp, age(ii,:), stems_n(:), competition_total, &
-                              lai(:), height_rel(:), &
-                              height_model, crown_width_model, pars_i(63:82,:), &
-                              dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
-                              calculate_states, is_new(:) )
-                end if
-
-
-
+            ! If there was a coppice event, update height, crown width and crown length
+            ! (dbh and basal area will already have been updated above)
+            is_new(:) = coppice_event(:)
+            if ( any(is_new(:)) ) then
+                competition_total = sum( wood_density(ii,:) * basal_area(:) )
+                calculate_states = .TRUE.
+                call s_height_crown_allometry (n_sp, stems_n(:), competition_total, &
+                    lai(:), height_rel(:), &
+                    height_model, crown_width_model, pars_i(63:82,:), &
+                    dbh(:), dbh_prev(:), height(:), crown_length(:), crown_width(:), crown_ratio(:), &
+                    calculate_states, is_new(:) )
+            end if
 
 
             ! Self-thinning / Density dependent related ------------------
@@ -1318,17 +1200,11 @@ contains
                            mort_thinn_total = min(mort_thinn_total, stems_n_total)
                            ! Mass-conserving allocation across cohorts
                            if (mort_thinn_total > 0.d0) then
-                           ! calculate dominance-weighted allocation
+                               ! dominance-weighted allocation using logistic function
                                do i = 1, n_sp
-                                   ! protect against zero or tiny heights
                                    if (height_rel_wt(i) > 1.d-6) then
-                                        if (height_rel_wt(i) < 1.d0) then
-                                            !weight(i) = basal_area(i) * height_rel_wt(i)**(-2.d0) ! the exponent defines the asymmetry of the weighting (also change it below)
-                                            weight(i) = basal_area(i) * 1.d0 / (1.d0 + exp( 6.d0 * (height_rel_wt(i) - 1.d0) ))
-                                        else
-                                            !weight(i) = basal_area(i) * height_rel_wt(i)**(-0.0d0) ! the exponent defines the asymmetry of the weighting (also change it below)
-                                            weight(i) = basal_area(i) * 1.d0 / (1.d0 + exp( 6.d0 * (height_rel_wt(i) - 1.d0) ))
-                                        end if
+                                       weight(i) = basal_area(i) * 1.d0 / &
+                                                   (1.d0 + exp(6.d0 * (height_rel_wt(i) - 1.d0)))
                                    else
                                        weight(i) = 0.d0
                                    end if
@@ -1345,20 +1221,6 @@ contains
                                        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
                                    end do
                                end if
-                               !! weights proportional to basal area
-                               !weight(:) = basal_area(:)
-                               !weight_sum = sum(weight(:))
-                               !if (weight_sum > 0.d0) then
-                               !    do i = 1, n_sp
-                               !        stems_loss_density(i) = mort_thinn_total * weight(i) / weight_sum
-                               !        stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
-                               !    end do
-                               !else
-                               !    ! fallback: proportional to stem numbers
-                               !    do i = 1, n_sp
-                               !        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
-                               !    end do
-                               !end if
                                ! Final renormalisation to enforce exact conservation
                                loss_sum = sum(stems_loss_density(:))
                                if (loss_sum > 0.d0) then
@@ -1369,54 +1231,45 @@ contains
                        end if
 
 
+                       if (mort_model .eq. 3) then
+                           mort_thinn_total = 0.d0
 
+                           betaN_eff = betaN
+                           pp = betaB + 1.d0
+                           dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
+                           dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
+                           modifiers = lt_fN_ave    ** betafN * &
+                                       lt_fT_ave    ** betafT * &
+                                       lt_fPhys_ave ** betafPhys
 
+                           ! delta term
+                           delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
 
-if (mort_model .eq. 3) then
-    mort_thinn_total = 0.d0
+                           ! inner argument for inversion
+                           inner = stems_n_total ** (1.d0 - betaN_eff) + &
+                                   Exp(beta0) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
 
-    betaN_eff = betaN
-    pp = betaB + 1.d0
-    dbh_prev_safe = max(dbh_total_prev, 1.0d-6)
-    dbh_ratio     = max(dbh_total / dbh_prev_safe, 1.0d-6)
-    modifiers = lt_fN_ave    ** betafN * &
-                lt_fT_ave    ** betafT * &
-                lt_fPhys_ave ** betafPhys
+                           ! allow inner to reach zero, not artificially capped
+                           inner = max(inner, 0.d0)
 
-    ! delta term
-    delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
+                           ! safe inversion using log-exp, with inv_exp capped for stability
+                           inv_exp = 1.d0 / (1.d0 - betaN_eff)
+                           inv_exp = max(min(inv_exp, 90.d0), -90.d0)
 
-    ! inner argument for inversion
-    inner = stems_n_total ** (1.d0 - betaN_eff) + &
-            Exp(beta0) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
+                           ! compute mortality at stand level
+                           mort_thinn_total = stems_n_total - Exp(inv_exp * Log(inner))
 
-    ! allow inner to reach zero, not artificially capped
-    inner = max(inner, 0.d0)
+                           ! ensure mortality is physically meaningful
+                           mort_thinn_total = max(mort_thinn_total, 0.d0)
+                           mort_thinn_total = min(mort_thinn_total, stems_n_total)
 
-    ! safe inversion using log-exp, with inv_exp capped for stability
-    inv_exp = 1.d0 / (1.d0 - betaN_eff)
-    inv_exp = max(min(inv_exp, 90.d0), -90.d0)
-
-    ! compute mortality at stand level
-    mort_thinn_total = stems_n_total - Exp(inv_exp * Log(inner))
-
-    ! ensure mortality is physically meaningful
-    mort_thinn_total = max(mort_thinn_total, 0.d0)
-    mort_thinn_total = min(mort_thinn_total, stems_n_total)
-
-! Mass-conserving allocation across cohorts
+                           ! Mass-conserving allocation across cohorts
                            if (mort_thinn_total > 0.d0) then
-                               ! weights proportional to basal area
                                do i = 1, n_sp
                                    ! protect against zero or tiny heights
                                    if (height_rel_wt(i) > 1.d-6) then
-                                        if (height_rel_wt(i) < 1.d0) then
-                                            !weight(i) = basal_area(i) * height_rel_wt(i)**(-2.d0) ! the exponent defines the asymmetry of the weighting (also change it above)
-                                            weight(i) = basal_area(i) * 1.d0 / (1.d0 + exp( 6.d0 * (height_rel_wt(i) - 1.d0) ))
-                                        else
-                                            !weight(i) = basal_area(i) * height_rel_wt(i)**(-0.0d0) ! the exponent defines the asymmetry of the weighting (also change it above)
-                                            weight(i) = basal_area(i) * 1.d0 / (1.d0 + exp( 6.d0 * (height_rel_wt(i) - 1.d0) ))
-                                        end if
+                                       weight(i) = basal_area(i) * 1.d0 / &
+                                                   (1.d0 + exp(6.d0 * (height_rel_wt(i) - 1.d0)))
                                    else
                                        weight(i) = 0.d0
                                    end if
@@ -1433,59 +1286,8 @@ if (mort_model .eq. 3) then
                                        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
                                    end do
                                end if
-
-                               !weight(:) = basal_area(:)
-                               !weight_sum = sum(weight(:))
-                               !if (weight_sum > 0.d0) then
-                               !    do i = 1, n_sp
-                               !        stems_loss_density(i) = mort_thinn_total * weight(i) / weight_sum
-                               !        stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
-                               !    end do
-                               !else
-                               !    ! fallback: proportional to stem numbers
-                               !    do i = 1, n_sp
-                               !        stems_loss_density(i) = mort_thinn_total * stems_n(i) / stems_n_total
-                               !    end do
-                               !end if
-                               !! Final renormalisation to enforce exact conservation
-                               !loss_sum = sum(stems_loss_density(:))
-                               !if (loss_sum > 0.d0) then
-                               !    scale = mort_thinn_total / loss_sum
-                               !    stems_loss_density(:) = stems_loss_density(:) * scale
-                               !end if
                            end if
-
-
-
-    ! Allocate stand-level mortality across cohorts
-    !if (mort_thinn_total > 0.d0) then
-    !    do i = 1, n_sp
-    !        if (.not. f_dormant(month, leafgrow(i), leaffall(i))) then
-!
-    !            if (n_sp .eq. 1) then
-    !                stems_loss_density(i) = mort_thinn_total
-    !            else
-    !                stems_loss_density(i) = mort_thinn_total * &
-    !                    Pi * dbh_total**2 / 40000.d0 / &
-    !                    basal_area_total * basal_area(i) / &
-    !                    max(Pi * dbh(i)**2 / 40000.d0, 1.0d-12)
-    !            end if
-!
-    !            ! enforce cohort-level physical bounds
-    !            stems_loss_density(i) = min(stems_loss_density(i), stems_n(i))
-    !            stems_loss_density(i) = max(stems_loss_density(i), 0.d0)
-!
-    !        end if
-    !    end do
-    !end if
-end if
-
-
-
-
-
-
-
+                       end if
 
 
                        ! Apply losses
@@ -1514,16 +1316,11 @@ end if
             coppice_event(:) = .FALSE.
 
 
-
-                        ! Additional calculations ------------------
+            ! Additional calculations ------------------
             biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This line should be added but causes an error, it is not critical because self-thinning usually doesn't change dbh much
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            ! TODO: dbh update after self-thinning omitted — causes numerical error,
+            !       but effect is small because self-thinning rarely changes dbh much.
             !dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
 
             ! lai has not been updated since the growth
@@ -1553,28 +1350,11 @@ end if
 
 
             ! dbh distributions
-            dlocation(:) = 1.d0
-            where( Dlocation0(:)==0.d0 .and. &
-                     DlocationB(:)==0.d0 .and. &
-                     Dlocationrh(:)==0.d0 .and. &
-                     Dlocationt(:)==0.d0 .and. &
-                     DlocationC(:)==0.d0 )
-            dlocation(:) = 0.d0
-            end where
-            DWeibullScale(:) = Exp( Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * &
-                       Log(height_rel(:)) + Dscalet(:) * Log(age(ii,:)) + DscaleC(:) * Log(competition_total))
-            DWeibullShape(:) = Exp( Dshape0(:) + DshapeB(:) * Log( dbh(:) ) + Dshaperh(:) * Log(height_rel(:)) + &
-                                      Dshapet(:) * Log(age(ii,:)) + DshapeC(:) * Log(competition_total))
-            DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
-            DWeibullLocation(:) = Exp( Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
-                                         Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age(ii,:)) + &
-                                         DlocationC(:) * Log(competition_total))
-            where( dlocation(:) == 0.d0 )
-            DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
-            end where
-            where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
-
-
+            call s_update_weibull_distribution(n_sp, dbh(:), height_rel(:), age(ii,:), competition_total, &
+                Dscale0(:), DscaleB(:), Dscalerh(:), Dscalet(:), DscaleC(:), &
+                Dshape0(:), DshapeB(:), Dshaperh(:), Dshapet(:), DshapeC(:), &
+                Dlocation0(:), DlocationB(:), Dlocationrh(:), Dlocationt(:), DlocationC(:), &
+                dlocation(:), DWeibullScale(:), DWeibullShape(:), DWeibullShape_gamma(:), DWeibullLocation(:))
 
 
             ! Save end of the month results
@@ -1630,7 +1410,6 @@ end if
         end if
 
 
-
     end function f_dormant
 
 
@@ -1653,6 +1432,26 @@ end if
         end if
 
     end function f_exp
+
+
+    ! Scalar version of f_exp (avoids tmp_vec intermediate)
+    function f_exp_s(x, g0, gx, tg, ng) result( out )
+
+        implicit none
+
+        ! input
+        real(kind=kind(0.0d0)), intent(in) :: x, g0, gx, tg, ng
+
+        ! output
+        real(kind=kind(0.0d0)) :: out
+
+        out = gx
+
+        if ( tg /= 0.d0 ) then
+            out = gx + (g0 - gx) * Exp(-ln2 * ( x / tg) ** ng)
+        end if
+
+    end function f_exp_s
 
 
     function f_exp_foliage(n_m, x, f1, f0, tg) result( out )
@@ -1678,6 +1477,30 @@ end if
         end if
 
     end function f_exp_foliage
+
+
+    ! Scalar version of f_exp_foliage (avoids tmp_vec intermediate)
+    function f_exp_foliage_s(x, f1, f0, tg) result( out )
+
+        implicit none
+
+        ! input
+        real(kind=kind(0.0d0)), intent(in) :: x, f1, f0, tg
+
+        ! output
+        real(kind=kind(0.0d0)) :: out
+
+        ! local
+        real(kind=kind(0.0d0)) :: kg
+
+        if( tg * f1 == 0.d0 ) then
+            out = f1
+        else
+            kg = 12.d0 * Log(1.d0 + f1 / f0) / tg
+            out = f1 * f0 / (f0 + (f1 - f0) * Exp(-kg * x))
+        end if
+
+    end function f_exp_foliage_s
 
 
     function f_gamma_dist( x, n ) result( out )
@@ -1759,7 +1582,7 @@ end if
         ones(1:n_sp) = 1
         ones = ones(Height_ind)
 
-    !   cummulative sum
+        !cummulative sum
         ones_sum = 0
         do i = 1, n_sp*2
             if (i == 1) then
@@ -1889,20 +1712,6 @@ end if
 
         solarangle(:) = solarzenithangle(:)
 
-        !if ( Lat >= 0.d0 .and. Lat <= 23.4d0) Then
-        !    !the zenith angle only needs to be adjusted if the lat is between about -23.4 and 23.4
-        !    where( dayOfYear(:) > secondxaxisintercept .or. dayOfYear(:) < firstxaxisintercept )
-        !        solarangle(:) = -1.d0 * solarzenithangle(:)
-        !    end where
-        !end if
-!
-        !if (  Lat >= -23.4d0 .and. Lat < 0.d0 ) Then
-        !    !the zenith angle only needs to be adjusted if the lat is between about -23.4 and 23.4
-        !    where( dayOfYear(:) > firstxaxisintercept .and. dayOfYear(:) < secondxaxisintercept )
-        !        solarangle(:) = -1.d0 * solarzenithangle(:)
-        !    end where
-        !end if
-
         ! Northern tropics: 0 to 23.4
         if (Lat >= 0.d0) then
             if (Lat <= 23.4d0) then
@@ -1968,26 +1777,93 @@ end if
     end function f_orderId
 
 
-    function p_min_max ( x, mn, mx, n ) result( out )
-        ! correct the values to be within the minimum and maximum range
+    subroutine s_update_long_term_modifiers(n_sp, lt_mod_mths, age_row, f_tmp_row, f_phys_row, f_age_row, &
+        hist_ptr, fT_hist, fPhys_hist, lt_fT, lt_fPhys)
 
         implicit none
 
-        ! input
-        integer, intent(in) :: n
-        real(kind=kind(0.0d0)), intent(in) :: mn, mx
-        real(kind=kind(0.0d0)), dimension(n) :: x
+        integer, intent(in) :: n_sp
+        integer, intent(in) :: lt_mod_mths
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: age_row
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: f_tmp_row
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: f_phys_row
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: f_age_row
 
-        ! output
-        real(kind=kind(0.0d0)), dimension(n) :: out
+        integer, dimension(n_sp), intent(inout) :: hist_ptr
+        real(kind=kind(0.0d0)), dimension(n_sp, lt_mod_mths), intent(inout) :: fT_hist
+        real(kind=kind(0.0d0)), dimension(n_sp, lt_mod_mths), intent(inout) :: fPhys_hist
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: lt_fT
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: lt_fPhys
 
-        where( x(:) > mx) x(:) = mx
-        where( x(:) < mn) x(:) = mn
+        integer :: i
 
-        out = x
+        do i = 1, n_sp
+            ! Skip species not yet planted
+            if (age_row(i) < 0.d0) cycle
 
-    end function p_min_max
+            ! Update circular buffer index
+            hist_ptr(i) = mod(hist_ptr(i), lt_mod_mths) + 1
 
+            ! Temperature (lt_fT)
+            fT_hist(i, hist_ptr(i)) = f_tmp_row(i)
+            lt_fT(i) = sum(fT_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=kind(0.0d0))
+
+            ! PhysMod (lt_fPhys) — exclude age effect
+            fPhys_hist(i, hist_ptr(i)) = f_phys_row(i) / f_age_row(i)
+            lt_fPhys(i) = sum(fPhys_hist(i, 1:lt_mod_mths)) / real(lt_mod_mths, kind=kind(0.0d0))
+        end do
+
+    end subroutine s_update_long_term_modifiers
+
+
+    subroutine s_update_weibull_distribution(n_sp, dbh, height_rel, age_row, competition_total, &
+        Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC, &
+        Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC, &
+        Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC, &
+        dlocation, DWeibullScale, DWeibullShape, DWeibullShape_gamma, DWeibullLocation)
+
+        implicit none
+
+        integer, intent(in) :: n_sp
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: dbh
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: height_rel
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: age_row
+        real(kind=kind(0.0d0)), intent(in) :: competition_total
+
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: Dscale0, DscaleB, Dscalerh, Dscalet, DscaleC
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: Dshape0, DshapeB, Dshaperh, Dshapet, DshapeC
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: Dlocation0, DlocationB, Dlocationrh, Dlocationt, DlocationC
+
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: dlocation
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: DWeibullScale
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: DWeibullShape
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: DWeibullShape_gamma
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: DWeibullLocation
+
+        dlocation(:) = 1.d0
+        where( Dlocation0(:)==0.d0 .and. &
+               DlocationB(:)==0.d0 .and. &
+               Dlocationrh(:)==0.d0 .and. &
+               Dlocationt(:)==0.d0 .and. &
+               DlocationC(:)==0.d0 )
+            dlocation(:) = 0.d0
+        end where
+
+        DWeibullScale(:) = Exp(Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * &
+                          Log(height_rel(:)) + Dscalet(:) * Log(age_row(:)) + DscaleC(:) * Log(competition_total))
+        DWeibullShape(:) = Exp(Dshape0(:) + DshapeB(:) * Log(dbh(:)) + Dshaperh(:) * Log(height_rel(:)) + &
+                          Dshapet(:) * Log(age_row(:)) + DshapeC(:) * Log(competition_total))
+        DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
+        DWeibullLocation(:) = Exp(Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
+                             Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age_row(:)) + &
+                             DlocationC(:) * Log(competition_total))
+
+        where( dlocation(:) == 0.d0 )
+            DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)
+        end where
+        where( DWeibullLocation(:) < 0.01d0 ) DWeibullLocation(:) = 0.01d0
+
+    end subroutine s_update_weibull_distribution
 
     subroutine s_light_3pgpjs ( n_sp, age, fullCanAge, k, lai, solar_rad, days_in_month, &
         canopy_cover, apar )
@@ -2088,11 +1964,8 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp) :: aparl  !The absorbed apar for the given layer
         real(kind=kind(0.0d0)) :: RADt ! Total available radiation
         real(kind=kind(0.0d0)), dimension(n_sp) :: LAI_l ! Layer LAI
-
-
-
-real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
-real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amplify light benefit to shorter cohorts
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: height_rel_wt ! height of cohort relative to the weighted average (by LAI) height of all cohorts
+        real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amplify light benefit to shorter cohorts
 
 
         ! initialization
@@ -2200,7 +2073,6 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
         end where
 
 
-
         ! Calculate the weighted kLS based on kL/sumkL
         kLSweightedave(:) = k(:) * lai_sa_ratio(:) * k(:) * lai(:) / kL_l(:)
         kLSweightedave(:) = f_get_layer_sum( n_sp, nLayers, kLSweightedave(:), layer_id(:))
@@ -2255,45 +2127,44 @@ real(kind=kind(0.0d0)), dimension(n_sp), intent(out) :: m_apar ! modifier to amp
         end do
 
 
-! if there is more than 1 cohort, redistribute some of the remaining PAR to the shorter species assuming they are generally in gaps
-! rather than under horizontally homogeneous canopies of the overstorey species
+        ! if there is more than 1 cohort, redistribute some of the remaining PAR to the shorter species assuming they are generally in gaps
+        ! rather than under horizontally homogeneous canopies of the overstorey species
 
-if (n_sp > 1 ) then
+        if (n_sp > 1 ) then
 
-      if( sum(gammaAPAR(:)) > 0.0d0) then ! no need to do this for monocultures, or for stands where all gammaAPAR are 0, because there will not be any effect
-         ! avoid fi = 0.0 for shaded cohorts
-         where (fi(:) < 1d-12)
-             fi(:) = 1d-12
-         end where
+            if( sum(gammaAPAR(:)) > 0.0d0) then ! no need to do this for monocultures, or for stands where all gammaAPAR are 0, because there will not be any effect
+                ! avoid fi = 0.0 for shaded cohorts
+                where (fi(:) < 1d-12)
+                    fi(:) = 1d-12
+                end where
 
-         ! modifier to redistribute PAR not absorbed by the canopy
-         !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
-         !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
+                ! modifier to redistribute PAR not absorbed by the canopy
+                !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * gammaAPAR(:) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
+                !m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * Exp(-gammaAPAR(:) * (height_rel_wt(:) - 1.d0))
 
-         where (height_rel_wt < 1.d0)
-         m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * (Exp(gammaAPAR(:) * (1.d0 - height_rel_wt(:) )) - 1.d0 )
-         elsewhere
-         m_apar = 1.d0
-         end where
+                where (height_rel_wt < 1.d0)
+                m_apar(:) = 1.d0 + sum( max(fi(:), 1d-12) ) * (Exp(gammaAPAR(:) * (1.d0 - height_rel_wt(:) )) - 1.d0 )
+                elsewhere
+                m_apar = 1.d0
+                end where
 
-         m_apar(:) = min( m_apar(:),  &
-              (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
-              / (max(fi(:), 1d-12)*solar_rad * days_in_month) ) ! MJ m-2 month-1
-         ! ensure no cohorts have their APAR reduced
-         m_apar(:) = max( 1.d0, m_apar(:))
-         ! only allow cohorts with relative heights < 0.5 to receive additional APAR.
-         !where (height_rel_wt(:) < 0.5d0)
-         !    m_apar(:) = 1.0d0
-         !end where
-         ! adjust the cohort APAR
-         apar(:) = apar(:) * m_apar(:)
-         ! ensure the total stand APAR is still less than above canopy PAR
-         apar(:) = apar(:) * (solar_rad * days_in_month)/ sum( apar(:) )
-      end if
-else
-      m_apar(:) = 1.d0
-end if
-
+                m_apar(:) = min( m_apar(:),  &
+                    (solar_rad * days_in_month * (1.d0 - exp(-k(:)*lai(:))))  &
+                    / (max(fi(:), 1d-12)*solar_rad * days_in_month) ) ! MJ m-2 month-1
+                ! ensure no cohorts have their APAR reduced
+                m_apar(:) = max( 1.d0, m_apar(:))
+                ! only allow cohorts with relative heights < 0.5 to receive additional APAR.
+                !where (height_rel_wt(:) < 0.5d0)
+                !    m_apar(:) = 1.0d0
+                !end where
+                ! adjust the cohort APAR
+                apar(:) = apar(:) * m_apar(:)
+                ! ensure the total stand APAR is still less than above canopy PAR
+                apar(:) = apar(:) * (solar_rad * days_in_month)/ sum( apar(:) )
+            end if
+        else
+            m_apar(:) = 1.d0
+        end if
 
     end subroutine s_light_3pgmix
 
@@ -2425,11 +2296,7 @@ end if
     end subroutine s_transpiration_3pgmix
 
 
-
-
-
-
-        subroutine s_height_crown_allometry (n_sp, age, stems_n, competition_total, &
+    subroutine s_height_crown_allometry (n_sp, stems_n, competition_total, &
         lai, height_rel, &
         height_model, crown_width_model, pars_s, & ! removed correct_bias
         dbh, dbh_prev, height, crown_length, crown_width, crown_ratio, &
@@ -2439,7 +2306,6 @@ end if
 
         ! input
         integer, intent(in) :: n_sp ! number of species
-        real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: age
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: stems_n
         real(kind=kind(0.0d0)), intent(in) :: competition_total
         real(kind=kind(0.0d0)), dimension(n_sp), intent(in) :: lai
@@ -2471,9 +2337,6 @@ end if
         real(kind=kind(0.0d0)), dimension(n_sp) :: aHL, nHL1, nHL2, nHL3, nHL4
 
         include 'i_read_param_sub.h'
-
-
-
 
 
         if ( calculate_states .eqv. .TRUE. ) then
@@ -2539,7 +2402,6 @@ end if
                       end do
                   end if
         end if
-
 
 
         if ( calculate_states .eqv. .FALSE. ) then
@@ -2625,7 +2487,6 @@ end if
         end if
 
     end subroutine s_height_crown_allometry
-
 
 
 end module mod_3PG

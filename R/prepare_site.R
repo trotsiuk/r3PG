@@ -58,6 +58,15 @@ prepare_site <- function(
 
   site = data.frame(site)
 
+  # Backward compatibility: legacy column name `altitude`
+  if ("altitude" %in% colnames(site) && !"elevation" %in% colnames(site)) {
+    warning(
+      "Deprecated site column 'altitude' detected; converting to 'elevation'. ",
+      "Please update your input data to use 'elevation'."
+    )
+    colnames(site)[colnames(site) == "altitude"] <- "elevation"
+  }
+
   if (nrow(site) != 1) {
     stop("The 'site' table must contain exactly one row.")
   }

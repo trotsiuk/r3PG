@@ -31,7 +31,7 @@ the function ensures consistency, updates specified values, and retains defaults
 \examples{
 # Example: Prepare size distribution
 # replace some
-prepare_sizeDist( size_dist = d_sizeDist[1:4,],
+prepare_sizeDist(size_dist = d_mixture$sizeDist[1:4, ],
   sp_names = c('Fagus sylvatica', 'Pinus sylvestris' ))
 
 # Make default

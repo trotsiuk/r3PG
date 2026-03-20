@@ -5,7 +5,7 @@
 \alias{i_output}
 \title{Information about model outputs}
 \format{
-A data frame with 150 rows and 7 variables:
+A data frame with 220 rows and 7 variables:
 \describe{
   \item{group_id}{serial number of the group}
   \item{variable_id}{serial number of the variable}

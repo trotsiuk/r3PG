@@ -1,26 +1,39 @@
 r3PG 0.2.0
 ============
 
+This is a major update of r3PG.
+
 ### Bug fixed
 
--
+-   Replaced all non-portable `real(kind=8)` usage in Fortran sources with `kind(0.0d0)` equivalents (extends fix from #97 to the main model file).
+-   Fixed implicit REAL→INTEGER conversion for `lt_mod_mths` in `i_read_input.h`.
+-   In northern latitudes `netRad` could become NaN when day-length is 0, causing simulation crashes. Corrected.
 
 ### New function and data sets
 
-- New mortality model (`mort_model = 2`) is included
-
+-   New density-dependent mortality model (`mort_model = 2`) based on stand-level self-thinning with modifier-adjusted intercept.
+-   New individual-tree mortality model (`mort_model = 3`) based on growth-driven mortality thresholds.
+-   New `prepare_defoliation()` function for validating defoliation event inputs (coppice, epicormic, recovery time).
+-   New example datasets: `d_mixture`, `d_regeneration`, `d_defoliation` — each bundling site, species, climate, thinning, parameters, and size-distribution tables.
 
 ### Major changes
 
-- Foliage biomass after dormant period is now generated from carbohydrates, and not from the current year NPP. This is a major change, leading to difference with previous version.
-- All the test data vere grouped into a specific `d_` file. So each file contain information on site, species, etc....
-- The output dimentions has been increased to 20 variables per group. See `i_output` for more details
+-   Management can now be based on the number of trees (`manag_model = 1`, original) or on retained biomass proportions (`manag_model = 2`).
+-   Foliage biomass after dormant period is now generated from carbohydrates, not from current-year NPP (changes output relative to v0.1.x).
+-   All test data grouped into `d_*` list objects (`d_mixture`, `d_regeneration`, `d_defoliation`), replacing the previous flat `d_input`, `d_site`, `d_species`, etc.
+-   Output dimensions increased to 20 variables per group (220 total); see `i_output` for the full list.
+-   Internal `i_parameters` reference table expanded to 86 rows reflecting the new parameter naming scheme (`beta0`, `betaB`, `nHB`, `nHC`, etc.).
+-   Fortran model code refactored: extracted reusable subroutines (`s_update_long_term_modifiers`, `s_update_weibull_distribution`), added scalar wrappers (`f_exp_s`, `f_exp_foliage_s`), removed 16+ unused declarations, centralised variable declarations in `i_decl_var.h`.
 
 ### Minor changes
 
-- revising the documentation and functions
-- writing tests for all of the functions
-- in the northern latitudes netRad could go to NaN if the daylenght is 0. This caused crash in calulations. Corrected.
+-   Backward-compatible handling for legacy `altitude` site column (warns and converts to `elevation`).
+-   Updated and expanded data documentation in `R/data.R` and regenerated Rd files.
+-   Aligned formatting across all Fortran include files and main model source.
+-   Standardised test object naming and expanded test suite to 88 tests (mortality model isolation, defoliation validation, backward compatibility).
+-   Updated all examples, README, and vignette to use `d_mixture$...` data references.
+
+### Test environments
 
 
 r3PG 0.1.7

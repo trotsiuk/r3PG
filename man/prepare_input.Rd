@@ -125,10 +125,10 @@ For detailed descriptions, see Forrester (2020).
 # Example: Climate data preparation
 # r3PG default data
 
-prepare_input( site = d_site,
-               species = d_species,
-               climate = d_climate,
-               d_thinning)
+prepare_input( site = d_mixture$site,
+               species = d_mixture$species,
+               climate = d_mixture$climate,
+               thinning = d_mixture$thinning)
 }
 \references{
 Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: \url{http://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}

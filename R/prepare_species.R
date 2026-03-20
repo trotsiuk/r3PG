@@ -39,7 +39,6 @@ prepare_species <- function(
 
   # Define required and optional columns
   cols_compulsory <- c("species","planted","fertility","stems_n","biom_stem","biom_root","biom_foliage")
-  #cols_modifier <- c( "lt_fN","lt_fT","lt_fPhys" )
 
   # Check if all compulsory columns are present
   missing_cols <- setdiff(cols_compulsory, colnames(species))
@@ -76,28 +75,8 @@ prepare_species <- function(
     warning("Some values in 'biom_stem' are greater than 10000. Please verify the input data.")
   }
 
-
-  ## Handle optional columns
-  #if (!all(cols_modifier %in% colnames(species))) {
-#
-  #  # Add missing optional columns with NA values
-  #  missing_modifiers <- setdiff(cols_modifier, colnames(species))
-  #  species[missing_modifiers] <- NA_real_
-#
-  #  } else {
-#
-  #  # Validate optional columns if present
-  #  if (!all(is.na(species[, cols_modifier]))) {
-#
-  #    if (any(species[, cols_modifier] < 0, na.rm = TRUE)) {
-  #      stop("Long-term modifiers (lt_fN, lt_fT, lt_fPhys) must contain non-negative values.")
-  #    }
-  #  }
-  #}
-
-
   # Select and return the final table
-  #final_columns <- c(cols_compulsory, cols_modifier)
+
   final_columns <- c(cols_compulsory)
   return(species[, final_columns, drop = FALSE])
 }

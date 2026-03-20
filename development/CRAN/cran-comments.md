@@ -1,37 +1,51 @@
 # Version 0.2.0
 
-## Submission 1 ....
+## Submission 1
 
 This is a major update of r3PG.
 
 ### Bug fixed
 
--   
+-   Replaced all non-portable `real(kind=8)` usage in Fortran sources with `kind(0.0d0)` equivalents (extends fix from #97 to the main model file).
+-   Fixed implicit REAL→INTEGER conversion for `lt_mod_mths` in `i_read_input.h`.
+-   In northern latitudes `netRad` could become NaN when day-length is 0, causing simulation crashes. Corrected.
 
 ### New function and data sets
 
+-   New density-dependent mortality model (`mort_model = 2`) based on stand-level self-thinning with modifier-adjusted intercept.
+-   New individual-tree mortality model (`mort_model = 3`) based on growth-driven mortality thresholds.
+-   New `prepare_defoliation()` function for validating defoliation event inputs (coppice, epicormic, recovery time).
+-   New example datasets: `d_mixture`, `d_regeneration`, `d_defoliation` — each bundling site, species, climate, thinning, parameters, and size-distribution tables.
+
 ### Major changes
 
-- new option for the management (#103). Management can be based on the number of 
-  trees (original manag_model = 1) or based on the biomass (magan_model = 2)
-- new option for the mortality ....
+-   Management can now be based on the number of trees (`manag_model = 1`, original) or on retained biomass proportions (`manag_model = 2`).
+-   Foliage biomass after dormant period is now generated from carbohydrates, not from current-year NPP (changes output relative to v0.1.x).
+-   All test data grouped into `d_*` list objects (`d_mixture`, `d_regeneration`, `d_defoliation`), replacing the previous flat `d_input`, `d_site`, `d_species`, etc.
+-   Output dimensions increased to 20 variables per group (220 total); see `i_output` for the full list.
+-   Internal `i_parameters` reference table expanded to 86 rows reflecting the new parameter naming scheme (`beta0`, `betaB`, `nHB`, `nHC`, etc.).
+-   Fortran model code refactored: extracted reusable subroutines (`s_update_long_term_modifiers`, `s_update_weibull_distribution`), added scalar wrappers (`f_exp_s`, `f_exp_foliage_s`), removed 16+ unused declarations, centralised variable declarations in `i_decl_var.h`.
 
 ### Minor changes
 
--   
+-   Backward-compatible handling for legacy `altitude` site column (warns and converts to `elevation`).
+-   Updated and expanded data documentation in `R/data.R` and regenerated Rd files.
+-   Aligned formatting across all Fortran include files and main model source.
+-   Standardised test object naming and expanded test suite to 88 tests (mortality model isolation, defoliation validation, backward compatibility).
+-   Updated all examples, README, and vignette to use `d_mixture$...` data references.
 
 ### Test environments
 
--   local MAC OS 13.4.1 (Monterey), R 4.0.2
+-   local MAC OS 26.4.1 (Tahoe), R 4.4.3
 -   <http://win-builder.r-project.org/> - oldrelease / devel / release
 -   Linux (Travis CI) - oldrel / release / devel
 -   rhub (using `rhub::check_for_cran()`, `rhub::check_with_valgrind()`)
 
 ### R CMD check results
 
-0 errors ✓ \| 0 warnings ✓ \| 0 notes ✓
+0 errors ✓ \| 0 warnings ✓ \| 1 note
 
-R CMD check succeeded.
+Note: "checking for future file timestamps ... unable to verify current time" (transient network issue, not a package problem).
 
 
 # Version 0.1.6

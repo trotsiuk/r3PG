@@ -4,7 +4,7 @@ library(testthat)
 test_that("prepare_thinning handles NULL input", {
   sp_names <- c("Fagus sylvatica", "Pinus sylvestris")
   result <- prepare_thinning(thinning = NULL, sp_names = sp_names)
-  expect_equal(dim(result), c(1, 5, length(sp_names)))
+  expect_equal(dim(result), c(1, 6, length(sp_names)))
   expect_true(all(is.na(result)))
 })
 
@@ -24,7 +24,7 @@ test_that("prepare_thinning validates thinning table column names", {
   sp_names <- c("Fagus sylvatica")
   expect_error(
     prepare_thinning(thinning = thinning_data, sp_names = sp_names),
-    "Column names of the thinning table must correspond to"
+    "The 'thinning' table is missing the following compulsory columns:"
   )
 })
 
@@ -57,6 +57,6 @@ test_that("prepare_thinning processes thinning data correctly", {
   )
   sp_names <- c("Fagus sylvatica", "Pinus sylvestris")
   result <- prepare_thinning(thinning = thinning_data, sp_names = sp_names)
-  expect_equal(dim(result), c(1, 5, 2))
+  expect_equal(dim(result), c(1, 6, 2))
   expect_equal(dimnames(result)[[3]], sp_names)
 })

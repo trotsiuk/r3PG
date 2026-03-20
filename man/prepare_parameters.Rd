@@ -31,7 +31,7 @@ the function ensures consistency, updates specified values, and retains defaults
 \examples{
 # Example: Prepare parameters
 # replace some
-prepare_parameters( parameters = d_parameters[1:4,],
+prepare_parameters(parameters = d_mixture$parameters[1:4, ],
   sp_names = c('Fagus sylvatica', 'Pinus sylvestris' ))
 
 # Make default

@@ -1,11 +1,11 @@
 # Example: Valid site data
 # r3PG default data
-prepare_site( site = d_site)
+prepare_site(site = d_mixture$site)
 
 # example data
 d_site <- data.frame(
   latitude = 46.8,
-  altitude = 1200,
+  elevation = 1200,
   soil_class = 2,
   asw_i = 150,
   asw_min = 100,

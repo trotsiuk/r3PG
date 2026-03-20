@@ -7,13 +7,12 @@
 \format{
 A named \code{list} with the following components:
 \describe{
-  \item{site}{A data frame with 1 row and 8 variables describing site conditions.}
-  \item{species}{A data frame with rows corresponding to each species/cohort and variables such as initial biomass and modifiers.}
-  \item{climate}{A data frame with monthly values of temperature, rainfall, radiation, frost days, etc.}
-  \item{parameters}{A data frame containing species-specific physiological parameters.}
-  \item{sizeDist}{A data frame describing the size distribution parameters for each species.}
-  \item{thinning}{A data frame listing thinning interventions by species and age.}
-  \item{defoliation}{A data frame listing defoliation events, including retained biomass fractions and recovery settings.}
+  \item{site}{A 1-row data frame with columns: \code{latitude}, \code{elevation}, \code{soil_class}, \code{asw_i}, \code{asw_min}, \code{asw_max}, \code{from}, \code{to}, \code{lt_mod_mths}, \code{st_Power}, \code{st_Intercept}, \code{st_fN}, \code{st_fT}, \code{st_fPhys}, \code{beta0}, \code{betaB}, \code{betaN}, \code{betafN}, \code{betafT}, \code{betafPhys}.}
+  \item{species}{A data frame with columns: \code{species}, \code{planted}, \code{fertility}, \code{stems_n}, \code{biom_stem}, \code{biom_root}, \code{biom_foliage}.}
+  \item{climate}{A monthly data frame with columns: \code{year}, \code{month}, \code{tmp_min}, \code{tmp_max}, \code{tmp_ave}, \code{prcp}, \code{srad}, \code{frost_days}, \code{co2}, \code{d13catm}.}
+  \item{parameters}{A species-parameter data frame used by \code{prepare_parameters()}.}
+  \item{sizeDist}{A size-distribution parameter data frame used by \code{prepare_sizeDist()}.}
+  \item{thinning}{A management data frame with columns: \code{species}, \code{age}, \code{stems_n}, \code{stem}, \code{root}, \code{foliage}, \code{biom_prop_retained}.}
 }
 }
 \usage{
@@ -22,7 +21,7 @@ d_regeneration
 \description{
 A named list containing all required input tables for a 3PG simulation.
 These include site conditions, species characteristics, climate, model parameters,
-size distributions, thinning schedules, and defoliation events.
+size distributions, and thinning schedules.
 This data set is particularly tailored to test regeneration
 }
 \examples{

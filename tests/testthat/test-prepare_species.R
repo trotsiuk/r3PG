@@ -16,8 +16,6 @@ test_that("prepare_species works with valid input", {
 
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), nrow(d_species))
-  expect_true(all(c("lt_fN", "lt_fT", "lt_fPhys") %in% colnames(result)))
-  expect_true(all(is.na(result$lt_fN))) # Optional columns should be NA by default
 })
 
 test_that("prepare_species detects missing compulsory columns", {
@@ -82,26 +80,6 @@ test_that("prepare_species validates non-negative biomass and stem numbers", {
   expect_error(
     prepare_species(d_species),
     "The 'stems_n' column must contain non-negative values."
-  )
-})
-
-test_that("prepare_species handles long-term modifier validation", {
-  d_species <- data.frame(
-    species = c("Pine", "Oak"),
-    planted = c("2000-01", "1995-06"),
-    fertility = c(0.8, 0.6),
-    stems_n = c(500, 300),
-    biom_stem = c(120, 90),
-    biom_root = c(30, 25),
-    biom_foliage = c(15, 10),
-    lt_fN = c(-0.5, NA), # Invalid value
-    lt_fT = c(0.3, NA),
-    lt_fPhys = c(NA, NA)
-  )
-
-  expect_error(
-    prepare_species(d_species),
-    "Long-term modifiers \\(lt_fN, lt_fT, lt_fPhys\\) must contain non-negative values."
   )
 })
 

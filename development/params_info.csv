@@ -1,0 +1,243 @@
+﻿Symbol / Abbreviation,Name in r3PG Fortran code,3-PG species parameter,Description,Units
+a,aFracDiffu,*,fractionation against 13C in diffusion through air (4.4‰),per mil
+"AGBP,ret ",,,Proportion of aboveground biomass retained after thinning,
+aH,aH,*,Parameter of height equation,
+aHL,aHL,*,Parameter of crown ratio equation,
+aK,aK,*,Parameter of crown diameter equation,
+aV,aV,*,Constant in the stem volume relationship,
+aWS,aWS,*,Constant in the stem mass v. diam. relationship,
+B,dbh,,Quadratic mean stem diameter at breast height,cm
+b,bFracRubi,*,enzymatic fractionation by Rubisco (27‰),per mil
+BA,basal_area or basal_area_total,,Basal area,m2 ha-1
+BAlost,,,Basal area lost per month due to background mortality,m2 ha-1
+BIASrel,DrelBias….,,relative bias that results from Jensen's inequality,
+Bst,dbh_total,,Quadratic mean stem diameter of the whole stand,cm
+C,competition_total,,Competition index calculated from basal area and wood specific gravity,m2 ha-1 x Mg m-3
+ca,,,molar fraction of CO2 in the air,
+calculate_d13c,,,setting. '0' = do not calculate; '1' = calculate,
+crown_width_model,,,"setting, '1' = exponential form; '2' = Michajlow form; '3' = Näslund form",
+CrownShape,CrownShape,,"cone = 1, ellipsoid = 2, half-elipsoid = 3, rectangular = 4",
+CV,CV…,,coefficient of variation of independent variable when calculating Jensen's inequality,
+cθ,SWconst,*,"Moisture ratio deficit for fθ = 0.5 (can be provided as species parameter, but this will only be used if it wasn’t provided as a site parameter)",
+D,"vpd_day, VPD_sp",,Mean daytime VPD,mbar
+Dc,VPD_sp,,VPD within the canopy,
+df,frost_days,,Number of frost days per month,days
+dN,mort_thinn_total,,Change in total stand N per month due to background mortality,trees per ha
+dNcohort,stems_loss_density,,Change in N per month for a cohort due to background mortality,trees per ha
+Dq ,,,specific saturation deficit (6.22 ´ 10-4 ´ VPD),
+ET,evapo_transp,,Evapotranspiration rate in current period,mm (= kg per m2)
+ɛsp,D13CTissueDif,*,difference between mean annual δ13C of new photosynthate and δ13C of tree rings,
+f,"sum( max(fi(:), 1d-12) )",,Fraction of photosynthetically active radiation (ϕp) that is absorbed by the canopy,
+fAGE,f_age,,Dimensionless growth modifier quantifying the effect of age,
+fCg,f_cg,,Dimensionless canopy conductance modifier quantifying the effect of atmospheric CO2,
+fCg700,fCg700,*,Canopy conductance enhancement factor when CO2 = 700 ppm,
+fCα,f_calpha,,Dimensionless growth modifier quantifying the effect of atmospheric CO2,
+fCα700,fCalpha700,*,Assimilation enhancement factor when CO2 = 700 ppm,
+fD,f_vpd,,Dimensionless growth modifier quantifying the effect of vapour pressure deficit,
+fF,f_frost,,Dimensionless growth modifier quantifying the effect of frost,
+Ffraction,manag_remove_prop_compartment,,Mean single-tree foliage biomass of removed trees relative to that of the mean tree prior to thinning ,
+fgT,f_tmp_gc,,Dimensionless canopy conductance modifier quantifying the effect of temperature,
+fN,f_nutr,,Dimensionless growth modifier quantifying the effect of soil nutrition,
+fN0,fN0,*,Value of fN when FR = 0,
+fNlt,lt_fN_ave,,"Long-term dimensionless growth modifier quantifying the effect of soil nutrition, averaged across all cohorts (weighted by their contribution to stand basal area)",
+FR,fertility,,Soil fertility rating,
+fT,f_tmp,,Dimensionless growth modifier quantifying the effect of temperature,
+fTlt,lt_fT_ave,,"Long-term dimensionless growth modifier quantifying the effect of temperature, averaged across all cohorts (weighted by their contribution to stand basal area)",
+fθ,f_sw,,Dimensionless growth modifier quantifying the effect of soil moisture,
+gB,BLcond,*,aerodynamic conductance (boundary layer conductance),m s-1
+gc,conduct_canopy,,Canopy conductance,m s-1
+gcmax ,MaxCond,*,Maximum canopy conductance,m s-1
+gcmin ,MinCond,*,Minimum canopy conductance,m s-1
+GPP,GPP,,Gross primary productivity,tDM ha-1
+gsoil ,conduct_soil,,Soil conductance,m s-1
+gsoilx ,MaxSoilCond,,Maximum  soil conductance,m s-1
+h,height,,Height of a cohort,m
+h0.5 ,Height_max / 2.d0,,half the height of the tallest species within the stand,m
+hb,Heightcrown,,Height of the bottom of the live crown,m
+Hd,Hd,*,Height of the diameter measurements for allometric equations,m
+height_model,,,"setting, '1' = exponential form; '2' = Michajlow form; '3' = Näslund form",
+hL,height_wtav_LAI,,Weighted average (by L) height of all cohorts in a stand,
+hm,Heightmidcrown,,Mid-crown height (mid point between tree height and the bottom of the live crown hb),m
+IR,prcp_interc_fract,,Fraction of rainfall intercepted by the canopy for a single cohort,
+IR,MaxIntcptn,*,Maximum proportion of rainfall evaporated from canopy,
+IRT ,prcp_interc_fract,,Fraction of rainfall intercepted by canopy by all cohorts,
+K,crown_width,,Crown diameter,m
+k or kH,k,*,Extinction coefficient for absorption of PAR by canopy (kH is for a homogeneous canopy),
+kD,CoeffCond,*,Defines stomatal response to VPD,1/mBar
+kF,kF,*,Days production lost per frost day,days
+L,lai,,Leaf area index,m2 m-2
+L50 ,cVPD,*,LAI for 50% reduction of VPD in canopy ,m2 m-2
+LA,lai(:) * 10000.d0 / stems_n(:),,Mean tree leaf area,m2/tree
+Labove,lai_above,,L of all layers above the layer in which the given cohort is in,m2 m-2
+LCR,aHL,,Live crown ratio (live-crown length / height),
+leafL,leaffall,*,"If deciduous, leaves all fall at start of this month",month
+leafP,leafgrow,*,"If deciduous, leaves are produced at end of this month",month
+Lgcmax ,LAIgcx,*,LAI for maximum canopy conductance,m2 m-2
+light_model,,,"setting, '1' = 3-PGpjs (default); '2' = 3-Pgmix",
+LIx ,LAImaxIntcptn,*,LAI for maximum rainfall interception,m2 m-2
+Lmix ,,,Cohort L / spL,m2 m-2
+loc,...WeibullLocation,,location parameter of Weibull distribution,
+locB0,Dlocation0,*,Constant in the relationship for Weibull location parameter of D distribution,
+locBB,DlocationB,*,Slope of DBH in relationship for Weibull location parameter of D distribution,
+locBC,DlocationC,*,Slope of competition in relationship for Weibull location parameter of D distribution,
+locBrh,Dlocationrh,*,Slope of relative height in relationship for Weibull location parameter of D distribution,
+locBt,Dlocationt,*,Slope of age in relationship for Weibull location parameter of D distribution,
+Lprop ,lai_per,,Proportion of stand L contributed by the cohort,
+m0,m0,*,Value of 'm' when FR = 0,
+mAPAR,m_apar,,ϕpa multiplier to redistribute unabsorbed PAR ϕp to short cohorts,
+mF,mF,*,Mean single-tree foliage biomass of trees that die due to background mortality relative to that of the mean tree,
+mR,mR,*,Mean single-tree stem biomass of trees that die due to background mortality relative to that of the mean tree,
+mS,mS,*,Mean single-tree root biomass of trees that die due to background mortality relative to that of the mean tree,
+N,stems_n,,Tree density,trees per ha
+nage,nAge,*,Power of relative age in function for fAGE,
+Nclass ,,,number of trees per ha within a given B or ws class,
+nfN,fNn,*,Power of (1-FR) in fN ,
+nfN,st_fN,,Power in fertility modifier (mort_model = 2),
+nfPhys,st_fPhys,,Power in physmod modifier (mort_model = 2),
+nfT,st_fT,,Power in temperature modifier (mort_model = 2),
+nH1,nH1,*,Parameter of height equation,
+nH2,nH2,*,Parameter of height equation,
+nH3,nH3,*,Parameter of height equation,
+nH4,nH4,*,Parameter of height equation,
+nHL1,nHL1,*,Parameter of crown ratio equation,
+nHL2,nHL2,*,Parameter of crown ratio equation,
+nHL3,nHL3,*,Parameter of crown ratio equation,
+nHL4,nHL4,*,Parameter of crown ratio equation,
+nint,st_Intercept,,Intercept for self-thinning rule (mort_model = 2),ln(trees ha-1)
+nK1,nK1,*,Parameter of crown diameter equation,
+nK2,nK2,*,Parameter of crown diameter equation,
+nK3,nK3,*,Parameter of crown diameter equation,
+nK4,nK4,*,Parameter of crown diameter equation,
+nm,thinPower,*,Power in self-thinning rule (mort_model = 1),
+nm,st_Power,,Power in self-thinning rule (mort_model = 2),
+Nmix,,,N adjusted using sp to represent a single cohort in a multi-cohort stand,trees per ha
+NP.rem,manag_remove_prop,,proportion of trees removed by thinning,
+Npost ,stems_n,,N after thinning,trees ha-1
+NPP,NPP,,Net primary productivity,tDM ha-1
+Npre ,stems_n,,N before thinning,trees ha-1
+nVB,nVB,*,Power of DBH in the stem volume relationship,
+nVBH,nVBH,*,Power of DBH^2 x height in the stem volume relationship,
+nVH,nVH,*,Power of height in the stem volume relationship,
+nWS,nWS,*,Power in the stem mass v. diam. relationship,
+nθ,SWpower,*,"Power of moisture ratio deficit (can be provided as species parameter, but this will only be used if it wasn’t provided as a site parameter)",
+PAR,RADt,,Photosynthetically active radiation,"µmol photons m-2 s-1, or MJ m-2 month-1"
+pBB ,fracBB,,Fraction of ws that is branch and bark ,
+Pcarbs ,prop_carbs,,"proportion of adjusted pre-fire foliage mass WF,pre,adj that can be used to produce new foliage (WF) + stem (WS) biomass in the first year after the fire",
+pFS,pFS,,Ratio of ηF and ηS,
+pFS2,pFS2,*,Ratio of ηF and ηS at a B of 2 cm,
+pFS20,pFS20,*,Ratio of ηF and ηS at a B of 20 cm,
+PG,GPP,,Gross primary productivity,tDM ha-1
+phys_model,,,"setting, '1' = 3-PGpjs (default), min of fd and fθ; '2' = 3-PGmix, fd x fθ",
+Pnpp ,prop_npp,,proportion of new photosynthesis that will be partitioned to foliage biomass,
+PηSR,,,proportional change in stem and root partitioning following defoliation,
+Qa ,Qa,,Intercept of net v. solar radiation relationship,W m-2
+Qb ,Qb,,Slope of net v. solar radiation relationship,
+ra ,aero_resist,,aerodynamic resistance ,s m-1
+rage,rAge,*,Relative age to give fAGE = 0.5,
+rasoil ,,,aerodynamic resistance above the soil ,s m-1
+Rfraction,manag_remove_prop_compartment,,Mean single-tree root biomass of removed trees relative to that of the mean tree prior to thinning ,
+RGcGw,RGcGw,*,The ratio of diffusivities of CO2 and water vapour in air,
+rhL,height_rel_wt,,Height of a cohort relative to the weighted average (by L) height of all cohorts.,
+RIr,irrig_supl,,Supplemental irrigation,mm
+RP ,prcp,,Precipitation,mm
+s,e20,,The slope of saturated vapour pressure versus temperature curve at a temperature of 20°C,
+SA,CrownSA,,Mean tree crown surface area,m2/tree
+sc,...WeibullShape,,scale parameter of Weibull distribution,
+scB0 ,Dscale0,*,Constant in the relationship for Weibull scale parameter of D distribution,
+scBB ,DscaleB,*,Slope of DBH in relationship for Weibull scale parameter of D distribution,
+scBC ,DscaleC,*,Slope of competition in relationship for Weibull scale parameter of D distribution,
+scBrh ,Dscalerh,*,Slope of relative height in relationship for Weibull scale parameter of D distribution,
+scBt ,Dscalet,*,Slope of age in relationship for Weibull scale parameter of D distribution,
+Sfraction,manag_remove_prop_compartment,,Mean single-tree stem biomass of removed trees relative to that of the mean tree prior to thinning ,
+sh,...WeibullScale,,shape parameter of Weibull distribution,
+shB0 ,Dshape0,*,Constant in the relationship for Weibull shape parameter of D distribution,
+shBB ,DshapeB,*,Slope of DBH in relationship for Weibull shape parameter of D distribution,
+shBC ,DshapeC,*,Slope of competition in relationship for Weibull shape parameter of D distribution,
+shBrh ,Dshaperh,*,Slope of relative height in relationship for Weibull shape parameter of D distribution,
+shBt ,Dshapet,*,Slope of age in relationship for Weibull shape parameter of D distribution,
+sizeclass ,,,the diameter or ws size class,
+SLA,SLA,,Specific leaf area,m2 kg-1
+sp,,,"The proportion of a stand (in terms of L, basal area etc) that is a given cohort",
+SR,coppice_sr_ratio,,Stem biomass to root biomass ratio immediately prior to a coppice defoliation event.,
+t,age,,Age,years
+Ta,tmp_ave,,Mean monthly temperature,deg. C
+tC,fullCanAge,*,The age at which the canopy closes,years
+Tmax,Tmax,*,Maximum temperature for growth,deg. C
+Tmin,Tmin,*,Minimum temperature for growth,deg. C
+Topt,Topt,*,Optimum temperature for growth,deg. C
+transp_model,,,"setting, '1' = 3-PGpjs (default); '2' = 3-Pgmix",
+tx,MaxAge,*,Maximum stand age used in age modifier,years
+tγF ,tgammaF,*,Age at which litterfall rate is ½(γF0 + γF1),months
+tγN ,tgammaN,,Age at which mortality rate has median value,years
+tρ ,tRho,*,Age at which rho = (rhoMin+rhoMax)/2,years
+tρ ,tBB,*,Age at which ρ = ½( ρ0 + ρ1),years
+tσ,tSLA,*,Age at which σ = (σ0+σ1)/2,years
+vfrac,canopy_vol_frac,,"Sum of the crown volume (m3) of all crowns within a given layer within one hectare, divided by the total volume of that layer (m3)",
+VPD,"vpd_day, VPD_sp",,Vapour pressure deficit,mbar
+VS,volume,,Stand volume,m3 ha-1
+WF,biom_foliage,,Foliage biomass,tDM ha-1
+"WF,pre,adj",biom_foliage_adj_pre_def,,Foliage mass of the trees that survived the defoliation event (adjusted for trees that were killed),tDM ha-1
+wi,weight,,"Weighting calculated using a relative height weighted by leaf area index, which is used to distribute background mortality between cohorts",
+WR,biom_root,,Root biomass,tDM ha-1
+"WR,loss",,,Root biomass lost due to natural root pruning after recovering from a coppice defoliation event if the stem to root mass ratio is still lower than it was before defoliation,tDM ha-1
+WS,biom_stem,,"Stem biomass, including branches and bark",tDM ha-1
+"WS,post ",biom_stem,,stem biomass after thinning,tDM ha-1
+"WS,pre ",biom_stem,,stem biomass before thinning,tDM ha-1
+wSx,biom_tree_max,,Maximum stem mass per tree @ N (mort_model = 1),kg/tree
+wSx1000,wSx1000,*,Maximum stem mass per tree @ N = 1000 trees/hectare (mort_model = 1),kg/tree
+Y,Y,*,Ratio NPP/GPP,
+zadj,,,Zenith angle,
+αC,alpha_c,,Quantum canopy efficiency (after applying the growth modifiers),mol C mol-1 PAR
+αCx,alphaCx,*,Maximum quantum canopy efficiency (before applying the growth modifiers),mol C mol-1 PAR
+ϐ0,beta0,,constant for self-thinning (mort_model = 3),
+ϐ1,betaB,,Power for B (mort_model = 3),
+ϐ2,betaN,,Power in tree density (mort_model = 3),
+ϐ3,betafN,,Power in nutrition modifier (mort_model = 3),
+ϐ4,betafT,,Power in temperature modifier (mort_model = 3),
+ϐ5,betafPhys,,Power in physmod modifier (mort_model = 3),
+γ,gammaAPAR,*,Parameter to amplify light benefit to shorter cohorts,
+γF,gammaF,*,Average monthly litterfall rate (Fraction of WF that falls as litter per month),1/month
+γF0 ,gammaF0,*,Litterfall rate at t = 0,1/month
+γF1 ,gammaF1,*,Maximum litterfall rate,1/month
+γN ,ngammaN,,Shape of mortality response,-
+γN0 ,gammaN0,,Seedling mortality rate (t = 0),%/year
+γN1 ,gammaN1,,Mortality rate for large t,%/year
+γR,gammaR,*,Average monthly root turnover rate,1/month
+δ13Ca,d13Catm,,δ13Ca of atmospheric CO2,per million
+δ13Cs,D13CNewPS,,δ13C of tree rings ,
+ε,epsilon,,Light use efficiency (GPP / ϕpa),gDM MJ-1
+ζ,canopy_cover,,Fraction of ground area covered by canopy,
+ηF,npp_fract_foliage,,Fraction of NPP partitioned to foliage biomass,
+ηF2,npp_fract_foliage,,Fraction of NPP partitioned to foliage biomass following defoliation,
+ηFS,,,Fraction of NPP partitioned to foliage + stem biomass following defoliation,
+ηR,npp_fract_root,,Fraction of NPP partitioned to root biomass,
+ηR2,npp_fract_root,,Fraction of NPP partitioned to stem biomass following defoliation,
+ηRn,pRn,*,Minimum fraction of NPP to roots,
+ηRx,pRx,*,Maximum fraction of NPP to roots,
+ηS,npp_fract_stem,,Fraction of NPP partitioned to stem biomass,
+ηS2,npp_fract_stem,,Fraction of NPP partitioned to root biomass following defoliation,
+θS,ASW,,Available soil water,mm
+θSx,asw_max,,Maximum available soil water,mm
+λ,lambda,,latent heat of vaporisation of water (2.46 ´ 106 J kg-1),2.46 x 106 J kg-1
+λh,lambda_h,,Constant used to account for horizontal canopy heterogeneity,
+λv,lambda_v,,Constant used to account for vertical canopy heterogeneity,
+ρ,wood_density,,Wood basic density,Mg m-3 = g cm-3
+ρ0 ,rhoMin,*,Minimum basic density - for young trees,Mg m-3 = g cm-3
+ρ0 ,fracBB0,*,Branch and bark fraction at age 0,
+ρ1,rhoMax,*,Maximum basic density - for older trees,Mg m-3 = g cm-3
+ρ1 ,fracBB1,*,Branch and bark fraction for mature stands,
+ρa ,rhoAir,,air density,1.2 kg m-3
+σ,SLA,,Specific leaf area,m2 kg-1
+σ0,SLA0,*,Specific leaf area at age 0,m2 kg-1
+σ1,SLA1,*,Specific leaf area for mature leaves,m2 kg-1
+φ,f_phys,,"Dimensionless growth modifier quantifying the effect soil moisture, vapour pressure deficit and age",
+φ’lt ,lt_fPhys_ave,,"Long-term dimensionless growth modifier quantifying the effect soil moisture, vapour pressure deficit (not age), averaged across all cohorts (weighted by their contribution to stand basal area)",
+ϕn,netRad,,total net radiation ,W m-2
+ϕp,RADt,,Photosynthetically active radiation,"µmol photons m-2 s-1, or MJ m-2 month-1"
+"ϕp,above",RADt,,Photosynthetically active radiation above the canopy,"µmol photons m-2 s-1, or MJ m-2 month-1"
+"ϕp,stand",sum( apar(:) ),,"Sum of the ϕpa,final of all cohorts within a stand","µmol photons m-2 s-1, or MJ m-2 month-1"
+ϕpa,apar,,Absorbed photosynthetically active radiation,MJ m-2 month-1
+"ϕpa,final",apar,,ϕpa after aplying mAPAR,"µmol photons m-2 s-1, or MJ m-2 month-1"
+Picture,,,Mean daily solar radiation above the canopy over the time period Δt ,MJ m-2d-1
+,def_recover_t,,"Maximum time to recover from defoliation. After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.",months
+,lt_mod_mths,,Number of months considered to be long-term when calculating the long-term average modifier values for density-dependent mortality,months

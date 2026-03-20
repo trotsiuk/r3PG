@@ -7,7 +7,7 @@ test_that("prepare_parameters handles NULL input", {
 
   result <- prepare_parameters(parameters = NULL, sp_names = sp_names)
 
-  expect_equal(nrow(result), 88)
+  expect_equal(nrow(result), 86)
   expect_equal(ncol(result), length(sp_names) + 1)
 })
 

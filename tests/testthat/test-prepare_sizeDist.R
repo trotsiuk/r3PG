@@ -7,7 +7,7 @@ test_that("prepare_sizeDist handles NULL input", {
 
   result <- prepare_sizeDist(size_dist = NULL, sp_names = sp_names)
 
-  expect_equal(nrow(result), 30)
+  expect_equal(nrow(result), 15)
   expect_equal(ncol(result), length(sp_names) + 1)
 })
 

@@ -5,7 +5,7 @@
 \alias{i_parameters}
 \title{Information about parameters}
 \format{
-A data frame with 82 rows and 3 variables:
+A data frame with 86 rows and 4 variables:
 \describe{
   \item{parameter}{parameter name}
   \item{description}{description of the parameter}

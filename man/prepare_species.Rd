@@ -33,7 +33,7 @@ This function is used to validate and prepare the species table for \code{\link{
 \examples{
 # Example: Valid species data
 # r3PG default data
-prepare_species( species = d_species)
+prepare_species(species = d_mixture$species)
 
 # example data
 d_species <- data.frame(

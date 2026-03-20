@@ -2,7 +2,7 @@
 # r3PG default data
 prepare_thinning( thinning = NULL, sp_names = c('Quercus', 'Abies'))
 
-prepare_thinning( thinning = d_thinning, sp_names = c('Fagus sylvatica', 'Pinus sylvestris'))
+prepare_thinning(thinning = d_mixture$thinning, sp_names = c('Fagus sylvatica', 'Pinus sylvestris'))
 
 # example data
 thinning_data <- data.frame(

@@ -43,17 +43,17 @@ usethis::use_data( i_output, i_parameters, i_sizeDist, i_parameters_lit,
 
 # Default data ------------------------------------------------------------
 #' `EU MIXFOR`
-f_reg <- 'data-raw/data.input.xlsx'
+f_mix <- 'data-raw/data.input.xlsx'
 
-d_site <- readxl::read_excel(f_reg, sheet = 'site')
-d_species <- readxl::read_excel(f_reg, sheet = 'species')
-d_climate <- readxl::read_excel(f_reg, sheet = 'climate')
-d_parameters <- readxl::read_excel(f_reg, sheet = 'parameters')
-d_sizeDist <- readxl::read_excel(f_reg, sheet = 'sizeDist')
-d_thinning <- readxl::read_excel(f_reg, sheet = 'thinning')
+d_site <- readxl::read_excel(f_mix, sheet = 'site')
+d_species <- readxl::read_excel(f_mix, sheet = 'species')
+d_climate <- readxl::read_excel(f_mix, sheet = 'climate')
+d_parameters <- readxl::read_excel(f_mix, sheet = 'parameters')
+d_sizeDist <- readxl::read_excel(f_mix, sheet = 'sizeDist')
+d_thinning <- readxl::read_excel(f_mix, sheet = 'thinning')
 
 # Create a named list using the actual variables
-d_input <- list(
+d_mixture <- list(
   site = d_site,
   species = d_species,
   climate = d_climate,
@@ -63,7 +63,7 @@ d_input <- list(
 )
 
 # Save the list as a single data object
-usethis::use_data(d_input, internal = FALSE, overwrite = TRUE)
+usethis::use_data(d_mixture, internal = FALSE, overwrite = TRUE)
 
 
 # Regeneration data set ---------------------------------------------------
@@ -92,16 +92,16 @@ usethis::use_data(d_regeneration, internal = FALSE, overwrite = TRUE)
 
 
 # Defoliation data set ----------------------------------------------------
-f_reg <- 'data-raw/data_input_defoliation.xlsx'
+f_def <- 'data-raw/data_input_defoliation.xlsx'
 
 # Read data from each sheet
-d_site_d <- readxl::read_excel(f_reg, sheet = 'site')
-d_species_d <- readxl::read_excel(f_reg, sheet = 'species')
-d_climate_d <- readxl::read_excel(f_reg, sheet = 'climate')
-d_parameters_d <- readxl::read_excel(f_reg, sheet = 'parameters')
-d_sizeDist_d <- readxl::read_excel(f_reg, sheet = 'sizeDist')
-d_thinning_d <- readxl::read_excel(f_reg, sheet = 'thinning')
-d_defoliation_d <- readxl::read_excel(f_reg, sheet = 'defoliation')
+d_site_d <- readxl::read_excel(f_def, sheet = 'site')
+d_species_d <- readxl::read_excel(f_def, sheet = 'species')
+d_climate_d <- readxl::read_excel(f_def, sheet = 'climate')
+d_parameters_d <- readxl::read_excel(f_def, sheet = 'parameters')
+d_sizeDist_d <- readxl::read_excel(f_def, sheet = 'sizeDist')
+d_thinning_d <- readxl::read_excel(f_def, sheet = 'thinning')
+d_defoliation_d <- readxl::read_excel(f_def, sheet = 'defoliation')
 
 # Create a named list using the actual variables
 d_defoliation <- list(

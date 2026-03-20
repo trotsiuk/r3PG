@@ -1,6 +1,6 @@
 # Example: Climate data preparation
 # r3PG default data
-prepare_climate( climate = d_climate, from = '2003-04', to = '2010-11')
+prepare_climate(climate = d_mixture$climate, from = "2003-04", to = "2010-11")
 
 d_climate <- data.frame(
   tmp_min = runif(12, -5, 5),
