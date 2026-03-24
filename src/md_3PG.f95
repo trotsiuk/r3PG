@@ -233,6 +233,13 @@ contains
         stems_n_total  = max(sum(stems_n(:)), 1.0d-6)
         basal_area_total = max(sum(basal_area(:)), 1.0d-6)
         dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+        dbh_total_prev = dbh_total
+
+        ! basal area proportions (needed for output and density-dependent mortality)
+        basal_area_prop(:) = basal_area(:) / basal_area_total
+        where (basal_area_prop(:) < 1.0d-6)
+            basal_area_prop(:) = 1.0d-6
+        end where
         dbh_prev(:) = dbh(:)
         dbh_total_prev = dbh_total
 

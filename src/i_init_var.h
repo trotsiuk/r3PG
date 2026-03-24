@@ -10,8 +10,15 @@ age(:,:)               = 0.d0
 age_m(:,:)             = 0.d0
 stems_n(:)             = 0.d0
 basal_area(:)          = 0.d0
+basal_area_prop(:)     = 0.d0
 dbh(:)                 = 0.d0
+dbh_total_prev         = 0.d0
+dbh_prev(:)            = 0.d0
 height(:)              = 0.d0
+height_rel(:)          = 0.d0
+crown_length(:)        = 0.d0
+crown_width(:)         = 0.d0
+stems_n_ha(:)          = 0.d0
 volume(:)              = 0.d0
 volume_mai(:)          = 0.d0
 volume_old(:)          = 0.d0
@@ -30,6 +37,7 @@ lambda_h(:)            = 0.d0
 aero_resist(:)         = 0.d0
 vpd_sp(:)              = 0.d0
 lai_sa_ratio(:)        = 0.d0
+m_apar(:)              = 1.d0
 
 ! Stocks variables ---------------
 biom_foliage(:)        = 0.d0
@@ -87,6 +95,7 @@ evapo_transp           = 0.d0
 transp_veg(:)          = 0.d0
 
 transp_total            = 0.d0
+water_runoff_polled     = 0.d0
 
 ! Mortality ---------------
 biom_tree_max(:)       = 0.d0
