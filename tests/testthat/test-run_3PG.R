@@ -1,9 +1,29 @@
 library(r3PG)
 library(testthat)
 
-# Basic model runs
-test_that("Basic model run returns an array", {
 
+# ---------------------------------------------------------------------------
+# Helper: run a defoliation scenario from an .rds fixture
+# ---------------------------------------------------------------------------
+run_defoliation_scenario <- function(rds_path, mort_model = 2) {
+  d <- readRDS(rds_path)
+  run_3PG(
+    site = d$site, species = d$species, climate = d$climate,
+    defoliation = d$defoliation, parameters = d$parameters,
+    size_dist = d$sizeDist,
+    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, correct_bias = 0, crown_width_model = 1,
+                    calculate_d13c = 0, mort_model = mort_model, manag_model = 1),
+    check_input = TRUE, df_out = FALSE
+  )
+}
+
+
+# ===========================================================================
+# 1. Basic model runs
+# ===========================================================================
+
+test_that("Basic model run returns an array", {
   result <- run_3PG(
     site = d_mixture$site,
     species = d_mixture$species,
@@ -15,7 +35,7 @@ test_that("Basic model run returns an array", {
                     correct_bias = 1, calculate_d13c = 0, mort_model = 1),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal( class(result), "array")
+  expect_equal(class(result), "array")
 })
 
 test_that("run_3PG returns a data frame with the correct structure", {
@@ -30,11 +50,15 @@ test_that("run_3PG returns a data frame with the correct structure", {
                     correct_bias = 1, calculate_d13c = 0, mort_model = 1),
     check_input = TRUE, df_out = TRUE
   )
-  expect_equal( class(result), "data.frame")
+  expect_equal(class(result), "data.frame")
   expect_true(all(c("date", "species", "group", "variable", "value") %in% colnames(result)))
 })
 
-# Evergreen model checks
+
+# ===========================================================================
+# 2. Single-species: Evergreen
+# ===========================================================================
+
 test_that("Evergreen 3-PGpjs produces expected output", {
   result <- run_3PG(
     site = d_mixture$site,
@@ -65,7 +89,11 @@ test_that("Evergreen 3-PGmix produces expected output", {
   expect_equal(round(result[120, , 4, 1:3], 3), c(123.357, 37.610, 3.625))
 })
 
-# Broadleaf model checks
+
+# ===========================================================================
+# 3. Single-species: Broadleaf
+# ===========================================================================
+
 test_that("Broadleaf 3-PGpjs produces expected output", {
   result <- run_3PG(
     site = d_mixture$site,
@@ -96,7 +124,11 @@ test_that("Broadleaf 3-PGmix produces expected output", {
   expect_equal(round(result[120, , 4, 1:3], 3), c(144.273, 40.554, 0.000))
 })
 
-# Mixed-species model check
+
+# ===========================================================================
+# 4. Mixed-species
+# ===========================================================================
+
 test_that("Mixed-species 3-PGmix produces expected output", {
   result <- run_3PG(
     site = d_mixture$site,
@@ -110,13 +142,15 @@ test_that("Mixed-species 3-PGmix produces expected output", {
     check_input = TRUE, df_out = FALSE
   )
   expect_equal(round(result[120, 1, 4, 1:3], 3), c(95.157, 24.911, 0.000))
-  expect_equal(round(result[120, 2, 4, 1:3], 3), c(57.192, 15.105,  1.415))
+  expect_equal(round(result[120, 2, 4, 1:3], 3), c(57.192, 15.105, 1.415))
 })
 
 
-# Regeneration
-test_that("Mortality model", {
+# ===========================================================================
+# 5. Mortality models
+# ===========================================================================
 
+test_that("Mortality model 2 produces expected biomass", {
   result <- run_3PG(
     site = d_regeneration$site,
     species = d_regeneration$species,
@@ -130,7 +164,6 @@ test_that("Mortality model", {
     check_input = TRUE, df_out = FALSE
   )
 
-
   expect_equal(round(result[120, 1, 4, 1:3], 3), c(85.191, 32.973, 4.729))
   expect_equal(round(result[120, 2, 4, 1:3], 3), c(53.333, 13.914, 1.892))
 
@@ -139,27 +172,6 @@ test_that("Mortality model", {
 
   expect_equal(round(result[1000, 4, 8, 5], 3), c(0.738))
   expect_equal(round(result[5000, 20, 8, 5], 3), c(0.738))
-
-})
-
-
-
-test_that("Mixed-species management based on biomass", {
-  result <- run_3PG(
-    site = d_regeneration$site,
-    species = d_regeneration$species,
-    climate = d_regeneration$climate,
-    thinning = d_regeneration$thinning,
-    parameters = d_regeneration$parameters,
-    size_dist = d_regeneration$sizeDist,
-    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-                    height_model = 1, correct_bias = 0, calculate_d13c = 0,
-                    mort_model = 2, manag_model = 2),
-    check_input = TRUE, df_out = FALSE
-  )
-
-  expect_equal(round(result[120, 1, 4, 1:3], 3), c(85.191, 32.973, 4.729))
-  expect_equal(round(result[120, 2, 4, 1:3], 3), c(53.333, 13.914, 1.892))
 })
 
 test_that("mort_model = 2 ignores beta* site parameters", {
@@ -242,23 +254,117 @@ test_that("mort_model = 3 ignores st_* site parameters", {
 })
 
 
+# ===========================================================================
+# 6. Management
+# ===========================================================================
+
+test_that("Mixed-species management based on biomass", {
+  result <- run_3PG(
+    site = d_regeneration$site,
+    species = d_regeneration$species,
+    climate = d_regeneration$climate,
+    thinning = d_regeneration$thinning,
+    parameters = d_regeneration$parameters,
+    size_dist = d_regeneration$sizeDist,
+    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, correct_bias = 0, calculate_d13c = 0,
+                    mort_model = 2, manag_model = 2),
+    check_input = TRUE, df_out = FALSE
+  )
+
+  expect_equal(round(result[120, 1, 4, 1:3], 3), c(85.191, 32.973, 4.729))
+  expect_equal(round(result[120, 2, 4, 1:3], 3), c(53.333, 13.914, 1.892))
+})
 
 
-# test_that("Evergreen defoliation", {
-#   result <- run_3PG(
-#     site = d_defoliation$site,
-#     species = d_defoliation$species,
-#     climate = d_defoliation$climate,
-#     thinning = d_defoliation$thinning,
-#     defoliation = d_defoliation$defoliation,
-#     parameters = d_defoliation$parameters,
-#     size_dist = d_defoliation$sizeDist,
-#     settings = list(light_model = 2, transp_model = 2, phys_model = 2,
-#                     height_model = 1, correct_bias = 0, crown_width_model = 1,
-#                     calculate_d13c = 0, mort_model = 2, manag_model = 2),
-#     check_input = TRUE, df_out = FALSE
-#   )
+# ===========================================================================
+# 7. Defoliation — package built-in data
+# ===========================================================================
 
-#   expect_equal(round(result[601, , 4, 1:3], 3), c(225.131, 82.174, 4.686))
-# })
+test_that("Evergreen defoliation with d_defoliation", {
+  result <- run_3PG(
+    site = d_defoliation$site,
+    species = d_defoliation$species,
+    climate = d_defoliation$climate,
+    thinning = d_defoliation$thinning,
+    defoliation = d_defoliation$defoliation,
+    parameters = d_defoliation$parameters,
+    size_dist = d_defoliation$sizeDist,
+    settings = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, correct_bias = 0, crown_width_model = 1,
+                    calculate_d13c = 0, mort_model = 2, manag_model = 2),
+    check_input = TRUE, df_out = FALSE
+  )
+
+  expect_equal(round(result[601, , 4, 1:3], 3), c(225.142, 89.828, 5.477))
+})
+
+
+# ===========================================================================
+# 8. Defoliation — scenario fixtures (tests/testthat/fixtures)
+# ===========================================================================
+
+test_that("Coppice defoliation resets height and biomass", {
+  result <- run_defoliation_scenario(test_path("fixtures", "d_coppice.rds"))
+
+  # Array: 601 months × 1 species × 11 groups × 20 variables
+  expect_equal(dim(result)[1], 601L)
+
+  # Final biomass: biom_stem, biom_root, biom_foliage (group 4, vars 1-3)
+  expect_equal(round(result[601, 1, 4, 1:3], 3), c(165.667, 107.336, 10.461))
+
+  # Coppice event at month 181 (age 20):
+  #   height resets from ~18.2 m to ~1.5 m (coppice regrowth height)
+  expect_equal(round(result[180, 1, 2, 6], 3), 18.215)
+  expect_equal(round(result[181, 1, 2, 6], 3), 1.541)
+
+  # Stem and foliage biomass zeroed at the coppice event
+
+  expect_equal(round(result[181, 1, 4, 1], 3), 0.000)
+  expect_equal(round(result[181, 1, 4, 3], 3), 0.000)
+
+  # def_type flag recorded in output (group 11, var 17)
+  expect_equal(result[180, 1, 11, 17], 0)
+  expect_equal(result[181, 1, 11, 17], 2)
+})
+
+test_that("Epicormic defoliation kills stems and reduces foliage", {
+  result <- run_defoliation_scenario(test_path("fixtures", "d_epicormic.rds"))
+
+  # Final biomass
+  expect_equal(round(result[601, 1, 4, 1:3], 3), c(267.530, 93.399, 5.751))
+
+  # Epicormic event at month 121 (age 40, stem_retained = 0.5):
+  #   stems_n drops from 200 to 100 (group 2, var 2)
+  expect_equal(round(result[120, 1, 2, 2], 0), 200)
+  expect_equal(round(result[121, 1, 2, 2], 0), 100)
+
+  # Defoliation stem losses recorded (group 11, var 13)
+  expect_equal(round(result[121, 1, 11, 13], 0), 100)
+
+  # Height is preserved (epicormic, not coppice)
+  expect_true(abs(result[121, 1, 2, 6] - result[120, 1, 2, 6]) < 0.1)
+})
+
+test_that("Pruning with physiological assistance produces higher biomass", {
+  result_phys    <- run_defoliation_scenario(test_path("fixtures", "d_pruning.rds"))
+  result_no_phys <- run_defoliation_scenario(test_path("fixtures", "d_pruning_no_phys.rds"))
+
+  # Reference final biomass values
+  expect_equal(round(result_phys[601, 1, 4, 1:3], 3),    c(271.873, 92.403, 6.094))
+  expect_equal(round(result_no_phys[601, 1, 4, 1:3], 3), c(266.599, 90.502, 6.139))
+
+  # Physiological assistance (prop_carbs > 0, prop_npp > 0) yields more stem biomass
+  expect_gt(result_phys[601, 1, 4, 1], result_no_phys[601, 1, 4, 1])
+})
+
+test_that("Pruning without physiological assistance produces expected output", {
+  result <- run_defoliation_scenario(test_path("fixtures", "d_pruning_no_phys.rds"))
+
+  # Final stand: height (group 2, var 6)
+  expect_equal(round(result[601, 1, 2, 6], 3), 34.618)
+
+  # Final biomass
+  expect_equal(round(result[601, 1, 4, 1:3], 3), c(266.599, 90.502, 6.139))
+})
 

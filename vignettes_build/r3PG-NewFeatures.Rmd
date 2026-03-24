@@ -1,0 +1,472 @@
+---
+title: "New features in r3PG v0.2.0"
+author: "Volodymyr Trotsiuk, David I. Forrester"
+date: "`r Sys.Date()`"
+abstract: "This vignette introduces the main features added in r3PG v0.2.0, including new mortality models, biomass-based thinning, defoliation events (pruning, coppice, epicormic), and multi-cohort regeneration. All examples use the internal package datasets and are fully reproducible.  \n \n \n"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{New features in r3PG v0.2.0}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8](inputenc)
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(knitr)
+```
+
+# Introduction
+
+`r3PG` provides an R interface to the 3-PG forest growth model (Landsberg & Waring, 1997). Version 0.2.0 adds several major capabilities:
+ 
+- **New mortality models** (`mort_model = 2` and `mort_model = 3`) that allow the self-thinning line to shift with long-term site conditions.
+- **Biomass-based thinning** as an alternative to specifying the number of retained stems.
+- **Defoliation events** to simulate pruning, coppicing, epicormic resprouting, and stand-replacing disturbances.
+- **Multi-cohort regeneration** for simulating uneven-aged or mixed-age stands with sequential planting and thinning to zero stems.
+
+This vignette walks through each feature with fully reproducible examples using the built-in datasets `d_mixture`, `d_regeneration`, and `d_defoliation`. For a general introduction to `r3PG`, see `vignette("r3PG")`.
+
+```{r libraries}
+library(r3PG)
+library(dplyr)
+library(ggplot2)
+```
+
+## Quick review: running a basic simulation
+
+The central function is `run_3PG()`. It expects tables for site conditions, species initial states, climate forcing, and (optionally) thinning, defoliation, parameters, size distributions, and model settings. All built-in datasets bundle these tables into a single list; for example, `d_mixture` contains a two-species mixed stand of *Fagus sylvatica* and *Pinus sylvestris*.
+
+```{r basic_run}
+out_mix <- run_3PG(
+  site       = d_mixture$site,
+  species    = d_mixture$species,
+  climate    = d_mixture$climate,
+  thinning   = d_mixture$thinning,
+  parameters = d_mixture$parameters,
+  size_dist  = d_mixture$sizeDist,
+  settings   = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, crown_width_model = 1,
+                    calculate_d13c = 0, mort_model = 3),
+  check_input = TRUE, df_out = TRUE)
+
+head(out_mix)
+```
+
+The output is a long-format data frame with columns `date`, `species`, `group`, `variable`, and `value`. You can switch to a 4-dimensional array by setting `df_out = FALSE`.
+
+# Mortality models
+
+3-PG v0.2.0 offers three mortality approaches. All include the same density-independent background mortality (declining with age), but they differ in how they calculate density-dependent (self-thinning) mortality.
+
+| Setting | Description |
+|:--------|:------------|
+| `mort_model = 1` | Original 3-PGpjs method. Maximum individual-tree stem mass (`wSx1000`) determines when self-thinning begins. |
+| `mort_model = 2` | Self-thinning line intercept can shift with long-term nutrition, temperature, and physiological modifiers (`st_Power`, `st_Intercept`, `st_fN`, `st_fT`, `st_fPhys`). |
+| `mort_model = 3` | Growth-based mortality where the change in tree density is a function of the change in stem diameter, modified by long-term site conditions (`beta0` through `betafPhys`). |
+
+For `mort_model = 2` and `3`, the self-thinning parameters are **site-level** (not species-level) inputs, because all cohorts within a stand share the same self-thinning boundary. These are supplied through the `site` table in columns such as `st_Power`, `beta0`, etc.
+
+### Long-term modifiers
+
+Both `mort_model = 2` and `3` optionally use rolling averages of three growth modifiers (nutrition, temperature, physiological) to shift the self-thinning line. The averaging window is set by the `lt_mod_mths` column in the site table (in months). For example, `lt_mod_mths = 120` uses a 10-year rolling average.
+
+### Comparing mortality models
+
+We can compare `mort_model = 1` and `mort_model = 3` side-by-side using `d_mixture`:
+
+```{r mort_compare}
+run_with_mort <- function(mort) {
+  run_3PG(
+    site       = d_mixture$site,
+    species    = d_mixture$species,
+    climate    = d_mixture$climate,
+    thinning   = d_mixture$thinning,
+    parameters = d_mixture$parameters,
+    size_dist  = d_mixture$sizeDist,
+    settings   = list(light_model = 2, transp_model = 2, phys_model = 2,
+                      height_model = 1, crown_width_model = 1,
+                      calculate_d13c = 0, mort_model = mort),
+    check_input = TRUE, df_out = TRUE) |>
+    mutate(mort_model = paste0("mort_model = ", mort))
+}
+
+out_mort <- bind_rows(run_with_mort(1), run_with_mort(3))
+
+i_var <- c("stems_n", "dbh", "biom_stem", "basal_area")
+i_lab <- c("Stem density (trees/ha)", "DBH (cm)",
+           "Stem biomass (Mg/ha)", "Basal area (m²/ha)")
+
+out_mort |>
+  filter(variable %in% i_var) |>
+  mutate(variable = factor(variable, levels = i_var)) |>
+  ggplot(aes(date, value, color = species, linetype = mort_model)) +
+  geom_line(linewidth = 0.5) +
+  facet_wrap(~ variable, scales = "free_y", ncol = 2,
+             labeller = labeller(variable = setNames(i_lab, i_var))) +
+  scale_color_brewer("", palette = "Dark2") +
+  scale_linetype_manual("", values = c("solid", "dashed")) +
+  theme_classic() +
+  theme(legend.position = "bottom") +
+  labs(x = "Date", y = "Value")
+```
+
+The newer mortality models (`mort_model = 2` and `3`) allow the self-thinning boundary to respond to site productivity, producing more realistic density trajectories for stands under varying growing conditions.
+
+# Thinning
+
+## Standard thinning (retained stems)
+
+Thinning events are specified through a data frame with columns `species`, `age`, `stems_n`, `stem`, `root`, and `foliage`. The `stems_n` column gives the retained stem count after thinning. The `stem`, `root`, and `foliage` columns describe the relative size of removed trees compared to the mean tree (values < 1 = thinning from below; > 1 = thinning from above; 1 = uniform).
+
+```{r thinning_data}
+d_mixture$thinning
+```
+
+## Biomass-based thinning (retained proportion)
+
+New in v0.2.0, thinning intensity can alternatively be specified as the proportion of aboveground biomass retained, using the optional column `biom_prop_retained` (a value between 0 and 1). When this column is provided and is not `NA`, it overrides `stems_n`. This is useful when the management prescription is defined in terms of retained basal area or biomass rather than stem count.
+
+```{r biom_thinning}
+# Create a biomass-based thinning event: retain 50% of aboveground biomass
+thinning_biom <- data.frame(
+  species            = "Fagus sylvatica",
+  age                = 48,
+  stems_n            = NA,
+  stem               = 1,
+  root               = 1,
+  foliage            = 1,
+  biom_prop_retained = 0.5
+)
+
+out_biom_thin <- run_3PG(
+  site       = d_mixture$site,
+  species    = d_mixture$species,
+  climate    = d_mixture$climate,
+  thinning   = thinning_biom,
+  parameters = d_mixture$parameters,
+  size_dist  = d_mixture$sizeDist,
+  settings   = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, crown_width_model = 1,
+                    calculate_d13c = 0, mort_model = 3),
+  check_input = TRUE, df_out = TRUE)
+```
+
+# Multi-cohort regeneration
+
+`d_regeneration` demonstrates how to simulate uneven-aged stands with sequential cohort establishment. Each cohort is a separate "species" entry (e.g. `Pinus sylvestris_1` through `Pinus sylvestris_25`), planted at different dates and thinned to zero stems when the cohort is removed from the stand.
+
+```{r regen_species}
+# 25 cohorts, planted 20 years apart
+d_regeneration$species |> select(species, planted, stems_n, biom_stem) |> head(8)
+```
+
+Thinning events remove entire cohorts by setting `stems_n = 0`:
+
+```{r regen_thinning}
+d_regeneration$thinning |> head(8)
+```
+
+```{r regen_run, fig.height=5, fig.width=6.6}
+out_reg <- run_3PG(
+  site       = d_regeneration$site,
+  species    = d_regeneration$species,
+  climate    = prepare_climate(
+                 climate = d_regeneration$climate,
+                 from    = d_regeneration$site$from,
+                 to      = d_regeneration$site$to),
+  thinning   = d_regeneration$thinning,
+  parameters = d_regeneration$parameters,
+  size_dist  = d_regeneration$sizeDist,
+  settings   = list(light_model = 2, transp_model = 2, phys_model = 2,
+                    height_model = 1, crown_width_model = 1,
+                    calculate_d13c = 0, mort_model = 3),
+  check_input = TRUE, df_out = TRUE)
+
+i_var <- c("stems_n", "dbh", "height", "basal_area")
+i_lab <- c("Stem density (trees/ha)", "DBH (cm)",
+           "Height (m)", "Basal area (m²/ha)")
+
+out_reg |>
+  filter(variable %in% i_var) |>
+  mutate(variable = factor(variable, levels = i_var)) |>
+  ggplot(aes(date, value, color = species)) +
+  geom_line(linewidth = 0.3) +
+  facet_wrap(~ variable, scales = "free_y", ncol = 2,
+             labeller = labeller(variable = setNames(i_lab, i_var))) +
+  theme_classic() +
+  theme(legend.position = "none") +
+  labs(x = "Date", y = "Value",
+       title = "Multi-cohort regeneration (25 Pinus sylvestris cohorts)")
+```
+
+Each cohort grows, self-thins, and is eventually removed at age 90. New cohorts are planted every 20 years, creating a continuous uneven-aged canopy. It is recommended to use the lowest number of cohorts that captures the size structure of interest, because prediction biases in one cohort propagate to others through competition for light and water.
+
+# Defoliation events
+
+Defoliation is a new input category in v0.2.0. It simulates the removal of foliage (and optionally stem and root biomass) to represent events such as pruning, fire, pest damage, coppicing, or epicormic resprouting. The built-in dataset `d_defoliation` provides an example for a single-species stand.
+
+## Defoliation input structure
+
+The defoliation table requires the following columns:
+
+| Column | Description |
+|:-------|:------------|
+| `species` | Species name matching the species table |
+| `age` | Stand age (years) at which the event occurs |
+| `def_type` | Type of defoliation event: 1 = pruning, 2 = coppice, 3 = epicormic, 4 = stand-replacing |
+| `stem_retained` | Proportion of stem biomass retained (per stand) |
+| `foliage_retained` | Proportion of foliage biomass retained (per tree) |
+| `root_retained` | Proportion of root biomass retained (per stand) |
+| `stem` | Currently reserved (set to 1) |
+| `def_recover_t` | Maximum recovery time in months (must be ≥ 2) |
+| `prop_carbs` | Proportion of 1st-year NPP from stored non-structural carbohydrates |
+| `prop_npp` | Proportion of new NPP partitioned to foliage (pruning/epicormic) or foliage+stem (coppice) |
+
+The four defoliation types have distinct constraints on the retained proportions:
+
+| Type | Foliage retained | Stem retained | Root retained |
+|:-----|:-----------------|:--------------|:--------------|
+| **Pruning (1)** | < 1 | 1 | 1 |
+| **Coppice (2)** | 0 | 0 | > 0 |
+| **Epicormic (3)** | < 1 | > 0 (= root) | > 0 (= stem) |
+| **Stand-replacing (4)** | 0 | 0 | 0 |
+
+### Key processes after defoliation
+
+Following a defoliation event, 3-PG modifies growth in two ways:
+
+1. **Stored carbohydrate use** (`prop_carbs`): A fraction of NPP is assumed to come from non-structural carbohydrate reserves, temporarily boosting foliage (and stem, for coppice) regrowth. This is particularly important for coppice events where all foliage is removed and photosynthetic NPP is initially zero.
+
+2. **Modified partitioning** (`prop_npp`): The fraction of NPP partitioned to foliage is temporarily increased at the expense of stem or root partitioning, reflecting the observed prioritisation of crown rebuilding after defoliation. This shift persists until the pre-defoliation foliage mass is restored or the maximum recovery time (`def_recover_t`) is reached.
+
+## Example: epicormic resprouting
+
+The built-in `d_defoliation` dataset simulates an epicormic response where 50% of trees are killed and 60% of foliage is retained on the survivors:
+
+```{r defol_data}
+d_defoliation$defoliation
+```
+
+```{r defol_epicormic, fig.height=4.5, fig.width=6.6}
+out_defol <- run_3PG(
+  site        = d_defoliation$site,
+  species     = d_defoliation$species,
+  climate     = d_defoliation$climate,
+  thinning    = d_defoliation$thinning,
+  defoliation = d_defoliation$defoliation,
+  parameters  = d_defoliation$parameters,
+  size_dist   = d_defoliation$sizeDist,
+  settings    = list(light_model = 2, transp_model = 2, phys_model = 2,
+                     height_model = 1, crown_width_model = 1,
+                     calculate_d13c = 0, mort_model = 3),
+  check_input = TRUE, df_out = TRUE)
+
+i_var <- c("stems_n", "dbh", "height", "biom_stem", "biom_foliage", "biom_root")
+i_lab <- c("Stem density", "DBH", "Height",
+           "Stem biomass", "Foliage biomass", "Root biomass")
+
+out_defol |>
+  filter(variable %in% i_var) |>
+  mutate(variable = factor(variable, levels = i_var)) |>
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = species), linewidth = 0.5) +
+  facet_wrap(~ variable, scales = "free_y", ncol = 3,
+             labeller = labeller(variable = setNames(i_lab, i_var))) +
+  scale_color_brewer("", palette = "Dark2") +
+  theme_classic() +
+  theme(legend.position = "bottom") +
+  labs(x = "Date", y = "Value",
+       title = "Epicormic defoliation event")
+```
+
+At the defoliation age, stem density drops from its pre-event value to 50% (reflecting tree mortality from the event), while foliage mass declines to 60% of the pre-event per-tree value (times the surviving trees). The modified partitioning and carbohydrate use then accelerate foliage recovery.
+
+## Simulating different defoliation types
+
+You can modify `d_defoliation$defoliation` to simulate other event types. Below we show how to set up each type.
+
+### Pruning
+
+Pruning removes some foliage but keeps all stem and root biomass. Only the surviving trees' crowns are trimmed.
+
+```{r pruning_example}
+defol_pruning <- data.frame(
+  species          = "Pinus sylvestris_1",
+  age              = 30,
+  def_type         = 1,
+  stem_retained    = 1,
+  foliage_retained = 0.5,
+  root_retained    = 1,
+  stem             = 1,
+  def_recover_t    = 36,
+  prop_carbs       = 0.2,
+  prop_npp         = 0.6
+)
+```
+
+### Coppice
+
+Coppice removes all foliage and stem biomass but retains the root system. **The cohort age is reset to zero** after a coppice event, allowing the stand to regrow from the existing root stock.
+
+```{r coppice_example}
+defol_coppice <- data.frame(
+  species          = "Pinus sylvestris_1",
+  age              = 20,
+  def_type         = 2,
+  stem_retained    = 0,
+  foliage_retained = 0,
+  root_retained    = 1,
+  stem             = 1,
+  def_recover_t    = 12,
+  prop_carbs       = 0.3,
+  prop_npp         = 0.6
+)
+```
+
+### Epicormic
+
+Epicormic events kill some trees (reducing stem and root proportionally) and remove some foliage from survivors. The retained stem proportion must equal the retained root proportion.
+
+```{r epicormic_example}
+defol_epicormic <- data.frame(
+  species          = "Pinus sylvestris_1",
+  age              = 70,
+  def_type         = 3,
+  stem_retained    = 0.5,
+  foliage_retained = 0.6,
+  root_retained    = 0.5,
+  stem             = 1,
+  def_recover_t    = 60,
+  prop_carbs       = 0.4,
+  prop_npp         = 0.8
+)
+```
+
+### Stand-replacing disturbance
+
+A stand-replacing event (e.g. severe fire) removes all biomass. This is equivalent to clearing the cohort entirely.
+
+```{r standreplacing_example}
+defol_standrep <- data.frame(
+  species          = "Pinus sylvestris_1",
+  age              = 50,
+  def_type         = 4,
+  stem_retained    = 0,
+  foliage_retained = 0,
+  root_retained    = 0,
+  stem             = 1,
+  def_recover_t    = 2,
+  prop_carbs       = 0,
+  prop_npp         = 0
+)
+```
+
+## Comparing a defoliated vs. undisturbed stand
+
+A useful analysis is to compare the same stand with and without a defoliation event:
+
+```{r defol_compare, fig.height=4.5, fig.width=6.6}
+run_defol <- function(defoliation_df = NULL, label = "none") {
+  run_3PG(
+    site        = d_defoliation$site,
+    species     = d_defoliation$species,
+    climate     = d_defoliation$climate,
+    thinning    = d_defoliation$thinning,
+    defoliation = defoliation_df,
+    parameters  = d_defoliation$parameters,
+    size_dist   = d_defoliation$sizeDist,
+    settings    = list(light_model = 2, transp_model = 2, phys_model = 2,
+                       height_model = 1, crown_width_model = 1,
+                       calculate_d13c = 0, mort_model = 3),
+    check_input = TRUE, df_out = TRUE) |>
+    mutate(scenario = label)
+}
+
+out_compare <- bind_rows(
+  run_defol(NULL, "No defoliation"),
+  run_defol(d_defoliation$defoliation, "Epicormic at age 70")
+)
+
+i_var <- c("stems_n", "biom_stem", "biom_foliage", "basal_area")
+i_lab <- c("Stem density", "Stem biomass", "Foliage biomass", "Basal area")
+
+out_compare |>
+  filter(variable %in% i_var) |>
+  mutate(variable = factor(variable, levels = i_var)) |>
+  ggplot(aes(date, value, color = scenario)) +
+  geom_line(linewidth = 0.5) +
+  facet_wrap(~ variable, scales = "free_y", ncol = 2,
+             labeller = labeller(variable = setNames(i_lab, i_var))) +
+  scale_color_brewer("", palette = "Set1") +
+  theme_classic() +
+  theme(legend.position = "bottom") +
+  labs(x = "Date", y = "Value")
+```
+
+# Model settings reference
+
+The `settings` argument to `run_3PG()` controls which sub-models are active. The table below summarises all available settings:
+
+| Setting | Values | Description |
+|:--------|:-------|:------------|
+| `light_model` | 1 (default), 2 | 1 = 3-PGpjs Beer–Lambert with typical *k*; 2 = 3-PGmix light model with homogeneous-canopy *kH* |
+| `transp_model` | 1 (default), 2 | 1 = 3-PGpjs; 2 = 3-PGmix (within-canopy VPD, aerodynamic resistance, soil evaporation) |
+| `phys_model` | 1 (default), 2 | 1 = min(f_vpd, f_sw); 2 = f_vpd × f_sw |
+| `height_model` | 1 (default), 2, 3 | Height allometry form: 1 = exponential; 2 = Michajlow; 3 = Näslund |
+| `crown_width_model` | 1 (default), 2, 3 | Crown width allometry form: 1 = exponential; 2 = Michajlow; 3 = Näslund |
+| `calculate_d13c` | 0 (default), 1 | Whether to calculate δ¹³C of wood |
+| `mort_model` | 1 (default), 2, 3 | Mortality approach (see section above) |
+
+For 3-PGpjs (monospecific, even-aged, evergreen), use all defaults (1). For 3-PGmix (mixed, uneven-aged, or deciduous), set `light_model = 2`, `transp_model = 2`, `phys_model = 2`.
+
+# Exploring output variables
+
+The full list of output variables is available through `i_output`:
+
+```{r output_vars}
+data("i_output")
+i_output |> head(20)
+```
+
+Each variable belongs to a numbered group. When using array output (`df_out = FALSE`), the 4-dimensional array has dimensions `[month, species, group, variable]`. The data frame output includes `group` and `variable` columns for easier filtering.
+
+# Summary
+
+r3PG v0.2.0 significantly extends the modelling capabilities of the package:
+
+- **Three mortality models** give users flexibility from the simple `wSx1000`-based approach to modifier-adjusted self-thinning lines.
+- **Biomass-based thinning** supplements the traditional stem-count approach.
+- **Four defoliation types** cover common disturbance and management scenarios (pruning, coppice, epicormic, stand-replacing), each with configurable recovery dynamics.
+- **Multi-cohort stands** with sequential planting and removal enable realistic uneven-aged forest simulations.
+
+For the mathematical details behind these features, see Forrester (2026) *3-PG: Equations, data requirements and calculation of parameters*.
+
+# References
+
+- Forrester, D. I. (2026). 3-PG: Equations, data requirements and calculation of parameters. CSIRO, Canberra.
+
+- Forrester, D. I., & Tang, X. (2016). Analysing the spatial and temporal dynamics of species interactions in mixed-species forests and the effects of stand density using the 3-PG model. *Ecological Modelling*, 319, 233–254. https://doi.org/10.1016/j.ecolmodel.2015.07.010
+
+- Forrester, D. I., & Trotsiuk, V. (in prep). Simulating forest growth responses to defoliation using the 3-PG model.
+
+- Landsberg, J. J., & Waring, R. H. (1997). A generalised model of forest productivity using simplified concepts of radiation-use efficiency, carbon balance and partitioning. *Forest Ecology and Management*, 95(3), 209–228. https://doi.org/10.1016/S0378-1127(97)00026-1
+
+- Sands, P. J. (2010). 3PGpjs user manual. https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf
+
+- Trotsiuk, V., Hartig, F., & Forrester, D. I. (2020). r3PG – An R package for simulating forest growth using the 3-PG model. *Methods in Ecology and Evolution*, 11(1), 95–98. https://doi.org/10.1111/2041-210X.13474
+
+# Session
+
+```{r session_info}
+sessionInfo()
+```

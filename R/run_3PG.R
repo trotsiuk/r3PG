@@ -145,9 +145,20 @@ run_3PG <- function(
     settings = settings)
 
 
-  # Remove the values for dead cohort or not recruited cohort
-  remove_sim_arr <- array(r3PG_out[,,2,2] <= 0 | r3PG_out[,,2,1] < 0, dim=dim(r3PG_out))
-  r3PG_out[remove_sim_arr] <- NA_real_
+  # Remove values for cohorts not yet recruited (age < 0) or already dead.
+
+  # For managed-out cohorts (stems_n drops to 0) we keep the event month
+
+  # so that management-loss outputs remain visible; masking starts only
+  # from the second consecutive month with stems_n <= 0.
+  stems_n_mat  <- matrix(r3PG_out[, , 2, 2], nrow = dim(r3PG_out)[1], ncol = dim(r3PG_out)[2])
+  age_mat      <- matrix(r3PG_out[, , 2, 1], nrow = dim(r3PG_out)[1], ncol = dim(r3PG_out)[2])
+  stems_n_prev <- rbind(NA_real_, stems_n_mat[-nrow(stems_n_mat), , drop = FALSE])
+
+  remove_2d <- age_mat < 0 |
+    (stems_n_mat <= 0 & (is.na(stems_n_prev) | stems_n_prev <= 0))
+
+  r3PG_out[array(remove_2d, dim = dim(r3PG_out))] <- NA_real_
 
 
   if( df_out ){

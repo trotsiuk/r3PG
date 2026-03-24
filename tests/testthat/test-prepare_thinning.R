@@ -60,3 +60,22 @@ test_that("prepare_thinning processes thinning data correctly", {
   expect_equal(dim(result), c(1, 6, 2))
   expect_equal(dimnames(result)[[3]], sp_names)
 })
+
+test_that("prepare_thinning preserves user-provided row order", {
+  # Two events for the same species supplied in descending age order
+  # (e.g., post-coppice scenario where age resets to 0)
+  thinning_data <- data.frame(
+    species = rep("Fagus sylvatica", 2),
+    age = c(30, 10),
+    stems_n = c(200, 100),
+    stem = c(1, 1),
+    root = c(1, 1),
+    foliage = c(1, 1)
+  )
+  sp_names <- "Fagus sylvatica"
+  result <- prepare_thinning(thinning = thinning_data, sp_names = sp_names)
+
+  # Row order preserved: age 30 first, age 10 second
+  expect_equal(result[1, 1, 1], 30)
+  expect_equal(result[2, 1, 1], 10)
+})

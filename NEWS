@@ -8,6 +8,8 @@ This is a major update of r3PG.
 -   Replaced all non-portable `real(kind=8)` usage in Fortran sources with `kind(0.0d0)` equivalents (extends fix from #97 to the main model file).
 -   Fixed implicit REAL→INTEGER conversion for `lt_mod_mths` in `i_read_input.h`.
 -   In northern latitudes `netRad` could become NaN when day-length is 0, causing simulation crashes. Corrected.
+-   Fixed event ordering for coppice species in `prepare_defoliation()` and `prepare_thinning()` — user-provided row order is now preserved when coppice resets age to 0.
+-   Fixed post-simulation output masking in `run_3PG()` that hid management-event outputs when a cohort was thinned to zero stems; the event month is now retained.
 
 ### New function and data sets
 
@@ -30,8 +32,9 @@ This is a major update of r3PG.
 -   Backward-compatible handling for legacy `altitude` site column (warns and converts to `elevation`).
 -   Updated and expanded data documentation in `R/data.R` and regenerated Rd files.
 -   Aligned formatting across all Fortran include files and main model source.
--   Standardised test object naming and expanded test suite to 88 tests (mortality model isolation, defoliation validation, backward compatibility).
+-   Expanded test suite to 115 tests: added defoliation scenario tests (coppice, epicormic, pruning ± physiological assistance) with `.rds` fixtures, event-ordering tests for `prepare_defoliation()` and `prepare_thinning()`, and reorganised `test-run_3PG.R` into 8 numbered sections.
 -   Updated all examples, README, and vignette to use `d_mixture$...` data references.
+-   New vignette "New Features in r3PG v0.2.0" covering mortality models, biomass-based thinning, defoliation events, and multi-cohort regeneration.
 
 ### Test environments
 

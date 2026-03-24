@@ -115,7 +115,25 @@ prepare_defoliation <- function(defoliation = NULL,
     defoliation <- data.frame(defoliation)
     defoliation <- defoliation[defoliation$species %in% sp_names, ]
     defoliation$species <- sp_id[defoliation$species]
-    defoliation <- defoliation[order(defoliation$species, defoliation$age), ]
+
+    # For species with a coppice event (def_type == 2) preserve the
+    # user-provided row order, because coppice resets age to 0 and any
+    # subsequent events must follow the coppice in the input sequence.
+    # For all other species, sort events by age as before.
+    coppice_sp <- unique(defoliation$species[defoliation$def_type == 2])
+    if (length(coppice_sp) > 0) {
+      is_coppice_sp <- defoliation$species %in% coppice_sp
+      defoliation_non_cop <- defoliation[!is_coppice_sp, , drop = FALSE]
+      defoliation_cop     <- defoliation[ is_coppice_sp, , drop = FALSE]
+
+      defoliation_non_cop <- defoliation_non_cop[order(defoliation_non_cop$species, defoliation_non_cop$age), ]
+      defoliation_cop     <- defoliation_cop[order(defoliation_cop$species), ]  # row order within species
+
+      defoliation <- rbind(defoliation_non_cop, defoliation_cop)
+      defoliation <- defoliation[order(defoliation$species), ]  # group by species
+    } else {
+      defoliation <- defoliation[order(defoliation$species, defoliation$age), ]
+    }
 
     t_t <- as.integer(as.vector(table(defoliation[, "species"])))
     n_def <- max(t_t)

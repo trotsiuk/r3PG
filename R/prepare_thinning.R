@@ -91,7 +91,13 @@ prepare_thinning <- function(
 
     thinning <- thinning[thinning$species %in% sp_names, ]
     thinning$species <- sp_id[thinning$species] # Map species names to indices
-    thinning <- thinning[order(thinning$species, thinning$age), ] # Order by species and age
+
+    # Preserve the user-provided row order within each species.
+    # This is required when a cohort includes a coppice event (which resets age
+    # to 0), so that post-coppice management events are not re-sorted ahead of
+    # the coppice. For non-coppice cohorts the user naturally supplies events in
+    # ascending age, so the result is identical to the previous age-based sort.
+    thinning <- thinning[order(thinning$species), ]
 
     t_t = as.integer( as.vector( table(thinning[,1]) ) )
     n_man = as.integer( max(t_t) )

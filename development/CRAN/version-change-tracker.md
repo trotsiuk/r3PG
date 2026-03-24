@@ -5,28 +5,55 @@ More items will be added as development progresses.
 
 ## Current updates
 
-- Adjusted variable descriptions in `src/i_decl_var.h` to match the descriptions used in `3PG_report_draft3.docx`.
-- Noted that the description of `mR` and `mS` still needs to be corrected in `3PG_report_draft3.docx`.
-- Cleaned up formatting in `src/i_decl_var.h` to match the aligned style used in the other Fortran include files.
-- Adjusted `testthat` tests to match the new package structure.
-- Adjusted `R/prepare_species.R` to comply with the revised input structure.
-- Adjusted `R/prepare_thinning.R` to comply with the revised input structure.
-- Aligned formatting in the Fortran interface/include files to improve readability and consistency.
-- Moved temporary variable declarations from `src/md_3PG.f95` into `src/i_decl_var.h`, placing them in their logical sections (modifiers, stand, mortality, defoliation, Weibull) with descriptive comments. Standardized `kind` types to `kind(0.0d0)`.
-- Completed Phase 1 synchronization of internal `i_parameters` with the new 88-row parameter naming used by `d_input$parameters`.
-- Standardized naming in `tests/testthat/test-run_3PG.R` to use `result` consistently for model output objects.
-- Replaced non-portable Fortran `kind=8` usage in the main model declarations/computations with portable `kind(0.0d0)` equivalents.
-- Standardized long-term modifier declarations so `lt_fT`, `lt_fPhys`, and `hist_ptr` are dimensioned by `n_sp` in `i_decl_var.h`.
-- Removed multiple unused declarations from `i_decl_var.h` and simplified `s_height_crown_allometry` by removing an unused dummy argument (`age`).
-- Updated data documentation in `R/data.R`: corrected `i_parameters` row count (86), verified and updated `i_output` row count (220), and expanded dataset field descriptions for `d_mixture`, `d_regeneration`, and `d_defoliation`.
-- Regenerated Rd files with `devtools::document()`.
-- Added targeted tests for mortality model site-parameter behavior (`mort_model = 2` vs `mort_model = 3`), defoliation validation edge cases, and backward compatibility warnings for legacy site inputs.
-- Started step-by-step `md_3PG.f95` refactoring by extracting the monthly long-term modifier update logic into a dedicated subroutine (`s_update_long_term_modifiers`).
-- Continued step-by-step `md_3PG.f95` refactoring by modularizing duplicated DBH Weibull distribution calculations into `s_update_weibull_distribution`.
-- Added scalar wrapper functions `f_exp_s` and `f_exp_foliage_s` to eliminate the `tmp_vec` intermediate for single-value modifier calls; removed `tmp_vec` from `i_decl_var.h`.
-- Aligned and cleaned up formatting throughout `md_3PG.f95`: re-indented `mort_model` blocks, simplified redundant weight calculations, cleaned comment markers, trimmed excessive blank lines (~2600 → 2512 lines).
-- Removed 5 unused variables from `i_decl_var.h` and `i_init_var.h`: `n_sp_max`, `mort_stress`, `mort_thinn` (array), `growing_season_length`, `bias_scale`.
-- Migrated default-data references in tests/examples/documentation from old objects (`d_input`, `d_site`, `d_species`, `d_climate`, `d_thinning`, `d_parameters`, `d_sizeDist`) to `d_mixture$...` where applicable.
+### Fortran source (`src/`)
+
+- Replaced all non-portable `kind=8` usage with `kind(0.0d0)` equivalents across `md_3PG.f95` and `i_decl_var.h`.
+- Moved 20+ temporary variable declarations from `md_3PG.f95` into `i_decl_var.h`, grouped by subsystem (modifiers, stand, mortality, defoliation, Weibull).
+- Extracted reusable subroutines: `s_update_long_term_modifiers`, `s_update_weibull_distribution`.
+- Added scalar wrapper functions `f_exp_s` and `f_exp_foliage_s`; removed `tmp_vec`.
+- Standardized long-term modifier arrays (`lt_fT`, `lt_fPhys`, `hist_ptr`) to fixed `dimension(n_sp)`.
+- Removed unused dummy argument `age` from `s_height_crown_allometry`.
+- Removed 16+ unused declarations (including `n_sp_max`, `mort_stress`, `mort_thinn`, `growing_season_length`, `bias_scale`).
+- Re-indented `mort_model` blocks, simplified redundant weight calculations, collapsed excessive blank lines (~2600 → 2512 lines).
+- Aligned formatting across all include files (`i_decl_var.h`, `i_init_var.h`, `i_read_input.h`, `i_read_param*.h`, `i_write_out.h`).
+- Made `lt_mod_mths` conversion explicit (`int(siteInputs(9))`) to avoid implicit REAL→INTEGER risk.
+- Updated variable descriptions in `i_decl_var.h` to match `3PG_report_draft3.docx` terminology.
+
+### R code (`R/`)
+
+- `prepare_species.R`, `prepare_thinning.R`: revised to comply with the updated input structure.
+- `prepare_site.R`: added backward-compatible handling for legacy `altitude` column (warns and converts to `elevation`).
+- `prepare_defoliation.R`: replaced unconditional age sort with conditional logic — preserves user-provided row order for coppice species (`def_type == 2`), sorts by age for all others.
+- `prepare_thinning.R`: replaced `order(species, age)` with `order(species)` to always preserve user-provided row order within species (required for post-coppice events).
+- `run_3PG.R`: rewrote dead-cohort output masking to use a one-month lag of `stems_n`, preserving the management-event month when a cohort is thinned to zero.
+- `data.R`: corrected `i_parameters` (86 rows), `i_output` (220 rows), expanded field-level documentation for `d_mixture`, `d_regeneration`, `d_defoliation`.
+
+### Data & internal objects
+
+- Synchronised internal `i_parameters` with the 86-row parameter naming scheme (`beta0`, `betaB`, `nHB`, `nHC`, etc.).
+- Migrated all default-data references from old flat objects (`d_input`, `d_site`, etc.) to list-based `d_mixture$...`.
+
+### Tests (115 total, 0 fail, 0 warn, 0 skip)
+
+- Restructured `test-run_3PG.R` into 8 numbered sections with comment headers.
+- Added mortality model isolation tests (`mort_model = 2` vs `3` parameter independence).
+- Added `test-prepare_defoliation.R`: coppice validation, epicormic constraints, recovery time, coppice row-order preservation, non-coppice age sorting.
+- Added `test-prepare_thinning.R`: row-order preservation.
+- Added `test-prepare_site.R`: backward compatibility warning for `altitude`.
+- Added 4 defoliation scenario tests (coppice, epicormic, pruning ± physiological assistance) using `.rds` fixtures in `tests/testthat/fixtures/`.
+- Migrated fixtures from `tests/Test_examples/*.xlsx` to `.rds`; removed `readxl` test dependency.
+
+### Documentation & vignettes
+
+- Updated examples in `inst/examples/`, `README.md`, and `vignettes_build/r3PG-ReferenceManual.Rmd` to use `d_mixture$...`.
+- Created new vignette `vignettes_build/r3PG-NewFeatures.Rmd` covering all v0.2.0 additions: mortality models, biomass-based thinning, defoliation events (pruning, coppice, epicormic, stand-replacing), multi-cohort regeneration. Uses only internal datasets; no calibration/Bayesian content.
+- Pre-built HTML and `.html.asis` stub added to `vignettes/` for `R.rsp::asis` packaging.
+- Regenerated all Rd files with `devtools::document()`.
+
+### Bug fixes
+
+- Fixed post-simulation output masking hiding management-event month.
+- Fixed event ordering breaking post-coppice events when age resets to 0.
 
 ## Technical log
 
@@ -108,12 +135,73 @@ More items will be added as development progresses.
     - invalid recovery time (`def_recover_t < 2`).
 - Added backward compatibility warning test in `test-prepare_site.R` to confirm legacy `altitude` is warned and converted to `elevation`.
 
+### `tests/testthat/test-run_3PG.R`
+
+- Restructured the file into 8 numbered sections with `# ===` comment headers:
+    1. Basic model runs (array and data.frame output)
+    2. Single-species: Evergreen (3-PGpjs and 3-PGmix)
+    3. Single-species: Broadleaf (3-PGpjs and 3-PGmix)
+    4. Mixed-species (3-PGmix)
+    5. Mortality models (mort_model 2 biomass, beta* isolation, st_* isolation)
+    6. Management (biomass-based thinning)
+    7. Defoliation — package built-in data (`d_defoliation`)
+    8. Defoliation — Excel-based scenarios (`tests/Test_examples`)
+- Added file-level helper functions `read_defoliation_scenario(xlsx_path)` and `run_defoliation_scenario(xlsx_path, mort_model)` to standardize Excel scenario loading and `run_3PG()` calls.
+- Added 4 new tests (section 8) that read from `tests/Test_examples/*.xlsx` files:
+    - **Coppice** (`Input_coppice.xlsx`): Verifies height resets from ~18.2 m to ~1.5 m at month 181 (age 20 coppice event), stem and foliage biomass zeroed, `def_type` flag written to output.
+    - **Epicormic** (`Input_epicormic.xlsx`): Verifies `stems_n` halves from 200 to 100 at month 121 (age 40, `stem_retained = 0.5`), defoliation stem loss of 100 recorded, height preserved across event.
+    - **Pruning with physiological assistance** (`Input_pruning.xlsx` vs `Input_pruning_no_phys_assistance.xlsx`): Asserts that `prop_carbs > 0` / `prop_npp > 0` yields higher final stem biomass than the no-assistance counterpart.
+    - **Pruning without physiological assistance** (`Input_pruning_no_phys_assistance.xlsx`): Checks final height and biomass regression values.
+- All 4 Excel-based tests use `skip_if_not_installed("readxl")` and `skip_if_not(file.exists(...))` guards so they are skipped gracefully when the external dependencies or data files are unavailable.
+- Migrated all 4 defoliation scenario tests from reading `tests/Test_examples/*.xlsx` via `readxl` to loading pre-processed `.rds` fixture lists from `tests/testthat/fixtures/`. Removed the `readxl` skip guards (`skip_if_not_installed`, `skip_if_not(file.exists(...))`) and the `read_defoliation_scenario()` xlsx helper, replaced with a single `run_defoliation_scenario(rds_path)` helper that calls `readRDS()`. Deleted the `tests/Test_examples/` directory (4 xlsx files + 4 interactive R scripts).
+- Each `.rds` fixture is a named list with components: `site`, `species`, `climate` (pre-processed via `prepare_climate()`), `defoliation`, `parameters`, `sizeDist`.
+- Reference values were generated by running each scenario through `run_3PG()` and rounding outputs at the assertion precision (3 decimal places for biomass/height, 0 for stem counts).
+- Total test count increased from 88 to 107 (19 new assertions across 4 test cases).
+
+### `R/run_3PG.R`
+
+- Rewrote the dead-cohort / not-yet-recruited output masking logic (lines ~149–160).
+- Previous behaviour: masked all outputs where `stems_n < 0` or `age < 0`, which meant the management-event month (where `stems_n` first drops to 0) was also masked, hiding loss outputs.
+- New behaviour: uses a one-month lag of `stems_n` so the first month with `stems_n ≤ 0` is preserved (management event visible); masking starts only from the second consecutive month with `stems_n ≤ 0`. The `age < 0` condition (not-yet-recruited) is unchanged.
+- Implementation extracts `stems_n` and `age` as explicit `[n_m, n_sp]` matrices via `matrix()`, computes `stems_n_prev` with `rbind(NA_real_, ...)`, and builds a 2-D logical mask that is broadcast to the full 4-D array.
+
+### `R/prepare_defoliation.R`
+
+- Replaced the unconditional `order(defoliation$species, defoliation$age)` sort with conditional logic:
+    - Species that contain any `def_type == 2` (coppice) event: preserve the user-provided row order within each species, since coppice resets age to 0 and post-coppice events would otherwise be mis-sorted.
+    - All other species: continue sorting by `(species, age)` as before.
+- The Fortran event-matching loop uses sequential pointers (`d_n(i)`) that increment after each event, so the array layout must match the intended chronological order — not necessarily ascending age order.
+
+### `R/prepare_thinning.R`
+
+- Replaced `order(thinning$species, thinning$age)` with `order(thinning$species)` to preserve user-provided row order within each species while still grouping rows by species.
+- This is required for post-coppice management events where age resets to 0, and is harmless for non-coppice scenarios where users naturally supply events in ascending age.
+- The subsequent `merge()`→`order(thin_n)` pipeline is unaffected; `thin_n` sequence numbers are now assigned based on row order rather than age order.
+
+### `tests/testthat/test-prepare_defoliation.R`
+
+- Added 2 new ordering tests:
+    - `prepare_defoliation preserves row order for coppice species`: supplies coppice (age 20) + pruning (age 5) in that order and verifies the prepared array retains coppice first, pruning second.
+    - `prepare_defoliation sorts by age for non-coppice species`: supplies two pruning events in reverse age order and verifies they are sorted ascending.
+
+### `tests/testthat/test-prepare_thinning.R`
+
+- Added 1 new ordering test:
+    - `prepare_thinning preserves user-provided row order`: supplies two events in descending age order and verifies the prepared array retains that order.
+
 ### `R/prepare_site.R`
 
 - Implemented backward-compatible handling for legacy site input column `altitude`:
     - emits a deprecation warning,
     - converts `altitude` to `elevation` when `elevation` is not provided.
 - Updated `test-prepare_input.R` to use `d_mixture$site`, `d_mixture$species`, `d_mixture$climate`, and `d_mixture$thinning` instead of `d_input$...`.
+
+### `vignettes_build/r3PG-NewFeatures.Rmd` and `vignettes/r3PG-NewFeatures.html.asis`
+
+- Created a new beginner-oriented vignette documenting all v0.2.0 features.
+- Structure: Introduction → Mortality models (table + comparison plot) → Thinning (standard + biomass-based) → Multi-cohort regeneration (`d_regeneration`, 25 cohorts) → Defoliation events (input structure, constraint table, 4 types with code examples, epicormic worked example with `d_defoliation`, defoliated vs. undisturbed comparison) → Model settings reference table → Output variable reference.
+- All examples use only internal datasets (`d_mixture`, `d_regeneration`, `d_defoliation`); no calibration, Bayesian, or Morris content.
+- Pre-built HTML rendered via `rmarkdown::render()` and placed in `vignettes/` alongside an `R.rsp::asis` stub, matching the existing `r3PG-ReferenceManual` packaging pattern.
 
 ### `inst/examples`, `README.md`, `vignettes_build/r3PG-ReferenceManual.Rmd`
 
