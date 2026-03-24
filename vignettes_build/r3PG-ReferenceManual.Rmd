@@ -27,13 +27,13 @@ library(knitr)
 
 ## Purpose
 
-`r3PG` provides an implementation of the Physiological Processes Predicting Growth ([3-PG](https://3pg.forestry.ubc.ca)) model (Landsberg & Waring, 1997). The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) models written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species.
+`r3PG` provides an implementation of the Physiological Processes Predicting Growth ([3-PG](https://3pg.forestry.ubc.ca)) model (Landsberg & Waring, 1997). The `r3PG` serves as a flexible and easy-to-use interface for the `3-PGpjs` (Sands, 2010) and the `3-PGmix` (Forrester & Tang, 2016) models written in `Fortran`. The package, allows for fast and easy interaction with the model, and `Fortran` re-implementation facilitates computationally intensive sensitivity analysis and calibration. The user can flexibly switch between various options and submodules to use the original `3-PGpjs` model version for monospecific, even-aged and evergreen forests and the `3-PGmix` model, which can also simulate multi-cohort stands (e.g. mixtures, uneven-aged) that contain deciduous species. Additional model developments have been incorporated to enable the simulation of stands recovering from defoliation (e.g., pruning, fire, coppicing), while also adding more self-thinning options. 
 
 ## Single model runs
 
 To demonstrate the basic functionality of the `r3PG` R package, we will perform a simple simulation with the `3-PGmix` model. The central function to run `3-PG` from R is `run_3PG`. When called, the function will:
 
--   check the model input for the consistency in structure
+-   check the model input for consistency in structure
 -   replace the default parameters if new ones are provided
 -   run and return the simulated output from the model.
 
@@ -54,11 +54,12 @@ out_3PG <- run_3PG(
   parameters  = d_mixture$parameters,
   size_dist   = d_mixture$sizeDist,
   settings    = list(light_model = 2, transp_model = 2, phys_model = 2, 
-                      height_model = 1, correct_bias = 0, calculate_d13c = 0),
+                      height_model = 1, crown_width_model = 1, 
+                      calculate_d13c = 0, mort_model = 3),
   check_input = TRUE, df_out = TRUE)
 ```
 
-The output of the `run_3PG` function can be either a long format dataframe or a 4-dimentional array where each row corresponds to one month of simulations, depending on your choice of the variable `df_out`. If setting `df_out = T` , the output will be in the array format, where the first dimension is time, the second dimension corresponds to species (each column represents one species), and the third dimension corresponds to variable groups and the variables themselves. In our simulation above, we set `df_out = T` , which means that our output is in the long format.
+The output of the `run_3PG` function can be either a long format dataframe or a 4-dimentional array where each row corresponds to one month of simulations, depending on your choice of the variable `df_out`. If setting `df_out = T`, the output will be in the array format, where the first dimension is time, the second dimension corresponds to species (each column represents one species), and the third dimension corresponds to variable groups and the variables themselves. In our simulation above, we set `df_out = T` , which means that our output is in the long format.
 
 ```{r}
 head( out_3PG )
@@ -104,11 +105,11 @@ library(BayesianTools)
 library(sensitivity)
 ```
 
-As a second example, we will first performed a `Morris` screening and then perform the `Bayesian calibration` of the 3-PGpjs model. We will use the `Solling` forest flux site located in Germany at an elevation of 508 m.a.s.l., and dominated by *Picea abies*. We obtained data for this site via the [PROFOUND database](https://doi.org/10.5194/essd-2019-220) that was set up for evaluating vegetation models and simulating climate impacts on forests (Reyer et al., 2019). There are almost 50 years of records for various stand and flux variables for `Solling` site.
+As a second example, we will first perform a `Morris` screening and then perform the `Bayesian calibration` of the 3-PGpjs model. We will use the `Solling` forest flux site located in Germany at an elevation of 508 m.a.s.l., and dominated by *Picea abies*. We obtained data for this site via the [PROFOUND database](https://doi.org/10.5194/essd-2019-220) that was set up for evaluating vegetation models and simulating climate impacts on forests (Reyer et al., 2019). There are almost 50 years of records for various stand and flux variables for the `Solling` site.
 
 ### Likelihood function
 
-A sensitivity analysis requires a target variable for which we want to evaluate sensitivity. In principle, any variable that is predicted by the model could be used as target, including any of the variables that we plotted above. In this case, we are planning to run a Bayesian calibration later, and thus it makes sense to run the sensitivity on the difference between model predictions and data, which is measured by the likelihood function.
+A sensitivity analysis requires a target variable for which we want to evaluate sensitivity. In principle, any variable that is predicted by the model could be used as a target, including any of the variables that we plotted above. In this case, we are planning to run a Bayesian calibration later, and thus it makes sense to run the sensitivity on the difference between model predictions and data, which is measured by the likelihood function.
 
 For the likelihood, we assumed normal errors for the six variables that describe stand stocks and characteristics: *basal area*, *dbh*, *height*, *stem biomass*, *foliage biomass*, and *root biomass*. To calculate the stand-level stocks, we applied the biomass equations developed for European forests following Forrester et al. (2017) for each measured tree, and summed it up to the stand level in Mg dry matter $ha^{-1}$.
 
@@ -124,7 +125,7 @@ r3pg_sim <- function( par_df, ...){
     thinning = thinn_solling,
     parameters = par_df, 
     size_dist = NULL,
-    settings =  list(light_model = 1, transp_model = 1, phys_model = 1),
+    settings =  list(light_model = 1, transp_model = 1, phys_model = 1, mort_model = 1),
     check_input = TRUE, ...)
   
   return( sim.df )
@@ -161,7 +162,7 @@ r3pg_ll <- function( par_v ){
 
 ### Morris sensitivity
 
-To evaluate the sensitivity of the likelihood above to changes of the model parameters, we used Morris screening. Morris screening is a so-called global sensitivity method which quantifies parameter sensitivity in defined area of the parameter space. This means that we require to set min / max values for all model parameters, which should be set on sensible ranges. Here, we provide expert-chosen values for all parameters, including the error parameters that are used in the likelihood.
+To evaluate the sensitivity of the likelihood above to changes of the model parameters, we used Morris screening. Morris screening is a so-called global sensitivity method which quantifies parameter sensitivity in a defined area of the parameter space. This means we need to set sensible min / max values for all model parameters. Here, we provide expert-chosen values for all parameters, including the error parameters that are used in the likelihood.
 
 ```{r def_input}
 # default parameters for simulations
@@ -230,7 +231,7 @@ morrisOut.df %>%
 
 ### Bayesian calibration
 
-As a next step, we want to calibrate the model. To speed up this task, we calibrate only the 20 most sensitive parameters identified in the `morris` screening plus the six errors parameters for each of the observational variables.
+As a next step, we want to calibrate the model. To speed up this task, we calibrate only the 20 most sensitive parameters identified in the `morris` screening plus the six error parameters for each of the observational variables.
 
 As Priors for the Bayesian analysis, we used uniform priors with the same ranges that we used for the Morris screening.
 
@@ -298,7 +299,7 @@ param.draw <- getSample(mcmc_out, start = 100000, numSamples = 500, coda = F, wh
     pars = map(pars, ~bind_rows(.x, filter(par_def.df, !parameter %in% par_cal_names))))
 ```
 
-We then simulate forest growth using the defaults and the drawn parameters combinations. Afterwards, we visualize the posteriori prediction range by drawing the $5^{th}$ and $95^{th}$ range of predictions. The calibrated model simulates the observational data well.
+We then simulate forest growth using the defaults and the drawn parameter combinations. Afterwards, we visualize the posteriori prediction range by drawing the $5^{th}$ and $95^{th}$ range of predictions. The calibrated model simulates the observational data well.
 
 ```{r sim_post, fig.height=4.5, fig.width=6.6}
 # default run
