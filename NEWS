@@ -36,8 +36,6 @@ This is a major update of r3PG.
 -   Updated all examples, README, and vignette to use `d_mixture$...` data references.
 -   New vignette "New Features in r3PG v0.2.0" covering mortality models, biomass-based thinning, defoliation events, and multi-cohort regeneration.
 
-### Test environments
-
 
 r3PG 0.1.7
 ============

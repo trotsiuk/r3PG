@@ -1109,9 +1109,15 @@ contains
 
             ! Update stand structure if there was thinning, defoliation or stress-related mortality that reduced stems_n
             if ( sum(stems_loss_manag(:) + stems_loss_def(:) + stems_loss_stress(:)) > 1.0e-6 ) then
-                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
-                dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
-                basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+                where (stems_n(:) > 0.d0)
+                    biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)  ! kg/tree
+                    dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
+                    basal_area(:) = dbh(:) ** 2.d0 / 4.d0 * Pi * stems_n(:) / 10000.d0
+                elsewhere
+                    biom_tree(:) = 0.d0
+                    dbh(:) = 0.d0
+                    basal_area(:) = 0.d0
+                end where
             end if
 
             ! If there was a coppice event, update height, crown width and crown length
@@ -1317,7 +1323,11 @@ contains
 
 
             ! Additional calculations ------------------
-            biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
+            where (stems_n(:) > 0.d0)
+                biom_tree(:) = biom_stem(:) * 1000.d0 / stems_n(:)
+            elsewhere
+                biom_tree(:) = 0.d0
+            end where
             ! TODO: dbh update after self-thinning omitted — causes numerical error,
             !       but effect is small because self-thinning rarely changes dbh much.
             !dbh(:) = ( biom_tree(:) / aWs(:)) ** (1.d0 / nWs(:))
@@ -1840,6 +1850,8 @@ contains
         real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: DWeibullShape_gamma
         real(kind=kind(0.0d0)), dimension(n_sp), intent(inout) :: DWeibullLocation
 
+        integer :: i_w  ! local loop index
+
         dlocation(:) = 1.d0
         where( Dlocation0(:)==0.d0 .and. &
                DlocationB(:)==0.d0 .and. &
@@ -1849,14 +1861,31 @@ contains
             dlocation(:) = 0.d0
         end where
 
-        DWeibullScale(:) = Exp(Dscale0(:) + DscaleB(:) * Log(dbh(:)) + Dscalerh(:) * &
-                          Log(height_rel(:)) + Dscalet(:) * Log(age_row(:)) + DscaleC(:) * Log(competition_total))
-        DWeibullShape(:) = Exp(Dshape0(:) + DshapeB(:) * Log(dbh(:)) + Dshaperh(:) * Log(height_rel(:)) + &
-                          Dshapet(:) * Log(age_row(:)) + DshapeC(:) * Log(competition_total))
+        ! Guard against Log(0) when dbh=0 (dead cohort) or age=0 (just-planted cohort)
+        do i_w = 1, n_sp
+            if (dbh(i_w) > 0.d0 .and. age_row(i_w) > 0.d0 .and. competition_total > 0.d0) then
+                DWeibullScale(i_w) = Exp(Dscale0(i_w) + DscaleB(i_w) * Log(dbh(i_w)) + Dscalerh(i_w) * &
+                    Log(max(height_rel(i_w), 1.0d-6)) + Dscalet(i_w) * Log(age_row(i_w)) + &
+                    DscaleC(i_w) * Log(competition_total))
+                DWeibullShape(i_w) = Exp(Dshape0(i_w) + DshapeB(i_w) * Log(dbh(i_w)) + &
+                    Dshaperh(i_w) * Log(max(height_rel(i_w), 1.0d-6)) + &
+                    Dshapet(i_w) * Log(age_row(i_w)) + DshapeC(i_w) * Log(competition_total))
+            else
+                DWeibullScale(i_w) = 0.d0
+                DWeibullShape(i_w) = 1.d0  ! avoid division by zero in gamma
+            end if
+        end do
         DWeibullShape_gamma(:) = f_gamma_dist(1.d0 + 1.d0 / DWeibullShape(:), n_sp)
-        DWeibullLocation(:) = Exp(Dlocation0(:) + DlocationB(:) * Log(dbh(:)) + &
-                             Dlocationrh(:) * Log(height_rel(:)) + Dlocationt(:) * Log(age_row(:)) + &
-                             DlocationC(:) * Log(competition_total))
+
+        do i_w = 1, n_sp
+            if (dbh(i_w) > 0.d0 .and. age_row(i_w) > 0.d0 .and. competition_total > 0.d0) then
+                DWeibullLocation(i_w) = Exp(Dlocation0(i_w) + DlocationB(i_w) * Log(dbh(i_w)) + &
+                    Dlocationrh(i_w) * Log(max(height_rel(i_w), 1.0d-6)) + &
+                    Dlocationt(i_w) * Log(age_row(i_w)) + DlocationC(i_w) * Log(competition_total))
+            else
+                DWeibullLocation(i_w) = 0.d0
+            end if
+        end do
 
         where( dlocation(:) == 0.d0 )
             DWeibullLocation(:) = NINT(dbh(:)) / 1.d0 - 1.d0 - DWeibullScale(:) * DWeibullShape_gamma(:)

@@ -54,6 +54,8 @@ More items will be added as development progresses.
 
 - Fixed post-simulation output masking hiding management-event month.
 - Fixed event ordering breaking post-coppice events when age resets to 0.
+- Fixed Fortran division-by-zero producing NaN in outputs at thinning months (`biom_tree / stems_n` when `stems_n = 0`) and at planting months (`Log(dbh)` / `Log(age)` when `dbh = 0` or `age = 0`). Affected variables: `basal_area`, `dbh`, `biom_tree`, `DWeibullScale`, `DWeibullShape`, `DWeibullLocation`.
+- Added R-side `NaN → NA` sanitization in `run_3PG.R` as a safety net.
 
 ## Technical log
 
@@ -97,6 +99,9 @@ More items will be added as development progresses.
 - Corrected `s_update_long_term_modifiers` call indentation from 13 to 12 spaces.
 - Added missing body indent under the `if (ii == 1) then` guard for `age_m`.
 - Collapsed 3+ consecutive blank lines throughout the file to a maximum of 2, reducing total line count from ~2600 to 2512.
+- Fixed division-by-zero bug in post-management stand structure update (~line 1112): added `where(stems_n > 0) ... elsewhere` guard to `biom_tree`, `dbh`, and `basal_area` computations, preventing NaN when a cohort is thinned to 0 stems.
+- Fixed same division-by-zero in end-of-month `biom_tree` recalculation (~line 1320): added `where(stems_n > 0) ... elsewhere` guard.
+- Fixed `s_update_weibull_distribution` subroutine: replaced array-wide `Log(dbh(:))` / `Log(age_row(:))` calls with per-species loop that checks `dbh > 0`, `age > 0`, and `competition_total > 0` before computing; sets outputs to 0 (or 1 for shape) for dead/just-planted cohorts, preventing NaN from `Log(0)`.
 
 ### `src/i_decl_var.h`
 
@@ -164,6 +169,7 @@ More items will be added as development progresses.
 - Previous behaviour: masked all outputs where `stems_n < 0` or `age < 0`, which meant the management-event month (where `stems_n` first drops to 0) was also masked, hiding loss outputs.
 - New behaviour: uses a one-month lag of `stems_n` so the first month with `stems_n ≤ 0` is preserved (management event visible); masking starts only from the second consecutive month with `stems_n ≤ 0`. The `age < 0` condition (not-yet-recruited) is unchanged.
 - Implementation extracts `stems_n` and `age` as explicit `[n_m, n_sp]` matrices via `matrix()`, computes `stems_n_prev` with `rbind(NA_real_, ...)`, and builds a 2-D logical mask that is broadcast to the full 4-D array.
+- Added `r3PG_out[is.nan(r3PG_out)] <- NA_real_` after the masking step as a safety net against any remaining Fortran NaN values (e.g. from edge-case 0/0 or Log(0) computations).
 
 ### `R/prepare_defoliation.R`
 

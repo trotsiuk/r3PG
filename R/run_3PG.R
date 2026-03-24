@@ -160,6 +160,9 @@ run_3PG <- function(
 
   r3PG_out[array(remove_2d, dim = dim(r3PG_out))] <- NA_real_
 
+  # Safety net: replace any remaining NaN (e.g. from 0/0 in Fortran) with NA
+  r3PG_out[is.nan(r3PG_out)] <- NA_real_
+
 
   if( df_out ){
     r3PG_out = transf.out( sim = r3PG_out, sp_names = sp_names, year_i = site[7], month_i = site[8] )
