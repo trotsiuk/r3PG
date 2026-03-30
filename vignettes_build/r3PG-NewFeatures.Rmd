@@ -245,7 +245,7 @@ The four defoliation types have distinct constraints on the retained proportions
 
 Following a defoliation event, 3-PG modifies growth in two ways:
 
-1. **Stored carbohydrate use** (`prop_carbs`): A fraction of NPP is assumed to come from non-structural carbohydrate reserves, temporarily boosting foliage (and stem, for coppice) regrowth. This is particularly important for coppice events where all foliage is removed and photosynthetic NPP is initially zero.
+1. **Stored carbohydrate use** (`prop_carbs`): A fraction of NPP is assumed to come from non-structural carbohydrate reserves, temporarily boosting foliage (and stem, for coppice) regrowth. This is particularly important for coppice events where all foliage is removed and photosynthetic NPP is initially zero. This process only occurs during the first year after a defoliation event.
 
 2. **Modified partitioning** (`prop_npp`): The fraction of NPP partitioned to foliage is temporarily increased at the expense of stem or root partitioning, reflecting the observed prioritisation of crown rebuilding after defoliation. This shift persists until the pre-defoliation foliage mass is restored or the maximum recovery time (`def_recover_t`) is reached.
 

@@ -2,7 +2,7 @@
 title: "The r3PG R package"
 author: "Volodymyr Trotsiuk, Florian Hartig, David I. Forrester"
 date: "`r Sys.Date()`"
-abstract: "This vignette provides an overview of the r3PG R package functions and options. We provide a working examples that (i) demonstrates the basic functionality and use of the package, (ii) performs a sensitivity analysis and a Bayesian calibration of the model, and (iii) uses the calibrated model to simulate spatial patterns of forest growth across Switzerland.  \n \n \n"
+abstract: "This vignette provides an overview of the r3PG R package functions and options. We provide a working example that (i) demonstrates the basic functionality and use of the package, (ii) performs a sensitivity analysis and a Bayesian calibration of the model, and (iii) uses the calibrated model to simulate spatial patterns of forest growth across Switzerland.  \n \n \n"
 output: 
   rmarkdown::html_vignette:
     toc: true
