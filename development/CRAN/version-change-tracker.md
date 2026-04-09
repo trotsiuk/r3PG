@@ -55,6 +55,7 @@ More items will be added as development progresses.
 - Fixed post-simulation output masking hiding management-event month.
 - Fixed event ordering breaking post-coppice events when age resets to 0.
 - Fixed Fortran division-by-zero producing NaN in outputs at thinning months (`biom_tree / stems_n` when `stems_n = 0`) and at planting months (`Log(dbh)` / `Log(age)` when `dbh = 0` or `age = 0`). Affected variables: `basal_area`, `dbh`, `biom_tree`, `DWeibullScale`, `DWeibullShape`, `DWeibullLocation`.
+- Fixed uninitialized Fortran variables written to the output array at month 1, causing platform-dependent garbage values on Windows/Linux (macOS ARM zeros stack memory, masking the bug). Added 9 missing initializations in `i_init_var.h` and proper `basal_area_prop` computation before the first output write.
 - Added R-side `NaN → NA` sanitization in `run_3PG.R` as a safety net.
 
 ## Technical log
@@ -109,6 +110,22 @@ More items will be added as development progresses.
 - Changed `lt_fT`, `lt_fPhys`, and `hist_ptr` to explicit `dimension(n_sp)` arrays to match their use and avoid unnecessary dynamic allocation.
 - Removed unused declarations flagged during Fortran diagnostics cleanup (`b_cor`, `b_n`, `n`, `NPP_def`, `biom_stem_pre`, `biom_foliage_pre`, `biom_root_pre`, `tmp`, `denom`, `denom_stems`, `def_test_var`).
 - Removed 5 additional unused variables identified via `-Wunused-variable` audit: `n_sp_max` (unused parameter), `mort_stress` and `mort_thinn` (superseded by `stems_loss_stress`/`mort_thinn_total`), `growing_season_length` (never assigned/read), `bias_scale` (never assigned/read). Corresponding initializations removed from `i_init_var.h`.
+
+### `src/i_init_var.h` (uninitialized-variable fix)
+
+- Added 9 missing variable initializations that were written to the output array (via `i_write_out.h`) before being computed:
+    - `basal_area_prop(:) = 0.d0` — main culprit; on Windows/Linux showed values like 400 instead of 0.
+    - `m_apar(:) = 1.d0` — second culprit; neutral multiplier, showed garbage on non-ARM platforms.
+    - `height_rel(:) = 0.d0`, `crown_length(:) = 0.d0`, `crown_width(:) = 0.d0` — stand geometry.
+    - `stems_n_ha(:) = 0.d0` — per-cohort monoculture-equivalent density.
+    - `dbh_prev(:) = 0.d0`, `dbh_total_prev = 0.d0` — previous-step DBH for mortality calculations.
+    - `water_runoff_polled = 0.d0` — pooled runoff accumulator.
+- Root cause: On macOS ARM, the OS zeroes stack-allocated memory, so the uninitialised values happened to be 0.0 and tests passed. On Windows and Linux x86-64, stack memory contains arbitrary bit patterns, producing garbage values (400, 4.65e-310, NaN) that failed `expect_equal()` in the mortality isolation tests.
+
+### `src/md_3PG.f95` (init-section `basal_area_prop`)
+
+- Added `basal_area_prop` computation (with `1.0d-6` floor) immediately after `basal_area_total` is calculated in the initialisation block, before the first `include 'i_write_out.h'` call at month 1.
+- Previously, `basal_area_prop` was only computed inside the density-dependent mortality section (which runs from month 2 onwards), so the month-1 output row contained either zero or uninitialised garbage depending on platform.
 
 ### `src/i_read_input.h`
 

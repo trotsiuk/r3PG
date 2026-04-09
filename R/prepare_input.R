@@ -20,7 +20,7 @@
 #'       \item 10: Silty clay
 #'       \item 11: Silty clay loam
 #'       \item 12: Silty loam
-#'       \item 0: Uses cθ and nθ provided in the “parameters” input
+#'       \item 0: Uses c\eqn{\theta} and n\eqn{\theta} provided in the "parameters" input
 #'     }
 #'   \item \code{asw_i}: Initial available soil water (mm, must be >= 0).
 #'   \item \code{asw_min}: Minimum available soil water (mm, must be >= 0).
@@ -108,7 +108,7 @@
 #' @example inst/examples/prepare_input-help.R
 #'
 #' @references
-#' Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: \url{http://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}
+#' Forrester, D. I., 2020. 3-PG User Manual. Swiss Federal Institute for Forest, Snow and Landscape Research WSL, Birmensdorf, Switzerland. 70 p. Available at the following web site: \url{https://sites.google.com/site/davidforresterssite/home/projects/3PGmix/3pgmixdownload}
 #'
 #'Sands, P. J., 2010. 3PGpjs user manual. Available at the following web site: \url{https://3pg.sites.olt.ubc.ca/files/2014/04/3PGpjs_UserManual.pdf}
 #'

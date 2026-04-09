@@ -11,6 +11,8 @@ This is a major update of r3PG.
 -   In northern latitudes `netRad` could become NaN when day-length is 0, causing simulation crashes. Corrected.
 -   Fixed event ordering for coppice species in `prepare_defoliation()` and `prepare_thinning()` — user-provided row order is now preserved when coppice resets age to 0.
 -   Fixed post-simulation output masking in `run_3PG()` that hid management-event outputs when a cohort was thinned to zero stems; the event month is now retained.
+-   Fixed Fortran division-by-zero producing NaN when `stems_n = 0` or `dbh = 0` during thinning/planting months (guarded with `where/elsewhere` blocks and loop-level checks in the Weibull subroutine).
+-   Fixed uninitialized Fortran variables (`basal_area_prop`, `m_apar`, and 7 others) that were written to the output array at month 1 before any computation; caused platform-dependent garbage values on Windows/Linux x86-64 while macOS ARM masked the issue by zero-filling stack memory.
 
 ### New function and data sets
 
@@ -46,9 +48,11 @@ This is a major update of r3PG.
 
 ### R CMD check results
 
-0 errors ✓ \| 0 warnings ✓ \| 1 note
+0 errors ✓ \| 0 warnings ✓ \| 2 notes
 
-Note: "checking for future file timestamps ... unable to verify current time" (transient network issue, not a package problem).
+Note 1: "checking for future file timestamps ... unable to verify current time" (transient network issue, not a package problem).
+
+Note 2: "checking HTML version of manual ... NOTE" — R's bundled tidy reports `<main>` as unrecognised; this is a known limitation of the old HTML checker, not a package issue.
 
 
 # Version 0.1.6

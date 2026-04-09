@@ -25,7 +25,7 @@ prepare_site(site)
       \item 10: Silty clay
       \item 11: Silty clay loam
       \item 12: Silty loam
-      \item 0: Uses cθ and nθ provided in the “parameters” input
+      \item 0: Uses c\eqn{\theta} and n\eqn{\theta} provided in the "parameters" input
     }
   \item \code{asw_i}: Initial available soil water (mm, must be >= 0).
   \item \code{asw_min}: Minimum available soil water (mm, must be >= 0).
