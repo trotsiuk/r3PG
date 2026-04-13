@@ -125,7 +125,8 @@ r3pg_sim <- function( par_df, ...){
     thinning = thinn_solling,
     parameters = par_df, 
     size_dist = NULL,
-    settings =  list(light_model = 1, transp_model = 1, phys_model = 1, mort_model = 1),
+    settings =  list(light_model = 1, transp_model = 1, phys_model = 1, mort_model = 1, 
+      height_model = 1, crown_width_model = 1, calculate_d13c = 0),
     check_input = TRUE, ...)
   
   return( sim.df )
@@ -176,6 +177,8 @@ par_cal_max <- param_morris.df$max
 par_cal_best <- param_morris.df$default
 
 r3pg_ll( par_cal_best)
+r3pg_ll( par_cal_min)
+r3pg_ll( par_cal_max)
 ```
 
 With these ranges and using the settings specified below, we run a Morris screening with 30500 model evaluations (N (length(factors)+1)) and visualize the results. This code ran approximately 4 minutes on our local computer.
