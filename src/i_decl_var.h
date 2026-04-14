@@ -42,6 +42,7 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: stems_n_i      ! initial stand stocki
 
 ! Long-term modifier state variables
 integer                        :: lt_mod_mths  ! Number of months for long-term average modifier calculation (density-dependent mortality)
+integer                        :: lt_init_len  ! min(lt_mod_mths, n_m): safe upper bound for indexing climate arrays during init
 real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fT     ! long-term value of fT modifier for a given species
 real(kind=kind(0.0d0)), dimension(n_sp) :: lt_fPhys  ! long-term value of fPhysmod modifier for a given species
 ! Rolling-history arrays (for last lt_mod_mths)
@@ -348,9 +349,11 @@ real(kind=kind(0.0d0))                  :: dbh_prev_safe      ! previous-step DB
 real(kind=kind(0.0d0))                  :: dbh_ratio          ! ratio of current to previous DBH (mort_model = 3)
 real(kind=kind(0.0d0))                  :: modifiers          ! combined modifier on mortality threshold (mort_model = 3)
 real(kind=kind(0.0d0))                  :: delta_term         ! change term in mortality calculation (mort_model = 3)
-real(kind=kind(0.0d0))                  :: inner              ! intermediate term in mortality calculation (mort_model = 3)
 real(kind=kind(0.0d0))                  :: betaN_eff          ! effective betaN after modifier adjustment (mort_model = 3)
 real(kind=kind(0.0d0))                  :: inv_exp            ! inverse exponent for solving N_max (mort_model = 3)
+real(kind=kind(0.0d0))                  :: base_nk            ! N^(1 - betaN), base term for relative-perturbation formulation (mort_model = 3)
+real(kind=kind(0.0d0))                  :: frac_nk            ! relative perturbation delta/base (mort_model = 3)
+real(kind=kind(0.0d0))                  :: log_term           ! inv_exp * log(1 + frac), argument for exp-minus-1 (mort_model = 3)
 
 real(kind=kind(0.0d0)), dimension(n_sp) :: stems_loss_def
 real(kind=kind(0.0d0)), dimension(n_sp) :: biom_loss_stem_def

@@ -57,6 +57,11 @@ More items will be added as development progresses.
 - Fixed Fortran division-by-zero producing NaN in outputs at thinning months (`biom_tree / stems_n` when `stems_n = 0`) and at planting months (`Log(dbh)` / `Log(age)` when `dbh = 0` or `age = 0`). Affected variables: `basal_area`, `dbh`, `biom_tree`, `DWeibullScale`, `DWeibullShape`, `DWeibullLocation`.
 - Fixed uninitialized Fortran variables written to the output array at month 1, causing platform-dependent garbage values on Windows/Linux (macOS ARM zeros stack memory, masking the bug). Added 9 missing initializations in `i_init_var.h` and proper `basal_area_prop` computation before the first output write.
 - Added R-side `NaN → NA` sanitization in `run_3PG.R` as a safety net.
+- Fixed out-of-bounds array reads in long-term modifier initialization when `lt_mod_mths > n_m`, causing non-deterministic density-dependent mortality (`mort_model = 3`) results across repeated runs; also reformulated the mort_model = 3 equation using relative-perturbation to avoid catastrophic cancellation.
+
+### Tests (115 total, 0 fail, 0 warn, 0 skip)
+
+- Increased test precision from 3 to 5 significant digits (`tolerance = 5e-6`) now that run-to-run determinism is guaranteed.
 
 ## Technical log
 
@@ -260,6 +265,30 @@ More items will be added as development progresses.
 - Reworked these files only at the formatting level, with the aim of making the mapping between indices, variables, and outputs easier to inspect during further development.
 - Kept the content and ordering unchanged while making the blocks more uniform, especially in the longer parameter and output mapping sections.
 - Checked the edited files after the cleanup and no file-level errors were reported.
+
+### `src/md_3PG.f95` (out-of-bounds array read fix — non-determinism root cause)
+
+- **Root cause of mort_model = 3 non-determinism**: `lt_mod_mths` is typically 120 (10 years × 12 months) but the simulation length `n_m` can be shorter (e.g. 92 months). The initialization code computed `sum(vpd_day(2:lt_mod_mths))` and `sum(f_tmp(1:lt_mod_mths, i))`, reading 28 elements past the end of the arrays (dimensioned to `n_m`). These out-of-bounds reads returned whatever happened to be in memory, which varied between calls — producing different long-term modifier seeds and therefore different mortality trajectories on every run.
+- Fix: introduced `lt_init_len = min(lt_mod_mths, n_m)` and clamped all initialization indexing (`vpd_day`, `f_tmp`, `fT_hist`, `fPhys_hist`) to this safe upper bound.
+- Changed `fT_hist` and `fPhys_hist` allocation from `if (.not. allocated(...)) allocate(...)` to unconditional `deallocate` + `allocate`. The previous pattern could retain stale values from a prior call in the same R session, contributing to run-to-run variation.
+- Verified fix: 20 consecutive identical-input runs now produce exactly the same `stems_n` (1171.9335732413) — previously 7 different values were observed across 20 runs.
+
+### `src/md_3PG.f95` (mort_model = 3 reformulation)
+
+- Reformulated the mort_model = 3 stem-loss equation to avoid catastrophic cancellation.
+- Original: `mort_thinn_total = stems_n_total - Exp(inv_exp * Log(inner))` where `inner = stems_n_total**expo + delta_stuff`. When `delta_stuff` is small relative to `stems_n_total**expo`, the subtraction loses precision.
+- New formulation uses relative perturbation: computes `frac_nk = delta_stuff / base_nk` and `log_term = inv_exp * log(1 + frac_nk)`, with a Taylor expansion (`expm1` equivalent) when `|log_term| < 1e-4`. This is mathematically equivalent but numerically superior.
+- Added variable declarations `base_nk`, `frac_nk`, `log_term` in `i_decl_var.h`.
+
+### `src/i_decl_var.h` (OOB fix variables)
+
+- Added `lt_init_len` (integer): safe upper bound for indexing climate arrays during initialization, defined as `min(lt_mod_mths, n_m)`.
+
+### `tests/testthat/test-run_3PG.R` (test precision increase)
+
+- Updated all 13 `expect_equal` assertions from `round(..., 3)` comparisons to `tolerance = 5e-6` with 5-digit reference values.
+- This tighter precision is now possible because the OOB fix eliminated run-to-run variation; previously the 3-digit rounding was necessary to absorb platform-dependent jitter.
+- Total test count remains 115, all passing.
 
 ## Notes
 

@@ -278,13 +278,24 @@ contains
         ! Long-term modifiers initialization
         lt_fT(:) = 1.0d0
         lt_fPhys(:) = 1.0d0
-        if (.not. allocated(fT_hist)) allocate(fT_hist(n_sp, lt_mod_mths))
+        ! Always deallocate before re-allocating to avoid stale state
+        if (allocated(fT_hist))   deallocate(fT_hist)
+        if (allocated(fPhys_hist)) deallocate(fPhys_hist)
+        allocate(fT_hist(n_sp, lt_mod_mths))
+        allocate(fPhys_hist(n_sp, lt_mod_mths))
         fT_hist(:,:) = 1.0d0
-        if (.not. allocated(fPhys_hist)) allocate(fPhys_hist(n_sp, lt_mod_mths))
         fPhys_hist(:,:) = 1.0d0
 
+        ! Clamp init range: climate arrays are dimensioned (n_m), so we
+        ! must not index beyond n_m even when lt_mod_mths > n_m.
+        lt_init_len = min(lt_mod_mths, n_m)
+
         ! Stand-level mean VPD for long-term initialization (same for all cohorts)
-        vpd_mean = sum(vpd_day(2:lt_mod_mths)) / real(lt_mod_mths - 1, kind=kind(0.0d0))
+        if (lt_init_len > 1) then
+            vpd_mean = sum(vpd_day(2:lt_init_len)) / real(lt_init_len - 1, kind=kind(0.0d0))
+        else
+            vpd_mean = vpd_day(1)
+        end if
 
         do i = 1, n_sp
             ! soil nutrition modifier
@@ -292,8 +303,8 @@ contains
             if (fNn(i) == 0.d0) then
             lt_fN(i) = 1.d0
             end if
-            ! Temperature (lt_fT)
-            lt_fT(i) = sum(f_tmp(1:lt_mod_mths, i)) / real(lt_mod_mths, kind=kind(0.0d0))
+            ! Temperature (lt_fT) — clamp to available climate data
+            lt_fT(i) = sum(f_tmp(1:lt_init_len, i)) / real(lt_init_len, kind=kind(0.0d0))
             fT_hist(i,1:lt_mod_mths) = lt_fT(i)
             ! PhysMod (lt_fPhys)
             ! ASW uses the constant directly
@@ -1255,22 +1266,46 @@ contains
                                        lt_fT_ave    ** betafT * &
                                        lt_fPhys_ave ** betafPhys
 
-                           ! delta term
+                           ! delta term: captures the DBH change contribution
                            delta_term = dbh_prev_safe ** pp * (1.d0 - dbh_ratio ** pp)
 
-                           ! inner argument for inversion
-                           inner = stems_n_total ** (1.d0 - betaN_eff) + &
-                                   Exp(beta0) * (1.d0 - betaN_eff) / pp * delta_term * modifiers
+                           ! --- Relative-perturbation formulation ---
+                           ! base = N^(1 - betaN),  inner = base * (1 + frac)
+                           ! N_new = inner^(1/(1-betaN)) = N * (1+frac)^inv_exp
+                           ! mort  = N * (1 - (1+frac)^inv_exp)
+                           !       = -N * expm1(inv_exp * log1p(frac))
+                           ! The Taylor branch handles the near-zero case without
+                           ! catastrophic cancellation from subtracting two large numbers.
 
-                           ! allow inner to reach zero, not artificially capped
-                           inner = max(inner, 0.d0)
-
-                           ! safe inversion using log-exp, with inv_exp capped for stability
                            inv_exp = 1.d0 / (1.d0 - betaN_eff)
                            inv_exp = max(min(inv_exp, 90.d0), -90.d0)
 
-                           ! compute mortality at stand level
-                           mort_thinn_total = stems_n_total - Exp(inv_exp * Log(inner))
+                           base_nk = stems_n_total ** (1.d0 - betaN_eff)
+
+                           if (base_nk > 0.d0) then
+                               frac_nk = Exp(beta0) * (1.d0 - betaN_eff) / pp * &
+                                         delta_term * modifiers / base_nk
+
+                               if (frac_nk > -1.d0) then
+                                   ! log_term = inv_exp * log(1 + frac)
+                                   log_term = inv_exp * log(1.d0 + frac_nk)
+
+                                   if (abs(log_term) < 1.0d-4) then
+                                       ! Taylor: exp(x)-1 ≈ x + x²/2 + x³/6
+                                       mort_thinn_total = -stems_n_total * &
+                                           (log_term + 0.5d0 * log_term**2 + &
+                                            log_term**3 / 6.d0)
+                                   else
+                                       mort_thinn_total = stems_n_total * &
+                                           (1.d0 - exp(log_term))
+                                   end if
+                               else
+                                   ! inner went to zero or negative: full mortality
+                                   mort_thinn_total = stems_n_total
+                               end if
+                           else
+                               mort_thinn_total = 0.d0
+                           end if
 
                            ! ensure mortality is physically meaningful
                            mort_thinn_total = max(mort_thinn_total, 0.d0)

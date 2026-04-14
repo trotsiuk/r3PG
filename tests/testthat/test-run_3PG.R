@@ -71,7 +71,7 @@ test_that("Evergreen 3-PGpjs produces expected output", {
                     height_model = 1, correct_bias = 0, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(result[120, , 4, 1:3], 3), c(125.423, 39.146, 3.845))
+  expect_equal(result[120, , 4, 1:3], c(125.42308, 39.14578, 3.84459), tolerance = 5e-6)
 })
 
 test_that("Evergreen 3-PGmix produces expected output", {
@@ -86,7 +86,7 @@ test_that("Evergreen 3-PGmix produces expected output", {
                     height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(result[120, , 4, 1:3], 3), c(123.357, 37.610, 3.625))
+  expect_equal(result[120, , 4, 1:3], c(123.35742, 37.61049, 3.62474), tolerance = 5e-6)
 })
 
 
@@ -106,7 +106,7 @@ test_that("Broadleaf 3-PGpjs produces expected output", {
                     height_model = 1, correct_bias = 0, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(result[120, , 4, 1:3], 3), c(140.249, 38.082, 0.000))
+  expect_equal(result[120, , 4, 1:3], c(140.24858, 38.08248, 0.00000), tolerance = 5e-6)
 })
 
 test_that("Broadleaf 3-PGmix produces expected output", {
@@ -121,7 +121,7 @@ test_that("Broadleaf 3-PGmix produces expected output", {
                     height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(result[120, , 4, 1:3], 3), c(144.273, 40.554, 0.000))
+  expect_equal(result[120, , 4, 1:3], c(144.27255, 40.55360, 0.00000), tolerance = 5e-6)
 })
 
 
@@ -141,8 +141,8 @@ test_that("Mixed-species 3-PGmix produces expected output", {
                     height_model = 1, correct_bias = 1, calculate_d13c = 0),
     check_input = TRUE, df_out = FALSE
   )
-  expect_equal(round(result[120, 1, 4, 1:3], 3), c(95.157, 24.911, 0.000))
-  expect_equal(round(result[120, 2, 4, 1:3], 3), c(57.192, 15.105, 1.415))
+  expect_equal(result[120, 1, 4, 1:3], c(95.15685, 24.91093, 0.00000), tolerance = 5e-6)
+  expect_equal(result[120, 2, 4, 1:3], c(57.19164, 15.10513, 1.41455), tolerance = 5e-6)
 })
 
 
@@ -164,14 +164,14 @@ test_that("Mortality model 2 produces expected biomass", {
     check_input = TRUE, df_out = FALSE
   )
 
-  expect_equal(round(result[120, 1, 4, 1:3], 3), c(85.191, 32.973, 4.729))
-  expect_equal(round(result[120, 2, 4, 1:3], 3), c(53.333, 13.914, 1.892))
+  expect_equal(result[120, 1, 4, 1:3], c(85.19058, 32.97327, 4.72888), tolerance = 5e-6)
+  expect_equal(result[120, 2, 4, 1:3], c(53.33273, 13.91404, 1.89198), tolerance = 5e-6)
 
-  expect_equal(round(result[5000, 20:24, 4, 1], 3), c(102.407, 66.012, 45.368, 27.786, 9.498))
-  expect_equal(round(result[5000, 20:24, 4, 2], 3), c(37.307, 24.127, 18.552, 14.909, 8.230))
+  expect_equal(result[5000, 20:24, 4, 1], c(102.40746, 66.01177, 45.36782, 27.78603, 9.49833), tolerance = 5e-6)
+  expect_equal(result[5000, 20:24, 4, 2], c(37.30721, 24.12720, 18.55220, 14.90944, 8.22990), tolerance = 5e-6)
 
-  expect_equal(round(result[1000, 4, 8, 5], 3), c(0.738))
-  expect_equal(round(result[5000, 20, 8, 5], 3), c(0.738))
+  expect_equal(result[1000, 4, 8, 5], 0.73787, tolerance = 5e-6)
+  expect_equal(result[5000, 20, 8, 5], 0.73792, tolerance = 5e-6)
 })
 
 test_that("mort_model = 2 ignores beta* site parameters", {
@@ -272,8 +272,8 @@ test_that("Mixed-species management based on biomass", {
     check_input = TRUE, df_out = FALSE
   )
 
-  expect_equal(round(result[120, 1, 4, 1:3], 3), c(85.191, 32.973, 4.729))
-  expect_equal(round(result[120, 2, 4, 1:3], 3), c(53.333, 13.914, 1.892))
+  expect_equal(result[120, 1, 4, 1:3], c(85.19058, 32.97327, 4.72888), tolerance = 5e-6)
+  expect_equal(result[120, 2, 4, 1:3], c(53.33273, 13.91404, 1.89198), tolerance = 5e-6)
 })
 
 
@@ -296,7 +296,7 @@ test_that("Evergreen defoliation with d_defoliation", {
     check_input = TRUE, df_out = FALSE
   )
 
-  expect_equal(round(result[601, , 4, 1:3], 3), c(225.142, 89.828, 5.477))
+  expect_equal(result[601, , 4, 1:3], c(225.14222, 89.82836, 5.47746), tolerance = 5e-6)
 })
 
 
@@ -311,17 +311,16 @@ test_that("Coppice defoliation resets height and biomass", {
   expect_equal(dim(result)[1], 601L)
 
   # Final biomass: biom_stem, biom_root, biom_foliage (group 4, vars 1-3)
-  expect_equal(round(result[601, 1, 4, 1:3], 3), c(165.667, 107.336, 10.461))
+  expect_equal(result[601, 1, 4, 1:3], c(165.66733, 107.33562, 10.46060), tolerance = 5e-6)
 
   # Coppice event at month 181 (age 20):
   #   height resets from ~18.2 m to ~1.5 m (coppice regrowth height)
-  expect_equal(round(result[180, 1, 2, 6], 3), 18.215)
-  expect_equal(round(result[181, 1, 2, 6], 3), 1.541)
+  expect_equal(result[180, 1, 2, 6], 18.21505, tolerance = 5e-6)
+  expect_equal(result[181, 1, 2, 6], 1.54070, tolerance = 5e-6)
 
   # Stem and foliage biomass zeroed at the coppice event
-
-  expect_equal(round(result[181, 1, 4, 1], 3), 0.000)
-  expect_equal(round(result[181, 1, 4, 3], 3), 0.000)
+  expect_equal(result[181, 1, 4, 1], 0.0, tolerance = 5e-6)
+  expect_equal(result[181, 1, 4, 3], 0.0, tolerance = 5e-6)
 
   # def_type flag recorded in output (group 11, var 17)
   expect_equal(result[180, 1, 11, 17], 0)
@@ -332,15 +331,15 @@ test_that("Epicormic defoliation kills stems and reduces foliage", {
   result <- run_defoliation_scenario(test_path("fixtures", "d_epicormic.rds"))
 
   # Final biomass
-  expect_equal(round(result[601, 1, 4, 1:3], 3), c(267.530, 93.399, 5.751))
+  expect_equal(result[601, 1, 4, 1:3], c(267.53013, 93.39865, 5.75085), tolerance = 5e-6)
 
   # Epicormic event at month 121 (age 40, stem_retained = 0.5):
   #   stems_n drops from 200 to 100 (group 2, var 2)
-  expect_equal(round(result[120, 1, 2, 2], 0), 200)
-  expect_equal(round(result[121, 1, 2, 2], 0), 100)
+  expect_equal(result[120, 1, 2, 2], 200, tolerance = 5e-6)
+  expect_equal(result[121, 1, 2, 2], 100, tolerance = 5e-6)
 
   # Defoliation stem losses recorded (group 11, var 13)
-  expect_equal(round(result[121, 1, 11, 13], 0), 100)
+  expect_equal(result[121, 1, 11, 13], 100, tolerance = 5e-6)
 
   # Height is preserved (epicormic, not coppice)
   expect_true(abs(result[121, 1, 2, 6] - result[120, 1, 2, 6]) < 0.1)
@@ -351,8 +350,8 @@ test_that("Pruning with physiological assistance produces higher biomass", {
   result_no_phys <- run_defoliation_scenario(test_path("fixtures", "d_pruning_no_phys.rds"))
 
   # Reference final biomass values
-  expect_equal(round(result_phys[601, 1, 4, 1:3], 3),    c(271.873, 92.403, 6.094))
-  expect_equal(round(result_no_phys[601, 1, 4, 1:3], 3), c(266.599, 90.502, 6.139))
+  expect_equal(result_phys[601, 1, 4, 1:3],    c(271.87322, 92.40271, 6.09444), tolerance = 5e-6)
+  expect_equal(result_no_phys[601, 1, 4, 1:3], c(266.59911, 90.50186, 6.13864), tolerance = 5e-6)
 
   # Physiological assistance (prop_carbs > 0, prop_npp > 0) yields more stem biomass
   expect_gt(result_phys[601, 1, 4, 1], result_no_phys[601, 1, 4, 1])
@@ -362,9 +361,9 @@ test_that("Pruning without physiological assistance produces expected output", {
   result <- run_defoliation_scenario(test_path("fixtures", "d_pruning_no_phys.rds"))
 
   # Final stand: height (group 2, var 6)
-  expect_equal(round(result[601, 1, 2, 6], 3), 34.618)
+  expect_equal(result[601, 1, 2, 6], 34.61828, tolerance = 5e-6)
 
   # Final biomass
-  expect_equal(round(result[601, 1, 4, 1:3], 3), c(266.599, 90.502, 6.139))
+  expect_equal(result[601, 1, 4, 1:3], c(266.59911, 90.50186, 6.13864), tolerance = 5e-6)
 })
 

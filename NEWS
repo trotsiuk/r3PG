@@ -12,6 +12,7 @@ This is a major update of r3PG.
 -   Fixed post-simulation output masking in `run_3PG()` that hid management-event outputs when a cohort was thinned to zero stems; the event month is now retained.
 -   Fixed Fortran division-by-zero producing NaN when `stems_n = 0` or `dbh = 0` during thinning/planting months (guarded with `where/elsewhere` blocks and loop-level checks in the Weibull subroutine).
 -   Fixed uninitialized Fortran variables (`basal_area_prop`, `m_apar`, and 7 others) that were written to the output array at month 1 before any computation; caused platform-dependent garbage values on Windows/Linux x86-64 while macOS ARM masked the issue by zero-filling stack memory.
+-   Fixed out-of-bounds array reads in long-term modifier initialization when `lt_mod_mths > n_m` (e.g. 120 vs 92 months), causing non-deterministic density-dependent mortality (`mort_model = 3`) results across repeated runs. Reformulated the mort_model = 3 equation using relative-perturbation to additionally avoid catastrophic cancellation.
 
 ### New function and data sets
 
