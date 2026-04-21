@@ -373,8 +373,17 @@ r3pg_grid <- function(site, forc){
     #' @description function to run one site and return required output on standing biomass
     #' @param par_df a data.frame of parameters
     
-    out <- run_3PG(site, species.grid, forc, thinn.grid, par_df, NULL, 
-      list(light_model = 1, transp_model = 1, phys_model = 1), check_input = TRUE,
+    out <- run_3PG(
+      site = site, 
+      species = species.grid, 
+      climate = forc, 
+      thinning = thinn.grid, 
+      defoliation = NULL,
+      parameters = par_df, 
+      size_dist = NULL,
+      list(light_model = 1, transp_model = 1, phys_model = 1, mort_model = 1, 
+        height_model = 1, crown_width_model = 1, calculate_d13c = 0), 
+      check_input = TRUE,
       df_out = F)[,,4,1]
     
     return( last( out ) )
