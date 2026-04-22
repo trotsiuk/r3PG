@@ -84,7 +84,7 @@ Both `mort_model = 2` and `3` optionally use rolling averages of three growth mo
 
 We can compare `mort_model = 1` and `mort_model = 3` side-by-side using `d_mixture`:
 
-```{r mort_compare}
+```{r mort_compare, fig.height=5, fig.width=6.6}
 run_with_mort <- function(mort) {
   run_3PG(
     site       = d_mixture$site,
