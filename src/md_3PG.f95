@@ -27,8 +27,8 @@ contains
         ! Initial, forcing, parameters
         real(kind=c_double), dimension(20), intent(in) :: siteInputs
         real(kind=c_double), dimension(n_sp,7), intent(in) :: speciesInputs
-        real(kind=c_double), dimension(n_man,6,n_sp), intent(in) :: managementInputs
-        real(kind=c_double), dimension(n_def,9,n_sp), intent(in) :: defoliationInputs
+        real(kind=c_double), dimension(n_man,7,n_sp), intent(in) :: managementInputs
+        real(kind=c_double), dimension(n_def,10,n_sp), intent(in) :: defoliationInputs
         real(kind=c_double), dimension(n_m,9), intent(in) :: forcingInputs
         real(kind=c_double), dimension(86,n_sp), intent(in) :: pars_i
         real(kind=c_double), dimension(15,n_sp), intent(in) :: pars_b
@@ -47,6 +47,10 @@ contains
 
         !*************************************************************************************
         ! INITIALISATION (Age independent)
+
+
+        ! thinning + defoliation event counter for cohorts with a defoliation coppice event
+        e_n(:) = 1
 
         ! Day-length calculations
         adjSolarZenithAngle(:) = f_get_solarangle( Lat )
@@ -832,21 +836,90 @@ contains
             volume_mai(:) = volume_cum(:) / age(ii,:)
 
 
-            ! Management -------------------------------------------------------------------------
+            ! Thinning and defoliation -----------------------------------------------------------------
             !reset mortality value
             stems_loss_manag(:) = 0.d0
             biom_loss_stem_manag(:) = 0.d0
             biom_loss_root_manag(:) = 0.d0
             biom_loss_foliage_manag(:) = 0.d0
 
+            stems_loss_def(:) = 0.d0
+            biom_loss_stem_def(:) = 0.d0
+            biom_loss_root_def(:) = 0.d0
+            biom_loss_foliage_def(:) = 0.d0
+
+            coppice_event(:) = .FALSE.
+
+
             do i = 1, n_sp
 
-                if( t_t(i) > 0 ) then
+                do_thin = .FALSE.
+                do_def  = .FALSE.
 
-                    if(t_n(i) <= t_t(i)) then
+                ! Determine whether this species uses ordered coppice events
+                use_event_order(i) = .FALSE.
+                if (t_t(i) > 0) then
+                    if (any(.not. isnan(managementInputs(1:t_t(i),7,i)))) then
+                        use_event_order(i) = .TRUE.
+                    end if
+                end if
+                if (d_t(i) > 0) then
+                    if (any(.not. isnan(defoliationInputs(1:d_t(i),10,i)))) then
+                        use_event_order(i) = .TRUE.
+                    end if
+                end if
 
-                        if( age(ii,i) >= managementInputs(t_n(i),1,i) ) then
+                ! Standard age-based event handling (no coppice ordering)
+                if (.not. use_event_order(i)) then
+                    if (t_t(i) > 0) then
+                        if (t_n(i) <= t_t(i)) then
+                            if (age(ii,i) >= managementInputs(t_n(i),1,i)) then
+                                do_thin = .TRUE.
+                            end if
+                        end if
+                    end if
+                    if (d_t(i) > 0) then
+                        if (d_n(i) <= d_t(i)) then
+                            if (age(ii,i) >= defoliationInputs(d_n(i),1,i)) then
+                                do_def = .TRUE.
+                            end if
+                        end if
+                    end if
 
+                ! Ordered coppice event handling
+                else
+
+                    if (t_t(i) > 0) then
+                        if (t_n(i) <= t_t(i)) then
+                            if (.not. isnan(managementInputs(t_n(i),7,i))) then
+                                if (int(managementInputs(t_n(i),7,i)) == e_n(i)) then
+                                    if (age(ii,i) >= managementInputs(t_n(i),1,i)) then
+                                        do_thin = .TRUE.
+                                        e_n(i) = e_n(i) + 1
+                                    end if
+                                end if
+                            end if
+                        end if
+                    end if
+
+
+                    if (d_t(i) > 0) then
+                        if (d_n(i) <= d_t(i)) then
+                            if (.not. isnan(defoliationInputs(d_n(i),10,i))) then
+                                if (int(defoliationInputs(d_n(i),10,i)) == e_n(i)) then
+                                    if (age(ii,i) >= defoliationInputs(d_n(i),1,i)) then
+                                        do_def = .TRUE.
+                                        e_n(i) = e_n(i) + 1
+                                    end if
+                                end if
+                            end if
+                        end if
+                    end if
+                end if
+
+                ! Thinning -----------------------------------------------------------------
+
+                        if (do_thin) then
                                    ! thinning calculated using stems_n as input
                                    if ( .not. isnan(managementInputs(t_n(i),2,i)) ) then
                                         if(stems_n(i) > managementInputs(t_n(i),2,i) ) then
@@ -867,13 +940,13 @@ contains
                                                manag_remove_prop_compartment(2) = manag_remove_prop * managementInputs(t_n(i),4,i)  ! root
                                                manag_remove_prop_compartment(3) = manag_remove_prop * managementInputs(t_n(i),5,i)  ! foliage
 
-                                          ! clamp compartments to 0–1
-                                          if ( manag_remove_prop_compartment(1) < 0.d0 ) manag_remove_prop_compartment(1) = 0.d0
-                                          if (manag_remove_prop_compartment(1) > 1.d0 ) manag_remove_prop_compartment(1) = 1.d0
-                                          if ( manag_remove_prop_compartment(2) < 0.d0 ) manag_remove_prop_compartment(2) = 0.d0
-                                          if (manag_remove_prop_compartment(2) > 1.d0 ) manag_remove_prop_compartment(2) = 1.d0
-                                          if ( manag_remove_prop_compartment(3) < 0.d0 ) manag_remove_prop_compartment(3) = 0.d0
-                                          if (manag_remove_prop_compartment(3) > 1.d0 ) manag_remove_prop_compartment(3) = 1.d0
+                                        ! clamp compartments to 0–1
+                                        if ( manag_remove_prop_compartment(1) < 0.d0 ) manag_remove_prop_compartment(1) = 0.d0
+                                        if (manag_remove_prop_compartment(1) > 1.d0 ) manag_remove_prop_compartment(1) = 1.d0
+                                        if ( manag_remove_prop_compartment(2) < 0.d0 ) manag_remove_prop_compartment(2) = 0.d0
+                                        if (manag_remove_prop_compartment(2) > 1.d0 ) manag_remove_prop_compartment(2) = 1.d0
+                                        if ( manag_remove_prop_compartment(3) < 0.d0 ) manag_remove_prop_compartment(3) = 0.d0
+                                        if (manag_remove_prop_compartment(3) > 1.d0 ) manag_remove_prop_compartment(3) = 1.d0
 
                                                ! calculate biomass losses
                                                biom_loss_stem_manag(i)   = biom_stem(i)   * manag_remove_prop_compartment(1)
@@ -949,30 +1022,9 @@ contains
 
                         end if
 
-                    end if
+            ! Defoliation -----------------------------------------------------------------------
 
-                end if
-
-            end do
-
-
-            ! Defoliation --------------------------------------------------------------------------
-            !reset defoliation value
-            stems_loss_def(:) = 0.d0
-            biom_loss_stem_def(:) = 0.d0
-            biom_loss_root_def(:) = 0.d0
-            biom_loss_foliage_def(:) = 0.d0
-            !def_type(:) = 0
-            coppice_event(:) = .FALSE.
-
-            do i = 1, n_sp
-
-                if( d_t(i) > 0 ) then
-
-                    if(d_n(i) <= d_t(i)) then
-
-                        if( age(ii,i) >= defoliationInputs(d_n(i),1,i) ) then
-
+                        if (do_def) then
                             ! Check whether we need to put the defoliation type back to default after first month
                             def_type(i) = int( defoliationInputs(d_n(i),2,i))
                             def_recover_t(i) = defoliationInputs(d_n(i),7,i)
@@ -1087,10 +1139,6 @@ contains
                             d_n(i) = d_n(i) + 1
 
                         end if
-
-                    end if
-
-                end if
 
             end do
 

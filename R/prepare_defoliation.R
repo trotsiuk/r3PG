@@ -32,20 +32,51 @@ prepare_defoliation <- function(defoliation = NULL,
   required_cols <- c("species", "age", "def_type", "stem_retained", "foliage_retained", "root_retained",
                      "stem", "def_recover_t", "prop_carbs", "prop_npp")
 
+  optional_cols <- c("order_coppice_events")
+
+
   if (is.null(defoliation)) {
 
-    defoliation <- array(NA_real_, dim = c(1, length(required_cols) - 1, n_sp))  # drop species column
+    defoliation <- array(NA_real_, dim = c(1, length(required_cols) + length(optional_cols) - 1, n_sp))  # drop species column
 
 
   } else {
 
-    if (!identical(required_cols, colnames(defoliation))) {
-      stop(paste("Column names of defoliation table must be:", paste(required_cols, collapse = ", ")))
+
+    missing_cols <- setdiff(required_cols, colnames(defoliation))
+    if (length(missing_cols) > 0) {
+      stop(paste("The 'defoliation' table is missing the following compulsory columns:", paste(missing_cols, collapse = ", ")))
     }
+
+    #if (!identical(required_cols, colnames(defoliation))) {
+    #  stop(paste("Column names of defoliation table must be:", paste(required_cols, collapse = ", ")))
+    #}
 
     if( !any(defoliation$species %in% sp_names) ){
       stop("species and sp_names does not match.")
     }
+
+
+
+
+
+
+
+
+
+
+
+    # Add missing optional columns with NA values
+    if (!all(optional_cols %in% colnames(defoliation))) {
+      missing_optional_cols <- setdiff(optional_cols, colnames(defoliation))
+      defoliation[missing_optional_cols] <- NA_real_
+    }
+
+    # Control the order
+    defoliation <- defoliation[, c("species", "age", "def_type", "stem_retained", "foliage_retained", "root_retained",
+                                   "stem", "def_recover_t", "prop_carbs", "prop_npp", "order_coppice_events")]
+
+    defoliation <- data.frame( defoliation )
 
 
     # pruning (def_type = 1)
@@ -112,28 +143,30 @@ prepare_defoliation <- function(defoliation = NULL,
     }
 
 
-    defoliation <- data.frame(defoliation)
+    #defoliation <- data.frame(defoliation)
     defoliation <- defoliation[defoliation$species %in% sp_names, ]
     defoliation$species <- sp_id[defoliation$species]
+    defoliation <- defoliation[order(defoliation$species, defoliation$age), ]
+
 
     # For species with a coppice event (def_type == 2) preserve the
     # user-provided row order, because coppice resets age to 0 and any
     # subsequent events must follow the coppice in the input sequence.
     # For all other species, sort events by age as before.
-    coppice_sp <- unique(defoliation$species[defoliation$def_type == 2])
-    if (length(coppice_sp) > 0) {
-      is_coppice_sp <- defoliation$species %in% coppice_sp
-      defoliation_non_cop <- defoliation[!is_coppice_sp, , drop = FALSE]
-      defoliation_cop     <- defoliation[ is_coppice_sp, , drop = FALSE]
-
-      defoliation_non_cop <- defoliation_non_cop[order(defoliation_non_cop$species, defoliation_non_cop$age), ]
-      defoliation_cop     <- defoliation_cop[order(defoliation_cop$species), ]  # row order within species
-
-      defoliation <- rbind(defoliation_non_cop, defoliation_cop)
-      defoliation <- defoliation[order(defoliation$species), ]  # group by species
-    } else {
-      defoliation <- defoliation[order(defoliation$species, defoliation$age), ]
-    }
+    #coppice_sp <- unique(defoliation$species[defoliation$def_type == 2])
+    #if (length(coppice_sp) > 0) {
+    #  is_coppice_sp <- defoliation$species %in% coppice_sp
+    #  defoliation_non_cop <- defoliation[!is_coppice_sp, , drop = FALSE]
+    #  defoliation_cop     <- defoliation[ is_coppice_sp, , drop = FALSE]
+    #
+    #  defoliation_non_cop <- defoliation_non_cop[order(defoliation_non_cop$species, defoliation_non_cop$age), ]
+    #  defoliation_cop     <- defoliation_cop[order(defoliation_cop$species), ]  # row order within species
+    #
+    #  defoliation <- rbind(defoliation_non_cop, defoliation_cop)
+    #  defoliation <- defoliation[order(defoliation$species), ]  # group by species
+    #} else {
+    #  defoliation <- defoliation[order(defoliation$species, defoliation$age), ]
+    #}
 
     t_t <- as.integer(as.vector(table(defoliation[, "species"])))
     n_def <- max(t_t)
@@ -146,7 +179,7 @@ prepare_defoliation <- function(defoliation = NULL,
     )
 
     defoliation <- defoliation[order(defoliation$species, defoliation$def_n), ]
-    defoliation <- simplify2array(by(defoliation[, 3:11], defoliation[, 1], as.matrix))
+    defoliation <- simplify2array(by(defoliation[, 3:12], defoliation[, 1], as.matrix))
 
   }
 
