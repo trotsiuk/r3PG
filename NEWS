@@ -8,7 +8,7 @@ This is a major update of r3PG.
 -   Replaced all non-portable `real(kind=8)` usage in Fortran sources with `kind(0.0d0)` equivalents (extends fix from #97 to the main model file).
 -   Fixed implicit REAL→INTEGER conversion for `lt_mod_mths` in `i_read_input.h`.
 -   In northern latitudes `netRad` could become NaN when day-length is 0, causing simulation crashes. Corrected.
--   Fixed event ordering for coppice species in `prepare_defoliation()` and `prepare_thinning()` — user-provided row order is now preserved when coppice resets age to 0.
+-   Updated coppice event sequencing in `prepare_defoliation()` and `prepare_thinning()` with `order_coppice_events`: values must be positive integers when provided, are required for coppice defoliation rows (`def_type = 2`), and are used as an event-order tie-breaker within the current sorting logic.
 -   Fixed post-simulation output masking in `run_3PG()` that hid management-event outputs when a cohort was thinned to zero stems; the event month is now retained.
 -   Fixed Fortran division-by-zero producing NaN when `stems_n = 0` or `dbh = 0` during thinning/planting months (guarded with `where/elsewhere` blocks and loop-level checks in the Weibull subroutine).
 -   Fixed uninitialized Fortran variables (`basal_area_prop`, `m_apar`, and 7 others) that were written to the output array at month 1 before any computation; caused platform-dependent garbage values on Windows/Linux x86-64 while macOS ARM masked the issue by zero-filling stack memory.

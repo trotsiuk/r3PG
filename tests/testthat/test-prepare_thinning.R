@@ -4,7 +4,7 @@ library(testthat)
 test_that("prepare_thinning handles NULL input", {
   sp_names <- c("Fagus sylvatica", "Pinus sylvestris")
   result <- prepare_thinning(thinning = NULL, sp_names = sp_names)
-  expect_equal(dim(result), c(1, 6, length(sp_names)))
+  expect_equal(dim(result), c(1, 7, length(sp_names)))
   expect_true(all(is.na(result)))
 })
 
@@ -57,13 +57,11 @@ test_that("prepare_thinning processes thinning data correctly", {
   )
   sp_names <- c("Fagus sylvatica", "Pinus sylvestris")
   result <- prepare_thinning(thinning = thinning_data, sp_names = sp_names)
-  expect_equal(dim(result), c(1, 6, 2))
+  expect_equal(dim(result), c(1, 7, 2))
   expect_equal(dimnames(result)[[3]], sp_names)
 })
 
-test_that("prepare_thinning preserves user-provided row order", {
-  # Two events for the same species supplied in descending age order
-  # (e.g., post-coppice scenario where age resets to 0)
+test_that("prepare_thinning keeps age-based ordering", {
   thinning_data <- data.frame(
     species = rep("Fagus sylvatica", 2),
     age = c(30, 10),
@@ -75,7 +73,40 @@ test_that("prepare_thinning preserves user-provided row order", {
   sp_names <- "Fagus sylvatica"
   result <- prepare_thinning(thinning = thinning_data, sp_names = sp_names)
 
-  # Row order preserved: age 30 first, age 10 second
-  expect_equal(result[1, 1, 1], 30)
-  expect_equal(result[2, 1, 1], 10)
+  # Ordered by age: 10 first, 30 second
+  expect_equal(result[1, 1, 1], 10)
+  expect_equal(result[2, 1, 1], 30)
+})
+
+test_that("prepare_thinning validates integer order_coppice_events", {
+  thinning_data <- data.frame(
+    species = "Fagus sylvatica",
+    age = 10,
+    stems_n = 500,
+    stem = 1,
+    root = 1,
+    foliage = 1,
+    order_coppice_events = 2.5
+  )
+
+  expect_error(
+    prepare_thinning(thinning = thinning_data, sp_names = "Fagus sylvatica"),
+    "positive integers"
+  )
+})
+
+test_that("prepare_thinning requires order_coppice_events for duplicate species-age events", {
+  thinning_data <- data.frame(
+    species = c("Fagus sylvatica", "Fagus sylvatica"),
+    age = c(10, 10),
+    stems_n = c(500, 400),
+    stem = c(1, 1),
+    root = c(1, 1),
+    foliage = c(1, 1)
+  )
+
+  expect_error(
+    prepare_thinning(thinning = thinning_data, sp_names = "Fagus sylvatica"),
+    "order_coppice_events"
+  )
 })

@@ -20,6 +20,7 @@ prepare_defoliation(defoliation = NULL, sp_names = c("Fagus sylvatica",
   \item \code{def_recover_t}: Time (months) to recover from defoliation (numeric). After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.
   \item \code{prop_carbs}: Proportion of pre-defoliation non-structural carbohydrates used to regenerate foliage (0 to 1).
   \item \code{prop_npp}: Proportion of new photosynthate allocated to foliage (0 to 1).
+  \item \code{order_coppice_events}: Event sequence index for coppice-related event ordering. Required and must be a positive integer for coppice rows (\code{def_type == 2}).
 }}
 
 \item{sp_names}{A character vector of species or cohort names used in the simulation. Must match \code{species} names in the input.}

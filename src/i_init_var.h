@@ -104,6 +104,7 @@ biom_tree_max(:)       = 0.d0
 
 ! Management
 t_n(:)                 = 1
+e_n(:) = 1         ! thinning + defoliation event counter for cohorts with a defoliation coppice event
 manag_remove_prop      = 0.d0
 manag_remove_prop_compartment(:) = 0.d0
 stems_loss_manag(:)    = 0.d0

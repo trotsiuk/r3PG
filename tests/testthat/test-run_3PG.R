@@ -7,6 +7,22 @@ library(testthat)
 # ---------------------------------------------------------------------------
 run_defoliation_scenario <- function(rds_path, mort_model = 2) {
   d <- readRDS(rds_path)
+
+  if (!is.null(d$defoliation)) {
+    if (!"order_coppice_events" %in% names(d$defoliation)) {
+      d$defoliation$order_coppice_events <- NA_real_
+    }
+
+    coppice_rows <- d$defoliation$def_type == 2
+    if (any(coppice_rows & is.na(d$defoliation$order_coppice_events))) {
+      d$defoliation$order_coppice_events[coppice_rows] <- ave(
+        d$defoliation$def_type[coppice_rows],
+        d$defoliation$species[coppice_rows],
+        FUN = seq_along
+      )
+    }
+  }
+
   run_3PG(
     site = d$site, species = d$species, climate = d$climate,
     defoliation = d$defoliation, parameters = d$parameters,

@@ -48,10 +48,6 @@ contains
         !*************************************************************************************
         ! INITIALISATION (Age independent)
 
-
-        ! thinning + defoliation event counter for cohorts with a defoliation coppice event
-        e_n(:) = 1
-
         ! Day-length calculations
         adjSolarZenithAngle(:) = f_get_solarangle( Lat )
 

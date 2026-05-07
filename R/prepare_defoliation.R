@@ -13,6 +13,7 @@
 #'   \item \code{def_recover_t}: Time (months) to recover from defoliation (numeric). After this time growth is only from npp (not non-structural carbohydrates), and biomass partitioning returns to normal.
 #'   \item \code{prop_carbs}: Proportion of pre-defoliation non-structural carbohydrates used to regenerate foliage (0 to 1).
 #'   \item \code{prop_npp}: Proportion of new photosynthate allocated to foliage (0 to 1).
+#'   \item \code{order_coppice_events}: Event sequence index for coppice-related event ordering. Required and must be a positive integer for coppice rows (\code{def_type == 2}).
 #' }
 #' @param sp_names A character vector of species or cohort names used in the simulation. Must match \code{species} names in the input.
 #'
@@ -20,6 +21,10 @@
 #' @export
 prepare_defoliation <- function(defoliation = NULL,
                                 sp_names = c('Fagus sylvatica', 'Pinus sylvestris')) {
+
+  is_positive_integer <- function(x) {
+    is.finite(x) & x > 0 & abs(x - round(x)) < .Machine$double.eps^0.5
+  }
 
   if (any(is.null(sp_names), is.na(sp_names), length(sp_names) == 0L)) {
     stop("sp_names must be provided and correspond to the species table.")
@@ -142,11 +147,22 @@ prepare_defoliation <- function(defoliation = NULL,
       stop("Defoliation input error: 'prop_carbs' must be < 1 for all defoliation events.")
     }
 
+    coppice_rows <- defoliation$def_type == 2
+    if (any(coppice_rows & is.na(defoliation$order_coppice_events))) {
+      stop("Defoliation input error: 'order_coppice_events' is required for coppice events (def_type = 2).")
+    }
+
+    order_rows <- !is.na(defoliation$order_coppice_events)
+    if (any(order_rows & !is_positive_integer(defoliation$order_coppice_events))) {
+      stop("Defoliation input error: 'order_coppice_events' must be positive integers.")
+    }
+
 
     #defoliation <- data.frame(defoliation)
     defoliation <- defoliation[defoliation$species %in% sp_names, ]
     defoliation$species <- sp_id[defoliation$species]
-    defoliation <- defoliation[order(defoliation$species, defoliation$age), ]
+    order_coppice <- ifelse(is.na(defoliation$order_coppice_events), Inf, defoliation$order_coppice_events)
+    defoliation <- defoliation[order(defoliation$species, defoliation$age, order_coppice), ]
 
 
     # For species with a coppice event (def_type == 2) preserve the

@@ -17,6 +17,7 @@ prepare_thinning(thinning = NULL, sp_names = c("Fagus sylvatica",
   \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
   \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).
   \item \code{biom_prop_retained}: Proportion of aboveground biomass retained after thinning.
+  \item \code{order_coppice_events}: Event sequence index for coppice-related event ordering. When provided, values must be positive integers.
 }}
 
 \item{sp_names}{A character vector of species or cohort names used in the simulation. This must match the species names in the \code{species} table. Required even if \code{thinning = NULL}.}

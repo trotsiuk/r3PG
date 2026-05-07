@@ -10,6 +10,7 @@
 #'   \item \code{foliage}: Type of thinning (above/below) applied to foliage (numeric, default is 1).
 #'   \item \code{root}: Type of thinning (above/below) applied to roots (numeric, default is 1).
 #'   \item \code{biom_prop_retained}: Proportion of aboveground biomass retained after thinning.
+#'   \item \code{order_coppice_events}: Event sequence index for coppice-related event ordering. When provided, values must be positive integers.
 #' }
 #' @param sp_names A character vector of species or cohort names used in the simulation. This must match the species names in the \code{species} table. Required even if \code{thinning = NULL}.
 #'
@@ -30,6 +31,10 @@ prepare_thinning <- function(
   thinning = NULL,
   sp_names = c('Fagus sylvatica', 'Pinus sylvestris')
 ){
+
+  is_positive_integer <- function(x) {
+    is.finite(x) & x > 0 & abs(x - round(x)) < .Machine$double.eps^0.5
+  }
 
   if( any( is.null(sp_names), is.na(sp_names), length(sp_names)==0L) ){
     stop("sp_names must be provided and correspond to the species table.")
@@ -92,9 +97,21 @@ prepare_thinning <- function(
       }
     }
 
+    order_rows <- !is.na(thinning$order_coppice_events)
+    if (any(order_rows & !is_positive_integer(thinning$order_coppice_events))) {
+      stop("Thinning input error: 'order_coppice_events' must be positive integers.")
+    }
+
+    species_age_key <- paste(thinning$species, thinning$age)
+    duplicated_species_age <- duplicated(species_age_key) | duplicated(species_age_key, fromLast = TRUE)
+    if (any(duplicated_species_age & is.na(thinning$order_coppice_events))) {
+      stop("Thinning input error: 'order_coppice_events' is required when multiple events share the same species and age.")
+    }
+
     thinning <- thinning[thinning$species %in% sp_names, ]
     thinning$species <- sp_id[thinning$species] # Map species names to indices
-    thinning <- thinning[order(thinning$species, thinning$age), ] # Order by species and age
+    order_coppice <- ifelse(is.na(thinning$order_coppice_events), Inf, thinning$order_coppice_events)
+    thinning <- thinning[order(thinning$species, thinning$age, order_coppice), ] # Order by species, age and optional coppice order
 
     # Preserve the user-provided row order within each species.
     # This is required when a cohort includes a coppice event (which resets age
