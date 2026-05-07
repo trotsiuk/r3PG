@@ -175,7 +175,7 @@ contains
         ! Calculate the species specific modifiers
         do i = 1, n_sp
             age(:,i) = 12.d0 * ( year_i - year_p(i) ) + month_i - month_p(i) - 1.d0 !
-            age(:,i) =  ( age(:,i) + int( (/(i, i=1, n_m)/) ) ) / 12.d0 ! translate to years
+            age(:,i) =  ( age(:,i) + int( (/(jj, jj=1, n_m)/) ) ) / 12.d0 ! translate to years
             age_m(:,i) =  age(:,i) - 1.d0/12.d0
             age_m(1,i) =  age(1,i)
 
@@ -358,6 +358,14 @@ contains
               lai(:) =  biom_foliage(:) * SLA(ii,:) * 0.1d0
               crown_ratio(:) = 1.d0
             end where
+
+            ! If any new cohort activated, reset dbh_total_prev to prevent misleading DBH ratios
+            ! in the mortality calculation for this same month
+            if (any(age(ii,:) .eq. 0.d0)) then
+                stems_n_total = max(sum(stems_n(:)), 1.0d-12)
+                dbh_total = sum(dbh(:) * stems_n(:)) / stems_n_total
+                dbh_total_prev = dbh_total
+            end if
 
 
             ! calculate partitioning parameter
@@ -1387,7 +1395,12 @@ contains
 
             ! Used when mort_model = 2
             dbh_prev(:) = dbh(:)
-            dbh_total_prev = dbh_total
+            ! Only update dbh_total_prev when there are live trees; if all trees died
+            ! this month, keep the previous valid value so that a regenerating cohort
+            ! in the next month does not see an infinite dbh ratio in mort_model = 3.
+            if (stems_n_total > 1.0d0) then
+                dbh_total_prev = dbh_total
+            end if
 
             ! Efficiency
             epsilon_gpp(:) = 100 * GPP(:) / apar(:)

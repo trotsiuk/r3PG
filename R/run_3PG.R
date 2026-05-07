@@ -153,10 +153,15 @@ run_3PG <- function(
   # from the second consecutive month with stems_n <= 0.
   stems_n_mat  <- matrix(r3PG_out[, , 2, 2], nrow = dim(r3PG_out)[1], ncol = dim(r3PG_out)[2])
   age_mat      <- matrix(r3PG_out[, , 2, 1], nrow = dim(r3PG_out)[1], ncol = dim(r3PG_out)[2])
+  age_prev_mat <- rbind(NA_real_, age_mat[-nrow(age_mat), , drop = FALSE])
   stems_n_prev <- rbind(NA_real_, stems_n_mat[-nrow(stems_n_mat), , drop = FALSE])
 
+  # Mask if: (1) age < 0 (not yet recruited) OR (2) stems_n <= 0 twice in a row AND
+  # both the current and previous month had age >= 0 (i.e., within cohort lifetime).
+  # This avoids masking the first month of a new cohort when it activates right after
+  # another cohort dies.
   remove_2d <- age_mat < 0 |
-    (stems_n_mat <= 0 & (is.na(stems_n_prev) | stems_n_prev <= 0))
+    (stems_n_mat <= 0 & (is.na(stems_n_prev) | stems_n_prev <= 0) & age_prev_mat >= 0)
 
   r3PG_out[array(remove_2d, dim = dim(r3PG_out))] <- NA_real_
 

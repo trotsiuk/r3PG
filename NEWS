@@ -13,6 +13,8 @@ This is a major update of r3PG.
 -   Fixed Fortran division-by-zero producing NaN when `stems_n = 0` or `dbh = 0` during thinning/planting months (guarded with `where/elsewhere` blocks and loop-level checks in the Weibull subroutine).
 -   Fixed uninitialized Fortran variables (`basal_area_prop`, `m_apar`, and 7 others) that were written to the output array at month 1 before any computation; caused platform-dependent garbage values on Windows/Linux x86-64 while macOS ARM masked the issue by zero-filling stack memory.
 -   Fixed out-of-bounds array reads in long-term modifier initialization when `lt_mod_mths > n_m` (e.g. 120 vs 92 months), causing non-deterministic density-dependent mortality (`mort_model = 3`) results across repeated runs. Reformulated the mort_model = 3 equation using relative-perturbation to additionally avoid catastrophic cancellation.
+-   Fixed masking logic for regenerating cohorts that activate after another cohort dies: when the gap exceeds 1 month, the new cohort's activation month was incorrectly masked as NA because the previous month's stem count (from the now-dead cohort) was ≤ 0. New logic checks that the previous month had `age >= 0` before applying the dead-for-2+-months masking rule, ensuring it only applies within a cohort's lifetime.
+-   Fixed Fortran density-dependent mortality calculations when a new cohort activates the same month: `dbh_total_prev` was stale (from when only previous cohorts existed), causing a misleading DBH ratio and massive mortality for the new cohort. Now reset `dbh_total_prev` immediately after new cohorts activate so the mortality calculation uses a sensible reference.
 
 ### New function and data sets
 

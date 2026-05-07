@@ -52,16 +52,21 @@ More items will be added as development progresses.
 
 ### Bug fixes
 
+- **mort_model=3 non-determinism**: Fixed out-of-bounds array reads when initialization period `lt_mod_mths` exceeds climate array size `n_m`. Applied clamping at initialization (`lt_init_len = min(lt_mod_mths, n_m)`) to prevent reading garbage memory. Also reformulated mort_model=3 equation using relative-perturbation + Taylor expansion to avoid catastrophic cancellation. Verified deterministic output: 20/20 identical runs across repeated simulations.
+- **Regenerating cohort R-side masking**: Fixed masking logic inadvertently removing newly-activated cohorts when the previous month had zero stems. Added `age_prev_mat >= 0` guard to ensure "dead for 2+ consecutive months" rule only applies within a cohort's lifetime, not across activation boundaries. Affected regenerating species with temporal gaps (e.g., species 2 planted >1 month after species 1 dies).
+- **Regenerating cohort Fortran mortality spike**: Fixed excessive mortality for newly-activated cohorts caused by stale `dbh_total_prev` from previous species. Added code to reset `dbh_total_prev = dbh_total` immediately after cohort activation to prevent misleading dbh_ratio calculations in mort_model=3. Species 2 now activates with expected stem count (~1000) instead of zero.
 - Fixed post-simulation output masking hiding management-event month.
 - Fixed event ordering breaking post-coppice events when age resets to 0.
 - Fixed Fortran division-by-zero producing NaN in outputs at thinning months (`biom_tree / stems_n` when `stems_n = 0`) and at planting months (`Log(dbh)` / `Log(age)` when `dbh = 0` or `age = 0`). Affected variables: `basal_area`, `dbh`, `biom_tree`, `DWeibullScale`, `DWeibullShape`, `DWeibullLocation`.
 - Fixed uninitialized Fortran variables written to the output array at month 1, causing platform-dependent garbage values on Windows/Linux (macOS ARM zeros stack memory, masking the bug). Added 9 missing initializations in `i_init_var.h` and proper `basal_area_prop` computation before the first output write.
 - Added R-side `NaN → NA` sanitization in `run_3PG.R` as a safety net.
 - Fixed out-of-bounds array reads in long-term modifier initialization when `lt_mod_mths > n_m`, causing non-deterministic density-dependent mortality (`mort_model = 3`) results across repeated runs; also reformulated the mort_model = 3 equation using relative-perturbation to avoid catastrophic cancellation.
+- Fixed masking logic for dead/not-yet-recruited cohorts in `run_3PG.R`: when a new cohort activates within 1–2 months after another cohort dies (gap > 1 month), the activation month was incorrectly masked as NA because the previous month's `stems_n` (from the dead cohort) was ≤ 0. New logic checks `age_prev >= 0` to only apply the "dead for 2+ months" rule within a cohort's lifetime, not across activation boundaries.
 
 ### Tests (115 total, 0 fail, 0 warn, 0 skip)
 
 - Increased test precision from 3 to 5 significant digits (`tolerance = 5e-6`) now that run-to-run determinism is guaranteed.
+- Masking logic verified to correctly handle regenerating cohorts with gaps after previous cohort death.
 
 ## Technical log
 
