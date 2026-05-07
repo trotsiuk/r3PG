@@ -41,12 +41,12 @@ prepare_thinning <- function(
 
   if( is.null(thinning) ){
 
-    thinning = array(NA_real_, dim = c(1, 6, n_sp)) #!20251114
+    thinning = array(NA_real_, dim = c(1, 7, n_sp))
 
   } else {
 
     required_cols <- c("species", "age", "stems_n", "stem", "root", "foliage")
-    optional_cols <- c( "biom_prop_retained")
+    optional_cols <- c( "biom_prop_retained","order_coppice_events")
 
     # Check if all compulsory columns are present
     missing_cols <- setdiff(required_cols, colnames(thinning))
@@ -62,8 +62,11 @@ prepare_thinning <- function(
     if (!all(optional_cols %in% colnames(thinning))) {
       missing_optional_cols <- setdiff(optional_cols, colnames(thinning))
       thinning[missing_optional_cols] <- NA_real_
-    } 
-        
+    }
+
+    # Control the order
+    thinning <- thinning[, c("species","age","stems_n","stem","root","foliage","biom_prop_retained","order_coppice_events")]
+
     thinning <- data.frame( thinning )
 
     # check whether the thinning above/below are within plausible range
@@ -72,32 +75,33 @@ prepare_thinning <- function(
     }
 
     # both supplied → ambiguous
-    if (any(!is.na(thinning[, "stems_n"]) & !is.na(thinning[, "biom_prop_retained"]))) {                                                     #!20260123
-      stop("Thinning input error: both 'stems_n' and 'biom_prop_retained' were supplied in the same thinning event. Please supply only one." #!20260123
+    if (any(!is.na(thinning[, "stems_n"]) & !is.na(thinning[, "biom_prop_retained"]))) {
+      stop("Thinning input error: both 'stems_n' and 'biom_prop_retained' were supplied in the same thinning event. Please supply only one."
       )
     }
 
     # neither supplied → undefined
-    if (any(is.na(thinning[, "stems_n"]) & is.na(thinning[, "biom_prop_retained"]))) {                                                      #!20260123
-      stop("Thinning input error: neither 'stems_n' nor 'biom_prop_retained' was supplied in a thinning event. Please supply exactly one."  #!20260123
+    if (any(is.na(thinning[, "stems_n"]) & is.na(thinning[, "biom_prop_retained"]))) {
+      stop("Thinning input error: neither 'stems_n' nor 'biom_prop_retained' was supplied in a thinning event. Please supply exactly one."
       )
     }
 
-    if (length(thinning[, "biom_prop_retained"]) > 0 && any(!is.na(thinning[, "biom_prop_retained"]))) {     #!20260123
-      if (any(thinning[, "biom_prop_retained"] < 0 | thinning[, "biom_prop_retained"] > 1, na.rm = TRUE)) {  #!20260123
-        stop("Thinning values for biom_prop_retained must be in the range [0, 1].")                          #!20260123
+    if (length(thinning[, "biom_prop_retained"]) > 0 && any(!is.na(thinning[, "biom_prop_retained"]))) {
+      if (any(thinning[, "biom_prop_retained"] < 0 | thinning[, "biom_prop_retained"] > 1, na.rm = TRUE)) {
+        stop("Thinning values for biom_prop_retained must be in the range [0, 1].")
       }
     }
 
     thinning <- thinning[thinning$species %in% sp_names, ]
     thinning$species <- sp_id[thinning$species] # Map species names to indices
+    thinning <- thinning[order(thinning$species, thinning$age), ] # Order by species and age
 
     # Preserve the user-provided row order within each species.
     # This is required when a cohort includes a coppice event (which resets age
     # to 0), so that post-coppice management events are not re-sorted ahead of
     # the coppice. For non-coppice cohorts the user naturally supplies events in
     # ascending age, so the result is identical to the previous age-based sort.
-    thinning <- thinning[order(thinning$species), ]
+    #thinning <- thinning[order(thinning$species), ]
 
     t_t = as.integer( as.vector( table(thinning[,1]) ) )
     n_man = as.integer( max(t_t) )
@@ -111,7 +115,7 @@ prepare_thinning <- function(
 
     thinning = thinning[order(thinning$species, thinning$thin_n),]
 
-    thinning = simplify2array(by(thinning[,3:8], thinning[,1], as.matrix)) #!20251114
+    thinning = simplify2array(by(thinning[,3:9], thinning[,1], as.matrix))
       }
 
   if( n_sp > 1 ){

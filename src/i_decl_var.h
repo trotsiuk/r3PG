@@ -310,11 +310,17 @@ real(kind=kind(0.0d0)), dimension(n_sp) :: m
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: gammaN
 real(kind=kind(0.0d0)), dimension(n_m, n_sp) :: gammaF
 
+! For coppice defoliation events, control order due to age resets
+integer, dimension(n_sp) :: e_n                                      ! current shared event number
+logical, dimension(n_sp) :: use_event_order                           ! consider order of events, or not (used for defoliation coppice events)
+logical :: do_thin, do_def
+
 
 ! Management mortality
 integer, dimension(n_sp) :: t_n, d_n                                     ! current thinning and defoliation number
 real(kind=kind(0.0d0)) :: manag_remove_prop                              ! proportion to be removed during the management based on the tree density (stems_n) or proportion of biomass retained
 real(kind=kind(0.0d0)), dimension(3) :: manag_remove_prop_compartment    ! proportion of each compartment (stem, root, foliage) to be removed by thinning.
+
 
 !real(kind=kind(0.0d0)) :: dbh_term_prev
 !real(kind=kind(0.0d0)) :: dbh_term
